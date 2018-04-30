@@ -2,6 +2,10 @@
 OrionAlpha - A Nexon Replica Emulator Project
 
 ----------------------------------------------------------------------
+## Resources
+ * You can download the game and client [here](https://mega.nz/#!yoVU2CpZ!J0U2UL_8-kV-x996Ui0qt4FgWdPgErMUALrlb59e41Y)
+ * To emulate a korean locale in the client, you can download LocaleEmulator [here](https://mega.nz/#!T5t00IwA!YByix3DVt-_Pi0IpU-OwUnvhCDyZEPz4JQ6S-kbYHks)
+ * You can download the named client IDB [here](https://mega.nz/#!C8FVnZwY!cnU-PYQadLzmtb9eiUHdr4heWfYb1uS7vbXo3Te4M34)
 ## Requirements/Dependencies
  * Java JDK (8 or higher)
  * javax.json (or Java EE)
@@ -14,6 +18,8 @@ OrionAlpha - A Nexon Replica Emulator Project
  The OrionAlpha Emulator is split up into two parts: Login, and Game, and each execute on their own thread. 
  Login is the sole Login server which will have connectivity to each world and can migrate you back and forth. 
  Game is designed to be each world, and takes the JVM argument -DworldID=X to define which world it is. Each Game JVM that controls the world will also control all of its channels (thus, no multi-jvm here).
+ 
+ ----------------------------------------------------------------------
  ## Server Configuration
  Located within the root of the emulator are a few configuration files:
   * Game0, Game1, etc is used to configure each World.
@@ -30,8 +36,14 @@ OrionAlpha - A Nexon Replica Emulator Project
   * `incEXPRate` -> The server's Experience Rate modifier.
   * `incMoneyRate` -> The server's Meso Rate modifier.
   * `incDropRate` -> The server's Drop Rate modifier.
+  ----------------------------------------------------------------------
   ## Client Modifications
   Even knowing there's barely anything to edit in such an early version, below are helpful client edits.
+  
+  ### Modifying IP
+  If you intend to use OrionAlpha, you can change the IP in either our client or the clean client.
+   * Our client's default IP is `127.0.0.1`
+   * Nexon's default IP is `218.153.9.173`
   
   ### Enable Multi-Client
   Allow multiple clients to be open/executed simultaneously.
@@ -56,7 +68,7 @@ OrionAlpha - A Nexon Replica Emulator Project
   
   ### Enable Infinite Text
   Allows you to type as many characters as you want into a single message, literally.
-  * Change the instruction at address `0051E38D` to `mov dword ptr [esp+0xC4], 0xFF`
+  * Change the instruction at address `0051E38D` to `mov dword ptr [esp+0xC4], 0xFF` where `0xFF` is the maximum
   
   ### Enable Swear Filter
   Allows you to enter curse words without getting a pop-up and restricting your message from sending.

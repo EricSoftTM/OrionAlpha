@@ -84,8 +84,10 @@ public class SocketDecoder extends ReplayingDecoder<Void> {
             if (state == 2) {
                 if (!packet.decryptData(cipher)) {
                     Logger.logError("DecryptData Failed");
+                    cipher.updateSeqRcv();
                     return;
                 }
+                cipher.updateSeqRcv();
                 out.add(packet);
             }
         } finally {

@@ -34,7 +34,7 @@ public class XORCipher {
         this.seqRcv = seqRcv;
     }
     
-    public int getSeqSend() {
+    public int getSeqSnd() {
         return seqSnd;
     }
     
@@ -46,10 +46,9 @@ public class XORCipher {
         byte iv = (byte) (Utilities.getBytes(seqRcv)[0] & 0xFF);
         
         for (int i = 0; i < buffer.length; i++) {
-            buffer[i] = (byte) ((byte) (16 * (iv ^ (buffer[i] & 0xFF))) | (byte) (((iv ^ buffer[i] & 0xFF) >> 4) & 0xFF0F0F0F));
+            buffer[i] = (byte) ((byte) (16 * (iv ^ (buffer[i] & 0xFF))) | (byte) (((iv ^ (buffer[i] & 0xFF)) >> 4) & 0xFF0F0F0F));
         }
         
-        this.seqRcv = Rand32.crtRand(this.seqRcv);
         return buffer;
     }
     
@@ -57,11 +56,18 @@ public class XORCipher {
         byte iv = (byte) (Utilities.getBytes(seqSnd)[0] & 0xFF);
         
         for (int i = 0; i < buffer.length; i++) {
-            buffer[i] = (byte)(iv ^ (byte) (16 * (buffer[i] & 0xFF) | (byte) ((buffer[i] & 0xFF) >> 4)));
+            buffer[i] = (byte) (iv ^ (byte) (16 * (buffer[i] & 0xFF) | (byte) ((buffer[i] & 0xFF) >> 4)));
         }
         
-        this.seqSnd = Rand32.crtRand(this.seqSnd);
         return buffer;
+    }
+    
+    public void updateSeqSend() {
+        this.seqSnd = Rand32.crtRand(this.seqSnd);
+    }
+    
+    public void updateSeqRcv() {
+        this.seqRcv = Rand32.crtRand(this.seqRcv);
     }
     
     /**

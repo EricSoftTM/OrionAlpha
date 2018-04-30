@@ -21,16 +21,27 @@ package network.packet;
  *
  * @author Eric
  */
-public enum ClientPacket {
-    BEGIN_SOCKET(0),
+public class ClientPacket {
+    public static final short
+            BEGIN_SOCKET = 0,
+            CheckPassword = 1,
+            WorldRequest = 2,
+            SelectCharacter = 3,
+            MigrateIn = 4,
+            CreateNewCharacter = 6,
+            DeleteCharacter = 7,
+            AliveAck = 8,
+            END_SOCKET = 11,
+            BEGIN_USER = 12,
+            UserTransferFieldRequest = 13,
+            UserMigrateToCashShopRequest = 14,
+            UserMove = 15,
+            UserMeleeAttack = 16,
+            UserShootAttack = 17,
+            UserMagicAttack = 18,
+            UserHit = 20,
+            UserChat = 21,
+            UserSelectNpc = 23,
+            UserChangeStatRequest = 32
     ;
-    
-    private final int type;
-    private ClientPacket(int type) {
-        this.type = type;
-    }
-    
-    public int get() {
-        return type;
-    }
 }

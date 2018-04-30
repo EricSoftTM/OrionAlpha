@@ -17,12 +17,14 @@
  */
 package network.packet;
 
+import common.OrionConfig;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.nio.charset.Charset;
 import java.util.List;
 import network.security.XORCipher;
 import util.FileTime;
+import util.Logger;
 import util.Pointer;
 import util.Utilities;
 
@@ -79,11 +81,10 @@ public class OutPacket {
         return uSeqKey;
     }
     
-    public void makeBufferList(List<byte[]> l, int seqBase, Pointer<Integer> seqKey, XORCipher cipher) {
+    public void makeBufferList(List<byte[]> l, int seqBase, XORCipher cipher) {
         // The source buffer to encrypt - do NOT encrypt directly;
         // all output of encrypted buffer should be in pDes, not pSrc.
-        byte[] src = new byte[sendBuff.writerIndex()];
-        System.arraycopy(sendBuff.array(), 0, src, 0, src.length);
+        byte[] src = toArray();
         
         // The total remaining bytes to be written to the destination
         // buffer. We additionally encode the 4-byte TCP packet header.
@@ -114,23 +115,26 @@ public class OutPacket {
         
         // Encode the sequence base and write it to the first 2 bytes of the
         // TCP packet header.
-        int rawSeq = encodeSeqBase(seqBase, seqKey);
+        int rawSeq = encodeSeqBase(seqBase, new Pointer<>(cipher.getSeqSnd()));
+        byte[] dest = new byte[4];
         //*(unsigned __int16 *)pDes = uRawSeq;
-        block[des++] = (byte) ((rawSeq >>> 8) & 0xFF);
-        block[des++] = (byte) (rawSeq & 0xFF);
+        dest[des++] = (byte) ((rawSeq >>> 8) & 0xFF);
+        dest[des++] = (byte) (rawSeq & 0xFF);
         //pDes += 2;
 
         // Encode the encrypted data length and write it to the last 2 bytes
         // of the TCP packet header.
-        int dataLen = rawSeq ^ (((src.length << 8) & 0xFF00) | (src.length >>> 8));
+        int dataLen = (((src.length << 8) & 0xFF00) | (src.length >>> 8));
         //*(unsigned __int16 *)pDes = uDataLen;
-        block[des++] = (byte) ((dataLen >>> 8) & 0xFF);
-        block[des++] = (byte) (dataLen & 0xFF);
+        dest[des++] = (byte) ((dataLen >>> 8) & 0xFF);
+        dest[des++] = (byte) (dataLen & 0xFF);
         //pDes += 2;
         
         // Encrypt the first block and append to the buffer list.
         System.arraycopy(src, src0, block, des, desEnd - des);
         block = cipher.encrypt(block);
+        // Copy the packet header after encrypting block
+        System.arraycopy(dest, 0, block, 0, dest.length);
         src0 += desEnd - des;
         l.add(block);
         
@@ -146,6 +150,8 @@ public class OutPacket {
             
             System.arraycopy(src, src0, block, des, desEnd - des);
             block = cipher.encrypt(block);
+            
+            System.arraycopy(dest, 0, block, 0, dest.length);
             
             src0 += desEnd - des;
             l.add(block);

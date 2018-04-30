@@ -18,6 +18,8 @@
 package login;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import network.LoginAcceptor;
 import util.Logger;
 
@@ -29,25 +31,35 @@ public class LoginApp implements Runnable {
     private static final LoginApp instance = new LoginApp();
     
     private LoginAcceptor acceptor;
+    private final List<WorldEntry> worlds;
     public final long serverStartTime;
     public String addr;
     public int port = 8484;
     
     public LoginApp() {
+        this.worlds = new ArrayList<>();
         this.serverStartTime = System.currentTimeMillis();
-    }
-    
-    public static LoginApp getInstance() {
-        return instance;
     }
     
     public final LoginAcceptor getAcceptor() {
         return acceptor;
     }
     
+    public static LoginApp getInstance() {
+        return instance;
+    }
+    
+    public void addWorld(WorldEntry world) {
+        this.worlds.add(world);
+    }
+    
     private void createAcceptor() {
         acceptor = new LoginAcceptor(new InetSocketAddress(port));
         acceptor.run();
+    }
+    
+    public final List<WorldEntry> getWorlds() {
+        return this.worlds;
     }
     
     private void initializeCenter() {

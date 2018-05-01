@@ -62,7 +62,7 @@ public class XORCipher {
         return buffer;
     }
     
-    public void updateSeqSend() {
+    public void updateSeqSnd() {
         this.seqSnd = Rand32.crtRand(this.seqSnd);
     }
     

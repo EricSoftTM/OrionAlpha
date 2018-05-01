@@ -43,7 +43,7 @@ public class OrionConfig {
     public static final int MAX_CONNECTIONS = 1000;
     
     // Master Password
-    public static final String MASTER_PASSWORD = "ericftw"; //TODO BCrypt
+    public static final String MASTER_PASSWORD = "$2a$10$SdXGImegkpvdeHohjas29.ZBR7LwmvpXxNBy..chrmXiMFqyntJZm";
     
     // Log Packets
     public static final boolean LOG_PACKETS = true;

@@ -22,7 +22,6 @@ import io.netty.buffer.Unpooled;
 import java.nio.charset.Charset;
 import network.security.XORCipher;
 import util.FileTime;
-import util.Logger;
 import util.Pointer;
 import util.Utilities;
 
@@ -232,6 +231,10 @@ public class InPacket {
             recvBuff.writeBytes(buff);
         }
         length += size;
+    }
+    
+    public void setDataLen(int len) {
+        this.dataLen = len;
     }
     
     @Override

@@ -25,7 +25,7 @@ public class ClientPacket {
     public static final short
             BEGIN_SOCKET = 0,
             CheckPassword = 1,
-            WorldRequest = 2,
+            SelectWorld = 2,
             SelectCharacter = 3,
             MigrateIn = 4,
             CreateNewCharacter = 6,

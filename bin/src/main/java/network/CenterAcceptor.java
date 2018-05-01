@@ -17,76 +17,58 @@
  */
 package network;
 
+import login.GameSocket;
 import common.OrionConfig;
-import game.GameApp;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import io.netty.handler.codec.MessageToByteEncoder;
+import io.netty.handler.codec.ReplayingDecoder;
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import login.user.client.ClientSocket;
+import network.packet.InPacket;
 
-/**
- *
- * @author Eric
- */
 /**
  * Our server acceptor.
  * Initializes all incoming connections.
  * 
  * @author Eric
  */
-public class GameAcceptor extends ChannelInitializer<SocketChannel> implements Runnable {
-    private final AtomicInteger serialNoCounter;
-    private final Map<Integer, ClientSocket> sn2pSocket;
-    private final Lock lock;
-    private final InetSocketAddress addr;
-    private EventLoopGroup workerGroup, childGroup;
+public class CenterAcceptor extends ChannelInitializer<SocketChannel> implements Runnable {
+    private final SocketAddress addr;
+    private EventLoopGroup acceptor, childGroup;
     private Channel channel;
-    public boolean acceptorClosed;
-    public final AtomicInteger remainedSocket;
+    private final List<GameSocket> sockets;
+    private final Lock lock;
     
     /**
      * Constructs Game Server-specific acceptors for each World and Channel.
      * 
      * @param pAddr Our IP Socket Address that contains the IP and Port to bind to
      */
-    public GameAcceptor(InetSocketAddress pAddr) {
+    public CenterAcceptor(SocketAddress pAddr) {
         this.addr = pAddr;
-        this.serialNoCounter = new AtomicInteger(0);
-        this.remainedSocket = new AtomicInteger(0);
-        this.sn2pSocket = new HashMap<>();
         this.lock = new ReentrantLock();
-        this.acceptorClosed = true;
+        this.sockets = new ArrayList<>();
     }
     
-    public static GameAcceptor getInstance() {
-        return GameApp.getInstance().getAcceptor();
-    }
-    
-    public ClientSocket getSocket(int localSocketSN) {
+    public void removeSocket(GameSocket socket) {
         lock.lock();
         try {
-            return sn2pSocket.get(localSocketSN);
-        } finally {
-            lock.unlock();
-        }
-    }
-    
-    public void removeSocket(ClientSocket socket) {
-        lock.lock();
-        try {
-            sn2pSocket.remove(socket.getLocalSocketSN());
+            sockets.remove(socket);
         } finally {
             lock.unlock();
         }
@@ -98,9 +80,9 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
     @Override
     public void run() {
         try {
-            workerGroup = new NioEventLoopGroup(4);
+            acceptor = new NioEventLoopGroup(4);
             childGroup = new NioEventLoopGroup(10);
-            channel =  new ServerBootstrap().group(workerGroup, childGroup)
+            channel =  new ServerBootstrap().group(acceptor, childGroup)
                     .channel(NioServerSocketChannel.class)
                     .childHandler(this)
                     .option(ChannelOption.SO_BACKLOG, OrionConfig.MAX_CONNECTIONS)
@@ -108,8 +90,6 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
                     .childOption(ChannelOption.TCP_NODELAY, true)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .bind(addr).syncUninterruptibly().channel().closeFuture().channel();
-            
-            acceptorClosed = false;
         } catch (Exception ex) {
             ex.printStackTrace(System.err);
         }
@@ -121,7 +101,7 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
      */
     public void unbind() {
         channel.close();
-        workerGroup.shutdownGracefully();
+        acceptor.shutdownGracefully();
         childGroup.shutdownGracefully();
     }
 
@@ -140,27 +120,39 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
      */
     @Override
     protected void initChannel(SocketChannel ch) throws Exception {
-        lock.lock();
-        try {
-            if (acceptorClosed) {
-                return;
-            }
-            ClientSocket socket = new ClientSocket(ch);
-            //socket.addr = String.format("%s:%d", socket.getSocketRemoteIP(), addr.getPort());
-            socket.initSequence();
-            int serialNo = serialNoCounter.incrementAndGet();
-            socket.setLocalSocketSN(serialNo);
-            sn2pSocket.put(serialNo, socket);
-            ch.pipeline().addLast("ClientSocket", socket);
-            if (sn2pSocket.size() > GameApp.getInstance().getConnectionLimit()) {
-                for (ClientSocket entry : sn2pSocket.values()) {
-                    //if (entry != null && entry.getMigrateState() == MigrateState.WaitMigrateIn) {
-                    //    entry.postClose();
-                    //}
-                }
-            }
-        } finally {
-            lock.unlock();
+        GameSocket socket = new GameSocket(ch);
+        
+        ch.pipeline().addLast(
+                new CenterDecoder(), 
+                socket, 
+                new CenterEncoder() 
+        );
+    }
+    
+    private static class CenterDecoder extends ReplayingDecoder<Void> {
+        
+        @Override
+        protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
+            int length = in.readInt();
+            
+            byte[] src = new byte[length];
+            in.readBytes(src);
+            
+            InPacket packet = new InPacket();
+            packet.setDataLen(length);
+            packet.rawAppendBuffer(Unpooled.wrappedBuffer(src), length);
+            out.add(packet);
+        }
+    }
+    
+    private static class CenterEncoder extends MessageToByteEncoder<byte[]> {
+        
+        @Override
+        protected void encode(ChannelHandlerContext ctx, byte[] message, ByteBuf out) throws Exception {
+            byte[] packet = (byte[]) message;
+        
+            out.writeInt(packet.length);
+            out.writeBytes(Arrays.copyOf(packet, packet.length));
         }
     }
 }

@@ -19,6 +19,7 @@ package login;
 
 import java.util.ArrayList;
 import java.util.List;
+import network.packet.OutPacket;
 
 /**
  *
@@ -28,8 +29,10 @@ public class WorldEntry {
     private final byte worldID;
     private final String name;
     private final List<ChannelEntry> channels;
+    private final GameSocket socket;
     
-    public WorldEntry(byte worldID, String name) {
+    public WorldEntry(GameSocket socket, byte worldID, String name) {
+        this.socket = socket;
         this.worldID = worldID;
         this.name = name;
         this.channels = new ArrayList<>();
@@ -43,6 +46,10 @@ public class WorldEntry {
         return this.channels;
     }
     
+    public final GameSocket getGameSocket() {
+        return socket;
+    }
+    
     public String getName() {
         return this.name;
     }
@@ -53,5 +60,11 @@ public class WorldEntry {
     
     public void removeChannel(ChannelEntry entry) {
         this.channels.remove(entry);
+    }
+    
+    public void sendPacket(OutPacket packet) {
+        if (socket != null) {
+            socket.sendPacket(packet, false);
+        }
     }
 }

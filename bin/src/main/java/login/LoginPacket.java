@@ -52,7 +52,7 @@ public class LoginPacket {
         return packet;
     }
     
-    public static OutPacket OnSelectWorldResult(int msg, List<Avatar> avatars) {
+    public static OutPacket onSelectWorldResult(int msg, List<Avatar> avatars) {
         OutPacket packet = new OutPacket(LoopbackPacket.SelectWorldResult);
         packet.encodeByte(msg);
         if (msg == 1) {
@@ -60,7 +60,7 @@ public class LoginPacket {
             
             packet.encodeByte(avatars.size());
             for (Avatar avatar : avatars) {
-                avatar.Encode(packet);
+                avatar.encode(packet);
             }
         }
         return packet;

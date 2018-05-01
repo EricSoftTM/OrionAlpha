@@ -28,20 +28,20 @@ import io.netty.handler.timeout.IdleStateHandler;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import login.ChannelEntry;
 import login.LoginApp;
 import login.LoginPacket;
 import login.WorldEntry;
+import login.avatar.Avatar;
 import network.LoginAcceptor;
 import network.SocketDecoder;
 import network.SocketEncoder;
+import network.database.LoginDB;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.LoopbackPacket;
@@ -231,25 +231,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         return ((this.gradeCode >> 3) & 0x1) > 0;
     }
     
-    private void processPacket(InPacket packet) {
-        if (packet.getDataLen() < 1) {
-            return;
-        }
-        final int type = packet.decodeByte();
-        if (OrionConfig.LOG_PACKETS) {
-            Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
-        }
-        if (type == ClientPacket.AliveAck) {
-            
-        } else if (type >= ClientPacket.BEGIN_SOCKET && type <= ClientPacket.END_SOCKET) {
-            switch (type) {
-                case ClientPacket.CheckPassword:
-                    onCheckPassword(packet);
-                    break;
-            }
-        }
-    }
-    
     public void onAliveAck() {
         long cur = System.currentTimeMillis();
         if (this.aliveReqSent > 0 && (cur - this.aliveReqSent) <= 60000 * (this.firstAliveAck ? 8 : 3)) {
@@ -286,18 +267,31 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         String id = packet.decodeString();
         String passwd = packet.decodeString();
         
-        int result = 1;
-        if (passwd.equals("ericftw"))
-            result = 3;
+        if (id == null || id.isEmpty()) {
+            return;
+        }
         
-        this.accountID = 30000;
-        this.gender = 0;
-        this.gradeCode = 1;
-        this.nexonClubID = "test@test.com";
-        LoginApp.getInstance().getWorlds().add(new WorldEntry((byte) 0, "Orion"));
-        LoginApp.getInstance().getWorlds().get(0).addChannel(new ChannelEntry((byte) 0, (byte) 1));
+        int retCode = LoginDB.rawCheckPassword(id, passwd, this);
+        if (retCode == 1) {
+            retCode = LoginDB.rawCheckUserConnected(this.accountID);
+        }
         
-        sendPacket(LoginPacket.onCheckPasswordResult(this, result), false);
+        sendPacket(LoginPacket.onCheckPasswordResult(this, retCode), false);
+    }
+    
+    public void onSelectWorld(InPacket packet) {
+        this.worldID = packet.decodeByte();
+        this.channelID = packet.decodeByte();
+        
+        WorldEntry pWorld = LoginApp.getInstance().getWorld(worldID);
+        if (pWorld != null) {
+            List<Avatar> avatars = new ArrayList<>();
+            LoginDB.rawLoadAvatar(this.accountID, this.worldID, avatars);
+            
+            sendPacket(LoginPacket.onSelectWorldResult(1, avatars), false);
+        } else {
+            Logger.logError("User %s attempting to connect to offline world %d", this.nexonClubID, this.worldID);
+        }
     }
     
     public boolean postClose() {
@@ -307,6 +301,28 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         } else {
             onClose();
             return true;
+        }
+    }
+    
+    private void processPacket(InPacket packet) {
+        if (packet.getDataLen() < 1) {
+            return;
+        }
+        final byte type = packet.decodeByte();
+        if (OrionConfig.LOG_PACKETS) {
+            Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+        }
+        if (type == ClientPacket.AliveAck) {
+            
+        } else if (type >= ClientPacket.BEGIN_SOCKET && type <= ClientPacket.END_SOCKET) {
+            switch (type) {
+                case ClientPacket.CheckPassword:
+                    onCheckPassword(packet);
+                    break;
+                case ClientPacket.SelectWorld:
+                    onSelectWorld(packet);
+                    break;
+            }
         }
     }
     
@@ -344,7 +360,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             if (!this.closePosted || force) {
                 List<byte[]> buff = new LinkedList<>();
                 packet.makeBufferList(buff, OrionConfig.CLIENT_VER, cipher);
-                cipher.updateSeqSend();
+                cipher.updateSeqSnd();
                 sendPacket(buff);
             }
         } finally {
@@ -368,8 +384,24 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         }
     }
     
+    public void setAccountID(int accountID) {
+        this.accountID = accountID;
+    }
+    
+    public void setGender(byte gender) {
+        this.gender = gender;
+    }
+    
+    public void setGradeCode(byte grade) {
+        this.gradeCode = grade;
+    }
+    
     public void setLocalSocketSN(int sn) {
         this.localSocketSN = sn;
+    }
+    
+    public void setNexonClubID(String id) {
+        this.nexonClubID = id;
     }
     
     /**

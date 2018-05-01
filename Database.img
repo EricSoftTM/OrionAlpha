@@ -1,0 +1,6 @@
+{
+	"dbPort": 3306,
+	"dbGameWorld": "orionalpha",
+	"dbGameWorldSource": "127.0.0.1",
+	"dbGameWorldInfo": "root,"
+}

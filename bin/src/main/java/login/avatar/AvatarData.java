@@ -17,11 +17,13 @@
  */
 package login.avatar;
 
+import common.item.BodyPart;
 import common.item.ItemSlotBase;
 import common.user.CharacterStat;
 import common.user.DBChar;
 import java.util.ArrayList;
 import java.util.List;
+import network.database.LoginDB;
 import network.packet.OutPacket;
 
 /**
@@ -40,7 +42,7 @@ public class AvatarData {
         this.equipped2 = new ArrayList<>();
     }
     
-    public void Encode(OutPacket packet) {
+    public void encode(OutPacket packet) {
         packet.encodeByte(DBChar.Character | DBChar.ItemSlotEquip);
         // Encode Character
         characterStat.Encode(packet);
@@ -76,5 +78,11 @@ public class AvatarData {
     
     public List<ItemSlotBase> getEquipped2() {
         return equipped2;
+    }
+    
+    public boolean load(int accountID, int characterID) {
+        //LoginDB.rawGetCharacterData(characterID, characterStat);
+        //TODO: Load character stat and equipment info
+        return true;
     }
 }

@@ -50,7 +50,7 @@ public class AvatarData {
     }
     
     public void encode(OutPacket packet) {
-        packet.encodeByte(DBChar.Character);// | DBChar.ItemSlotEquip
+        packet.encodeByte(DBChar.Character | DBChar.ItemSlotEquip);
         // Encode Character
         characterStat.encode(packet);
         // Encode Equipment
@@ -72,6 +72,7 @@ public class AvatarData {
         }
         packet.encodeByte(0);
         // Encode Equip Inventory
+        packet.encodeByte(25);
         packet.encodeByte(0);
     }
     

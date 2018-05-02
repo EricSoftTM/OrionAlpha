@@ -33,23 +33,20 @@ import network.packet.OutPacket;
  */
 public class GameSocket extends SimpleChannelInboundHandler {
     public final Lock lockSend;
-    //packetRecv
-    //packetLoopback
-    public WorldEntry pServer;
-    public boolean bClosePosted;
-    public boolean bAliveReqSended;
-    public long tLastAliveAckRcvTime;
-    public long tLastAliveReqSndTime;
-    public String sAddr;
+    public boolean closePosted;
+    public boolean aliveReqSended;
+    public long lastAliveAckRcvTime;
+    public long lastAliveReqSndTime;
+    public String addr;
     private final Channel channel;
     
     public GameSocket(Channel channel) {
         this.channel = channel;
         this.lockSend = new ReentrantLock();
-        this.bClosePosted = false;
-        this.bAliveReqSended = false;
-        this.tLastAliveAckRcvTime = 0;
-        this.sAddr = "";
+        this.closePosted = false;
+        this.aliveReqSended = false;
+        this.lastAliveAckRcvTime = 0;
+        this.addr = "";
     }
     
     @Override
@@ -88,10 +85,10 @@ public class GameSocket extends SimpleChannelInboundHandler {
     }
     
     public final String getAddr() {
-        if (sAddr.isEmpty() && channel != null) {
+        if (addr.isEmpty() && channel != null) {
             return ((InetSocketAddress) channel.remoteAddress()).getAddress().getHostAddress().split(":")[0];
         }
-        return sAddr;
+        return addr;
     }
     
     public void onClose() {
@@ -99,8 +96,8 @@ public class GameSocket extends SimpleChannelInboundHandler {
     }
     
     public boolean postClose() {
-        if (!bClosePosted) {
-            bClosePosted = true;
+        if (!closePosted) {
+            closePosted = true;
             return false;
         } else {
             onClose();
@@ -123,10 +120,10 @@ public class GameSocket extends SimpleChannelInboundHandler {
         }
     }
     
-    public void sendPacket(OutPacket packet, boolean bForce) {
+    public void sendPacket(OutPacket packet, boolean force) {
         lockSend.lock();
         try {
-            if (!bClosePosted || bForce) {
+            if (!closePosted || force) {
                 channel.writeAndFlush(packet.toArray());
             }
         } finally {

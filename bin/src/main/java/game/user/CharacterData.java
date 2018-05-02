@@ -37,10 +37,10 @@ public class CharacterData {
         return characterStat;
     }
     
-    public void Encode(int flag, OutPacket packet) {
+    public void encode(OutPacket packet, byte flag) {
         packet.encodeByte(flag);
         if ((flag & DBChar.Character) != 0) {
-            characterStat.Encode(packet);
+            characterStat.encode(packet);
         }
         if ((flag & DBChar.ItemSlotEquip) != 0) {
             for (int nPOS = 1; nPOS <= BodyPart.BP_Count; nPOS++) {

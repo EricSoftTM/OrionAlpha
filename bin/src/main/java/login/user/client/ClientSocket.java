@@ -29,9 +29,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import login.LoginApp;
@@ -77,6 +79,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     public boolean adminClient;
     public int birthDate;
     public boolean closePosted;
+    private final Map<Integer, String> characters;
     
     public int localSocketSN;
     public int seqSnd;
@@ -113,6 +116,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         this.premium = false;
         this.tempBlockedIP = false;
         this.processed = false;
+        this.characters = new HashMap<>();
     }
     
     @Override
@@ -259,6 +263,19 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         this.channel.close();
     }
     
+    public void onCheckDuplicateID(InPacket packet) {
+        if (loginState == 8) {
+            String checkedName = packet.decodeString();
+            
+            Logger.logReport("Checking if name %s is valid..", checkedName);
+            boolean nameUsed = false;//TODO Database
+            
+            sendPacket(LoginPacket.onCheckDuplicateIDResult(checkedName, nameUsed), false);
+        } else {
+            postClose();
+        }
+    }
+    
     public void onCheckPassword(InPacket packet) {
         if (this.loginState != 1) {
             onClose();
@@ -279,6 +296,75 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         sendPacket(LoginPacket.onCheckPasswordResult(this, retCode), false);
     }
     
+    public void onCreateNewCharacter(InPacket packet) {
+        // [04 00 45 72 69 63] [21 4E 00 00] [4B 75 00 00] [8A DE 0F 00] [A2 2C 10 00] [85 5B 10 00] [F0 DD 13 00] [07 00 00 00] [06 00 00 00] [06 00 00 00] [06 00 00 00]
+        if (loginState != 8) {
+            postClose();
+            return;
+        }
+        List<Integer> stat = new ArrayList<>(4);
+        boolean ret = true;
+        
+        String charName = packet.decodeString();
+        int face = packet.decodeInt();
+        int hair = packet.decodeInt();
+        int clothes = packet.decodeInt();
+        int pants = packet.decodeInt();
+        int shoes = packet.decodeInt();
+        int weapon = packet.decodeInt();
+        
+        for (int i = 0; i < 4; i++) {
+            stat.add(packet.decodeInt()); // STR, DEX, INT, LUK
+        }
+        
+        // TODO: CheckCharName
+        
+        // TODO: Check Character Equips
+        
+        WorldEntry world = LoginApp.getInstance().getWorld(this.worldID);
+        if (ret && world != null && world.getGameSocket() != null) {
+            // TODO: Insert into DB
+            
+            Avatar avatar = new Avatar();
+            sendPacket(LoginPacket.onCreateNewCharacterResult((byte) 0, avatar), false);
+        }
+    }
+    
+    public void onDeleteCharacter(InPacket packet) {
+        if (loginState != 8) {
+            postClose();
+            return;
+        }
+        int characterId = packet.decodeInt();
+        boolean ret = true;//does only the client validate this? o.O
+        
+        if (ret) {
+            // TODO: Remove from DB
+            
+            sendPacket(LoginPacket.onDeleteCharacterResult(characterId, (byte) 0), false);
+        }
+    }
+    
+    public void onSelectCharacter(InPacket packet) {
+        if (loginState == 8) {
+            int characterId = packet.decodeInt();
+            
+            if (!characters.containsKey(characterId)) {
+                closeSocket();
+                return;
+            }
+            
+            WorldEntry pWorld = LoginApp.getInstance().getWorld(worldID);
+            if (pWorld != null) {
+                loginState = 9;
+                
+                sendPacket(LoginPacket.onSelectCharacterResult((byte) 1, inet_aton("127.0.0.1").intValue(), (short) 8585, characterID), false);
+            }
+        } else {
+            postClose();
+        }
+    }
+    
     public void onSelectWorld(InPacket packet) {
         this.worldID = packet.decodeByte();
         this.channelID = packet.decodeByte();
@@ -288,6 +374,11 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             List<Avatar> avatars = new ArrayList<>();
             LoginDB.rawLoadAvatar(this.accountID, this.worldID, avatars);
             
+            for (Avatar avatar : avatars) {
+                characters.put(avatar.getCharacterStat().getCharacterID(), avatar.getCharacterStat().getName());
+            }
+            
+            loginState = 8;
             sendPacket(LoginPacket.onSelectWorldResult(1, avatars), false);
         } else {
             Logger.logError("User %s attempting to connect to offline world %d", this.nexonClubID, this.worldID);
@@ -321,6 +412,18 @@ public class ClientSocket extends SimpleChannelInboundHandler {
                     break;
                 case ClientPacket.SelectWorld:
                     onSelectWorld(packet);
+                    break;
+                case ClientPacket.CheckDuplicatedID:
+                    onCheckDuplicateID(packet);
+                    break;
+                case ClientPacket.CreateNewCharacter:
+                    onCreateNewCharacter(packet);
+                    break;
+                case ClientPacket.DeleteCharacter:
+                    onDeleteCharacter(packet);
+                    break;
+                case ClientPacket.SelectCharacter:
+                    onSelectCharacter(packet);
                     break;
             }
         }
@@ -430,5 +533,19 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         OutPacket packet = new OutPacket(LoopbackPacket.AliveReq);
         packet.encodeInt(time);
         return packet;
+    }
+    
+    public static final Long inet_aton(String inp) {
+        Long dwIP = 0L;
+        String[] aIP = inp.split("\\.");
+        
+        for (int i = 0; i < 4; i++) {
+            dwIP += Long.parseLong(aIP[i]) << (i * 8);
+        }
+        return dwIP;
+    }
+    
+    public static final String inet_ntoa(long netaddr) {
+        return (netaddr & 0xFF) + "." + ((netaddr >> 8) & 0xFF) + "." + ((netaddr >> 16) & 0xFF) + "." + ((netaddr >> 24) & 0xFF);
     }
 }

@@ -15,21 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package common.user;
+package game.user;
 
 /**
  *
  * @author Eric
  */
-public class DBChar {
-    public static final byte
-            Character       = 0x1,
-            ItemSlotEquip   = 0x2,
-            ItemSlotConsume = 0x4,
-            ItemSlotInstall = 0x8,
-            ItemSlotEtc     = 0x10,
-            SkillRecord     = 0x20,
-            QuestRecord     = 0x40,
-            All             = 0x7F
-    ;
+public class User {
+    private final CharacterData character;
+    
+    public User() {
+        this.character = new CharacterData();
+    }
+    
+    public CharacterData getCharacter() {
+        return character;
+    }
 }

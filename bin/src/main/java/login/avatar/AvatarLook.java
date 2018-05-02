@@ -32,7 +32,7 @@ public class AvatarLook {
             Look    = 1,
             Speed   = 2
     ;
-    static final int BodyPartCount = BodyPart.BP_Count;
+    static final int BODY_PART_COUNT = BodyPart.BP_Count;
     private byte gender;
     private byte skin;
     private byte face;
@@ -46,7 +46,7 @@ public class AvatarLook {
         this.anHairEquip = new ArrayList<>();
         this.anUnseenEquip = new ArrayList<>();
         
-        for (int i = 0; i < BodyPartCount + 1; i++) {
+        for (int i = 0; i < BODY_PART_COUNT + 1; i++) {
             this.anHairEquip.add(i, 0);
             this.anUnseenEquip.add(i, 0);
         }

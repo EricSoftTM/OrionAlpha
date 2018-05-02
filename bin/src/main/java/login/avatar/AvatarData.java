@@ -32,6 +32,8 @@ import network.packet.OutPacket;
  * @author Eric
  */
 public class AvatarData {
+    static final int BODY_PART_COUNT = BodyPart.BP_Count;
+    
     private final CharacterStat characterStat;
     private final List<ItemSlotBase> equipped;
     private final List<ItemSlotBase> equipped2;
@@ -40,12 +42,17 @@ public class AvatarData {
         this.characterStat = new CharacterStat();
         this.equipped = new ArrayList<>();
         this.equipped2 = new ArrayList<>();
+        
+        for (int i = 0; i < BODY_PART_COUNT + 1; i++) {
+            this.equipped.add(i, null);
+            this.equipped2.add(i, null);
+        }
     }
     
     public void encode(OutPacket packet) {
-        packet.encodeByte(DBChar.Character | DBChar.ItemSlotEquip);
+        packet.encodeByte(DBChar.Character);// | DBChar.ItemSlotEquip
         // Encode Character
-        characterStat.Encode(packet);
+        characterStat.encode(packet);
         // Encode Equipment
         for (int nPOS = 1; nPOS <= equipped.size(); nPOS++) {
             ItemSlotBase item = equipped.get(nPOS - 1);
@@ -81,8 +88,7 @@ public class AvatarData {
     }
     
     public boolean load(int accountID, int characterID) {
-        //LoginDB.rawGetCharacterData(characterID, characterStat);
-        //TODO: Load character stat and equipment info
+        //TODO: Load items..
         return true;
     }
 }

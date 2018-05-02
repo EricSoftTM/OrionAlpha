@@ -91,8 +91,41 @@ public class LoginDB {
     
     public static void rawLoadAvatar(int accountID, int worldID, List<Avatar> avatars) {
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("")) {
-                
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `AccountID` = ? AND `WorldID` = ?")) {
+                ps.setInt(1, accountID);
+                ps.setInt(2, worldID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Avatar avatar = new Avatar();
+                        avatar.getCharacterStat().setCharacterID(rs.getInt("CharacterID"));
+                        avatar.getCharacterStat().setName(rs.getString("CharacterName"));
+                        avatar.getCharacterStat().setGender(rs.getByte("Gender"));
+                        avatar.getCharacterStat().setSkin(rs.getByte("Skin"));
+                        avatar.getCharacterStat().setFace(rs.getInt("Face"));
+                        avatar.getCharacterStat().setHair(rs.getInt("Hair"));
+                        avatar.getCharacterStat().setLevel(rs.getByte("Level"));
+                        avatar.getCharacterStat().setJob(rs.getShort("Job"));
+                        avatar.getCharacterStat().setSTR(rs.getShort("STR"));
+                        avatar.getCharacterStat().setDEX(rs.getShort("DEX"));
+                        avatar.getCharacterStat().setINT(rs.getShort("INT"));
+                        avatar.getCharacterStat().setLUK(rs.getShort("LUK"));
+                        avatar.getCharacterStat().setHP(rs.getShort("HP"));
+                        avatar.getCharacterStat().setMP(rs.getShort("MP"));
+                        avatar.getCharacterStat().setMHP(rs.getShort("MaxHP"));
+                        avatar.getCharacterStat().setMMP(rs.getShort("MaxMP"));
+                        avatar.getCharacterStat().setAP(rs.getShort("AP"));
+                        avatar.getCharacterStat().setSP(rs.getShort("SP"));
+                        avatar.getCharacterStat().setEXP(rs.getInt("EXP"));
+                        avatar.getCharacterStat().setPOP(rs.getShort("POP"));
+                        avatar.getCharacterStat().setMoney(rs.getInt("Money"));
+                        avatar.getCharacterStat().setPosMap(rs.getInt("Map"));
+                        avatar.getCharacterStat().setPortal(rs.getByte("Portal"));
+                        
+                        avatar.load(accountID, avatar.getCharacterStat().getCharacterID());
+                        
+                        avatars.add(avatar);
+                    }
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);

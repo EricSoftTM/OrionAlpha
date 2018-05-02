@@ -54,7 +54,7 @@ public class CharacterStat {
         this.money = new AtomicInteger(0);
     }
     
-    public void Encode(OutPacket packet) {
+    public void encode(OutPacket packet) {
         packet.encodeInt(characterID);
         packet.encodeString(name, 13);
         packet.encodeByte(gender);
@@ -79,5 +79,189 @@ public class CharacterStat {
         packet.encodeInt(money.get());
         packet.encodeInt(posMap);
         packet.encodeByte(portal);
+    }
+    
+    public int getCharacterID() {
+        return characterID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public byte getGender() {
+        return gender;
+    }
+
+    public int getFace() {
+        return face;
+    }
+
+    public int getHair() {
+        return hair;
+    }
+
+    public byte getSkin() {
+        return skin;
+    }
+
+    public byte getLevel() {
+        return level;
+    }
+
+    public short getJob() {
+        return job;
+    }
+
+    public short getSTR() {
+        return STR;
+    }
+
+    public short getDEX() {
+        return DEX;
+    }
+
+    public short getINT() {
+        return INT;
+    }
+
+    public short getLUK() {
+        return LUK;
+    }
+
+    public short getHP() {
+        return hp;
+    }
+
+    public short getMHP() {
+        return mhp;
+    }
+
+    public short getMP() {
+        return mp;
+    }
+
+    public short getMMP() {
+        return mmp;
+    }
+
+    public short getAP() {
+        return ap;
+    }
+
+    public short getSP() {
+        return sp;
+    }
+
+    public int getEXP() {
+        return exp.get();
+    }
+
+    public short getPOP() {
+        return pop;
+    }
+
+    public int getMoney() {
+        return money.get();
+    }
+
+    public int getPosMap() {
+        return posMap;
+    }
+
+    public byte getPortal() {
+        return portal;
+    }
+    
+    public void setCharacterID(int characterID) {
+        this.characterID = characterID;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setGender(byte gender) {
+        this.gender = gender;
+    }
+
+    public void setFace(int face) {
+        this.face = face;
+    }
+
+    public void setHair(int hair) {
+        this.hair = hair;
+    }
+
+    public void setSkin(byte skin) {
+        this.skin = skin;
+    }
+
+    public void setLevel(byte level) {
+        this.level = level;
+    }
+
+    public void setJob(short job) {
+        this.job = job;
+    }
+
+    public void setSTR(short STR) {
+        this.STR = STR;
+    }
+
+    public void setDEX(short DEX) {
+        this.DEX = DEX;
+    }
+
+    public void setINT(short INT) {
+        this.INT = INT;
+    }
+
+    public void setLUK(short LUK) {
+        this.LUK = LUK;
+    }
+
+    public void setHP(short hp) {
+        this.hp = hp;
+    }
+
+    public void setMHP(short mhp) {
+        this.mhp = mhp;
+    }
+
+    public void setMP(short mp) {
+        this.mp = mp;
+    }
+
+    public void setMMP(short mmp) {
+        this.mmp = mmp;
+    }
+
+    public void setAP(short ap) {
+        this.ap = ap;
+    }
+
+    public void setSP(short sp) {
+        this.sp = sp;
+    }
+
+    public void setPOP(short pop) {
+        this.pop = pop;
+    }
+
+    public void setPosMap(int posMap) {
+        this.posMap = posMap;
+    }
+
+    public void setPortal(byte portal) {
+        this.portal = portal;
+    }
+    
+    public void setEXP(int exp) {
+        this.exp.set(exp);
+    }
+    
+    public void setMoney(int money) {
+        this.money.set(money);
     }
 }

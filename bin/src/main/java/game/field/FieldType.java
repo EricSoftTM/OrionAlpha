@@ -17,31 +17,19 @@
  */
 package game.field;
 
-import common.user.DBChar;
-import game.user.User;
-import network.packet.LoopbackPacket;
-import network.packet.OutPacket;
-
 /**
  *
  * @author Eric
  */
-public class Stage {
-    
-    public static OutPacket onSetField(User user, boolean characterData, int s1, int s2, int s3) {
-        OutPacket packet = new OutPacket(LoopbackPacket.SetField);
-        packet.encodeByte(user.getChannelID());
-        packet.encodeBool(characterData);
-        if (!characterData) {
-            packet.encodeInt(user.getPosMap());
-            packet.encodeByte(user.getPortal());
-            packet.encodeShort(user.getHP());
-        } else {
-            packet.encodeInt(s1);
-            packet.encodeInt(s2);
-            packet.encodeInt(s3);
-            user.getCharacter().encode(packet, DBChar.All);
-        }
-        return packet;
-    }
+public class FieldType {
+    public static final int
+            Default                     = 0,
+            Snowball                    = 1,
+            CONTIMOVE                   = 2,
+            Tournament                  = 3,
+            Coconut                     = 4,
+            OXQuiz                      = 5,
+            PersonalTimeLimit           = 6,
+            WaitingRoom                 = 7
+    ;
 }

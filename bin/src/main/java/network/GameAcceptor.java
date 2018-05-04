@@ -19,6 +19,8 @@ package network;
 
 import common.OrionConfig;
 import game.GameApp;
+import game.user.ClientSocket;
+import game.user.ClientSocket.MigrateState;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -34,7 +36,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import login.user.client.ClientSocket;
 
 /**
  *
@@ -53,8 +54,8 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
     private final InetSocketAddress addr;
     private EventLoopGroup workerGroup, childGroup;
     private Channel channel;
-    public boolean acceptorClosed;
-    public final AtomicInteger remainedSocket;
+    private boolean acceptorClosed;
+    private final AtomicInteger remainedSocket;
     
     /**
      * Constructs Game Server-specific acceptors for each World and Channel.
@@ -72,6 +73,14 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
     
     public static GameAcceptor getInstance() {
         return GameApp.getInstance().getAcceptor();
+    }
+    
+    public int decRemainedSocket() {
+        return this.remainedSocket.decrementAndGet();
+    }
+    
+    public int incRemainedSocket() {
+        return this.remainedSocket.incrementAndGet();
     }
     
     public ClientSocket getSocket(int localSocketSN) {
@@ -146,17 +155,17 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
                 return;
             }
             ClientSocket socket = new ClientSocket(ch);
-            //socket.addr = String.format("%s:%d", socket.getSocketRemoteIP(), addr.getPort());
+            socket.setAddr(String.format("%s:%d", socket.getSocketRemoteIP(), addr.getPort()));
             socket.initSequence();
             int serialNo = serialNoCounter.incrementAndGet();
             socket.setLocalSocketSN(serialNo);
             sn2pSocket.put(serialNo, socket);
             ch.pipeline().addLast("ClientSocket", socket);
             if (sn2pSocket.size() > GameApp.getInstance().getConnectionLimit()) {
-                for (ClientSocket entry : sn2pSocket.values()) {
-                    //if (entry != null && entry.getMigrateState() == MigrateState.WaitMigrateIn) {
-                    //    entry.postClose();
-                    //}
+                for (ClientSocket client : sn2pSocket.values()) {
+                    if (client != null && client.getMigrateState() == MigrateState.WaitMigrateIn) {
+                        client.postClose();
+                    }
                 }
             }
         } finally {

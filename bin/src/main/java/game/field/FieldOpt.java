@@ -17,31 +17,20 @@
  */
 package game.field;
 
-import common.user.DBChar;
-import game.user.User;
-import network.packet.LoopbackPacket;
-import network.packet.OutPacket;
-
 /**
  *
  * @author Eric
  */
-public class Stage {
-    
-    public static OutPacket onSetField(User user, boolean characterData, int s1, int s2, int s3) {
-        OutPacket packet = new OutPacket(LoopbackPacket.SetField);
-        packet.encodeByte(user.getChannelID());
-        packet.encodeBool(characterData);
-        if (!characterData) {
-            packet.encodeInt(user.getPosMap());
-            packet.encodeByte(user.getPortal());
-            packet.encodeShort(user.getHP());
-        } else {
-            packet.encodeInt(s1);
-            packet.encodeInt(s2);
-            packet.encodeInt(s3);
-            user.getCharacter().encode(packet, DBChar.All);
-        }
-        return packet;
-    }
+public class FieldOpt {
+    public static final int
+            MoveLimit                       = 0x1,
+            SkillLimit                      = 0x2,
+            SummonLimit                     = 0x4,
+            MysticDoorLimit                 = 0x8,
+            Event                           = 0x9,
+            MigrateLimit                    = 0x10,
+            PortalScrollLimit               = 0x20,
+            TeleportItemLimit               = 0x40,
+            MiniGameLimit                   = 0x80
+    ;
 }

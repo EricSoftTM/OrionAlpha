@@ -15,33 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.field;
+package game.field.life;
 
-import common.user.DBChar;
-import game.user.User;
-import network.packet.LoopbackPacket;
-import network.packet.OutPacket;
+import game.field.Field;
+import util.wz.WzProperty;
 
 /**
  *
  * @author Eric
  */
-public class Stage {
+public class LifePool {
     
-    public static OutPacket onSetField(User user, boolean characterData, int s1, int s2, int s3) {
-        OutPacket packet = new OutPacket(LoopbackPacket.SetField);
-        packet.encodeByte(user.getChannelID());
-        packet.encodeBool(characterData);
-        if (!characterData) {
-            packet.encodeInt(user.getPosMap());
-            packet.encodeByte(user.getPortal());
-            packet.encodeShort(user.getHP());
-        } else {
-            packet.encodeInt(s1);
-            packet.encodeInt(s2);
-            packet.encodeInt(s3);
-            user.getCharacter().encode(packet, DBChar.All);
-        }
-        return packet;
+    public LifePool(Field field) {
+        
+    }
+    
+    public void init(Field field, WzProperty mapData) {
+        
     }
 }

@@ -23,6 +23,8 @@ package util;
  * @author Eric
  */
 public class Rand32 {
+    private static Rand32 g_rand;
+    
     private int s1;
     private int s2;
     private int s3;
@@ -33,6 +35,13 @@ public class Rand32 {
         this.s1 = seed | 0x100000;
         this.s2 = rand | 0x1000;
         this.s3 = crtRand(rand) | 0x10;
+    }
+    
+    public static Rand32 getInstance() {
+        if (g_rand == null) {
+            g_rand = new Rand32((int) (System.currentTimeMillis() / 1000));
+        }
+        return g_rand;
     }
     
     public static int crtRand(int rand) {

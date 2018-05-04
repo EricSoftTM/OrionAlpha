@@ -15,33 +15,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.field;
-
-import common.user.DBChar;
-import game.user.User;
-import network.packet.LoopbackPacket;
-import network.packet.OutPacket;
+package util;
 
 /**
- *
+ * tagSIZE
+ * 
  * @author Eric
  */
-public class Stage {
+public class Size {
+    public int cx;
+    public int cy;
     
-    public static OutPacket onSetField(User user, boolean characterData, int s1, int s2, int s3) {
-        OutPacket packet = new OutPacket(LoopbackPacket.SetField);
-        packet.encodeByte(user.getChannelID());
-        packet.encodeBool(characterData);
-        if (!characterData) {
-            packet.encodeInt(user.getPosMap());
-            packet.encodeByte(user.getPortal());
-            packet.encodeShort(user.getHP());
-        } else {
-            packet.encodeInt(s1);
-            packet.encodeInt(s2);
-            packet.encodeInt(s3);
-            user.getCharacter().encode(packet, DBChar.All);
-        }
-        return packet;
+    public Size(int cx, int cy) {
+        this.cx = cx;
+        this.cy = cy;
+    }
+    
+    public Size(Size size) {
+        this.cx = size.cx;
+        this.cy = size.cy;
+    }
+    
+    public int getCx() {
+        return cx;
+    }
+    
+    public int getCy() {
+        return cy;
+    }
+    
+    public void setCx(int cx) {
+        this.cx = cx;
+    }
+    
+    public void setCy(int cy) {
+        this.cy = cy;
     }
 }

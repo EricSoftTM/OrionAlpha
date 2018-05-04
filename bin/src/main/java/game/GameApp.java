@@ -24,6 +24,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import network.GameAcceptor;
+import network.database.Database;
 import util.Logger;
 
 /**
@@ -36,10 +37,12 @@ public class GameApp implements Runnable {
     private GameAcceptor acceptor;
     private CenterSocket socket;
     private int connectionLimit;
+    private int waitingFirstPacket;
     public final long serverStartTime;
     
     public GameApp() {
         this.connectionLimit = 4000;
+        this.waitingFirstPacket = 1000 * 15;
         this.serverStartTime = System.currentTimeMillis();
     }
     
@@ -76,6 +79,31 @@ public class GameApp implements Runnable {
         return connectionLimit;
     }
     
+    public int getWaitingFirstPacket() {
+        return waitingFirstPacket;
+    }
+    
+    private void initializeDB() {
+        try (JsonReader reader = Json.createReader(new FileReader("Database.img"))) {
+            JsonObject dbData = reader.readObject();
+            
+            int dbPort = dbData.getInt("dbPort", 3306);
+            String dbName = dbData.getString("dbGameWorld", "orionalpha");
+            String dbSource = dbData.getString("dbGameWorldSource", "127.0.0.1");
+            String[] dbInfo = dbData.getString("dbGameWorldInfo", "root,").split(",");
+            
+            // Construct the instance of the Database
+            Database.createInstance(dbName, dbSource, dbInfo[0], dbInfo.length == 1 ? "" : dbInfo[1], dbPort);
+            
+            // Load the initial instance of the Database
+            Database.getDB().load();
+            
+            Logger.logReport("DB configuration parsed successfully");
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
     public void initializeGameData() {
         long time;
         
@@ -107,8 +135,7 @@ public class GameApp implements Runnable {
     public void run() {
         // CreateTimerThread
         
-        // Database.Load
-        
+        initializeDB();
         initializeGameData();
         connectCenter();
         createAcceptor();

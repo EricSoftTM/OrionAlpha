@@ -49,16 +49,16 @@ public class ClientPacket {
             UserSelectNpc = 23,
             UserScriptMessageAnswer = 24,
             Unknown25 = 25, // 004D4C34, 004D7CC5
-            Unknown26 = 26, // 00593477
+            UserChangeSlotPositionRequest = 26, // 00593477
             Unknown27 = 27, // 00593A97
             UserShopRequest = 28, // 00594043
             Unknown29 = 29, // 00594187
             Unknown30 = 30, // 005938B6
-            Unknown31 = 31, // 00596679
+            UserAbilityUpRequest = 31, // 00596679
             UserChangeStatRequest = 32, // 00594530
             UserSkillUpRequest = 33, // 00596859
             UserSkillUseRequest = 34, // 00548191
-            Unknown35 = 35, // 005969E7
+            UserDropMoneyRequest = 35,
             Unknown36 = 36, // 00596C14
             // missing 37
             Unknown38 = 38, // 00596DDA
@@ -78,6 +78,9 @@ public class ClientPacket {
             // missing 58, 59, 60
             Unknown61 = 61, // 0042E454
             Unknown62 = 62, // 0042F4ED
-            Unknown63 = 63 // multiple structures based on initial byte (0042F160, 0042F38C, 0042DEBF)
+            Unknown63 = 63, // multiple structures based on initial byte (0042F160, 0042F38C, 0042DEBF)
+            
+            BEGIN_FIELD = 98,
+            END_FIELD = 99
     ;
 }

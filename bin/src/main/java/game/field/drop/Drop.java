@@ -15,33 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.field;
-
-import common.user.DBChar;
-import game.user.User;
-import network.packet.LoopbackPacket;
-import network.packet.OutPacket;
+package game.field.drop;
 
 /**
  *
  * @author Eric
  */
-public class Stage {
+public class Drop {
     
-    public static OutPacket onSetField(User user, boolean characterData, int s1, int s2, int s3) {
-        OutPacket packet = new OutPacket(LoopbackPacket.SetField);
-        packet.encodeByte(user.getChannelID());
-        packet.encodeBool(characterData);
-        if (!characterData) {
-            packet.encodeInt(user.getPosMap());
-            packet.encodeByte(user.getPortal());
-            packet.encodeShort(user.getHP());
-        } else {
-            packet.encodeInt(s1);
-            packet.encodeInt(s2);
-            packet.encodeInt(s3);
-            user.getCharacter().encode(packet, DBChar.All);
-        }
-        return packet;
-    }
 }

@@ -17,31 +17,52 @@
  */
 package game.field;
 
-import common.user.DBChar;
-import game.user.User;
-import network.packet.LoopbackPacket;
-import network.packet.OutPacket;
-
 /**
  *
  * @author Eric
  */
-public class Stage {
+public class AttrField {
+    private double walk;
+    private double drag;
+    private double fly;
+    private double g;
+
+    public AttrField() {
+        this.walk = 0.0d;
+        this.drag = 0.0d;
+        this.fly = 0.0d;
+        this.g = 0.0d;
+    }
+
+    public double getWalk() {
+        return walk;
+    }
+
+    public double getDrag() {
+        return drag;
+    }
+
+    public double getFly() {
+        return fly;
+    }
     
-    public static OutPacket onSetField(User user, boolean characterData, int s1, int s2, int s3) {
-        OutPacket packet = new OutPacket(LoopbackPacket.SetField);
-        packet.encodeByte(user.getChannelID());
-        packet.encodeBool(characterData);
-        if (!characterData) {
-            packet.encodeInt(user.getPosMap());
-            packet.encodeByte(user.getPortal());
-            packet.encodeShort(user.getHP());
-        } else {
-            packet.encodeInt(s1);
-            packet.encodeInt(s2);
-            packet.encodeInt(s3);
-            user.getCharacter().encode(packet, DBChar.All);
-        }
-        return packet;
+    public double getGravity() {
+        return g;
+    }
+
+    public void setWalk(double walk) {
+        this.walk = walk;
+    }
+
+    public void setDrag(double drag) {
+        this.drag = drag;
+    }
+
+    public void setFly(double fly) {
+        this.fly = fly;
+    }
+    
+    public void setGravity(double g) {
+        this.g = g;
     }
 }

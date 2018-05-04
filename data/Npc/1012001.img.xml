@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1012001.img">
+    <imgdir name="info">
+        <string name="name" value="원장 돌팔이"/>
+        <imgdir name="speak">
+            <string name="0" value="이 안경도 너무 오래 쓰고 있다보니 눈 앞이 흐리구먼..."/>
+            <string name="1" value="어... 얼굴을 뜯어 고치고 싶다고오...? 쿨럭~ 쿨럭~"/>
+            <string name="2" value="성형 수술이라... 나한테 맡기라고... 헐헐~ 근데 여기가 얼굴 맞나...?"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="51" height="70">
+            <vector name="origin" x="25" y="70"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

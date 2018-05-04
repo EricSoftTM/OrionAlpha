@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0203.img">
+    <imgdir name="02030000">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="마을 귀환 주문서"/>
+            <int name="price" value="75"/>
+            <string name="desc" value="현재 위치에서 가장 가까운 마을로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+        </imgdir>
+        <imgdir name="spec">
+            <int name="moveTo" value="-1"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02030001">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="리스 항구 귀환 주문서"/>
+            <int name="price" value="90"/>
+            <string name="desc" value="리스 항구로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+        </imgdir>
+        <imgdir name="spec">
+            <int name="moveTo" value="104000000"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02030002">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="엘리니아 귀환 주문서"/>
+            <int name="price" value="90"/>
+            <string name="desc" value="신비한 숲속 마을인 엘리니아로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+        </imgdir>
+        <imgdir name="spec">
+            <int name="moveTo" value="101000000"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02030003">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="페리온 귀환 주문서"/>
+            <int name="price" value="90"/>
+            <string name="desc" value="황량한 고원 마을인 페리온으로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+        </imgdir>
+        <imgdir name="spec">
+            <int name="moveTo" value="102000000"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02030004">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="헤네시스 귀환 주문서"/>
+            <int name="price" value="90"/>
+            <string name="desc" value="평화로운 초원 마을인 헤네시스로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+        </imgdir>
+        <imgdir name="spec">
+            <int name="moveTo" value="100000000"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02030005">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="커닝시티 귀환 주문서"/>
+            <int name="price" value="90"/>
+            <string name="desc" value="어두운 분위기의 도시인 커닝시티로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+        </imgdir>
+        <imgdir name="spec">
+            <int name="moveTo" value="103000000"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02030006">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="슬리피우드 귀환 주문서"/>
+            <int name="price" value="100"/>
+            <string name="desc" value="조용하고 어두운 숲 마을인 슬리피우드로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+        </imgdir>
+        <imgdir name="spec">
+            <int name="moveTo" value="105040300"/>
+        </imgdir>
+    </imgdir>
+</imgdir>

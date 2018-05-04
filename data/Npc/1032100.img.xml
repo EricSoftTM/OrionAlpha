@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1032100.img">
+    <imgdir name="info">
+        <string name="name" value="요정 아르웬"/>
+        <string name="quest" value="owen"/>
+        <imgdir name="speak">
+            <string name="0" value="휴... 내 소중한 수집품이... 어디에서 떨어뜨린 것일까...?"/>
+            <string name="1" value="인간에게 도움을 받고 싶지는 않지만... 어쩔수 없는걸..."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="41" height="57">
+            <vector name="origin" x="21" y="57"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

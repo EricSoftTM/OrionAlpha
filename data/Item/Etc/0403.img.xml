@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0403.img">
+    <imgdir name="04030000">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="24">
+                <vector name="origin" x="-4" y="24"/>
+            </canvas>
+            <canvas name="iconRaw" width="23" height="17">
+                <vector name="origin" x="-5" y="24"/>
+            </canvas>
+            <string name="name" value="검은 오목 알"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="까맣고 작은 돌이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04030001">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="24">
+                <vector name="origin" x="-4" y="24"/>
+            </canvas>
+            <canvas name="iconRaw" width="23" height="17">
+                <vector name="origin" x="-5" y="24"/>
+            </canvas>
+            <string name="name" value="하얀 오목 알"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="하얗고 작은 돌이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04030002">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="22">
+                <vector name="origin" x="-4" y="22"/>
+            </canvas>
+            <canvas name="iconRaw" width="16" height="14">
+                <vector name="origin" x="-9" y="22"/>
+            </canvas>
+            <string name="name" value="테트리스 조각"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="재미있게 생긴 조각이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04030003">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="29">
+                <vector name="origin" x="-4" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="10" height="26">
+                <vector name="origin" x="-12" y="29"/>
+            </canvas>
+            <string name="name" value="테트리스 조각"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="재미있게 생긴 조각이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04030004">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="16" height="20">
+                <vector name="origin" x="-9" y="26"/>
+            </canvas>
+            <string name="name" value="테트리스 조각"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="재미있게 생긴 조각이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04030005">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="23">
+                <vector name="origin" x="-4" y="23"/>
+            </canvas>
+            <canvas name="iconRaw" width="22" height="14">
+                <vector name="origin" x="-5" y="23"/>
+            </canvas>
+            <string name="name" value="테트리스 조각"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="재미있게 생긴 조각이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04030006">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="23">
+                <vector name="origin" x="-4" y="23"/>
+            </canvas>
+            <canvas name="iconRaw" width="22" height="14">
+                <vector name="origin" x="-6" y="23"/>
+            </canvas>
+            <string name="name" value="테트리스 조각"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="재미있게 생긴 조각이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04030007">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="23">
+                <vector name="origin" x="-4" y="23"/>
+            </canvas>
+            <canvas name="iconRaw" width="22" height="14">
+                <vector name="origin" x="-6" y="23"/>
+            </canvas>
+            <string name="name" value="테트리스 조각"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="재미있게 생긴 조각이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04030008">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="25">
+                <vector name="origin" x="-4" y="25"/>
+            </canvas>
+            <canvas name="iconRaw" width="16" height="20">
+                <vector name="origin" x="-9" y="25"/>
+            </canvas>
+            <string name="name" value="테트리스 조각"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="재미있게 생긴 조각이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04030009">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="22">
+                <vector name="origin" x="-2" y="22"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="16">
+                <vector name="origin" x="-2" y="22"/>
+            </canvas>
+            <string name="name" value="바둑판"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="바둑을 둘 수 있는 나무 판이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031000">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="31">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="29">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <string name="name" value="마리아의 편지"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="마리아에게서 받은 편지이다. 암 허스트의 루카스에게 전해주어야 한다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031001">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="31">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="29">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <string name="name" value="루카스의 편지"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="루카스에게서 받은 편지이다. 버섯 마을의 마리아에게 전해주어야 한다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031002">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="루카스의 금시계"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="황금으로 만들어진 루카스의 금시계이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031003">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="29">
+                <vector name="origin" x="0" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="26">
+                <vector name="origin" x="0" y="29"/>
+            </canvas>
+            <string name="name" value="세라의 거울"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="화려한 장식이 있는 세라의 거울이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031004">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="27"/>
+            </canvas>
+            <canvas name="iconRaw" width="15" height="20">
+                <vector name="origin" x="-9" y="27"/>
+            </canvas>
+            <string name="name" value="반짝이는 돌"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="스스로 빛을 내는 반짝이는 돌이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031005">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="31">
+                <vector name="origin" x="0" y="32"/>
+            </canvas>
+            <string name="name" value="아르콘의 피"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="아르콘의 피가 담겨있는 병이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031006">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="31">
+                <vector name="origin" x="0" y="32"/>
+            </canvas>
+            <string name="name" value="이상한 약"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="어떤 힘이 있는지 알 수 없는 이상한 약이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031007">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="오래된 금시계"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="황금으로 만들어진 오래된 금시계이다. 알렉스의 어머니의 유품이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031008">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="31">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="29">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <string name="name" value="&apos;주먹펴고 일어서&apos;의 편지"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="페리온의 &apos;주먹펴고 일어서&apos;로부터 받은 편지이다. 고원 어딘가에 있는 &apos;전사 시험교관&apos;에게 보여줘야 한다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031009">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="31">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="29">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <string name="name" value="&apos;하인즈&apos;의 편지"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="엘리니아의 &apos;하인즈&apos;로부터 받은 편지이다. 숲 어딘가에 있는 &apos;마법사 시험교관&apos;에게 보여줘야 한다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031010">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="31">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="29">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <string name="name" value="&apos;헬레나&apos;의 편지"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="헤네시스의 &apos;헬레나&apos;로부터 받은 편지이다. 던전 어딘가에 있는 &apos;궁수 시험교관&apos;에게 보여줘야 한다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031011">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="31">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="29">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <string name="name" value="&apos;다크로드&apos;의 편지"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="커닝시티의 &apos;다크로드&apos;로부터 받은 편지이다. 도시 어딘가에 있는 &apos;도적 시험교관&apos;에게 보여줘야 한다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031012">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="32">
+                <vector name="origin" x="-4" y="32"/>
+            </canvas>
+            <canvas name="iconRaw" width="24" height="31">
+                <vector name="origin" x="-4" y="32"/>
+            </canvas>
+            <string name="name" value="영웅의 증거"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="2차 전직 시험에 합격하여 교관으로부터 넘겨받은 증거품이다. 지니고 있으면 영웅으로 인정받게 된다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031013">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="20" height="20">
+                <vector name="origin" x="-6" y="26"/>
+            </canvas>
+            <string name="name" value="검은 구슬"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="몬스터의 검고 추악한 마음이 담겨있는 신비로운 구슬이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031014">
+        <imgdir name="info">
+            <canvas name="icon" width="31" height="22">
+                <vector name="origin" x="-1" y="22"/>
+            </canvas>
+            <canvas name="iconRaw" width="31" height="17">
+                <vector name="origin" x="-1" y="22"/>
+            </canvas>
+            <string name="name" value="리나의 특제 장어구이"/>
+            <int name="price" value="550"/>
+            <string name="desc" value="커즈 아이의 꼬리... 와 돼지의 머리가 첨가된 리나의 특제 장어구이이다. 로니에게 가져다 주어야 한다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031015">
+        <imgdir name="info">
+            <canvas name="icon" width="27" height="30">
+                <vector name="origin" x="-3" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="27" height="27">
+                <vector name="origin" x="-3" y="30"/>
+            </canvas>
+            <string name="name" value="신선한 우유"/>
+            <int name="price" value="500"/>
+            <string name="desc" value="요정족들에게서 받은 신선한 우유이다. 로니에게 가져다 주어야 한다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04031016">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="30">
+                <vector name="origin" x="-1" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="28">
+                <vector name="origin" x="-1" y="30"/>
+            </canvas>
+            <string name="name" value="비밀의 책"/>
+            <int name="price" value="150"/>
+            <string name="desc" value="어떤 내용이 들어가 있는지 알 수 없는 책이다."/>
+        </imgdir>
+    </imgdir>
+</imgdir>

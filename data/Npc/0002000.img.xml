@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0002000.img">
+    <imgdir name="info">
+        <string name="name" value="로저"/>
+        <string name="quest" value="begin2"/>
+        <int name="dcMark" value="1"/>
+        <imgdir name="speak">
+            <string name="0" value="아이템 창을 열면 장비, 소비, 설치, 기타 탭이 나와."/>
+            <string name="1" value="얻는 아이템은 자동으로 아이템 창에 정리되지. 어때? 편하지?"/>
+            <string name="2" value="아이템 창에 있는 아이템을 더블 클릭하면 사용할 수 있어."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="56" height="70">
+            <vector name="origin" x="26" y="70"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="5000"/>
+        </canvas>
+    </imgdir>
+    <imgdir name="finger">
+        <canvas name="0" width="56" height="70">
+            <vector name="origin" x="26" y="70"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="5000"/>
+        </canvas>
+        <imgdir name="speak">
+            <string name="0" value="아이템을 버리고 싶어? 아이템 창에서 아이템을 클릭해서 아이템 창 밖으로 드래그해봐."/>
+            <string name="1" value="아이템 창이 꽉 차면 새로운 아이템을 가질 수 없어. 필요없는 건 버리거나 상점에 팔도록 해."/>
+            <string name="2" value="소비 아이템은 오른쪽 하단에 단축 아이콘으로 지정할 수도 있어."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="wink">
+        <canvas name="0" width="56" height="70">
+            <vector name="origin" x="26" y="70"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="200"/>
+        </canvas>
+        <canvas name="1" width="56" height="70">
+            <vector name="origin" x="26" y="70"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="4800"/>
+        </canvas>
+        <imgdir name="speak">
+            <string name="0" value="HP가 0이 되면 죽게 되니까 미리 물약이나 음식을 먹어 두라구."/>
+            <string name="1" value="빨리 여행을 하고 싶은거야? 그럼 나에게 말을 걸라구."/>
+            <string name="2" value="사람들에게 말을 걸고 싶다면 마우스로 더블 클릭해봐."/>
+        </imgdir>
+    </imgdir>
+</imgdir>

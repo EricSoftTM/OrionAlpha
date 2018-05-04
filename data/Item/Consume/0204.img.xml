@@ -1,0 +1,912 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0204.img">
+    <imgdir name="02040000">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="29">
+                <vector name="origin" x="-1" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="26">
+                <vector name="origin" x="-1" y="29"/>
+            </canvas>
+            <string name="name" value="투구 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="투구의 물리 방어력 향상.\n성공률:100%, 물리 방어력+1"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040001">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="29">
+                <vector name="origin" x="-1" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="26">
+                <vector name="origin" x="-1" y="29"/>
+            </canvas>
+            <string name="name" value="투구 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="투구의 물리 방어력 향상.\n성공률:60%, 물리 방어력+2, 마법 방어력+1"/>
+            <int name="incPDD" value="2"/>
+            <int name="incMDD" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040002">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="29">
+                <vector name="origin" x="-1" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="26">
+                <vector name="origin" x="-1" y="29"/>
+            </canvas>
+            <string name="name" value="투구 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="투구의 물리 방어력 향상.\n성공률:10%, 물리 방어력+5, 마법 방어력+3, 명중률+1"/>
+            <int name="incPDD" value="5"/>
+            <int name="incMDD" value="3"/>
+            <int name="incACC" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040003">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="투구 체력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="투구에 MaxHP 향상 옵션 추가.\n성공률:100%, MaxHP+5"/>
+            <int name="incMHP" value="5"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040004">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="투구 체력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="투구에 MaxHP 향상 옵션 추가.\n성공률:60%, MaxHP+10"/>
+            <int name="incMHP" value="10"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040005">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="투구 체력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="투구에 MaxHP 향상 옵션 추가.\n성공률:10%, MaxHP+30"/>
+            <int name="incMHP" value="30"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040300">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="귀 장식 지력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="귀 장식에 지력 향상 옵션 추가.\n성공률:100%, 마법 공격력+1"/>
+            <int name="incMAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040301">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="귀 장식 지력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="귀 장식에 지력 향상 옵션 추가.\n성공률:60%, 마법 공격력+2, INT+1"/>
+            <int name="incMAD" value="2"/>
+            <int name="incINT" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040302">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="귀 장식 지력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="귀 장식에 지력 향상 옵션 추가.\n성공률:10%, 마법 공격력+5, INT+3, 마법 방어력+1"/>
+            <int name="incMAD" value="5"/>
+            <int name="incINT" value="3"/>
+            <int name="incMDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040400">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="상의 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="상의에 물리 방어력 향상 옵션 추가.\n성공률:100%, 물리 방어력+1"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040401">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="상의 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="상의에 물리 방어력 향상 옵션 추가.\n성공률:60%, 물리 방어력+2, 마법 방어력+1"/>
+            <int name="incPDD" value="2"/>
+            <int name="incMDD" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040402">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="상의 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="상의에 물리 방어력 향상 옵션 추가.\n성공률:10%, 물리 방어력+5, 마법 방어력+3, MaxHP+10"/>
+            <int name="incPDD" value="5"/>
+            <int name="incMDD" value="3"/>
+            <int name="incMHP" value="10"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040500">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="전신 갑옷 민첩성 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="전신 갑옷에 민첩성 향상 옵션 추가.\n성공률:100%, DEX+1"/>
+            <int name="incDEX" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040501">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="전신 갑옷 민첩성 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="전신 갑옷에 민첩성 향상 옵션 추가.\n성공률:60%, DEX+2, 명중률+1"/>
+            <int name="incDEX" value="2"/>
+            <int name="incACC" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040502">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="전신 갑옷 민첩성 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="전신 갑옷에 민첩성 향상 옵션 추가.\n성공률:10%, DEX+5, 명중률+3, 이동속도+1"/>
+            <int name="incDEX" value="5"/>
+            <int name="incACC" value="3"/>
+            <int name="incSpeed" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040600">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="하의 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="하의에 물리 방어력 향상 옵션 추가.\n성공률:100%, 물리 방어력+1"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040601">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="하의 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="하의에 물리 방어력 향상 옵션 추가.\n성공률:60%, 물리 방어력+2, 마법 방어력+1"/>
+            <int name="incPDD" value="2"/>
+            <int name="incMDD" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040602">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="하의 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="하의에 물리 방어력 향상 옵션 추가.\n성공률:10%, 물리 방어력+5, 마법 방어력+3, MaxHP+10"/>
+            <int name="incPDD" value="5"/>
+            <int name="incMDD" value="3"/>
+            <int name="incMHP" value="10"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040700">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="신발 민첩성 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="신발에 민첩성 향상 옵션 추가.\n성공률:100%, 회피율+1"/>
+            <int name="incEVA" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040701">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="신발 민첩성 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="신발에 민첩성 향상 옵션 추가.\n성공률:60%, 회피율+2, 명중률+1"/>
+            <int name="incEVA" value="2"/>
+            <int name="incACC" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040702">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="신발 민첩성 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="신발에 민첩성 향상 옵션 추가.\n성공률:10%, 회피율+5, 명중률+3, 이동속도+1"/>
+            <int name="incEVA" value="5"/>
+            <int name="incACC" value="3"/>
+            <int name="incSpeed" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040703">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="신발 점프력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="신발에 점프력 향상 옵션 추가.\n성공률:100%, 점프력+1"/>
+            <int name="incJump" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040704">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="신발 점프력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="신발에 점프력 향상 옵션 추가.\n성공률:60%, 점프력+2, DEX+1"/>
+            <int name="incJump" value="2"/>
+            <int name="incDEX" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040705">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="신발 점프력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="신발에 점프력 향상 옵션 추가.\n성공률:10%, 점프력+5, DEX+3, 이동속도+1"/>
+            <int name="incJump" value="5"/>
+            <int name="incDEX" value="3"/>
+            <int name="incSpeed" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040800">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="장갑 민첩성 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="장갑에 민첩성 향상 옵션 추가.\n성공률:100%, 명중률+1"/>
+            <int name="incACC" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040801">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="장갑 민첩성 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="장갑에 민첩성 향상 옵션 추가.\n성공률:60%, 명중률+2, DEX+1"/>
+            <int name="incACC" value="2"/>
+            <int name="incDEX" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040802">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="장갑 민첩성 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="장갑에 민첩성 향상 옵션 추가.\n성공률:10%, 명중률+5, DEX+3, 회피율+1"/>
+            <int name="incACC" value="5"/>
+            <int name="incDEX" value="3"/>
+            <int name="incEVA" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040900">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="방패 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="방패에 물리 방어력 향상 옵션 추가.\n성공률:100%, 물리 방어력+1"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040901">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="방패 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="방패에 물리 방어력 향상 옵션 추가.\n성공률:60%, 물리 방어력+2, 마법 방어력+1"/>
+            <int name="incPDD" value="2"/>
+            <int name="incMDD" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02040902">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="방패 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="방패에 물리 방어력 향상 옵션 추가.\n성공률:10%, 물리 방어력+5, 마법 방어력+3, MaxHP+10"/>
+            <int name="incPDD" value="5"/>
+            <int name="incMDD" value="3"/>
+            <int name="incMHP" value="10"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02041000">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="망토 마법 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="망토에 마법 방어력 향상 옵션 추가.\n성공률:100%, 마법 방어력+1"/>
+            <int name="incMDD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02041001">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="망토 마법 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="망토에 마법 방어력 향상 옵션 추가.\n성공률:60%, 마법 방어력+2, 물리 방어력+1"/>
+            <int name="incMDD" value="2"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02041002">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="망토 마법 방어력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="망토에 마법 방어력 향상 옵션 추가.\n성공률:10%, 마법 방어력+5, 물리 방어력+3, MaxHP+10"/>
+            <int name="incMDD" value="5"/>
+            <int name="incPDD" value="3"/>
+            <int name="incMHP" value="10"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043000">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="한손검 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="한손검에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043001">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="한손검 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="한손검에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, STR+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incSTR" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043002">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="한손검 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="한손검에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, STR+3, 물리 방어력+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incSTR" value="3"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043100">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="한손도끼 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="한손도끼에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043101">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="한손도끼 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="한손도끼에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, STR+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incSTR" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043102">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="한손도끼 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="한손도끼에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, STR+3, 물리 방어력+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incSTR" value="3"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043200">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="한손둔기 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="한손둔기에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043201">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="한손둔기 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="한손둔기에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, STR+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incSTR" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043202">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="한손둔기 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="한손둔기에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, STR+3, 물리 방어력+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incSTR" value="3"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043300">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="단검 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="단검에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043301">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="단검 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="단검에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, LUK+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incLUK" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043302">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="단검 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="단검에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, LUK+3, 물리 방어력+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incLUK" value="3"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043700">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="완드 마력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="완드에 마력 향상 옵션 추가.\n성공률:100%, 마법 공격력+1"/>
+            <int name="incMAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043701">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="완드 마력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="완드에 마력 향상 옵션 추가.\n성공률:60%, 마법 공격력+2, INT+1"/>
+            <int name="incMAD" value="2"/>
+            <int name="incINT" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043702">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="완드 마력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="완드에 마력 향상 옵션 추가.\n성공률:10%, 마법 공격력+5, INT+3, 마법 방어력+1"/>
+            <int name="incMAD" value="5"/>
+            <int name="incINT" value="3"/>
+            <int name="incMDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043800">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="스태프 마력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="스태프에 마력 향상 옵션 추가.\n성공률:100%, 마법 공격력+1"/>
+            <int name="incMAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043801">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="스태프 마력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="스태프에 마력 향상 옵션 추가.\n성공률:60%, 마법 공격력+2, INT+1"/>
+            <int name="incMAD" value="2"/>
+            <int name="incINT" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02043802">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="스태프 마력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="스태프에 마력 향상 옵션 추가.\n성공률:10%, 마법 공격력+5, INT+3, 마법 방어력+1"/>
+            <int name="incMAD" value="5"/>
+            <int name="incINT" value="3"/>
+            <int name="incMDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044000">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="두손검 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="두손검에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044001">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="두손검 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="두손검에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, STR+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incSTR" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044002">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="두손검 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="두손검에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, STR+3, 물리 방어력+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incSTR" value="3"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044100">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="두손도끼 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="두손도끼에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044101">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="두손도끼 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="두손도끼에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, STR+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incSTR" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044102">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="두손도끼 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="두손도끼에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, STR+3, 물리 방어력+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incSTR" value="3"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044200">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="두손둔기 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="두손둔기에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044201">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="두손둔기 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="두손둔기에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, STR+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incSTR" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044202">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="두손둔기 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="두손둔기에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, STR+3, 물리 방어력+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incSTR" value="3"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044300">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="창 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="창에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044301">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="창 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="창에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, STR+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incSTR" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044302">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="창 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="창에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, STR+3, 물리 방어력+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incSTR" value="3"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044400">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="폴암 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="폴암에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044401">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="폴암 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="폴암에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, STR+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incSTR" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044402">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="폴암 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="폴암에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, STR+3, 물리 방어력+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incSTR" value="3"/>
+            <int name="incPDD" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044500">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="활 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="활에 공격력 향상 옵션 추가.\n성공률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044501">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="활 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="활에 공격력 향상 옵션 추가.\n성공률:60%, 물리 공격력+2, 명중률+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incACC" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044502">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="활 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="활에 공격력 향상 옵션 추가.\n성공률:10%, 물리 공격력+5, 명중률+3, DEX+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incACC" value="3"/>
+            <int name="incDEX" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044600">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="석궁 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="석궁에 공격력 향상 옵션 추가.\n성공확률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044601">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="석궁 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="석궁에 공격력 향상 옵션 추가.\n성공확률:60%, 물리 공격력+2, 명중률+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incACC" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044602">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="석궁 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="석궁에 공격력 향상 옵션 추가.\n성공확률:10%, 물리 공격력+5, 명중률+3, DEX+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incACC" value="3"/>
+            <int name="incDEX" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044700">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040000/info/icon"/>
+            <uol name="iconRaw" value="../../02040000/info/iconRaw"/>
+            <string name="name" value="아대 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="아대에 공격력 향상 옵션 추가.\n성공확률:100%, 물리 공격력+1"/>
+            <int name="incPAD" value="1"/>
+            <int name="success" value="100"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044701">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040001/info/icon"/>
+            <uol name="iconRaw" value="../../02040001/info/iconRaw"/>
+            <string name="name" value="아대 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="아대에 공격력 향상 옵션 추가.\n성공확률:60%, 물리 공격력+2, 명중률+1"/>
+            <int name="incPAD" value="2"/>
+            <int name="incACC" value="1"/>
+            <int name="success" value="60"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="02044702">
+        <imgdir name="info">
+            <uol name="icon" value="../../02040002/info/icon"/>
+            <uol name="iconRaw" value="../../02040002/info/iconRaw"/>
+            <string name="name" value="아대 공격력 주문서"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="아대에 공격력 향상 옵션 추가.\n성공확률:10%, 물리 공격력+5, 명중률+3, LUK+1"/>
+            <int name="incPAD" value="5"/>
+            <int name="incACC" value="3"/>
+            <int name="incLUK" value="1"/>
+            <int name="success" value="10"/>
+        </imgdir>
+    </imgdir>
+</imgdir>

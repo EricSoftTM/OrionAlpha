@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0011000.img">
+    <imgdir name="info">
+        <string name="name" value="시드"/>
+        <imgdir name="speak">
+            <string name="0" value="쌉니다! 싸요~!"/>
+            <string name="1" value="어서 오라구~! 하하하~"/>
+        </imgdir>
+        <imgdir name="shop">
+            <imgdir name="01302000">
+                <int name="price" value="50"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01312004">
+                <int name="price" value="50"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01322005">
+                <int name="price" value="50"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01332005">
+                <int name="price" value="500"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="51" height="79">
+            <vector name="origin" x="25" y="79"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

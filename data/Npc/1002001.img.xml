@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1002001.img">
+    <imgdir name="info">
+        <string name="name" value="테오"/>
+        <string name="quest" value="teo"/>
+        <imgdir name="speak">
+            <string name="0" value="이봐! 이 근처에서 고래를 보지 못했나? 이놈이 어디로 사라졌지..."/>
+            <string name="1" value="몇달동안 면도를 못했더니 턱이 근질근질 하는걸~"/>
+            <string name="2" value="드 넓은 바다를 항해하는 그 기분! 정말 최고지!"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="50" height="78">
+            <vector name="origin" x="26" y="78"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

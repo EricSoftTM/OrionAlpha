@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0400.img">
+    <imgdir name="04000000">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="27">
+                <vector name="origin" x="-4" y="27"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="25">
+                <vector name="origin" x="-4" y="27"/>
+            </canvas>
+            <string name="name" value="파란 달팽이의 껍질"/>
+            <int name="price" value="3"/>
+            <string name="desc" value="달팽의 껍질을 벗긴 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000001">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="28">
+                <vector name="origin" x="-1" y="28"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="26">
+                <vector name="origin" x="-1" y="28"/>
+            </canvas>
+            <string name="name" value="주황 버섯의 갓"/>
+            <int name="price" value="4"/>
+            <string name="desc" value="버섯의 갓을 자른 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000002">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="31">
+                <vector name="origin" x="-1" y="31"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="31">
+                <vector name="origin" x="-1" y="31"/>
+            </canvas>
+            <string name="name" value="돼지의 리본"/>
+            <int name="price" value="8"/>
+            <string name="desc" value="리본 돼지의 리본을 끊은 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000003">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="30">
+                <vector name="origin" x="-2" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="28">
+                <vector name="origin" x="-2" y="30"/>
+            </canvas>
+            <string name="name" value="나뭇가지"/>
+            <int name="price" value="4"/>
+            <string name="desc" value="나무의 가지를 꺽어온 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000004">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="25">
+                <vector name="origin" x="-4" y="25"/>
+            </canvas>
+            <canvas name="iconRaw" width="24" height="21">
+                <vector name="origin" x="-5" y="25"/>
+            </canvas>
+            <string name="name" value="물컹물컹한 액체"/>
+            <int name="price" value="4"/>
+            <string name="desc" value="점성이 높아 끈적끈적한 액체이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000005">
+        <imgdir name="info">
+            <canvas name="icon" width="27" height="28">
+                <vector name="origin" x="-3" y="28"/>
+            </canvas>
+            <canvas name="iconRaw" width="27" height="25">
+                <vector name="origin" x="-3" y="28"/>
+            </canvas>
+            <string name="name" value="나뭇잎"/>
+            <int name="price" value="10"/>
+            <string name="desc" value="나무의 잎을 따온 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000006">
+        <imgdir name="info">
+            <canvas name="icon" width="28" height="31">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <canvas name="iconRaw" width="27" height="30">
+                <vector name="origin" x="-2" y="31"/>
+            </canvas>
+            <string name="name" value="옥토퍼스의 다리"/>
+            <int name="price" value="15"/>
+            <string name="desc" value="문어의 다리를 자른 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000007">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="32">
+                <vector name="origin" x="-2" y="32"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="31">
+                <vector name="origin" x="-2" y="32"/>
+            </canvas>
+            <string name="name" value="이블아이의 꼬리"/>
+            <int name="price" value="40"/>
+            <string name="desc" value="도마뱀의 꼬리를 자른 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000008">
+        <imgdir name="info">
+            <canvas name="icon" width="27" height="29">
+                <vector name="origin" x="-3" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="26" height="26">
+                <vector name="origin" x="-3" y="29"/>
+            </canvas>
+            <string name="name" value="죽은 자의 부적"/>
+            <int name="price" value="30"/>
+            <string name="desc" value="언데드 몬스터의 부적을 떼어 온 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000009">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="28">
+                <vector name="origin" x="-1" y="28"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="26">
+                <vector name="origin" x="-1" y="28"/>
+            </canvas>
+            <string name="name" value="파란 버섯의 갓"/>
+            <int name="price" value="30"/>
+            <string name="desc" value="버섯의 갓을 자른 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000010">
+        <imgdir name="info">
+            <canvas name="icon" width="27" height="29">
+                <vector name="origin" x="-3" y="29"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="27" height="25">
+                <vector name="origin" x="-3" y="29"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="슬라임의 방울"/>
+            <int name="price" value="50"/>
+            <string name="desc" value="슬라임의 방울을 떼어온 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000011">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="30">
+                <vector name="origin" x="-1" y="30"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="27">
+                <vector name="origin" x="-1" y="30"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="버섯의 포자"/>
+            <int name="price" value="3"/>
+            <string name="desc" value="버섯의 포자이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000012">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="29">
+                <vector name="origin" x="-1" y="29"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="25">
+                <vector name="origin" x="-1" y="29"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="초록 버섯의 갓"/>
+            <int name="price" value="25"/>
+            <string name="desc" value="버섯의 갓을 자른 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000013">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="31">
+                <vector name="origin" x="-2" y="31"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="31">
+                <vector name="origin" x="-2" y="31"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="커즈아이의 꼬리"/>
+            <int name="price" value="60"/>
+            <string name="desc" value="도마뱀의 꼬리를 자른 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000014">
+        <imgdir name="info">
+            <canvas name="icon" width="27" height="29">
+                <vector name="origin" x="-3" y="29"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="26" height="27">
+                <vector name="origin" x="-3" y="29"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="드레이크의 머리뼈"/>
+            <int name="price" value="120"/>
+            <string name="desc" value="드레이크의 머리뼈이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000015">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="30">
+                <vector name="origin" x="-1" y="30"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="27">
+                <vector name="origin" x="-1" y="30"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="뿔버섯의 갓"/>
+            <int name="price" value="30"/>
+            <string name="desc" value="버섯의 갓을 자른 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000016">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="27">
+                <vector name="origin" x="-4" y="27"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="25">
+                <vector name="origin" x="-4" y="27"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="빨간 달팽이의 껍질"/>
+            <int name="price" value="6"/>
+            <string name="desc" value="달팽이의 껍질을 벗긴 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000017">
+        <imgdir name="info">
+            <canvas name="icon" width="28" height="26">
+                <vector name="origin" x="-2" y="26"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="28" height="23">
+                <vector name="origin" x="-2" y="26"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="돼지의 머리"/>
+            <int name="price" value="50"/>
+            <string name="desc" value="돼지의 머리이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000018">
+        <imgdir name="info">
+            <canvas name="icon" width="27" height="31">
+                <vector name="origin" x="-3" y="31"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="27" height="30">
+                <vector name="origin" x="-3" y="31"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="장작"/>
+            <int name="price" value="30"/>
+            <string name="desc" value="엑스텀프에서 떼어낸 고품질 장작이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000019">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="27">
+                <vector name="origin" x="-4" y="27"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="25">
+                <vector name="origin" x="-4" y="27"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="달팽이의 껍질"/>
+            <int name="price" value="2"/>
+            <string name="desc" value="달팽이의 껍질을 벗긴 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000020">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="18" height="19">
+                <vector name="origin" x="-7" y="26"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="와일드보어의 송곳니"/>
+            <int name="price" value="32"/>
+            <string name="desc" value="와일드보어의 송곳니를 잘라온 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000021">
+        <imgdir name="info">
+            <canvas name="icon" width="31" height="31">
+                <vector name="origin" x="-1" y="31"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="31" height="30">
+                <vector name="origin" x="-1" y="31"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="동물의 가죽"/>
+            <int name="price" value="100"/>
+            <string name="desc" value="동물의 가죽을 잘라온 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000022">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="30">
+                <vector name="origin" x="-1" y="30"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="28">
+                <vector name="origin" x="-1" y="30"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="스톤골렘의 돌조각"/>
+            <int name="price" value="130"/>
+            <string name="desc" value="스톤골렘의 몸의 일부분을 이루고 있던 신비로운 돌조각이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000023">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="32">
+                <vector name="origin" x="-2" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="31">
+                <vector name="origin" x="-2" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="콜드아이의 꼬리"/>
+            <int name="price" value="70"/>
+            <string name="desc" value="도마뱀의 꼬리를 자른 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000024">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="18" height="19">
+                <vector name="origin" x="-7" y="26"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="파이어보어의 송곳니"/>
+            <int name="price" value="40"/>
+            <string name="desc" value="파이어보어의 송곳니를 잘라온 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000025">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="30">
+                <vector name="origin" x="-1" y="30"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="28">
+                <vector name="origin" x="-1" y="30"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="다크 스톤골렘의 돌조각"/>
+            <int name="price" value="150"/>
+            <string name="desc" value="다크 스톤골렘의 몸의 일부분을 이루고 있던 신비로운 돌조각이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000026">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="32">
+                <vector name="origin" x="-1" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="32">
+                <vector name="origin" x="-1" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="루팡 인형"/>
+            <int name="price" value="100"/>
+            <string name="desc" value="루팡의 모습을 쏙 빼닮은 작은 인형이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000027">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="28">
+                <vector name="origin" x="-4" y="28"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconRaw" width="24" height="25">
+                <vector name="origin" x="-5" y="28"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="와일드카고의 눈동자"/>
+            <int name="price" value="170"/>
+            <string name="desc" value="와일드카고의 눈동자를 떼어온 것이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000028">
+        <imgdir name="info">
+            <canvas name="icon" width="28" height="30">
+                <vector name="origin" x="-2" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="28" height="28">
+                <vector name="origin" x="-2" y="30"/>
+            </canvas>
+            <string name="name" value="타우로마시스의 뿔"/>
+            <int name="price" value="200"/>
+            <string name="desc" value="타우로마시스의 뿔을 잘라온 것이다. 매우 단단하고 무겁다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000029">
+        <imgdir name="info">
+            <canvas name="icon" width="31" height="31">
+                <vector name="origin" x="-1" y="31"/>
+            </canvas>
+            <canvas name="iconRaw" width="31" height="30">
+                <vector name="origin" x="-1" y="31"/>
+            </canvas>
+            <string name="name" value="루팡의 바나나"/>
+            <int name="price" value="75"/>
+            <string name="desc" value="루팡이 좋아하는 맛있는 바나나이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04000030">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="29">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="용의 가죽"/>
+            <int name="price" value="200"/>
+            <string name="desc" value="신비한 빛을 내는 단단한 용의 가죽이다."/>
+            <int name="slotMax" value="200"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04001000">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="27">
+                <vector name="origin" x="-4" y="27"/>
+            </canvas>
+            <canvas name="iconRaw" width="23" height="24">
+                <vector name="origin" x="-5" y="27"/>
+            </canvas>
+            <string name="name" value="아르웬의 유리구두"/>
+            <int name="price" value="250"/>
+            <string name="desc" value="유리로 만든 반짝이는 여성용 구두이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04001001">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="29">
+                <vector name="origin" x="0" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="26">
+                <vector name="origin" x="0" y="29"/>
+            </canvas>
+            <string name="name" value="귀족의 거울"/>
+            <int name="price" value="500"/>
+            <string name="desc" value="화려하게 장식이 된 거울이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04001002">
+        <imgdir name="info">
+            <canvas name="icon" width="29" height="30">
+                <vector name="origin" x="-1" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="29" height="28">
+                <vector name="origin" x="-1" y="30"/>
+            </canvas>
+            <string name="name" value="이웃집 그녀"/>
+            <int name="price" value="150"/>
+            <string name="desc" value="위험한 내용의 책이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04001003">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="30">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="28">
+                <vector name="origin" x="0" y="30"/>
+            </canvas>
+            <string name="name" value="오래된 금시계"/>
+            <int name="price" value="1"/>
+            <string name="desc" value="황금으로 만들어진 오래된 금시계이다. 알렉스의 어머니의 유품이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04002000">
+        <imgdir name="info">
+            <canvas name="icon" width="28" height="29">
+                <vector name="origin" x="-2" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="28" height="28">
+                <vector name="origin" x="-2" y="29"/>
+            </canvas>
+            <string name="name" value="달팽이 우표"/>
+            <int name="price" value="250"/>
+            <string name="desc" value="달팽이가 그려진 우표이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04002001">
+        <imgdir name="info">
+            <canvas name="icon" width="28" height="29">
+                <vector name="origin" x="-2" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="28" height="28">
+                <vector name="origin" x="-2" y="29"/>
+            </canvas>
+            <string name="name" value="파란 달팽이 우표"/>
+            <int name="price" value="350"/>
+            <string name="desc" value="파란 달팽이가 그려진 우표이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04002002">
+        <imgdir name="info">
+            <canvas name="icon" width="28" height="29">
+                <vector name="origin" x="-2" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="28" height="28">
+                <vector name="origin" x="-2" y="29"/>
+            </canvas>
+            <string name="name" value="스텀프 우표"/>
+            <int name="price" value="400"/>
+            <string name="desc" value="스텀프가 그려진 우표이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04002003">
+        <imgdir name="info">
+            <canvas name="icon" width="28" height="29">
+                <vector name="origin" x="-2" y="29"/>
+            </canvas>
+            <canvas name="iconRaw" width="28" height="28">
+                <vector name="origin" x="-2" y="29"/>
+            </canvas>
+            <string name="name" value="슬라임 우표"/>
+            <int name="price" value="350"/>
+            <string name="desc" value="슬라임이 그려진 우표이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04003000">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="28">
+                <vector name="origin" x="-3" y="28"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="24">
+                <vector name="origin" x="-3" y="28"/>
+            </canvas>
+            <string name="name" value="나사"/>
+            <int name="price" value="50"/>
+            <string name="desc" value="강철로 만들어진 작은 나사이다. 무기나 방어구를 만들때 재료로 쓰인다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04003001">
+        <imgdir name="info">
+            <canvas name="icon" width="32" height="26">
+                <vector name="origin" x="0" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="32" height="21">
+                <vector name="origin" x="0" y="26"/>
+            </canvas>
+            <string name="name" value="가공된 나무"/>
+            <int name="price" value="20"/>
+            <string name="desc" value="나뭇가지를 가공한 나무이다. 무기나 방어구를 만들때 재료로 쓰인다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04003002">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="26">
+                <vector name="origin" x="0" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="21">
+                <vector name="origin" x="0" y="26"/>
+            </canvas>
+            <string name="name" value="얼음 조각"/>
+            <int name="price" value="400"/>
+            <string name="desc" value="마법의 힘으로 물을 얼려 만든 조각이다. 쉽게 녹지 않는다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04003003">
+        <imgdir name="info">
+            <canvas name="icon" width="28" height="28">
+                <vector name="origin" x="-3" y="28"/>
+            </canvas>
+            <canvas name="iconRaw" width="28" height="25">
+                <vector name="origin" x="-3" y="28"/>
+            </canvas>
+            <string name="name" value="요정의 날개"/>
+            <int name="price" value="5000"/>
+            <string name="desc" value="요정의 날개 조각이다. 부드럽고 약해서 소중하게 다뤄야 한다."/>
+        </imgdir>
+    </imgdir>
+</imgdir>

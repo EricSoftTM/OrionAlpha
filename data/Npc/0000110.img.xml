@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0000110.img">
+    <imgdir name="info">
+        <string name="name" value="필"/>
+        <imgdir name="speak">
+            <string name="0" value="어이~ 탈래?"/>
+            <string name="1" value="이 오토바이 멋지지? 타보고 싶지? 근데 난 면허가 없다고. 하하~"/>
+            <string name="2" value="예쁜 여자 하나 건져보려고 했더니... 호박들 뿐이잖아."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="69" height="78">
+            <vector name="origin" x="23" y="78"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

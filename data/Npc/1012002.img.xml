@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1012002.img">
+    <imgdir name="info">
+        <string name="name" value="비셔스"/>
+        <string name="quest" value="refine_henesys"/>
+        <imgdir name="speak">
+            <string name="0" value="뭐 필요한 물건이라도 있어?"/>
+        </imgdir>
+        <int name="dcLeft" value="-38"/>
+        <int name="dcTop" value="-73"/>
+        <int name="dcRight" value="2"/>
+        <int name="dcBottom" value="0"/>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="79" height="78">
+            <vector name="origin" x="39" y="78"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

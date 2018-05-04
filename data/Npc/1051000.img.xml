@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1051000.img">
+    <imgdir name="info">
+        <string name="name" value="만슈타인"/>
+        <imgdir name="speak">
+            <string name="0" value="무기가 필요한가? 우리 가게는 도둑을 위한 무기를 전문적으로 취급하고 있지."/>
+            <string name="1" value="자! 골라 보라구!"/>
+        </imgdir>
+        <imgdir name="shop">
+            <imgdir name="01302007">
+                <int name="price" value="3000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01332000">
+                <int name="price" value="4000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01332006">
+                <int name="price" value="7000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01332002">
+                <int name="price" value="8000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01332008">
+                <int name="price" value="10000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01332010">
+                <int name="price" value="22000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01332004">
+                <int name="price" value="38000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01332012">
+                <int name="price" value="40000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01332009">
+                <int name="price" value="42000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01322009">
+                <int name="price" value="20000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01402001">
+                <int name="price" value="3000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01412001">
+                <int name="price" value="3000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01422000">
+                <int name="price" value="3000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01432000">
+                <int name="price" value="3000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01432001">
+                <int name="price" value="7000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01442000">
+                <int name="price" value="3000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01472000">
+                <int name="price" value="3000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="59" height="91">
+            <vector name="origin" x="29" y="91"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

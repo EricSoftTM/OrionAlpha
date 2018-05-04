@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1072005.img">
+    <imgdir name="info">
+        <string name="name" value="마법사 전직교관"/>
+        <string name="quest" value="inside_magician"/>
+        <imgdir name="speak">
+            <string name="0" value="마법사 2차 전직을 하고 싶은가? 먼저 엘리니아의 &apos;하인즈&apos;님을 찾아가 보게나."/>
+            <string name="1" value="나의 시험을 통과한 자만이 마법사 2차 전직을 할 수 있지."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="67" height="87">
+            <vector name="origin" x="33" y="87"/>
+        </canvas>
+    </imgdir>
+</imgdir>

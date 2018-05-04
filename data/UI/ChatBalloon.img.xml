@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="ChatBalloon.img">
+    <imgdir name="0">
+        <canvas name="nw" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="ne" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="sw" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="se" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="n" width="12" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="s" width="12" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="w" width="6" height="14">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="e" width="6" height="14">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="c" width="12" height="14">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="arrow" width="13" height="13">
+            <vector name="origin" x="1" y="0"/>
+        </canvas>
+    </imgdir>
+    <imgdir name="1">
+        <canvas name="nw" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="ne" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="sw" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="se" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="n" width="12" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="s" width="12" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="w" width="6" height="14">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="e" width="6" height="14">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="c" width="12" height="14">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="arrow" width="13" height="13">
+            <vector name="origin" x="1" y="0"/>
+        </canvas>
+    </imgdir>
+    <imgdir name="dead">
+        <canvas name="nw" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="ne" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="sw" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="se" width="6" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="n" width="12" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="s" width="12" height="6">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="w" width="6" height="14">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="e" width="6" height="14">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="c" width="12" height="14">
+            <vector name="origin" x="0" y="0"/>
+        </canvas>
+        <canvas name="arrow" width="14" height="15">
+            <vector name="origin" x="2" y="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

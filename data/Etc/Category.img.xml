@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="Category.img">
+    <imgdir name="0">
+        <int name="Category" value="1"/>
+        <int name="CategorySub" value="0"/>
+        <string name="Name" value="추천상품"/>
+    </imgdir>
+    <imgdir name="1">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="0"/>
+        <string name="Name" value="모자"/>
+    </imgdir>
+    <imgdir name="2">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="1"/>
+        <string name="Name" value="얼굴장식"/>
+    </imgdir>
+    <imgdir name="3">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="2"/>
+        <string name="Name" value="눈장식"/>
+    </imgdir>
+    <imgdir name="4">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="3"/>
+        <string name="Name" value="한벌옷"/>
+    </imgdir>
+    <imgdir name="5">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="4"/>
+        <string name="Name" value="상의"/>
+    </imgdir>
+    <imgdir name="6">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="5"/>
+        <string name="Name" value="하의"/>
+    </imgdir>
+    <imgdir name="7">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="6"/>
+        <string name="Name" value="신발"/>
+    </imgdir>
+    <imgdir name="8">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="7"/>
+        <string name="Name" value="장갑"/>
+    </imgdir>
+    <imgdir name="9">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="8"/>
+        <string name="Name" value="무기"/>
+    </imgdir>
+    <imgdir name="10">
+        <int name="Category" value="2"/>
+        <int name="CategorySub" value="9"/>
+        <string name="Name" value="반지"/>
+    </imgdir>
+    <imgdir name="11">
+        <int name="Category" value="3"/>
+        <int name="CategorySub" value="0"/>
+        <string name="Name" value="기상센터"/>
+    </imgdir>
+    <imgdir name="12">
+        <int name="Category" value="5"/>
+        <int name="CategorySub" value="0"/>
+        <string name="Name" value="뷰티샵"/>
+    </imgdir>
+    <imgdir name="13">
+        <int name="Category" value="5"/>
+        <int name="CategorySub" value="1"/>
+        <string name="Name" value="감정표현"/>
+    </imgdir>
+</imgdir>

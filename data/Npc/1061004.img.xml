@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1061004.img">
+    <imgdir name="info">
+        <string name="name" value="로니"/>
+        <string name="quest" value="rony"/>
+        <imgdir name="speak">
+            <string name="0" value="나... 사실 몰래 아빠의 책을 들고 나와버렸어."/>
+            <string name="1" value="아직 어려서 잘은 모르겠지만... 이 책 무슨 내용인 걸까?"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="40" height="58">
+            <vector name="origin" x="20" y="58"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

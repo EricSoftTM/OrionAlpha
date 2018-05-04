@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="ToolTipHelp.img">
+    <imgdir name="Game">
+        <imgdir name="Button">
+            <imgdir name="Shop">
+                <string name="Title" value="캐시 샵"/>
+                <string name="Desc" value="넥슨캐시를 이용하여 귀엽고 예쁜 치장 아이템, 메신저 아이템, 헤어샵 이용쿠폰, 성형외과 이용쿠폰 등 다양한 아이템을 살 수 있는 곳"/>
+            </imgdir>
+            <imgdir name="Item">
+                <string name="Title" value="아이템 창"/>
+                <string name="Desc" value="소유하고 있는 아이템의 목록을 보는 창\n아이템은 장비, 소비, 설치, 기타 아이템이 있음"/>
+            </imgdir>
+            <imgdir name="Equip">
+                <string name="Title" value="장비 창"/>
+                <string name="Desc" value="장비된 아이템을 보며 장비/해제하는 창\n아이템창과 함께 사용해서 장비아이템을 이용할 수 있음"/>
+            </imgdir>
+            <imgdir name="Stat">
+                <string name="Title" value="능력치 창"/>
+                <string name="Desc" value="세부 정보와 능력치를 보는 창\nAP를 이용하여 여러가지 능력치를 키울 수 있음"/>
+            </imgdir>
+            <imgdir name="Skill">
+                <string name="Title" value="스킬 창"/>
+                <string name="Desc" value="보유하고 있는 스킬북의 세부 내용을 보는 창\n스킬포인트를 이용하여 스킬을 배울 수 있음"/>
+            </imgdir>
+            <imgdir name="Chat">
+                <string name="Title" value="메신저 창"/>
+                <string name="Desc" value="월드내의 다른 친구들과 대화하는 창"/>
+            </imgdir>
+            <imgdir name="Menu">
+                <string name="Title" value="메뉴"/>
+                <string name="Desc" value="옵션을 변경하거나 게임 정보를 보는 창\n게임 옵션, 시스템 옵션 변경 가능\n퀘스트 정보, 파티 정보, 커뮤니티 정보를 볼 수 있음"/>
+            </imgdir>
+            <imgdir name="Whisper">
+                <string name="Title" value="귓속말"/>
+                <string name="Desc" value="버튼을 눌러 귓속말을 하고 싶은 상대의 캐릭터 설정\n귓속말 상태에서 버튼을 다시 누르면 해제"/>
+            </imgdir>
+        </imgdir>
+        <imgdir name="UIWnd">
+            <imgdir name="Stat">
+                <imgdir name="0">
+                    <vector name="lt" x="10" y="58"/>
+                    <vector name="rb" x="38" y="73"/>
+                    <string name="Title" value="캐릭터 이름"/>
+                    <string name="Desc" value="생성 이후에는 변경불가"/>
+                </imgdir>
+                <imgdir name="1">
+                    <vector name="lt" x="10" y="76"/>
+                    <vector name="rb" x="38" y="91"/>
+                    <string name="Title" value="캐릭터 직업"/>
+                    <string name="Desc" value="초보자에서 전사, 궁수, 마법사, 도적으로 전직 가능\n전사 - 레벨 10, STR 35 이상, 페리온 마을에서 전직\n궁수 - 레벨 10, DEX 25이상, 헤네시스 마을에서 전직\n마법사 - 레벨 8, INT 20이상, 엘리니아 마을에서 전직\n도적 - 레벨 10, DEX 25이상, 커닝시티에서 전직"/>
+                </imgdir>
+                <imgdir name="2">
+                    <vector name="lt" x="10" y="94"/>
+                    <vector name="rb" x="61" y="109"/>
+                    <string name="Title" value="메인 커뮤니티"/>
+                    <string name="Desc" value="해당 계정이 가입한 커뮤니티 중 메인 커뮤니티"/>
+                </imgdir>
+                <imgdir name="3">
+                    <vector name="lt" x="10" y="112"/>
+                    <vector name="rb" x="31" y="127"/>
+                    <string name="Title" value="Health Point"/>
+                    <string name="Desc" value="체력 수치로 0이 되면 죽음\n적으로부터 공격을 받거나 특정 스킬을 사용할 경우 HP가 감소함\n최고 30,000포인트까지 가능"/>
+                </imgdir>
+                <imgdir name="4">
+                    <vector name="lt" x="10" y="130"/>
+                    <vector name="rb" x="31" y="145"/>
+                    <string name="Title" value="Mana Point"/>
+                    <string name="Desc" value="여러가지 스킬을 사용할 때 필요한 능력치\n최고 10,000포인트까지 가능"/>
+                </imgdir>
+                <imgdir name="5">
+                    <vector name="lt" x="10" y="148"/>
+                    <vector name="rb" x="50" y="163"/>
+                    <string name="Title" value="경험치"/>
+                    <string name="Desc" value="획득한 경험치의 양\n몬스터를 죽이거나 퀘스트를 완료하면 경험치 획득"/>
+                </imgdir>
+                <imgdir name="6">
+                    <vector name="lt" x="10" y="166"/>
+                    <vector name="rb" x="50" y="181"/>
+                    <string name="Title" value=""/>
+                    <string name="Desc" value=""/>
+                </imgdir>
+                <imgdir name="7">
+                    <vector name="lt" x="10" y="202"/>
+                    <vector name="rb" x="39" y="217"/>
+                    <string name="Title" value="힘(STR)"/>
+                    <string name="Desc" value="무거운 무기나 갑옷을 장비할 때 필요한 수치\n전사의 공격력을 결정하는 가장 중요한 능력치"/>
+                </imgdir>
+                <imgdir name="8">
+                    <vector name="lt" x="10" y="220"/>
+                    <vector name="rb" x="39" y="235"/>
+                    <string name="Title" value="민첩성(DEX)"/>
+                    <string name="Desc" value="이 능력치가 높을수록 명중률과 회피율이 증가\n궁수의 공격력을 결정하는 가장 중요한 능력치"/>
+                </imgdir>
+                <imgdir name="9">
+                    <vector name="lt" x="10" y="238"/>
+                    <vector name="rb" x="39" y="253"/>
+                    <string name="Title" value="지력(INT)"/>
+                    <string name="Desc" value="높을수록 마법 공격이 성공률이 높음\n마법사의 마력을 결정하는 가장 중요한 능력치\n높을수록 레벨업 때와 MP에 AP를 부여할 때 상승하는 MP의 양이 늘어남"/>
+                </imgdir>
+                <imgdir name="10">
+                    <vector name="lt" x="10" y="256"/>
+                    <vector name="rb" x="39" y="271"/>
+                    <string name="Title" value="운(LUK)"/>
+                    <string name="Desc" value="이 능력치가 높을수록 회피율이 증가\n도적의 공격력과 손재주를 결정하는 능력치\n이 능력치가 높을수록 죽었을 경우 떨어지는 경험치의 양이 감소"/>
+                </imgdir>
+                <imgdir name="11">
+                    <vector name="lt" x="8" y="281"/>
+                    <vector name="rb" x="109" y="296"/>
+                    <string name="Title" value="AP(Ability Point)"/>
+                    <string name="Desc" value="힘, 민첩성, 지력, 운의 능력치와 HP, MP의 양을 올릴 수 있는 수치\n힘, 민첩성, 지력, 운을 올릴 경우, AP 1포인트당 능력치 1포인트 상승\nHP나 MP의 경우에는 각 캐릭터의 상태에 따라 상승치가 다름\n레벨업을 할 때마다 5포인트씩 주어짐"/>
+                </imgdir>
+            </imgdir>
+            <imgdir name="StatDetail">
+                <imgdir name="0">
+                    <vector name="lt" x="10" y="11"/>
+                    <vector name="rb" x="74" y="27"/>
+                    <string name="Title" value="공격력"/>
+                    <string name="Desc" value="물리 공격의 데미지를 결정하는 능력치\n전사와 마법사는 힘, 궁수는 민첩성, 도적은 힘, 민첩성, 운이 결정\n위의 능력치와 무기의 물리 공격력을 합산하여 물리 공격력을 결정"/>
+                </imgdir>
+                <imgdir name="1">
+                    <vector name="lt" x="10" y="29"/>
+                    <vector name="rb" x="74" y="45"/>
+                    <string name="Title" value="물리 방어력"/>
+                    <string name="Desc" value="물리 공격을 방어하는 능력치\n장비하고 있는 모든 방어구의 물리 방어력을 합산하여 결정"/>
+                </imgdir>
+                <imgdir name="2">
+                    <vector name="lt" x="10" y="47"/>
+                    <vector name="rb" x="74" y="63"/>
+                    <string name="Title" value="마력"/>
+                    <string name="Desc" value="마법 성공률과 마법 공격력을 결정하는 능력치\n장비 아이템의 마력과 INT가 더해져서 마력이 결정"/>
+                </imgdir>
+                <imgdir name="3">
+                    <vector name="lt" x="10" y="65"/>
+                    <vector name="rb" x="74" y="81"/>
+                    <string name="Title" value="마법 방어력"/>
+                    <string name="Desc" value="마법 공격을 방어하는 능력치\n장비하고 있는 모든 방어구의 마법 방어력을 합산하여 결정"/>
+                </imgdir>
+                <imgdir name="4">
+                    <vector name="lt" x="10" y="83"/>
+                    <vector name="rb" x="74" y="99"/>
+                    <string name="Title" value="명중률"/>
+                    <string name="Desc" value="물리 공격의 명중률을 결정하는 능력치\n높을수록 물리 공격이 더 잘 명중\n민첩성과 장비하고 있는 아이템에 따라 명중률 결정"/>
+                </imgdir>
+                <imgdir name="5">
+                    <vector name="lt" x="10" y="101"/>
+                    <vector name="rb" x="74" y="117"/>
+                    <string name="Title" value="회피율"/>
+                    <string name="Desc" value="물리 공격을 회피하는 능력치\n높을수록 물리 공격을 더 잘 피함\n민첩성, 운과 장비하고 있는 아이템의 옵션에 따라서 회피율 결정 "/>
+                </imgdir>
+                <imgdir name="6">
+                    <vector name="lt" x="10" y="119"/>
+                    <vector name="rb" x="74" y="135"/>
+                    <string name="Title" value=""/>
+                    <string name="Desc" value=""/>
+                </imgdir>
+                <imgdir name="7">
+                    <vector name="lt" x="10" y="137"/>
+                    <vector name="rb" x="74" y="153"/>
+                    <string name="Title" value="이동속도"/>
+                    <string name="Desc" value="장비 아이템의 옵션이나 스킬로 이동속도가 변동가능"/>
+                </imgdir>
+                <imgdir name="8">
+                    <vector name="lt" x="10" y="155"/>
+                    <vector name="rb" x="74" y="171"/>
+                    <string name="Title" value="점프력"/>
+                    <string name="Desc" value="최대로 점프 가능한 수치\n장비 아이템의 옵션이나 스킬로 변동가능"/>
+                </imgdir>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+    <imgdir name="Shop">
+        <imgdir name="Button">
+            <imgdir name="BuyAvatar">
+                <string name="Title" value="입고있는 물건 사기"/>
+                <string name="Desc" value="캐릭터가 입고 있는 아이템 사기\n원래 가지고 있는 아이템은 포함되지 않음"/>
+            </imgdir>
+            <imgdir name="DefaultAvatar">
+                <string name="Title" value="원래대로 돌리기"/>
+                <string name="Desc" value="캐릭터가 캐시샵에 들어올 때의 상태로 복귀"/>
+            </imgdir>
+            <imgdir name="Remove">
+                <string name="Title" value="아이템 없애기"/>
+                <string name="Desc" value="가지고 있는 캐시 아이템 목록에서 선택된 캐시 아이템 영구적으로 없애기"/>
+            </imgdir>
+            <imgdir name="ExEquip">
+                <string name="Title" value="장비창 늘리기"/>
+                <string name="Desc" value="장비 아이템 창의 슬롯을  4개(1줄) 늘리기\n4800캐시"/>
+            </imgdir>
+            <imgdir name="ExConsume">
+                <string name="Title" value="소비창 늘리기"/>
+                <string name="Desc" value="소비 아이템 창의 슬롯을 4개(1줄) 늘리기\n4800캐시"/>
+            </imgdir>
+            <imgdir name="ExInstall">
+                <string name="Title" value="설치창 늘리기"/>
+                <string name="Desc" value="설치 아이템 창의 슬롯을 4개(1줄) 늘리기\n4800캐시"/>
+            </imgdir>
+            <imgdir name="ExEtc">
+                <string name="Title" value="기타창 늘리기"/>
+                <string name="Desc" value="기타 아이템 창의 슬롯을 4개(1줄) 늘리기\n4800캐시"/>
+            </imgdir>
+            <imgdir name="Charge">
+                <string name="Title" value="캐시 충전하기"/>
+                <string name="Desc" value="핸드폰 결제, OK 캐쉬백 포인트 결제 등 다양한 방식으로 넥슨 캐시 충전 가능\n캐시가 부족할 경우, 먼저 충전을 한 후 아이템 구입 가능"/>
+            </imgdir>
+            <imgdir name="Check">
+                <string name="Title" value="캐시 확인하기"/>
+                <string name="Desc" value="현재 남아있는 넥슨캐시를 확인"/>
+            </imgdir>
+            <imgdir name="Coupon">
+                <string name="Title" value="쿠폰 사용하기"/>
+                <string name="Desc" value="가지고 있는 아이템 쿠폰을 아이템으로 바꾸기"/>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+</imgdir>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0000070.img">
+    <imgdir name="info">
+        <string name="name" value="반스"/>
+        <string name="quest" value="fighter"/>
+        <imgdir name="speak">
+            <string name="0" value="이곳은 정말 평화롭군... 덕분에 내가 할 일이 없네..."/>
+            <string name="1" value="내가 졸고 있는 것처럼 보이나? 이렇게 생겨먹어 어쩔수 없다고..."/>
+            <string name="2" value="콧수염이 멋지지? 하지만 밥 먹을때 걸리적 거려서 불편한게 이만 저만이 아니야."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="54" height="99">
+            <vector name="origin" x="23" y="99"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

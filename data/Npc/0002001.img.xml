@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0002001.img">
+    <imgdir name="info">
+        <string name="name" value="센"/>
+        <string name="quest" value="begin3_2"/>
+        <imgdir name="speak">
+            <string name="0" value="나... 배고파..."/>
+            <string name="1" value="이거... 먹어도 되는건가...?"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="40" height="58">
+            <vector name="origin" x="20" y="58"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

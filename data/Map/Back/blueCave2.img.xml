@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="blueCave2.img">
+    <imgdir name="back">
+        <canvas name="0" width="800" height="600">
+            <vector name="origin" x="400" y="300"/>
+            <int name="z" value="0"/>
+        </canvas>
+        <canvas name="1" width="800" height="600">
+            <vector name="origin" x="400" y="300"/>
+            <int name="z" value="0"/>
+        </canvas>
+        <canvas name="2" width="800" height="600">
+            <vector name="origin" x="400" y="300"/>
+            <int name="z" value="0"/>
+        </canvas>
+        <canvas name="5" width="73" height="264">
+            <vector name="origin" x="36" y="132"/>
+            <int name="z" value="0"/>
+        </canvas>
+        <canvas name="6" width="73" height="264">
+            <vector name="origin" x="36" y="132"/>
+            <int name="z" value="0"/>
+        </canvas>
+        <canvas name="7" width="104" height="94">
+            <vector name="origin" x="52" y="47"/>
+            <int name="z" value="0"/>
+        </canvas>
+        <canvas name="8" width="105" height="59">
+            <vector name="origin" x="52" y="29"/>
+            <int name="z" value="0"/>
+        </canvas>
+        <canvas name="3" width="57" height="199">
+            <vector name="origin" x="28" y="99"/>
+            <int name="z" value="0"/>
+        </canvas>
+        <canvas name="4" width="57" height="199">
+            <vector name="origin" x="28" y="99"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

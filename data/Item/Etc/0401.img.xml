@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0401.img">
+    <imgdir name="04010000">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="21">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <string name="name" value="청동의 원석"/>
+            <int name="price" value="100"/>
+            <string name="desc" value="가볍고 약한 청동의 원석이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04010001">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="21">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <string name="name" value="강철의 원석"/>
+            <int name="price" value="100"/>
+            <string name="desc" value="강한 강철의 원석이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04010002">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="21">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <string name="name" value="미스릴의 원석"/>
+            <int name="price" value="150"/>
+            <string name="desc" value="가볍고 강한 미스릴의 원석이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04010003">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="21">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <string name="name" value="아다만티움의 원석"/>
+            <int name="price" value="150"/>
+            <string name="desc" value="무겁고 강한 아다만티움의 원석이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04010004">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="21">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <string name="name" value="은의 원석"/>
+            <int name="price" value="150"/>
+            <string name="desc" value="광택이 있는 은의 원석이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04010005">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="21">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <string name="name" value="오리할콘의 원석"/>
+            <int name="price" value="200"/>
+            <string name="desc" value="매우 희귀한 광석인 오리할콘의 원석이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04010006">
+        <imgdir name="info">
+            <canvas name="icon" width="26" height="26">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <canvas name="iconRaw" width="25" height="21">
+                <vector name="origin" x="-4" y="26"/>
+            </canvas>
+            <string name="name" value="금의 원석"/>
+            <int name="price" value="300"/>
+            <string name="desc" value="매우 희귀한 광석인 금의 원석이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04011000">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="25">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="20">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <string name="name" value="청동"/>
+            <int name="price" value="500"/>
+            <string name="desc" value="가볍고 약한 가공 청동이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04011001">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="25">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="20">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <string name="name" value="강철"/>
+            <int name="price" value="500"/>
+            <string name="desc" value="강한 가공 강철이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04011002">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="25">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="20">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <string name="name" value="미스릴"/>
+            <int name="price" value="800"/>
+            <string name="desc" value="가볍고 강한 가공 미스릴이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04011003">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="25">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="20">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <string name="name" value="아다만티움"/>
+            <int name="price" value="800"/>
+            <string name="desc" value="무겁고 강한 가공 아다만티움이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04011004">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="25">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="20">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <string name="name" value="은"/>
+            <int name="price" value="1000"/>
+            <string name="desc" value="광택이 있는 가공 은이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04011005">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="25">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="20">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <string name="name" value="오리할콘"/>
+            <int name="price" value="1200"/>
+            <string name="desc" value="매우 희귀한 광석인 가공 오리할콘이다."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="04011006">
+        <imgdir name="info">
+            <canvas name="icon" width="30" height="25">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <canvas name="iconRaw" width="30" height="20">
+                <vector name="origin" x="-1" y="25"/>
+            </canvas>
+            <string name="name" value="금"/>
+            <int name="price" value="1200"/>
+            <string name="desc" value="매우 희귀한 가공 금이다."/>
+        </imgdir>
+    </imgdir>
+</imgdir>

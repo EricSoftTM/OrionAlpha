@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1032101.img">
+    <imgdir name="info">
+        <string name="name" value="요정 로웬"/>
+        <string name="quest" value="rowen"/>
+        <imgdir name="speak">
+            <string name="0" value="제 친구 로니는 잘 지내고 있을까요?"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="53" height="63">
+            <vector name="origin" x="26" y="63"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

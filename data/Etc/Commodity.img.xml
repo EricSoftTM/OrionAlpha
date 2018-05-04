@@ -1,0 +1,539 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="Commodity.img">
+    <imgdir name="0">
+        <int name="SN" value="10000010"/>
+        <int name="ItemId" value="1050004"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="3200"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="1">
+        <int name="SN" value="10000011"/>
+        <int name="ItemId" value="1040056"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1700"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="2">
+        <int name="SN" value="10000012"/>
+        <int name="ItemId" value="1060047"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="3">
+        <int name="SN" value="10000013"/>
+        <int name="ItemId" value="1041005"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1700"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="4">
+        <int name="SN" value="10000014"/>
+        <int name="ItemId" value="1061004"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="5">
+        <int name="SN" value="10000015"/>
+        <int name="ItemId" value="1000000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="3000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="6">
+        <int name="SN" value="10000016"/>
+        <int name="ItemId" value="1010001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1700"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="7">
+        <int name="SN" value="10000017"/>
+        <int name="ItemId" value="1072014"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1200"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="8">
+        <int name="SN" value="10000018"/>
+        <int name="ItemId" value="4040000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2800"/>
+        <int name="Period" value="90"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="9">
+        <int name="SN" value="10000019"/>
+        <int name="ItemId" value="2090000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="250"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="10">
+        <int name="SN" value="20000000"/>
+        <int name="ItemId" value="1002186"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="11">
+        <int name="SN" value="20000001"/>
+        <int name="ItemId" value="1001000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="3000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="12">
+        <int name="SN" value="20000002"/>
+        <int name="ItemId" value="1002015"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="13">
+        <int name="SN" value="20000003"/>
+        <int name="ItemId" value="1002031"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="14">
+        <int name="SN" value="20000004"/>
+        <int name="ItemId" value="1000000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="3000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="15">
+        <int name="SN" value="20000005"/>
+        <int name="ItemId" value="1002000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2700"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="16">
+        <int name="SN" value="20000006"/>
+        <int name="ItemId" value="1002070"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="17">
+        <int name="SN" value="20100000"/>
+        <int name="ItemId" value="1010000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="18">
+        <int name="SN" value="20100001"/>
+        <int name="ItemId" value="1012000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="19">
+        <int name="SN" value="20100002"/>
+        <int name="ItemId" value="1012001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="20">
+        <int name="SN" value="20100003"/>
+        <int name="ItemId" value="1010001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1700"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="21">
+        <int name="SN" value="20200000"/>
+        <int name="ItemId" value="1022000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="22">
+        <int name="SN" value="20200001"/>
+        <int name="ItemId" value="1022001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="23">
+        <int name="SN" value="20200002"/>
+        <int name="ItemId" value="1022002"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="24">
+        <int name="SN" value="20200003"/>
+        <int name="ItemId" value="1022003"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="25">
+        <int name="SN" value="20300000"/>
+        <int name="ItemId" value="1051002"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="3000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="26">
+        <int name="SN" value="20300001"/>
+        <int name="ItemId" value="1050004"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="3200"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="27">
+        <int name="SN" value="20400000"/>
+        <int name="ItemId" value="1040001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="28">
+        <int name="SN" value="20400001"/>
+        <int name="ItemId" value="1040045"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="29">
+        <int name="SN" value="20400002"/>
+        <int name="ItemId" value="1041000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="30">
+        <int name="SN" value="20400003"/>
+        <int name="ItemId" value="1041001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="31">
+        <int name="SN" value="20400004"/>
+        <int name="ItemId" value="1040046"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="32">
+        <int name="SN" value="20400005"/>
+        <int name="ItemId" value="1040056"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1700"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="33">
+        <int name="SN" value="20400006"/>
+        <int name="ItemId" value="1041005"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1700"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="34">
+        <int name="SN" value="20400007"/>
+        <int name="ItemId" value="1041009"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="35">
+        <int name="SN" value="20400008"/>
+        <int name="ItemId" value="1040005"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="36">
+        <int name="SN" value="20500000"/>
+        <int name="ItemId" value="1060001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1800"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="37">
+        <int name="SN" value="20500001"/>
+        <int name="ItemId" value="1060034"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1300"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="38">
+        <int name="SN" value="20500002"/>
+        <int name="ItemId" value="1061000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1300"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="39">
+        <int name="SN" value="20500003"/>
+        <int name="ItemId" value="1061001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1800"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="40">
+        <int name="SN" value="20500004"/>
+        <int name="ItemId" value="1060035"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1300"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="41">
+        <int name="SN" value="20500005"/>
+        <int name="ItemId" value="1060047"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="42">
+        <int name="SN" value="20500006"/>
+        <int name="ItemId" value="1061004"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="43">
+        <int name="SN" value="20500007"/>
+        <int name="ItemId" value="1061007"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1800"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="44">
+        <int name="SN" value="20500008"/>
+        <int name="ItemId" value="1062003"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1800"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="45">
+        <int name="SN" value="20600000"/>
+        <int name="ItemId" value="1071000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1200"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="46">
+        <int name="SN" value="20600001"/>
+        <int name="ItemId" value="1072010"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="47">
+        <int name="SN" value="20600002"/>
+        <int name="ItemId" value="1071001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1200"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="48">
+        <int name="SN" value="20600003"/>
+        <int name="ItemId" value="1072014"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1200"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="49">
+        <int name="SN" value="20700000"/>
+        <int name="ItemId" value="1082040"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1400"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="50">
+        <int name="SN" value="20700001"/>
+        <int name="ItemId" value="1082041"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1400"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="51">
+        <int name="SN" value="20800000"/>
+        <int name="ItemId" value="1602000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2500"/>
+        <int name="Period" value="50"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="52">
+        <int name="SN" value="20800001"/>
+        <int name="ItemId" value="1602001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2500"/>
+        <int name="Period" value="50"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="53">
+        <int name="SN" value="20800002"/>
+        <int name="ItemId" value="1602002"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2500"/>
+        <int name="Period" value="50"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="54">
+        <int name="SN" value="20800003"/>
+        <int name="ItemId" value="1602003"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2500"/>
+        <int name="Period" value="50"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="55">
+        <int name="SN" value="20900000"/>
+        <int name="ItemId" value="1112100"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="90"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="56">
+        <int name="SN" value="20900001"/>
+        <int name="ItemId" value="1112200"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="90"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="57">
+        <int name="SN" value="30000000"/>
+        <int name="ItemId" value="2090000"/>
+        <int name="Count" value="10"/>
+        <int name="Price" value="2500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="58">
+        <int name="SN" value="30000001"/>
+        <int name="ItemId" value="2090000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="250"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+    <imgdir name="59">
+        <int name="SN" value="50000000"/>
+        <int name="ItemId" value="4050002"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="60">
+        <int name="SN" value="50000001"/>
+        <int name="ItemId" value="4050003"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="3500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="61">
+        <int name="SN" value="50000002"/>
+        <int name="ItemId" value="4051002"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="800"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="62">
+        <int name="SN" value="50000003"/>
+        <int name="ItemId" value="4051003"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="63">
+        <int name="SN" value="50000004"/>
+        <int name="ItemId" value="4052000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="1000"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="64">
+        <int name="SN" value="50000005"/>
+        <int name="ItemId" value="4052001"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2500"/>
+        <int name="Period" value="0"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="65">
+        <int name="SN" value="50100000"/>
+        <int name="ItemId" value="4040000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="2800"/>
+        <int name="Period" value="90"/>
+        <int name="Priority" value="8"/>
+    </imgdir>
+    <imgdir name="66">
+        <int name="SN" value="50100001"/>
+        <int name="ItemId" value="4040000"/>
+        <int name="Count" value="1"/>
+        <int name="Price" value="200"/>
+        <int name="Period" value="5"/>
+        <int name="Priority" value="9"/>
+    </imgdir>
+</imgdir>

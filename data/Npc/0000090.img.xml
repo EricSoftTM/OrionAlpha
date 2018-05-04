@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0000090.img">
+    <imgdir name="info">
+        <string name="name" value="라덴"/>
+        <imgdir name="speak">
+            <string name="0" value="뱀이 안보인다고오~? 진정한 용사의 눈에만 보이는 뱀이라고오..."/>
+            <string name="1" value="내가 불고 있는 이 피리... 실은 엄청난 비밀이 숨겨져 있는 보물이라고오..."/>
+            <string name="2" value="하루종일 앉아 있었더니 다리가 져려오는 구만~"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="57" height="78">
+            <vector name="origin" x="23" y="78"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

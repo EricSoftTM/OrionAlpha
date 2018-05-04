@@ -1,0 +1,903 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="200.img">
+    <imgdir name="info">
+        <string name="bookName" value="마법사 입문서"/>
+        <canvas name="icon" width="26" height="30">
+            <vector name="origin" x="-4" y="30"/>
+        </canvas>
+    </imgdir>
+    <imgdir name="skill">
+        <imgdir name="2000000">
+            <canvas name="icon" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconMouseOver" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconDisabled" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="MP 회복력 향상"/>
+            <string name="desc" value="[마스터 레벨 : 16]\n10초마다 더욱 많은 양의 MP를 회복할 수 있다. 캐릭터의 레벨이 높고 스킬 레벨이 높을수록 한 번에 회복되는 양이 많다."/>
+            <imgdir name="level">
+                <imgdir name="1">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="2">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="3">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="4">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="5">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="6">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="7">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="8">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="9">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="10">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="11">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="12">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="13">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="14">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="15">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+                <imgdir name="16">
+                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                </imgdir>
+            </imgdir>
+        </imgdir>
+        <imgdir name="2000001">
+            <canvas name="icon" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconMouseOver" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconDisabled" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="MP 증가량 향상"/>
+            <string name="desc" value="[마스터 레벨 : 10]\nLevel UP 할 때, Max MP에 AP를 사용할 때 Max MP의 증가량을 향상시킨다."/>
+            <string name="helpFormat" value="MaxMP LevelUP시 %d, AP 부여시 %d 추가 향상"/>
+            <imgdir name="level">
+                <imgdir name="1">
+                    <string name="hs" value="MaxMP LevelUP시 2, AP 부여시 1 추가 향상"/>
+                    <int name="x" value="2"/>
+                    <int name="y" value="1"/>
+                </imgdir>
+                <imgdir name="2">
+                    <string name="hs" value="MaxMP LevelUP시 4, AP 부여시 2 추가 향상"/>
+                    <int name="x" value="4"/>
+                    <int name="y" value="2"/>
+                </imgdir>
+                <imgdir name="3">
+                    <string name="hs" value="MaxMP LevelUP시 6, AP 부여시 3 추가 향상"/>
+                    <int name="x" value="6"/>
+                    <int name="y" value="3"/>
+                </imgdir>
+                <imgdir name="4">
+                    <string name="hs" value="MaxMP LevelUP시 8, AP 부여시 4 추가 향상"/>
+                    <int name="x" value="8"/>
+                    <int name="y" value="4"/>
+                </imgdir>
+                <imgdir name="5">
+                    <string name="hs" value="MaxMP LevelUP시 10, AP 부여시 5 추가 향상"/>
+                    <int name="x" value="10"/>
+                    <int name="y" value="5"/>
+                </imgdir>
+                <imgdir name="6">
+                    <string name="hs" value="MaxMP LevelUP시 12, AP 부여시 6 추가 향상"/>
+                    <int name="x" value="12"/>
+                    <int name="y" value="6"/>
+                </imgdir>
+                <imgdir name="7">
+                    <string name="hs" value="MaxMP LevelUP시 14, AP 부여시 7 추가 향상"/>
+                    <int name="x" value="14"/>
+                    <int name="y" value="7"/>
+                </imgdir>
+                <imgdir name="8">
+                    <string name="hs" value="MaxMP LevelUP시 16, AP 부여시 8 추가 향상"/>
+                    <int name="x" value="16"/>
+                    <int name="y" value="8"/>
+                </imgdir>
+                <imgdir name="9">
+                    <string name="hs" value="MaxMP LevelUP시 18, AP 부여시 9 추가 향상"/>
+                    <int name="x" value="18"/>
+                    <int name="y" value="9"/>
+                </imgdir>
+                <imgdir name="10">
+                    <string name="hs" value="MaxMP LevelUP시 20, AP 부여시 10 추가 향상"/>
+                    <int name="x" value="20"/>
+                    <int name="y" value="10"/>
+                </imgdir>
+            </imgdir>
+            <imgdir name="req">
+                <int name="2000000" value="5"/>
+            </imgdir>
+        </imgdir>
+        <imgdir name="2001002">
+            <canvas name="icon" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconMouseOver" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconDisabled" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="매직 가드"/>
+            <string name="desc" value="[마스터 레벨 : 20]\n일정 시간동안 받는 데미지의 일정 수치를 MP로 대신한다. 다만 MP가 0일 경우에는 그대로 HP를 소비하게 된다."/>
+            <imgdir name="action">
+                <string name="0" value="alert2"/>
+            </imgdir>
+            <imgdir name="level">
+                <imgdir name="1">
+                    <string name="hs" value="30초간 MP 6 소비, 데미지의 4%를 MP로 대신함"/>
+                    <int name="time" value="30"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="4"/>
+                </imgdir>
+                <imgdir name="2">
+                    <string name="hs" value="60초간 MP 6 소비, 데미지의 8%를 MP로 대신함"/>
+                    <int name="time" value="60"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="8"/>
+                </imgdir>
+                <imgdir name="3">
+                    <string name="hs" value="90초간 MP 6 소비, 데미지의 12%를 MP로 대신함"/>
+                    <int name="time" value="90"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="12"/>
+                </imgdir>
+                <imgdir name="4">
+                    <string name="hs" value="120초간 MP 6 소비, 데미지의 16%를 MP로 대신함"/>
+                    <int name="time" value="120"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="16"/>
+                </imgdir>
+                <imgdir name="5">
+                    <string name="hs" value="150초간 MP 6 소비, 데미지의 20%를 MP로 대신함"/>
+                    <int name="time" value="150"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="20"/>
+                </imgdir>
+                <imgdir name="6">
+                    <string name="hs" value="180초간 MP 6 소비, 데미지의 24%를 MP로 대신함"/>
+                    <int name="time" value="180"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="24"/>
+                </imgdir>
+                <imgdir name="7">
+                    <string name="hs" value="210초간 MP 6 소비, 데미지의 28%를 MP로 대신함"/>
+                    <int name="time" value="210"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="28"/>
+                </imgdir>
+                <imgdir name="8">
+                    <string name="hs" value="240초간 MP 6 소비, 데미지의 32%를 MP로 대신함"/>
+                    <int name="time" value="240"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="32"/>
+                </imgdir>
+                <imgdir name="9">
+                    <string name="hs" value="270초간 MP 6 소비, 데미지의 36%를 MP로 대신함"/>
+                    <int name="time" value="270"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="36"/>
+                </imgdir>
+                <imgdir name="10">
+                    <string name="hs" value="300초간 MP 6 소비, 데미지의 40%를 MP로 대신함"/>
+                    <int name="time" value="300"/>
+                    <int name="mpCon" value="6"/>
+                    <int name="x" value="40"/>
+                </imgdir>
+                <imgdir name="11">
+                    <string name="hs" value="330초간 MP 12 소비, 데미지의 44%를 MP로 대신함"/>
+                    <int name="time" value="330"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="44"/>
+                </imgdir>
+                <imgdir name="12">
+                    <string name="hs" value="360초간 MP 12 소비, 데미지의 48%를 MP로 대신함"/>
+                    <int name="time" value="360"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="48"/>
+                </imgdir>
+                <imgdir name="13">
+                    <string name="hs" value="390초간 MP 12 소비, 데미지의 52%를 MP로 대신함"/>
+                    <int name="time" value="390"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="52"/>
+                </imgdir>
+                <imgdir name="14">
+                    <string name="hs" value="420초간 MP 12 소비, 데미지의 56%를 MP로 대신함"/>
+                    <int name="time" value="420"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="56"/>
+                </imgdir>
+                <imgdir name="15">
+                    <string name="hs" value="450초간 MP 12 소비, 데미지의 60%를 MP로 대신함"/>
+                    <int name="time" value="450"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="60"/>
+                </imgdir>
+                <imgdir name="16">
+                    <string name="hs" value="480초간 MP 12 소비, 데미지의 64%를 MP로 대신함"/>
+                    <int name="time" value="480"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="64"/>
+                </imgdir>
+                <imgdir name="17">
+                    <string name="hs" value="510초간 MP 12 소비, 데미지의 68%를 MP로 대신함"/>
+                    <int name="time" value="510"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="68"/>
+                </imgdir>
+                <imgdir name="18">
+                    <string name="hs" value="540초간 MP 12 소비, 데미지의 72%를 MP로 대신함"/>
+                    <int name="time" value="540"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="72"/>
+                </imgdir>
+                <imgdir name="19">
+                    <string name="hs" value="570초간 MP 12 소비, 데미지의 76%를 MP로 대신함"/>
+                    <int name="time" value="570"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="76"/>
+                </imgdir>
+                <imgdir name="20">
+                    <string name="hs" value="600초간 MP 12 소비, 데미지의 80%를 MP로 대신함"/>
+                    <int name="time" value="600"/>
+                    <int name="mpCon" value="12"/>
+                    <int name="x" value="80"/>
+                </imgdir>
+            </imgdir>
+            <imgdir name="effect">
+                <canvas name="0" width="32" height="37">
+                    <vector name="origin" x="16" y="118"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="1" width="30" height="42">
+                    <vector name="origin" x="16" y="124"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="2" width="37" height="37">
+                    <vector name="origin" x="21" y="120"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="3" width="40" height="42">
+                    <vector name="origin" x="26" y="124"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="4" width="41" height="54">
+                    <vector name="origin" x="25" y="118"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="5" width="41" height="74">
+                    <vector name="origin" x="27" y="122"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="6" width="43" height="76">
+                    <vector name="origin" x="27" y="116"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="7" width="44" height="87">
+                    <vector name="origin" x="30" y="122"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="8" width="44" height="80">
+                    <vector name="origin" x="28" y="118"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="9" width="39" height="83">
+                    <vector name="origin" x="25" y="124"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="10" width="40" height="67">
+                    <vector name="origin" x="24" y="120"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="100"/>
+                </canvas>
+                <canvas name="11" width="38" height="42">
+                    <vector name="origin" x="24" y="124"/>
+                    <int name="z" value="1"/>
+                    <int name="delay" value="100"/>
+                    <int name="a0" value="255"/>
+                    <int name="a1" value="0"/>
+                </canvas>
+            </imgdir>
+        </imgdir>
+        <imgdir name="2001003">
+            <canvas name="iconMouseOver" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="icon" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconDisabled" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="매직 아머"/>
+            <string name="desc" value="[마스터 레벨 : 20]\n일정 시간 갑옷에 마력을 응집시켜 물리 방어력을 상승시킨다."/>
+            <imgdir name="action">
+                <string name="0" value="alert2"/>
+            </imgdir>
+            <imgdir name="level">
+                <imgdir name="1">
+                    <string name="hs" value="20초간 MP 8 소비, 물리 방어력 2 증가"/>
+                    <int name="time" value="20"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="2"/>
+                </imgdir>
+                <imgdir name="2">
+                    <string name="hs" value="40초간 MP 8 소비, 물리 방어력 4 증가"/>
+                    <int name="time" value="40"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="4"/>
+                </imgdir>
+                <imgdir name="3">
+                    <string name="hs" value="60초간 MP 8 소비, 물리 방어력 6 증가"/>
+                    <int name="time" value="60"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="6"/>
+                </imgdir>
+                <imgdir name="4">
+                    <string name="hs" value="80초간 MP 8 소비, 물리 방어력 8 증가"/>
+                    <int name="time" value="80"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="8"/>
+                </imgdir>
+                <imgdir name="5">
+                    <string name="hs" value="100초간 MP 8 소비, 물리 방어력 10 증가"/>
+                    <int name="time" value="100"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="10"/>
+                </imgdir>
+                <imgdir name="6">
+                    <string name="hs" value="120초간 MP 8 소비, 물리 방어력 12 증가"/>
+                    <int name="time" value="120"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="12"/>
+                </imgdir>
+                <imgdir name="7">
+                    <string name="hs" value="140초간 MP 8 소비, 물리 방어력 14 증가"/>
+                    <int name="time" value="140"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="14"/>
+                </imgdir>
+                <imgdir name="8">
+                    <string name="hs" value="160초간 MP 8 소비, 물리 방어력 16 증가"/>
+                    <int name="time" value="160"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="16"/>
+                </imgdir>
+                <imgdir name="9">
+                    <string name="hs" value="180초간 MP 8 소비, 물리 방어력 18 증가"/>
+                    <int name="time" value="180"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="18"/>
+                </imgdir>
+                <imgdir name="10">
+                    <string name="hs" value="200초간 MP 8 소비, 물리 방어력 20 증가"/>
+                    <int name="time" value="200"/>
+                    <int name="mpCon" value="8"/>
+                    <int name="pdd" value="20"/>
+                </imgdir>
+                <imgdir name="11">
+                    <string name="hs" value="220초간 MP 16 소비, 물리 방어력 22 증가"/>
+                    <int name="time" value="220"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="22"/>
+                </imgdir>
+                <imgdir name="12">
+                    <string name="hs" value="240초간 MP 16 소비, 물리 방어력 24 증가"/>
+                    <int name="time" value="240"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="24"/>
+                </imgdir>
+                <imgdir name="13">
+                    <string name="hs" value="260초간 MP 16 소비, 물리 방어력 26 증가"/>
+                    <int name="time" value="260"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="26"/>
+                </imgdir>
+                <imgdir name="14">
+                    <string name="hs" value="280초간 MP 16 소비, 물리 방어력 28 증가"/>
+                    <int name="time" value="280"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="28"/>
+                </imgdir>
+                <imgdir name="15">
+                    <string name="hs" value="300초간 MP 16 소비, 물리 방어력 30 증가"/>
+                    <int name="time" value="300"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="30"/>
+                </imgdir>
+                <imgdir name="16">
+                    <string name="hs" value="320초간 MP 16 소비, 물리 방어력 32 증가"/>
+                    <int name="time" value="320"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="32"/>
+                </imgdir>
+                <imgdir name="17">
+                    <string name="hs" value="340초간 MP 16 소비, 물리 방어력 34 증가"/>
+                    <int name="time" value="340"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="34"/>
+                </imgdir>
+                <imgdir name="18">
+                    <string name="hs" value="360초간 MP 16 소비, 물리 방어력 36 증가"/>
+                    <int name="time" value="360"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="36"/>
+                </imgdir>
+                <imgdir name="19">
+                    <string name="hs" value="380초간 MP 16 소비, 물리 방어력 38 증가"/>
+                    <int name="time" value="380"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="38"/>
+                </imgdir>
+                <imgdir name="20">
+                    <string name="hs" value="400초간 MP 16 소비, 물리 방어력 40 증가"/>
+                    <int name="time" value="400"/>
+                    <int name="mpCon" value="16"/>
+                    <int name="pdd" value="40"/>
+                </imgdir>
+            </imgdir>
+            <imgdir name="req">
+                <int name="2001002" value="3"/>
+            </imgdir>
+        </imgdir>
+        <imgdir name="2001004">
+            <canvas name="icon" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconMouseOver" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconDisabled" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="에너지 볼트"/>
+            <string name="desc" value="[마스터 레벨 : 20]\nMP를 소비하여 적 하나를 공격한다."/>
+            <imgdir name="level">
+                <imgdir name="1">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 17, 숙련도 15%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="17"/>
+                    <int name="mastery" value="1"/>
+                </imgdir>
+                <imgdir name="2">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 19, 숙련도 15%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="19"/>
+                    <int name="mastery" value="1"/>
+                </imgdir>
+                <imgdir name="3">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 21, 숙련도 20%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="21"/>
+                    <int name="mastery" value="2"/>
+                </imgdir>
+                <imgdir name="4">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 23, 숙련도 20%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="23"/>
+                    <int name="mastery" value="2"/>
+                </imgdir>
+                <imgdir name="5">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 25, 숙련도 25%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="25"/>
+                    <int name="mastery" value="3"/>
+                </imgdir>
+                <imgdir name="6">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 27, 숙련도 25%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="27"/>
+                    <int name="mastery" value="3"/>
+                </imgdir>
+                <imgdir name="7">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 29, 숙련도 30%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="29"/>
+                    <int name="mastery" value="4"/>
+                </imgdir>
+                <imgdir name="8">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 31, 숙련도 30%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="31"/>
+                    <int name="mastery" value="4"/>
+                </imgdir>
+                <imgdir name="9">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 33, 숙련도 35%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="33"/>
+                    <int name="mastery" value="5"/>
+                </imgdir>
+                <imgdir name="10">
+                    <string name="hs" value="MP 7 소비, 기본 공격력 35, 숙련도 35%"/>
+                    <int name="mpCon" value="7"/>
+                    <int name="mad" value="35"/>
+                    <int name="mastery" value="5"/>
+                </imgdir>
+                <imgdir name="11">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 37, 숙련도 40%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="37"/>
+                    <int name="mastery" value="6"/>
+                </imgdir>
+                <imgdir name="12">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 39, 숙련도 40%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="39"/>
+                    <int name="mastery" value="6"/>
+                </imgdir>
+                <imgdir name="13">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 41, 숙련도 45%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="41"/>
+                    <int name="mastery" value="7"/>
+                </imgdir>
+                <imgdir name="14">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 43, 숙련도 45%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="43"/>
+                    <int name="mastery" value="7"/>
+                </imgdir>
+                <imgdir name="15">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 45, 숙련도 50%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="45"/>
+                    <int name="mastery" value="8"/>
+                </imgdir>
+                <imgdir name="16">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 47, 숙련도 50%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="47"/>
+                    <int name="mastery" value="8"/>
+                </imgdir>
+                <imgdir name="17">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 49, 숙련도 55%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="49"/>
+                    <int name="mastery" value="9"/>
+                </imgdir>
+                <imgdir name="18">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 51, 숙련도 55%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="51"/>
+                    <int name="mastery" value="9"/>
+                </imgdir>
+                <imgdir name="19">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 53, 숙련도 60%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="53"/>
+                    <int name="mastery" value="10"/>
+                </imgdir>
+                <imgdir name="20">
+                    <string name="hs" value="MP 14 소비, 기본 공격력 55, 숙련도 60%"/>
+                    <int name="mpCon" value="14"/>
+                    <int name="mad" value="55"/>
+                    <int name="mastery" value="10"/>
+                </imgdir>
+            </imgdir>
+            <imgdir name="ball">
+                <canvas name="0" width="33" height="33">
+                    <vector name="origin" x="16" y="16"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="80"/>
+                </canvas>
+                <canvas name="1" width="33" height="33">
+                    <vector name="origin" x="16" y="16"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="80"/>
+                </canvas>
+                <canvas name="2" width="33" height="33">
+                    <vector name="origin" x="16" y="16"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="80"/>
+                </canvas>
+                <canvas name="3" width="33" height="33">
+                    <vector name="origin" x="16" y="16"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="80"/>
+                </canvas>
+            </imgdir>
+            <imgdir name="hit">
+                <imgdir name="0">
+                    <canvas name="0" width="36" height="36">
+                        <vector name="origin" x="18" y="18"/>
+                        <int name="z" value="0"/>
+                        <int name="delay" value="80"/>
+                    </canvas>
+                    <canvas name="1" width="51" height="48">
+                        <vector name="origin" x="27" y="26"/>
+                        <int name="z" value="0"/>
+                        <int name="delay" value="80"/>
+                    </canvas>
+                    <canvas name="2" width="71" height="67">
+                        <vector name="origin" x="33" y="35"/>
+                        <int name="z" value="1"/>
+                        <int name="delay" value="80"/>
+                    </canvas>
+                </imgdir>
+                <imgdir name="1">
+                    <canvas name="0" width="36" height="36">
+                        <vector name="origin" x="18" y="18"/>
+                        <int name="z" value="0"/>
+                    </canvas>
+                    <canvas name="1" width="51" height="48">
+                        <vector name="origin" x="27" y="26"/>
+                        <int name="z" value="0"/>
+                    </canvas>
+                    <canvas name="2" width="73" height="64">
+                        <vector name="origin" x="31" y="35"/>
+                        <int name="z" value="0"/>
+                    </canvas>
+                </imgdir>
+            </imgdir>
+        </imgdir>
+        <imgdir name="2001005">
+            <canvas name="icon" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconMouseOver" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <canvas name="iconDisabled" width="32" height="32">
+                <vector name="origin" x="0" y="32"/>
+                <int name="z" value="0"/>
+            </canvas>
+            <string name="name" value="매직 클로"/>
+            <string name="desc" value="[마스터 레벨 : 20]\nMP를 소비하여 적 하나를 두 번 공격한다."/>
+            <imgdir name="level">
+                <imgdir name="1">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 6, 숙련도 15%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="6"/>
+                    <int name="mastery" value="1"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="2">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 7, 숙련도 15%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="7"/>
+                    <int name="mastery" value="1"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="3">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 8, 숙련도 20%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="8"/>
+                    <int name="mastery" value="2"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="4">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 9, 숙련도 20%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="9"/>
+                    <int name="mastery" value="2"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="5">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 10, 숙련도 25%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="10"/>
+                    <int name="mastery" value="3"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="6">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 12, 숙련도 25%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="12"/>
+                    <int name="mastery" value="3"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="7">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 14, 숙련도 30%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="14"/>
+                    <int name="mastery" value="4"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="8">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 16, 숙련도 30%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="16"/>
+                    <int name="mastery" value="4"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="9">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 18, 숙련도 35%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="18"/>
+                    <int name="mastery" value="5"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="10">
+                    <string name="hs" value="MP 10 소비, 기본 공격력 20, 숙련도 35%"/>
+                    <int name="mpCon" value="10"/>
+                    <int name="mad" value="20"/>
+                    <int name="mastery" value="5"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="11">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 22, 숙련도 40%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="22"/>
+                    <int name="mastery" value="6"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="12">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 24, 숙련도 40%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="24"/>
+                    <int name="mastery" value="6"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="13">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 26, 숙련도 45%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="26"/>
+                    <int name="mastery" value="7"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="14">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 28, 숙련도 45%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="28"/>
+                    <int name="mastery" value="7"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="15">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 30, 숙련도 50%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="30"/>
+                    <int name="mastery" value="8"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="16">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 32, 숙련도 50%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="32"/>
+                    <int name="mastery" value="8"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="17">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 34, 숙련도 55%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="34"/>
+                    <int name="mastery" value="9"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="18">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 36, 숙련도 55%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="36"/>
+                    <int name="mastery" value="9"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="19">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 38, 숙련도 60%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="38"/>
+                    <int name="mastery" value="10"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+                <imgdir name="20">
+                    <string name="hs" value="MP 20 소비, 기본 공격력 40, 숙련도 60%"/>
+                    <int name="mpCon" value="20"/>
+                    <int name="mad" value="40"/>
+                    <int name="mastery" value="10"/>
+                    <int name="attackCount" value="2"/>
+                </imgdir>
+            </imgdir>
+            <imgdir name="req">
+                <int name="2001004" value="1"/>
+            </imgdir>
+            <imgdir name="hit">
+                <imgdir name="0">
+                    <canvas name="0" width="78" height="72">
+                        <vector name="origin" x="39" y="36"/>
+                        <int name="z" value="0"/>
+                        <int name="delay" value="120"/>
+                    </canvas>
+                    <canvas name="1" width="77" height="78">
+                        <vector name="origin" x="48" y="32"/>
+                        <int name="z" value="0"/>
+                        <int name="delay" value="90"/>
+                    </canvas>
+                    <canvas name="2" width="83" height="94">
+                        <vector name="origin" x="55" y="49"/>
+                        <int name="z" value="0"/>
+                        <int name="delay" value="120"/>
+                    </canvas>
+                    <canvas name="3" width="77" height="78">
+                        <vector name="origin" x="42" y="43"/>
+                        <int name="z" value="0"/>
+                        <int name="delay" value="90"/>
+                    </canvas>
+                    <canvas name="4" width="77" height="78">
+                        <vector name="origin" x="31" y="34"/>
+                        <int name="z" value="0"/>
+                        <int name="delay" value="150"/>
+                    </canvas>
+                </imgdir>
+            </imgdir>
+            <imgdir name="effect">
+                <canvas name="0" width="87" height="87">
+                    <vector name="origin" x="43" y="73"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="80"/>
+                </canvas>
+                <canvas name="1" width="73" height="79">
+                    <vector name="origin" x="39" y="69"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="80"/>
+                </canvas>
+                <canvas name="2" width="63" height="79">
+                    <vector name="origin" x="39" y="69"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="80"/>
+                </canvas>
+                <canvas name="3" width="56" height="77">
+                    <vector name="origin" x="39" y="69"/>
+                    <int name="z" value="0"/>
+                    <int name="delay" value="80"/>
+                </canvas>
+            </imgdir>
+        </imgdir>
+    </imgdir>
+</imgdir>

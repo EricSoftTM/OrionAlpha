@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="01002186.img">
+    <imgdir name="info">
+        <canvas name="icon" width="27" height="27">
+            <vector name="origin" x="-3" y="27"/>
+        </canvas>
+        <canvas name="iconRaw" width="25" height="20">
+            <vector name="origin" x="-3" y="27"/>
+        </canvas>
+        <string name="name" value="투명 모자"/>
+        <string name="islot" value="Cp"/>
+        <string name="vslot" value="Cp"/>
+        <int name="reqJob" value="0"/>
+        <int name="reqLevel" value="5"/>
+        <int name="reqSTR" value="0"/>
+        <int name="reqDEX" value="0"/>
+        <int name="reqINT" value="0"/>
+        <int name="reqLUK" value="0"/>
+        <int name="cash" value="1"/>
+        <string name="desc" value="현재 쓰고 있는 모자의 기능을 모두 사용하면서 가려지지 않은 머리 모양을 보여주고 싶을때 사용해 보세요."/>
+    </imgdir>
+</imgdir>

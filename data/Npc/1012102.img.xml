@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1012102.img">
+    <imgdir name="info">
+        <string name="name" value="피아"/>
+        <string name="quest" value="pia"/>
+        <imgdir name="speak">
+            <string name="0" value="온몸이 근질근질 하네~"/>
+            <string name="1" value="으악~ 이놈이 날 잡아먹고 있다아~"/>
+            <string name="2" value="아~ 폭신한게 좋은걸~"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <int name="zigzag" value="1"/>
+        <canvas name="0" width="53" height="58">
+            <vector name="origin" x="26" y="58"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="500"/>
+        </canvas>
+        <canvas name="1" width="53" height="58">
+            <vector name="origin" x="26" y="58"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="500"/>
+        </canvas>
+        <canvas name="2" width="53" height="58">
+            <vector name="origin" x="26" y="58"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="4000"/>
+        </canvas>
+    </imgdir>
+</imgdir>

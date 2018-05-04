@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1022003.img">
+    <imgdir name="info">
+        <string name="name" value="선더"/>
+        <string name="quest" value="refine_perion"/>
+        <imgdir name="speak">
+            <string name="0" value="내가 만들지 못하는 물건은 하나도 없지. 하하~"/>
+            <string name="1" value="보석이나 광석을 가지고 있나? 어디 한번 보여줘봐!"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="56" height="73">
+            <vector name="origin" x="28" y="73"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

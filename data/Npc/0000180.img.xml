@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="0000180.img">
+    <imgdir name="info">
+        <string name="name" value="에블라"/>
+        <string name="quest" value="magician"/>
+        <imgdir name="speak">
+            <string name="0" value="엠블라라는 고명한 학자를 알고 있어? 그분과 이름이 비슷해서 착각하는 사람들이 있더라구."/>
+            <string name="1" value="이 부근의 치안을 담당하고 있지만 이렇게 조용해서야 원..."/>
+            <string name="2" value="당신도 말썽 일으키지 않도록 행동 조심해."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="58" height="85">
+            <vector name="origin" x="26" y="85"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="500"/>
+        </canvas>
+    </imgdir>
+</imgdir>

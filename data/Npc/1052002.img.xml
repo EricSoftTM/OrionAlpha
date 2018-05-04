@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="1052002.img">
+    <imgdir name="info">
+        <string name="name" value="뒷골목의 제이엠"/>
+        <string name="quest" value="refine_kerning"/>
+        <imgdir name="speak">
+            <string name="0" value="음... 잠깐 나좀 볼까...?"/>
+            <string name="1" value="으흐흐... 네가 필요한 물건... 전부 가지고 있어."/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="stand">
+        <canvas name="0" width="57" height="69">
+            <vector name="origin" x="28" y="69"/>
+            <int name="z" value="0"/>
+        </canvas>
+    </imgdir>
+</imgdir>

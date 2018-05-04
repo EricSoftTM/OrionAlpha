@@ -1,0 +1,949 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="swordOS.img">
+    <imgdir name="0">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="1">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="2">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="3">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="4">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="5">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="6">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="7">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="8">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="9">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="90" height="51">
+                    <vector name="origin" x="92" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-51"/>
+            <vector name="rb" x="-11" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="79" height="63">
+                    <vector name="origin" x="70" y="56"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="77" height="40">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="86" height="44">
+                    <vector name="origin" x="108" y="43"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="33"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="74" y="33"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="35" height="20">
+                    <vector name="origin" x="55" y="32"/>
+                </canvas>
+                <canvas name="1" width="35" height="20">
+                    <vector name="origin" x="70" y="31"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-70" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="48" height="29">
+                    <vector name="origin" x="83" y="36"/>
+                </canvas>
+                <canvas name="1" width="48" height="29">
+                    <vector name="origin" x="98" y="36"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-95" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="49" height="28">
+                    <vector name="origin" x="50" y="20"/>
+                </canvas>
+                <canvas name="1" width="49" height="28">
+                    <vector name="origin" x="66" y="20"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+    <imgdir name="10">
+        <imgdir name="swingO1">
+            <imgdir name="2">
+                <canvas name="0" width="92" height="65">
+                    <vector name="origin" x="92" y="69"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-85" y="-58"/>
+            <vector name="rb" x="-9" y="-11"/>
+        </imgdir>
+        <imgdir name="swingO2">
+            <imgdir name="2">
+                <canvas name="0" width="89" height="69">
+                    <vector name="origin" x="79" y="58"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-64" y="-50"/>
+            <vector name="rb" x="5" y="2"/>
+        </imgdir>
+        <imgdir name="swingO3">
+            <imgdir name="2">
+                <canvas name="0" width="78" height="46">
+                    <vector name="origin" x="84" y="49"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-78" y="-41"/>
+            <vector name="rb" x="-18" y="-14"/>
+        </imgdir>
+        <imgdir name="swingOF">
+            <imgdir name="3">
+                <canvas name="0" width="91" height="48">
+                    <vector name="origin" x="109" y="44"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-100" y="-35"/>
+            <vector name="rb" x="-20" y="-6"/>
+        </imgdir>
+        <imgdir name="stabO1">
+            <imgdir name="1">
+                <canvas name="0" width="48" height="31">
+                    <vector name="origin" x="63" y="38"/>
+                </canvas>
+                <canvas name="1" width="48" height="31">
+                    <vector name="origin" x="83" y="38"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-74" y="-28"/>
+            <vector name="rb" x="-27" y="-18"/>
+        </imgdir>
+        <imgdir name="stabO2">
+            <imgdir name="1">
+                <canvas name="0" width="48" height="31">
+                    <vector name="origin" x="65" y="38"/>
+                </canvas>
+                <canvas name="1" width="48" height="31">
+                    <vector name="origin" x="85" y="38"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-77" y="-26"/>
+            <vector name="rb" x="-27" y="-15"/>
+        </imgdir>
+        <imgdir name="stabOF">
+            <imgdir name="2">
+                <canvas name="0" width="56" height="37">
+                    <vector name="origin" x="95" y="42"/>
+                </canvas>
+                <canvas name="1" width="56" height="37">
+                    <vector name="origin" x="115" y="42"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-106" y="-30"/>
+            <vector name="rb" x="-42" y="-12"/>
+        </imgdir>
+        <imgdir name="proneStab">
+            <imgdir name="1">
+                <canvas name="0" width="48" height="31">
+                    <vector name="origin" x="55" y="19"/>
+                </canvas>
+                <canvas name="1" width="48" height="31">
+                    <vector name="origin" x="71" y="19"/>
+                </canvas>
+            </imgdir>
+            <vector name="lt" x="-66" y="-12"/>
+            <vector name="rb" x="-12" y="0"/>
+        </imgdir>
+    </imgdir>
+</imgdir>

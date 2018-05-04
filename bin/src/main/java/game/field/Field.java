@@ -259,7 +259,7 @@ public class Field {
                 // dropPool.onEnter
                 if (!splitRegisterFieldObj(user.getCurrentPosition().x, user.getCurrentPosition().y, 0, user)) {
                     Logger.logError("Incorrect field position [%09d]", field);
-                    //return false;
+                    return false;
                 }
                 splitRegisterUser(null, user.getSplit(), user);
                 user.setPosMap(this.field);
@@ -304,6 +304,62 @@ public class Field {
     
     public void setMapSize(Size sz) {
         this.map = sz;
+    }
+
+    public void setFieldReturn(int fieldReturn) {
+        this.fieldReturn = fieldReturn;
+    }
+
+    public void setForcedReturn(int forcedReturn) {
+        this.forcedReturn = forcedReturn;
+    }
+
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
+
+    public void setMapName(String mapName) {
+        this.mapName = mapName;
+    }
+
+    public void setMobRate(double mobRate) {
+        this.mobRate = mobRate;
+    }
+
+    public void setRecoveryRate(double recoveryRate) {
+        this.recoveryRate = recoveryRate;
+    }
+
+    public void setOption(int option) {
+        this.option = option;
+    }
+
+    public void setAutoDecHP(int autoDecHP) {
+        this.autoDecHP = autoDecHP;
+    }
+
+    public void setAutoDecMP(int autoDecMP) {
+        this.autoDecMP = autoDecMP;
+    }
+
+    public void setTown(boolean town) {
+        this.town = town;
+    }
+
+    public void setClock(boolean clock) {
+        this.clock = clock;
+    }
+
+    public void setSwim(boolean swim) {
+        this.swim = swim;
+    }
+
+    public void setIncRateEXP(double incRateEXP) {
+        this.incRateEXP = incRateEXP;
+    }
+
+    public void setIncRateDrop(double incRateDrop) {
+        this.incRateDrop = incRateDrop;
     }
     
     public FieldSplit splitFromPoint(int x, int y) {

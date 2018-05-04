@@ -74,6 +74,19 @@ public class FieldMan {
         final Field field = new Field(fieldID);
         
         WzProperty info = mapData.getNode("info");
+        field.setForcedReturn(WzUtil.getInt32(info.getNode("returnMap"), Field.Invalid));
+        field.setForcedReturn(WzUtil.getInt32(info.getNode("forcedReturn"), Field.Invalid));
+        field.setMobRate(WzUtil.getFloat(info.getNode("mobRate"), 1.0f));
+        field.setRecoveryRate(WzUtil.getFloat(info.getNode("recovery"), 1.0f));
+        field.setStreetName(WzUtil.getString(info.getNode("streetName"), "NULL"));
+        field.setMapName(WzUtil.getString(info.getNode("mapName"), "NULL"));
+        field.setOption(WzUtil.getInt32(info.getNode("fieldLimit"), 0));
+        field.setAutoDecHP(WzUtil.getInt32(info.getNode("autoDecHP"), 0));
+        field.setAutoDecMP(WzUtil.getInt32(info.getNode("autoDecMP"), 0));
+        field.setClock(WzUtil.getBoolean(info.getNode("clock"), false));
+        field.setTown(WzUtil.getBoolean(info.getNode("town"), false));
+        field.setSwim(WzUtil.getBoolean(info.getNode("swim"), false));
+        
         
         restoreFoothold(field, mapData.getNode("foothold"), mapData.getNode("ladderRope"), info);
         //restoreArea(field, mapData.getNode("area"));

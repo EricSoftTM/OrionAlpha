@@ -249,19 +249,47 @@ public class WvsPhysicalSpace2D {
             for (WzProperty page : propFoothold.getChildNodes()) {
                 for (WzProperty massFoothold : page.getChildNodes()) {
                     for (WzProperty foothold : massFoothold.getChildNodes()) {
-                        // TODO: Load all x/y/sn properties
+                        int x0 = WzUtil.getInt32(foothold.getNode("x1"), 0);
+                        int y0 = WzUtil.getInt32(foothold.getNode("y1"), 0);
+                        int x1 = WzUtil.getInt32(foothold.getNode("x2"), 0);
+                        int y1 = WzUtil.getInt32(foothold.getNode("y2"), 0);
+                        int drag = WzUtil.getInt32(foothold.getNode("drag"), 0);
+                        int force = WzUtil.getInt32(foothold.getNode("force"), 0);
+                        int snPrev = WzUtil.getInt32(foothold.getNode("prev"), 0);
+                        int snNext = WzUtil.getInt32(foothold.getNode("next"), 0);
                         
                         StaticFoothold pfh = new StaticFoothold();
                         pfh.setSN(Integer.valueOf(foothold.getNodeName()));
+                        pfh.setX1(x0);
+                        pfh.setY1(y0);
+                        pfh.setX2(x1);
+                        pfh.setY2(y1);
                         pfh.setPage(Integer.valueOf(page.getNodeName()));
                         pfh.setZMass(Integer.valueOf(massFoothold.getNodeName()));
+                        pfh.setSnPrev(snPrev);
+                        pfh.setSnNext(snNext);
+                        if (drag > 0)
+                            pfh.getAttrFoothold().setDrag((double) drag * 0.01d);
+                        if (force > 0)
+                            pfh.getAttrFoothold().setForce((double) force * 0.01d);
                         pfh.validateVectorInfo();
                         footholds.put(pfh.getSN(), pfh);
                         while (massRange.size() <= pfh.getZMass()) {
                             massRange.add(new Range(Integer.MAX_VALUE, Integer.MIN_VALUE));
                         }
                         
-                        // TODO: Handle final MBR adjustments
+                        int xMin = Math.min(x0, x1);
+                        int xMax = Math.max(x0, x1);
+                        int yMin = Math.min(y0, y1);
+                        int yMax = Math.max(y0, y1);
+                        if (mbr.left > xMin + 30)
+                            mbr.left = xMin + 30;
+                        if (mbr.right < xMax - 30)
+                            mbr.right = xMax - 30;
+                        if (mbr.top > yMin - 300)
+                            mbr.top = yMin - 300;
+                        if (mbr.bottom < yMax + 10)
+                            mbr.bottom = yMax + 10;
                     }
                 }
             }

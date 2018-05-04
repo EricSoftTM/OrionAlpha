@@ -84,6 +84,7 @@ public class ItemSlotEquip extends ItemSlotBase {
     
     @Override
     public void rawEncode(OutPacket packet) {
+        super.rawEncode(packet);
         packet.encodeByte(ruc);
         packet.encodeByte(cuc);
         packet.encodeShort(iSTR);

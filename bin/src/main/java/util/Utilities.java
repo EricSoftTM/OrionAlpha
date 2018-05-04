@@ -63,4 +63,18 @@ public class Utilities {
         str.deleteCharAt(str.length() - 1);
         return str.toString();
     }
+    
+    public static final Long inet_aton(String inp) {
+        Long dwIP = 0L;
+        String[] aIP = inp.split("\\.");
+        
+        for (int i = 0; i < 4; i++) {
+            dwIP += Long.parseLong(aIP[i]) << (i * 8);
+        }
+        return dwIP;
+    }
+    
+    public static final String inet_ntoa(long netaddr) {
+        return (netaddr & 0xFF) + "." + ((netaddr >> 8) & 0xFF) + "." + ((netaddr >> 16) & 0xFF) + "." + ((netaddr >> 24) & 0xFF);
+    }
 }

@@ -18,6 +18,7 @@
 package login.user.client;
 
 import common.OrionConfig;
+import common.user.CharacterData;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -50,6 +51,7 @@ import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 import network.security.XORCipher;
 import util.Logger;
+import util.Utilities;
 
 /**
  *
@@ -347,9 +349,9 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     
     public void onSelectCharacter(InPacket packet) {
         if (loginState == 8) {
-            int characterId = packet.decodeInt();
+            characterID = packet.decodeInt();
             
-            if (!characters.containsKey(characterId)) {
+            if (!characters.containsKey(characterID)) {
                 closeSocket();
                 return;
             }
@@ -358,7 +360,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             if (pWorld != null) {
                 loginState = 9;
                 
-                sendPacket(LoginPacket.onSelectCharacterResult((byte) 1, inet_aton("127.0.0.1").intValue(), (short) 8585, characterID), false);
+                // TODO: Handle addresses for each WorldEntry.
+                sendPacket(LoginPacket.onSelectCharacterResult((byte) 1, Utilities.inet_aton("127.0.0.1").intValue(), (short) 8585, characterID), false);
             }
         } else {
             postClose();
@@ -371,11 +374,13 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         
         WorldEntry pWorld = LoginApp.getInstance().getWorld(worldID);
         if (pWorld != null) {
-            List<Avatar> avatars = new ArrayList<>();
-            LoginDB.rawLoadAvatar(this.accountID, this.worldID, avatars);
+            List<Integer> characterId = new ArrayList<>();
+            int count = LoginDB.rawGetWorldCharList(this.accountID, this.worldID, characterId);
             
-            for (Avatar avatar : avatars) {
-                characters.put(avatar.getCharacterStat().getCharacterID(), avatar.getCharacterStat().getName());
+            List<CharacterData> avatars = new ArrayList<>();
+            for (int i = 0; i < count; i++) {
+                avatars.add(LoginDB.rawLoadCharacter(characterId.get(i)));
+                characters.put(characterId.get(i), avatars.get(i).getCharacterStat().getName());
             }
             
             loginState = 8;
@@ -533,19 +538,5 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         OutPacket packet = new OutPacket(LoopbackPacket.AliveReq);
         packet.encodeInt(time);
         return packet;
-    }
-    
-    public static final Long inet_aton(String inp) {
-        Long dwIP = 0L;
-        String[] aIP = inp.split("\\.");
-        
-        for (int i = 0; i < 4; i++) {
-            dwIP += Long.parseLong(aIP[i]) << (i * 8);
-        }
-        return dwIP;
-    }
-    
-    public static final String inet_ntoa(long netaddr) {
-        return (netaddr & 0xFF) + "." + ((netaddr >> 8) & 0xFF) + "." + ((netaddr >> 16) & 0xFF) + "." + ((netaddr >> 24) & 0xFF);
     }
 }

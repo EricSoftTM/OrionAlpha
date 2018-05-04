@@ -18,6 +18,10 @@
 package network.database;
 
 import common.OrionConfig;
+import common.item.ItemSlotEquip;
+import common.item.ItemType;
+import common.user.CharacterData;
+import common.user.DBChar;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,6 +30,7 @@ import java.util.List;
 import login.avatar.Avatar;
 import login.user.client.ClientSocket;
 import network.security.BCrypt;
+import util.FileTime;
 
 /**
  * Login DB Processing
@@ -38,7 +43,7 @@ public class LoginDB {
         int retCode = 1; //Success
         
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE LoginID = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` WHERE `LoginID` = ?")) {
                 ps.setString(1, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -73,7 +78,7 @@ public class LoginDB {
         int retCode = 1; //Success
         
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT ConnectIP FROM userconnection WHERE AccountID = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `ConnectIP` FROM `userconnection` WHERE `AccountID` = ?")) {
                 ps.setInt(1, accountID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -89,6 +94,107 @@ public class LoginDB {
         return retCode;
     }
     
+    public static int rawGetEveryWorldCharList(int accountID, List<Integer> worldID, List<Integer> characterID) {
+        int count = 0;
+        
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `WorldID`, `CharacterID` FROM `character` WHERE `AccountID` = ?")) {
+                ps.setInt(1, accountID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        worldID.add(rs.getInt("WorldID"));
+                        characterID.add(rs.getInt("CharacterID"));
+                        count++;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        
+        return count;
+    }
+    
+    public static void rawGetInventorySize(int characterID, CharacterData cd) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `inventorysize` WHERE `CharacterID` = ?")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        String[] types = {"Equip", "Consume", "Install", "Etc" };
+                        for (int i = 1; i <= types.length; i++) {
+                            int count = rs.getInt(String.format("%sCount", types[i - 1]));
+                            for (int j = 0; j <= count; j++) {
+                                cd.getItemSlot(i).add(j, null);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public static void rawGetItemEquip(int characterID, CharacterData cd) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemslotequip` WHERE `CharacterID` = ? ORDER BY `SN`")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int itemID = rs.getInt("ItemID");
+                        int pos = rs.getInt("POS");
+                        
+                        ItemSlotEquip item = new ItemSlotEquip(itemID);
+                        item.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpireDate")));
+                        item.ruc = rs.getByte("RUC");
+                        item.cuc = rs.getByte("CUC");
+                        item.iSTR = rs.getShort("I_STR");
+                        item.iDEX = rs.getShort("I_DEX");
+                        item.iINT = rs.getShort("I_INT");
+                        item.iLUK = rs.getShort("I_LUK");
+                        item.iMaxHP = rs.getShort("I_MaxHP");
+                        item.iMaxMP = rs.getShort("I_MaxMP");
+                        item.iPAD = rs.getShort("I_PAD");
+                        item.iMAD = rs.getShort("I_MAD");
+                        item.iPDD = rs.getShort("I_PDD");
+                        item.iMDD = rs.getShort("I_MDD");
+                        item.iACC = rs.getShort("I_ACC");
+                        item.iEVA = rs.getShort("I_EVA");
+                        item.iCraft = rs.getShort("I_Craft");
+                        item.iSpeed = rs.getShort("I_Speed");
+                        item.iJump = rs.getShort("I_Jump");
+                        
+                        cd.setItem(ItemType.Equip, pos, item);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public static int rawGetWorldCharList(int accountID, int worldID, List<Integer> characterID) {
+        int count = 0;
+        
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `CharacterID` FROM `character` WHERE `AccountID` = ? AND `WorldID` = ?")) {
+                ps.setInt(1, accountID);
+                ps.setInt(2, worldID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        characterID.add(rs.getInt("CharacterID"));
+                        count++;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        
+        return count;
+    }
+    
     public static void rawLoadAvatar(int accountID, int worldID, List<Avatar> avatars) {
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `AccountID` = ? AND `WorldID` = ?")) {
@@ -97,29 +203,7 @@ public class LoginDB {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Avatar avatar = new Avatar();
-                        avatar.getCharacterStat().setCharacterID(rs.getInt("CharacterID"));
-                        avatar.getCharacterStat().setName(rs.getString("CharacterName"));
-                        avatar.getCharacterStat().setGender(rs.getByte("Gender"));
-                        avatar.getCharacterStat().setSkin(rs.getByte("Skin"));
-                        avatar.getCharacterStat().setFace(rs.getInt("Face"));
-                        avatar.getCharacterStat().setHair(rs.getInt("Hair"));
-                        avatar.getCharacterStat().setLevel(rs.getByte("Level"));
-                        avatar.getCharacterStat().setJob(rs.getShort("Job"));
-                        avatar.getCharacterStat().setSTR(rs.getShort("STR"));
-                        avatar.getCharacterStat().setDEX(rs.getShort("DEX"));
-                        avatar.getCharacterStat().setINT(rs.getShort("INT"));
-                        avatar.getCharacterStat().setLUK(rs.getShort("LUK"));
-                        avatar.getCharacterStat().setHP(rs.getShort("HP"));
-                        avatar.getCharacterStat().setMP(rs.getShort("MP"));
-                        avatar.getCharacterStat().setMHP(rs.getShort("MaxHP"));
-                        avatar.getCharacterStat().setMMP(rs.getShort("MaxMP"));
-                        avatar.getCharacterStat().setAP(rs.getShort("AP"));
-                        avatar.getCharacterStat().setSP(rs.getShort("SP"));
-                        avatar.getCharacterStat().setEXP(rs.getInt("EXP"));
-                        avatar.getCharacterStat().setPOP(rs.getShort("POP"));
-                        avatar.getCharacterStat().setMoney(rs.getInt("Money"));
-                        avatar.getCharacterStat().setPosMap(rs.getInt("Map"));
-                        avatar.getCharacterStat().setPortal(rs.getByte("Portal"));
+                        avatar.getCharacterStat().load(rs);
                         
                         avatar.load(accountID, avatar.getCharacterStat().getCharacterID());
                         
@@ -130,5 +214,28 @@ public class LoginDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
+    }
+    
+    public static CharacterData rawLoadCharacter(int characterID) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            CharacterData cd = new CharacterData();
+            // Load Stats
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `CharacterID` = ?")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        cd.load(rs, DBChar.Character);
+                    }
+                }
+            }
+            // Load Items
+            rawGetInventorySize(characterID, cd);
+            rawGetItemEquip(characterID, cd);
+            return cd;
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        
+        return null;
     }
 }

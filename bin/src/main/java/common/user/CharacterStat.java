@@ -17,6 +17,8 @@
  */
 package common.user;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicInteger;
 import network.packet.OutPacket;
 
@@ -173,7 +175,33 @@ public class CharacterStat {
         return portal;
     }
     
-    public void setCharacterID(int characterID) {
+    public void load(ResultSet rs) throws SQLException {
+        setCharacterID(rs.getInt("CharacterID"));
+        setName(rs.getString("CharacterName"));
+        setGender(rs.getByte("Gender"));
+        setSkin(rs.getByte("Skin"));
+        setFace(rs.getInt("Face"));
+        setHair(rs.getInt("Hair"));
+        setLevel(rs.getByte("Level"));
+        setJob(rs.getShort("Job"));
+        setSTR(rs.getShort("STR"));
+        setDEX(rs.getShort("DEX"));
+        setINT(rs.getShort("INT"));
+        setLUK(rs.getShort("LUK"));
+        setHP(rs.getShort("HP"));
+        setMP(rs.getShort("MP"));
+        setMHP(rs.getShort("MaxHP"));
+        setMMP(rs.getShort("MaxMP"));
+        setAP(rs.getShort("AP"));
+        setSP(rs.getShort("SP"));
+        setEXP(rs.getInt("EXP"));
+        setPOP(rs.getShort("POP"));
+        setMoney(rs.getInt("Money"));
+        setPosMap(rs.getInt("Map"));
+        setPortal(rs.getByte("Portal"));
+    }
+    
+    private void setCharacterID(int characterID) {
         this.characterID = characterID;
     }
 

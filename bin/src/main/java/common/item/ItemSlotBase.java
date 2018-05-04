@@ -42,22 +42,22 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
      * as it is only to be used for Cloning an item, or 
      * Decoding a item from a remote server (Center/Login/etc)
      * 
-     * @param nSlotType The ItemSlotType of the item to construct
+     * @param slotType The ItemSlotType of the item to construct
      * @return A new constructed Item type base
      */
-    public static ItemSlotBase CreateItem(int nSlotType) {
-        ItemSlotBase pItem = null;
-        switch (nSlotType) {
+    public static ItemSlotBase CreateItem(int slotType) {
+        ItemSlotBase item = null;
+        switch (slotType) {
             case ItemSlotType.Equip:
-                pItem = new ItemSlotEquip(0);
+                item = new ItemSlotEquip(0);
                 break;
             case ItemSlotType.Bundle:
-                pItem = new ItemSlotBundle(0);
+                item = new ItemSlotBundle(0);
                 break;
             case ItemSlotType.Pet:
                 break;
         }
-        return pItem;
+        return item;
     }
     
     public String dumpString() {
@@ -66,13 +66,11 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
     
     /**
      * Encodes, or writes, the current item's information
-     * into the OutPacket buffer. This function will
-     * additionally encode the item's Slot Type.
+     * into the OutPacket buffer. 
      * 
      * @param packet The OutPacket buffer
      */
     public void encode(OutPacket packet) {
-        packet.encodeByte(getType());
         rawEncode(packet);
     }
     
@@ -104,15 +102,15 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
      * continue to compare each individual 
      * equipment stats to determine equality.
      * 
-     * @param pSrc The item to compare
+     * @param src The item to compare
      * @return If the two items are the same
      */
-    public boolean isSameItem(ItemSlotBase pSrc) {
-        if (this.itemID != pSrc.itemID || this.cashItemSN != pSrc.cashItemSN || this.dateExpire != pSrc.dateExpire) {
+    public boolean isSameItem(ItemSlotBase src) {
+        if (this.itemID != src.itemID || this.cashItemSN != src.cashItemSN || this.dateExpire != src.dateExpire) {
             return false;
         } else {
-            if (pSrc.getType() == ItemSlotType.Equip) {
-                return ((ItemSlotEquip) this).isSameEquipItem((ItemSlotEquip) pSrc);
+            if (src.getType() == ItemSlotType.Equip) {
+                return ((ItemSlotEquip) this).isSameEquipItem((ItemSlotEquip) src);
             } else {
                 return true;
             }
@@ -134,10 +132,10 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
         if (cashItemSN > 0) {
             packet.encodeBool(true);
             packet.encodeLong(cashItemSN);
+            packet.encodeFileTime(dateExpire);
         } else {
             packet.encodeBool(false);
         }
-        packet.encodeFileTime(dateExpire);
     }
     
     public void setItemID(int itemID) {
@@ -178,7 +176,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
      * @return 
      */
     public abstract short getItemNumber();
-    public abstract void setItemNumber(short nNumber);
+    public abstract void setItemNumber(short number);
     
     /**
      * A base will include a generated CashItemSN,

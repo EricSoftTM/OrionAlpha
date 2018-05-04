@@ -21,26 +21,14 @@ package common.item;
  *
  * @author Eric
  */
-public class BodyPart {
+public class ItemType {
     public static final int
-            BP_BEGIN    = 0,
-            Hair        = 0,
-            Cap         = 1,
-            FaceAcc     = 2,
-            EyeAcc      = 3,
-            EarAcc      = 4,
-            Clothes     = 5,
-            Pants       = 6,
-            Shoes       = 7,
-            Gloves      = 8,
-            Cape        = 9,
-            Shield      = 10,
-            Weapon      = 11,
-            Ring1       = 12,
-            Ring2       = 13,
-            PetWear     = 14,
-            BP_Count    = 14,
-            BP_END      = 15,
-            Sticker     = 100
+            // ItemType
+            NotDefine       = 0,
+            Equip           = 1,
+            Consume         = 2,
+            Install         = 3,
+            Etc             = 4,
+            NO              = 5
     ;
 }

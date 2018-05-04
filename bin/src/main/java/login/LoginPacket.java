@@ -17,6 +17,8 @@
  */
 package login;
 
+import common.user.CharacterData;
+import common.user.DBChar;
 import java.util.List;
 import login.avatar.Avatar;
 import login.user.client.ClientSocket;
@@ -51,15 +53,15 @@ public class LoginPacket {
         return packet;
     }
     
-    public static OutPacket onSelectWorldResult(int msg, List<Avatar> avatars) {
+    public static OutPacket onSelectWorldResult(int msg, List<CharacterData> characters) {
         OutPacket packet = new OutPacket(LoopbackPacket.SelectWorldResult);
         packet.encodeByte(msg);
         if (msg == 1) {
-            packet.encodeInt(0); // Unknown
+            packet.encodeInt(1); // Unknown
             
-            packet.encodeByte(avatars.size());
-            for (Avatar avatar : avatars) {
-                avatar.encode(packet);
+            packet.encodeByte(characters.size());
+            for (CharacterData cd : characters) {
+                cd.encode(packet, (byte) (DBChar.Character | DBChar.ItemSlotEquip));
             }
         }
         return packet;

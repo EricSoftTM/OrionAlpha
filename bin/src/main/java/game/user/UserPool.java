@@ -33,7 +33,7 @@ public class UserPool {
         packet.encodeString(user.getCharacterName());
         packet.encodeByte(0);
         
-        user.getSecondaryStat().encodeForRemote(packet);
+        user.getSecondaryStat().encodeForRemote(packet, 0);
         
         packet.encodeInt(0);
         packet.encodeInt(0);

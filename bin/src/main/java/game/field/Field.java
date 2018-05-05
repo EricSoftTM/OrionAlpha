@@ -571,6 +571,7 @@ public class Field {
     }
     
     public void update(long time) {
-        
+        //lifePool.update(time);
+        dropPool.tryExpire(false);
     }
 }

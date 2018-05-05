@@ -39,10 +39,7 @@ public class UserPool {
         packet.encodeInt(0);
         packet.encodeInt(0);
         
-        // AvatarLook Encoding
-        // while (CInPacket::Decode1() != -1) { -> BodyPart
-        //      CInPacket::Decode4() -> ItemID
-        packet.encodeByte(-1);
+        user.getAvatarLook().encode(packet);
         
         packet.encodeInt(0);
         packet.encodeShort(user.getCurrentPosition().x);

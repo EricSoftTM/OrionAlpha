@@ -33,7 +33,7 @@ public class ClientPacket {
             DeleteCharacter = 7,
             AliveAck = 8,
             Unknown9 = 9, // 0058B285
-            Unknown10 = 10, // 0058B3B0
+            ExceptionLog = 10, // 0058B3B0
             END_SOCKET = 11,
             BEGIN_USER = 12,
             UserTransferFieldRequest = 13,
@@ -42,7 +42,7 @@ public class ClientPacket {
             UserMeleeAttack = 16,
             UserShootAttack = 17,
             UserMagicAttack = 18,
-            // missing 19
+            BEGIN_UNKNOWN = 19,
             UserHit = 20, // 005436CB
             UserChat = 21,
             UserEmotion = 22,
@@ -60,7 +60,7 @@ public class ClientPacket {
             UserSkillUseRequest = 34, // 00548191
             UserDropMoneyRequest = 35,
             Unknown36 = 36, // 00596C14
-            // missing 37
+            END_UNKNOWN = 37,
             Unknown38 = 38, // 00596DDA
             Unknown39 = 39, // 00486F0C, command-related?
             Whisper = 40, // 004879AA
@@ -69,18 +69,25 @@ public class ClientPacket {
             Unknown43 = 43, // 00487F0F, 00595858
             Unknown44 = 44, // 00595755, 005958CA
             Unknown45 = 45, // 00486B38, command-related?
-            // missing 46, 47, 48, 49
-            Unknown50 = 50, // 004A4DA5, might be mob movement
-            // missing 51, 52
-            Unknown53 = 53, // 004B9617
-            // missing 54, 55, 56
-            Unknown57 = 57, // 005936EB
-            // missing 58, 59, 60
-            Unknown61 = 61, // 0042E454
-            Unknown62 = 62, // 0042F4ED
-            Unknown63 = 63, // multiple structures based on initial byte (0042F160, 0042F38C, 0042DEBF)
-            
-            BEGIN_FIELD = 98,
-            END_FIELD = 99
+            END_USER = 46,
+            BEGIN_FIELD = 47,
+            BEGIN_LIFEPOOL = 48,
+            BEGIN_MOB = 49,
+            MobMove = 50, // 004A4DA5, might be mob movement
+            END_MOB = 51,
+            BEGIN_NPC = 52,
+            NpcMove = 53, // 004B9617
+            END_NPC = 54,
+            END_LIFEPOOL = 55,
+            BEGIN_DROPPOOL = 56,
+            DropPickUpRequest = 57,
+            END_DROPPOOL = 58,
+            END_FIELD = 59,
+            BEGIN_CASHSHOP = 60,
+            CashShopChargeParamRequest = 61, // 0042E454
+            CashShopQueryCashRequest = 62, // 0042F4ED
+            CashShopCashItemRequest = 63, // 0042F160, 0042F38C, 0042DEBF
+            END_CASHSHOP = 64,
+            NO = 65
     ;
 }

@@ -160,6 +160,10 @@ public class CharacterData {
         return itemSlot.get(ti).size() - 1;
     }
     
+    public int getMoneyTrading() {
+        return moneyTrading;
+    }
+    
     public void load(ResultSet rs, byte flag) throws SQLException {
         if ((flag & DBChar.Character) != 0) {
             characterStat.load(rs);

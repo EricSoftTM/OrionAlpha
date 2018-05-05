@@ -18,7 +18,6 @@
 package game.user;
 
 import common.user.CharacterData;
-import common.user.CharacterStat;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.DBChar;
 import game.field.Creature;
@@ -26,9 +25,13 @@ import game.field.Field;
 import game.field.FieldMan;
 import game.field.GameObjectType;
 import game.field.Stage;
+import game.field.drop.Drop;
+import game.field.drop.Reward;
+import game.field.drop.RewardType;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
 import game.user.WvsContext.Request;
+import game.user.item.InventoryManipulator;
 import game.user.stat.SecondaryStat;
 import java.awt.Point;
 import java.util.Collection;
@@ -43,6 +46,8 @@ import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
 import util.Logger;
+import util.Pointer;
+import util.Rand32;
 import util.Rect;
 
 /**
@@ -276,6 +281,38 @@ public class User extends Creature {
         return worldID;
     }
     
+    public boolean incMoney(int inc, boolean onlyFull) {
+        return incMoney(inc, onlyFull, false);
+    }
+    
+    public boolean incMoney(int inc, boolean onlyFull, boolean totalMoneyChange) {
+        lock.lock();
+        try {
+            if (InventoryManipulator.rawIncMoney(character, inc, onlyFull)) {
+                characterDataModFlag |= DBChar.Character;
+                return true;
+            }
+            return false;
+        } finally {
+            unlock();
+        }
+    }
+    
+    public int initEXP() {
+        if (lock()) {
+            try {
+                if (character.getCharacterStat().getLevel() >= 200 && character.getCharacterStat().getEXP() > 0) {
+                    character.getCharacterStat().setEXP(0);
+                    characterDataModFlag |= DBChar.Character;
+                    return CharacterStatType.EXP;
+                }
+            } finally {
+                unlock();
+            }
+        }
+        return 0;
+    }
+    
     public boolean isGM() {
         return gradeCode >= 3;//TODO: Proper GradeCode
     }
@@ -365,7 +402,9 @@ public class User extends Creature {
             setPortal(field.getPortal().getRandStartPoint().getPortalIdx());
         }
         characterDataModFlag |= DBChar.Character;
-        // TODO: Check level, initialize exp
+        if (character.getCharacterStat().getLevel() >= 200 && character.getCharacterStat().getEXP() > 0) {
+            initEXP();
+        }
         PortalMap portal = getField().getPortal();
         int count = 0;
         if (!portal.getPortal().isEmpty()) {
@@ -436,6 +475,12 @@ public class User extends Creature {
             case ClientPacket.UserChat:
                 onChat(packet);
                 break;
+            case ClientPacket.UserEmotion:
+                onEmotion(packet);
+                break;
+            case ClientPacket.UserDropMoneyRequest:
+                onDropMoneyRequest(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -471,6 +516,44 @@ public class User extends Creature {
         }
         
         getField().splitSendPacket(getSplit(), UserCommon.onChat(characterID, text), null);
+    }
+    
+    public void onEmotion(InPacket packet) {
+        if (getField() != null) {
+            int emotion = packet.decodeInt();
+            if (emotion < 8) {
+                getField().splitSendPacket(getSplit(), UserRemote.onEmotion(this.characterID, emotion), this);
+            }
+        }
+    }
+    
+    public void onDropMoneyRequest(InPacket packet) {
+        if (getHP() == 0) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        int amount = packet.decodeInt();
+        if (amount >= 10 && amount <= 50000) {
+            if (character.getCharacterStat().getLevel() <= 15) {
+                // not sure if this even exists actually
+            }
+            if (getField() != null) {
+                Pointer<Integer> y2 = new Pointer<>(0);
+                if (getField().getSpace2D().getFootholdUnderneath(getCurrentPosition().x, getCurrentPosition().y, y2) != null) {
+                    if (!incMoney(-amount, true, true)) {
+                        return;
+                    }
+                    sendCharacterStat(Request.Excl, CharacterStatType.Money);
+                    Reward reward = new Reward();
+                    reward.setMoney(amount);
+                    reward.setType(RewardType.Money);
+                    reward.setPeriod(0);
+                    int x = getCurrentPosition().x;
+                    int y1 = getCurrentPosition().y;
+                    getField().getDropPool().create(reward, this.characterID, 0, x, y1, x, y2.get(), 0, false, 0);
+                }
+            }
+        }
     }
     
     public void onTransferFieldRequest(InPacket packet) {
@@ -525,11 +608,22 @@ public class User extends Creature {
         // Actually, AdminResult probably doesn't exist yet..
     }
     
+    public void sendCharacterStat(byte request, int flag) {
+        lock.lock();
+        try {
+            character.getCharacterStat().setMoney(character.getCharacterStat().getMoney() - character.getMoneyTrading());
+            sendPacket(WvsContext.onStatChanged(request, character.getCharacterStat(), secondaryStat, flag));
+            character.getCharacterStat().setMoney(character.getCharacterStat().getMoney() + character.getMoneyTrading());
+        } finally {
+            unlock();
+        }
+    }
+    
     public void sendSetFieldPacket(boolean characterData) {
         if (characterData) {
-            int s1 = 1;
-            int s2 = 2;
-            int s3 = 3;
+            int s1 = Rand32.getInstance().random().intValue();
+            int s2 = Rand32.getInstance().random().intValue();
+            int s3 = Rand32.getInstance().random().intValue();
             
             sendPacket(Stage.onSetField(this, true, s1, s2, s3));
         } else {

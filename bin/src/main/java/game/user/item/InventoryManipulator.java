@@ -19,6 +19,7 @@ package game.user.item;
 
 import common.item.ItemSlotBase;
 import common.item.ItemType;
+import common.user.CharacterData;
 import java.util.Collections;
 import java.util.List;
 import network.packet.LoopbackPacket;
@@ -71,5 +72,26 @@ public class InventoryManipulator {
             }
         }
         return packet;
+    }
+    
+    public static boolean rawIncMoney(CharacterData cd, int inc, boolean onlyFull) {
+        int money = inc + cd.getCharacterStat().getMoney();
+        if (inc <= 0) {
+            if (money < Math.max(cd.getMoneyTrading(), 0)) {
+                if (onlyFull)
+                    return false;
+                money = Math.max(cd.getMoneyTrading(), 0);
+            }
+        } else {
+            if (money < 0) {
+                if (onlyFull)
+                    return false;
+                money = ((cd.getCharacterStat().getMoney() < 0 ? 1 : 0) - 1) & 0x7FFFFFFF;
+            }
+            if (money < cd.getMoneyTrading())
+                money = cd.getMoneyTrading();
+        }
+        cd.getCharacterStat().setMoney(money);
+        return true;
     }
 }

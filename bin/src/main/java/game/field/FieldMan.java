@@ -81,15 +81,13 @@ public class FieldMan {
         field.setStreetName(WzUtil.getString(info.getNode("streetName"), "NULL"));
         field.setMapName(WzUtil.getString(info.getNode("mapName"), "NULL"));
         field.setOption(WzUtil.getInt32(info.getNode("fieldLimit"), 0));
-        field.setAutoDecHP(WzUtil.getInt32(info.getNode("autoDecHP"), 0));
-        field.setAutoDecMP(WzUtil.getInt32(info.getNode("autoDecMP"), 0));
+        field.setAutoDecHP(WzUtil.getInt32(info.getNode("decHP"), 0));
+        field.setAutoDecMP(WzUtil.getInt32(info.getNode("decMP"), 0));
         field.setClock(WzUtil.getBoolean(info.getNode("clock"), false));
         field.setTown(WzUtil.getBoolean(info.getNode("town"), false));
         field.setSwim(WzUtil.getBoolean(info.getNode("swim"), false));
         
-        
         restoreFoothold(field, mapData.getNode("foothold"), mapData.getNode("ladderRope"), info);
-        //restoreArea(field, mapData.getNode("area"));
         field.getSpace2D().setFieldAttr(WzUtil.getFloat(info.getNode("fs"), 1.0f), field.isSwim());
         field.makeSplit();
         field.getPortal().restorePortal(mapData.getNode("portal"), field);

@@ -15,33 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package common.item;
-
-import common.user.DBChar;
+package game.field.life;
 
 /**
  *
  * @author Eric
  */
-public class ItemAccessor {
-    
-    public static byte getItemTypeIndexFromID(int itemID) {
-        return (byte) (itemID / 1000000);
-    }
-    
-    public static int getItemTypeFromTypeIndex(int ti) {
-        switch (ti) {
-            case ItemType.Equip:
-                return DBChar.ItemSlotEquip;
-            case ItemType.Consume:
-                return DBChar.ItemSlotConsume;
-            case ItemType.Install:
-                return DBChar.ItemSlotInstall;
-            case ItemType.Etc:
-                return DBChar.ItemSlotEtc;
-            default: {
-                return 0;
-            }
-        }
-    }
+public class AttackIndex {
+    public static final byte
+            Mob_Physical    = 0,
+            Mob_Magic       = -1,
+            Counter         = -2,
+            Obstacle        = -3,
+            Stat            = -4
+    ;
 }

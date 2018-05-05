@@ -15,33 +15,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package common.item;
-
-import common.user.DBChar;
+package game.user.skill;
 
 /**
  *
  * @author Eric
  */
-public class ItemAccessor {
+public class SkillRecord {
+    private int skillID;
+    private int info;
     
-    public static byte getItemTypeIndexFromID(int itemID) {
-        return (byte) (itemID / 1000000);
+    public SkillRecord() {
+        
     }
     
-    public static int getItemTypeFromTypeIndex(int ti) {
-        switch (ti) {
-            case ItemType.Equip:
-                return DBChar.ItemSlotEquip;
-            case ItemType.Consume:
-                return DBChar.ItemSlotConsume;
-            case ItemType.Install:
-                return DBChar.ItemSlotInstall;
-            case ItemType.Etc:
-                return DBChar.ItemSlotEtc;
-            default: {
-                return 0;
-            }
-        }
+    public SkillRecord(int skillID, int info) {
+        this.skillID = skillID;
+        this.info = info;
+    }
+    
+    public int getSkillID() {
+        return skillID;
+    }
+    
+    public int getInfo() {
+        return info;
+    }
+    
+    public void setSkillID(int skill) {
+        this.skillID = skill;
+    }
+    
+    public void setInfo(int info) {
+        this.info = info;
     }
 }

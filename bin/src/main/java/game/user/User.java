@@ -18,13 +18,17 @@
 package game.user;
 
 import common.user.CharacterData;
+import common.user.CharacterStat;
+import common.user.CharacterStat.CharacterStatType;
 import common.user.DBChar;
 import game.field.Creature;
 import game.field.Field;
 import game.field.FieldMan;
 import game.field.GameObjectType;
 import game.field.Stage;
+import game.field.portal.Portal;
 import game.field.portal.PortalMap;
+import game.user.WvsContext.Request;
 import game.user.stat.SecondaryStat;
 import java.awt.Point;
 import java.util.Collection;
@@ -39,6 +43,7 @@ import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
 import util.Logger;
+import util.Rect;
 
 /**
  *
@@ -56,6 +61,7 @@ public class User extends Creature {
     private byte channelID;
     private byte worldID;
     private ClientSocket socket;
+    private final AvatarLook avatarLook;
     private final CharacterData character;
     private final SecondaryStat secondaryStat;
     private String characterName;
@@ -78,6 +84,7 @@ public class User extends Creature {
         this.lock = new ReentrantLock();
         this.lockSocket = new ReentrantLock();
         this.secondaryStat = new SecondaryStat();
+        this.avatarLook = new AvatarLook();
         this.character = GameDB.rawLoadCharacter(characterID);
     }
     
@@ -219,6 +226,10 @@ public class User extends Creature {
     
     public final void unlock() {
         lock.unlock();
+    }
+    
+    public AvatarLook getAvatarLook() {
+        return avatarLook;
     }
     
     public byte getChannelID() {
@@ -434,15 +445,80 @@ public class User extends Creature {
     }
     
     public void onChat(InPacket packet) {
-        Logger.logReport("[Chat] %s", packet.dumpString());
+        if (getField() == null) {
+            return;
+        }
+        String text = packet.decodeString();
+        
+        if (text.startsWith("!")) {
+            // TODO: Command processing system
+            
+            String[] arg = text.split(" ");
+            if (arg[0].equals("!level")) {
+                if (arg.length > 1) {
+                    character.getCharacterStat().setLevel(Byte.parseByte(arg[1]));
+                } else {
+                    character.getCharacterStat().setLevel((byte) 99);
+                }
+                sendPacket(WvsContext.onStatChanged(Request.None, character.getCharacterStat(), secondaryStat, CharacterStatType.LEV));
+            }
+            if (arg[0].equals("!job")) {
+                if (arg.length > 1) {
+                    character.getCharacterStat().setJob(Short.parseShort(arg[1]));
+                    sendPacket(WvsContext.onStatChanged(Request.None, character.getCharacterStat(), secondaryStat, CharacterStatType.Job));
+                }
+            }
+        }
+        
+        getField().splitSendPacket(getSplit(), UserCommon.onChat(characterID, text), null);
     }
     
     public void onTransferFieldRequest(InPacket packet) {
+        int fieldID = packet.decodeInt();
+        String portal = packet.decodeString();
         
+        if (fieldID == -1) {
+            Portal pt = getField().getPortal().findPortal(portal);
+            if (pt == null || pt.tmap == Field.Invalid) {
+                return;
+            }
+            fieldID = pt.tmap;
+            portal = pt.tname;
+        }
+        
+        Field field = FieldMan.getInstance().getField(fieldID, false);
+        if (field != null) {
+            Portal pt = field.getPortal().findPortal(portal);
+            if (portal.isEmpty() || pt == null) {
+                pt = field.getPortal().getRandStartPoint();
+            }
+            getField().onLeave(this);
+            lock.lock();
+            try {
+                setField(field);
+                setPosMap(field.getFieldID());
+                setPortal(pt.getPortalIdx());
+                setMovePosition(pt.getPortalPos().x, pt.getPortalPos().y, (byte) 0, (short) 0);
+                characterDataModFlag |= DBChar.Character;
+                //avatarModFlag = 0;
+            } finally {
+                unlock();
+            }
+            sendSetFieldPacket(false);
+            if (getField().onEnter(this)) {
+                
+            } else {
+                Logger.logError("Failed in entering field");
+                closeSocket();
+            }
+        }
     }
     
     public void onMove(InPacket packet) {
-        
+        if (getField() != null) {
+            Rect move = new Rect();
+            getField().onUserMove(this, packet, move);
+        }
     }
     
     public void sendCharacterHidePacket() {
@@ -483,7 +559,15 @@ public class User extends Creature {
         character.getCharacterStat().setPortal(portal);
     }
     
-    public void update(long tCur) {
+    public void update(long time) {
         
+    }
+    
+    public class UserEffect {
+        public static final byte
+                LevelUp         = 0,
+                SkillUse        = 1,
+                SkillAffected   = 2
+        ;
     }
 }

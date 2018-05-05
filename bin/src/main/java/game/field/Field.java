@@ -17,10 +17,12 @@
  */
 package game.field;
 
+import game.field.MovePath.Elem;
 import game.field.drop.DropPool;
 import game.field.life.LifePool;
 import game.field.portal.PortalMap;
 import game.user.User;
+import game.user.UserRemote;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -295,7 +297,50 @@ public class Field {
     }
     
     public void onUserMove(User user, InPacket packet, Rect move) {
+        MovePath mp = new MovePath();
+        mp.decode(packet);
+        if (mp.getElem().isEmpty()) {
+            Logger.logError("Received Empty Move Path [%s]", user.getCharacterName());
+            return;
+        }
         
+        Elem tail = mp.getElem().getLast();
+        // Nexon applies the pTail coordinates here, however that will
+        // cause an incorrect result on fieldsplits if the movement's
+        // element is ever wrong. Since the current coordinates are of
+        // the portal destination, they are never wrong.
+        final int xPos = user.getCurrentPosition().x;//pTail.x
+        final int yPos = user.getCurrentPosition().y;//pTail.y
+        user.setMovePosition(tail.getX(), tail.getY(), (byte) (tail.getMoveAction() & 0xFF), tail.getFh());
+        
+        FieldSplit splitOld = user.getSplit();
+        int x = ScreenWidthOffset * splitOld.getCol() + leftTop.x - 100;
+        int y = ScreenHeightOffset * splitOld.getRow() + leftTop.y - 75;
+        if (tail.getX() < x || tail.getX() > (x + WvsScreenWidth) || tail.getY() < y || tail.getY() > (y + WvsScreenHeight)) {
+            FieldSplit splitNew = splitFromPoint(xPos, yPos);
+            if (splitNew == null) {
+                /*pUser.postTransferField(pUser.getField().getFieldID(), "", true);
+                long tCur = System.currentTimeMillis();
+                if ((tCur - pUser.tLastIncorrectFieldPositionTime) <= 60000) {
+                    ++pUser.nIncorrectFieldPositionCount;
+                    if (pUser.nIncorrectFieldPositionCount >= 5) {
+                        Logger.logError("Incorrect field position (%d,%d)/(%d,%d,%d,%d)/(Map:%d)");
+                        if (!pUser.isGM()) {
+                            //pUser.closeSocket();
+                            return;
+                        }
+                    }
+                } else {
+                    pUser.nIncorrectFieldPositionCount = 1;
+                }
+                pUser.tLastIncorrectFieldPositionTime = tCur;*/
+                return;
+            }
+            splitMigrateFieldObj(splitNew, FieldSplit.User, user);
+            splitRegisterUser(splitOld, splitNew, user);
+        }
+        splitSendPacket(user.getSplit(), UserRemote.onMove(user.getCharacterID(), mp), user);
+        mp.getElem().clear();
     }
     
     public void setLeftTop(Point pt) {

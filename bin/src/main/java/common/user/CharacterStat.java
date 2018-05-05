@@ -83,6 +83,67 @@ public class CharacterStat {
         packet.encodeByte(portal);
     }
     
+    public void encodeChangeStat(OutPacket packet, int flag) {
+        packet.encodeInt(flag);
+        if ((flag & CharacterStatType.Face) > 0) {
+            packet.encodeInt(this.face);
+        }
+        if ((flag & CharacterStatType.Hair) > 0) {
+            packet.encodeInt(this.hair);
+        }
+        if ((flag & CharacterStatType.Skin) > 0) {
+            packet.encodeInt(this.skin);
+        }
+        if ((flag & CharacterStatType.PetSN) > 0) {
+            packet.encodeInt(0);
+        }
+        if ((flag & CharacterStatType.LEV) > 0) {
+            packet.encodeByte(this.level);
+        }
+        if ((flag & CharacterStatType.Job) > 0) {
+            packet.encodeShort(this.job);
+        }
+        if ((flag & CharacterStatType.STR) > 0) {
+            packet.encodeShort(this.STR);
+        }
+        if ((flag & CharacterStatType.DEX) > 0) {
+            packet.encodeShort(this.DEX);
+        }
+        if ((flag & CharacterStatType.INT) > 0) {
+            packet.encodeShort(this.INT);
+        }
+        if ((flag & CharacterStatType.LUK) > 0) {
+            packet.encodeShort(this.LUK);
+        }
+        if ((flag & CharacterStatType.HP) > 0) {
+            packet.encodeShort(this.hp);
+        }
+        if ((flag & CharacterStatType.MHP) > 0) {
+            packet.encodeShort(this.mhp);
+        }
+        if ((flag & CharacterStatType.MP) > 0) {
+            packet.encodeShort(this.mp);
+        }
+        if ((flag & CharacterStatType.MMP) > 0) {
+            packet.encodeShort(this.mmp);
+        }
+        if ((flag & CharacterStatType.AP) > 0) {
+            packet.encodeShort(this.ap);
+        }
+        if ((flag & CharacterStatType.SP) > 0) {
+            packet.encodeShort(this.sp);
+        }
+        if ((flag & CharacterStatType.EXP) > 0) {
+            packet.encodeInt(this.exp.get());
+        }
+        if ((flag & CharacterStatType.POP) > 0) {
+            packet.encodeInt(this.pop);//wtf?
+        }
+        if ((flag & CharacterStatType.Money) > 0) {
+            packet.encodeInt(this.money.get());
+        }
+    }
+    
     public int getCharacterID() {
         return characterID;
     }
@@ -291,5 +352,29 @@ public class CharacterStat {
     
     public void setMoney(int money) {
         this.money.set(money);
+    }
+    
+    public class CharacterStatType {
+        public static final int
+                Face    = 0x1,
+                Hair    = 0x2,
+                Skin    = 0x4,//Incorrect (does this correspond to AvatarModified's 0x4 flag?)
+                PetSN   = 0x8,//Incorrect (does this correspond to AvatarModified's 0x8 flag?)
+                LEV     = 0x10,
+                Job     = 0x20,
+                STR     = 0x40,
+                DEX     = 0x80,
+                INT     = 0x100,
+                LUK     = 0x200,
+                HP      = 0x400,
+                MHP     = 0x800,
+                MP      = 0x1000,
+                MMP     = 0x2000,
+                AP      = 0x4000,
+                SP      = 0x8000,
+                EXP     = 0x10000,
+                POP     = 0x20000,
+                Money   = 0x40000
+        ;
     }
 }

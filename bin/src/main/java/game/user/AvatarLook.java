@@ -47,7 +47,7 @@ public class AvatarLook {
     }
     
     public void encode(OutPacket packet) {
-        for (int pos = 1; pos <= equipped.size(); pos++) {
+        for (int pos = 1; pos < equipped.size(); pos++) {
             if (equipped.get(pos) > 0) {
                 packet.encodeByte(pos);
                 packet.encodeInt(equipped.get(pos));

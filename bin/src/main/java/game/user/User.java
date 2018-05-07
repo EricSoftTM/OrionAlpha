@@ -17,6 +17,7 @@
  */
 package game.user;
 
+import common.item.BodyPart;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.DBChar;
@@ -32,11 +33,15 @@ import game.field.portal.Portal;
 import game.field.portal.PortalMap;
 import game.user.WvsContext.Request;
 import game.user.item.InventoryManipulator;
+import game.user.skill.SkillRecord;
+import game.user.skill.UserSkillRecord;
 import game.user.stat.SecondaryStat;
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -65,19 +70,73 @@ public class User extends Creature {
     private int localSocketSN;
     private byte channelID;
     private byte worldID;
-    private ClientSocket socket;
-    private final AvatarLook avatarLook;
-    private final CharacterData character;
-    private final SecondaryStat secondaryStat;
+    // Account/Character Names
+    private String nexonClubID;
     private String characterName;
+    // Misc. Variables
     private final Lock lock;
     private final Lock lockSocket;
+    private long lastSelectNPCTime;
+    private boolean onTransferField;
+    private int incorrectFieldPositionCount;
+    private long lastCharacterDataFlush;
+    private long nextGeneralItemCheck;
+    private long nextCheckCashItemExpire;
+    
+    // Hide
     private boolean hide;
     private boolean adminHide;
+    // User Emotions
+    private int emotion;
+    // User-specific rates
+    private double incExpRate = 1.0d;
+    private double incMesoRate = 1.0d;
+    private double incDropRate = 1.0d;
+    private double incDropRate_Ticket = 1.0d;
+    private int incEXPRate = 100;
+    // Trade Limits
+    private int tradeMoneyLimit;
+    private int tempTradeMoney;
+    // Cheat Inspector
+    // private CheatInspector cheatInspector;
+    private int invalidTryRepeatCount;
+    private int invalidUserActionCount;
+    private int invalidMobMoveCount;
+    private int invalidHitPointCount;
+    private int skipWarpCount;
+    private int warpCheckedCount;
+    private int invalidDamageCount;
+    // Character Data
+    private final CharacterData character;
+    private int characterDataModFlag;
+    // Avatar Look
+    private final AvatarLook avatarLook;
+    private int avatarModFlag;
+    // Basic Stat
+    // private final BasicStat basicStat;
+    // Secondary Stat
+    private final SecondaryStat secondaryStat;
+    // User RNG's
+    private final Rand32 rndActionMan;
+    // Mini Rooms
+    // private UserMiniRoom userMR;
+    // private MiniRoomBase miniRoom;
+    private boolean miniRoomBalloon;
+    // MSMessenger
+    // private UserMessenger msm;
+    private boolean msMessenger;
+    // ScriptVM
+    // private ScriptVM runningVM;
+    // Client
+    private ClientSocket socket;
+    private long loginTime;
+    private long logoutTime;
+    private boolean closeSocketNextTime;
+    private boolean temporaryLogging;
+    // Movement
     private Point curPos;
     private byte moveAction;
     private short footholdSN;
-    private int characterDataModFlag;
     
     protected User(int characterID) {
         super();
@@ -85,11 +144,37 @@ public class User extends Creature {
         this.worldID = 0;
         this.channelID = 0;
         
+        this.hide = false;
+        this.adminHide = false;
+        this.onTransferField = false;
+        this.closeSocketNextTime = false;
+        
+        this.emotion = 0;
+        this.invalidHitPointCount = 0;
+        this.invalidMobMoveCount = 0;
+        this.skipWarpCount = 0;
+        this.warpCheckedCount = 0;
+        this.invalidDamageCount = 0;
+        this.tradeMoneyLimit = 0;
+        this.tempTradeMoney = 0;
+        this.accountID = -1;
+        this.incorrectFieldPositionCount = 0;
+        this.avatarModFlag = 0;
+        this.characterDataModFlag = 0;
+        this.lastSelectNPCTime = 0;
+        
+        long time = System.currentTimeMillis();
+        this.lastCharacterDataFlush = time;
+        this.nextCheckCashItemExpire = time;
+        this.nexonClubID = "";
+        this.characterName = "";
+        
         this.curPos = new Point(0, 0);
         this.lock = new ReentrantLock();
         this.lockSocket = new ReentrantLock();
         this.secondaryStat = new SecondaryStat();
         this.avatarLook = new AvatarLook();
+        this.rndActionMan = new Rand32();
         this.character = GameDB.rawLoadCharacter(characterID);
     }
     
@@ -101,10 +186,12 @@ public class User extends Creature {
         
         this.characterID = character.getCharacterStat().getCharacterID();
         this.characterName = character.getCharacterStat().getName();
+        
+        this.validateStat(true);
     }
     
     public final void destructUser() {
-        //flushCharacterData(0, true);
+        flushCharacterData(0, true);
         Logger.logReport("User logout");
         
     }
@@ -196,6 +283,399 @@ public class User extends Creature {
         }
     }
     
+    ///////////////////////////// CQWUser START /////////////////////////////
+    public boolean canStatChange(int inc, int dec) {
+        // TODO
+        
+        return false;
+    }
+    
+    public byte getLevel() {
+        return character.getCharacterStat().getLevel();
+    }
+    
+    public boolean incAP(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int ap = character.getCharacterStat().getAP();
+            if (onlyFull && (ap + inc < 0 || ap + inc > 999)) {
+                return false;
+            }
+            int newSP = Math.max(Math.min(ap + inc, 999), 0);
+            character.getCharacterStat().setAP((short) newSP);
+            if (newSP == ap) {
+                return false;
+            } else {
+                characterDataModFlag |= DBChar.Character;
+                validateStat(false);
+                return true;
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incDEX(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int DEX = character.getCharacterStat().getDEX();
+            if (onlyFull && (DEX + inc < 0 || DEX + inc > 999)) {
+                return false;
+            }
+            int newDEX = Math.max(Math.min(DEX + inc, 999), 0);
+            character.getCharacterStat().setDEX((short) newDEX);
+            if (newDEX == DEX) {
+                return false;
+            } else {
+                characterDataModFlag |= DBChar.Character;
+                validateStat(false);
+                return true;
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public int incEXP(int inc, boolean onlyFull) {
+        // TODO
+        
+        return 0;
+    }
+    
+    public boolean incHP(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int hp = character.getCharacterStat().getHP();
+            int mhp = character.getCharacterStat().getMHP();
+            if (hp == 0) {
+                return false;
+            }
+            if (onlyFull && (inc < 0 && hp + inc < 0 || inc > 0 && hp + inc > mhp)) {
+                return false;
+            }
+            int newHP = Math.max(Math.min(hp + inc, mhp), 0);
+            character.getCharacterStat().setHP((short) newHP);
+            if (newHP == 0) {
+                //cheatInspector.initUserDamagedTime(0, false);
+                onUserDead();
+            }
+            if (newHP == hp) {
+                return false;
+            }
+            characterDataModFlag |= DBChar.Character;
+            return true;
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incINT(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int INT = character.getCharacterStat().getINT();
+            if (onlyFull && (INT + inc < 0 || INT + inc > 999)) {
+                return false;
+            }
+            int newINT = Math.max(Math.min(INT + inc, 999), 0);
+            character.getCharacterStat().setINT((short) newINT);
+            if (newINT == INT) {
+                return false;
+            } else {
+                characterDataModFlag |= DBChar.Character;
+                validateStat(false);
+                return true;
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incLUK(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int LUK = character.getCharacterStat().getLUK();
+            if (onlyFull && (LUK + inc < 0 || LUK + inc > 999)) {
+                return false;
+            }
+            int newLUK = Math.max(Math.min(LUK + inc, 999), 0);
+            character.getCharacterStat().setLUK((short) newLUK);
+            if (newLUK == LUK) {
+                return false;
+            } else {
+                characterDataModFlag |= DBChar.Character;
+                validateStat(false);
+                return true;
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incMHP(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int mhp = character.getCharacterStat().getMHP();
+            if (onlyFull && (mhp + inc < 50 || mhp + inc > 30000)) {
+                return false;
+            }
+            int newMHP = Math.max(Math.min(mhp + inc, 30000), 50);
+            character.getCharacterStat().setMHP((short) newMHP);
+            if (newMHP == mhp) {
+                return false;
+            } else {
+                characterDataModFlag |= DBChar.Character;
+                validateStat(false);
+                return true;
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incMMP(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int mmp = character.getCharacterStat().getMMP();
+            if (onlyFull && (mmp + inc < 5 || mmp + inc > 30000)) {
+                return false;
+            }
+            int newMMP = Math.max(Math.min(mmp + inc, 30000), 5);
+            character.getCharacterStat().setMMP((short) newMMP);
+            if (newMMP == mmp) {
+                return false;
+            } else {
+                characterDataModFlag |= DBChar.Character;
+                validateStat(false);
+                return true;
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incMP(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            if (inc < 0 && getHP() <= 0) {
+                return false;
+            }
+            int mp = character.getCharacterStat().getMP();
+            int mmp = character.getCharacterStat().getMMP();
+            if (onlyFull && (inc < 0 && mp + inc < 0 || inc > 0 && mp + inc > mmp)) {
+                return false;
+            }
+            int newMP = Math.max(Math.min(mp + inc, mmp), 0);
+            character.getCharacterStat().setMP((short) newMP);
+            if (newMP == mp) {
+                return false;
+            }
+            characterDataModFlag |= DBChar.Character;
+            return true;
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incMoney(int inc, boolean onlyFull) {
+        return incMoney(inc, onlyFull, false);
+    }
+    
+    public boolean incMoney(int inc, boolean onlyFull, boolean totalMoneyChange) {
+        lock.lock();
+        try {
+            if (InventoryManipulator.rawIncMoney(character, inc, onlyFull)) {
+                characterDataModFlag |= DBChar.Character;
+                return true;
+            }
+            return false;
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incPOP(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int pop = character.getCharacterStat().getPOP();
+            if (onlyFull && (pop + inc < -30000 || pop + inc > 30000)) {
+                return false;
+            }
+            int newPOP = Math.min(Math.max(pop + inc, -30000), 30000);
+            character.getCharacterStat().setPOP((short) newPOP);
+            if (newPOP == pop) {
+                return false;
+            } else {
+                characterDataModFlag |= DBChar.Character;
+                validateStat(false);
+                return true;
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incSP(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int sp = character.getCharacterStat().getSP();
+            if (onlyFull && (sp + inc < 0 || sp + inc > 999)) {
+                return false;
+            }
+            int newSP = Math.max(Math.min(sp + inc, 999), 0);
+            character.getCharacterStat().setSP((short) newSP);
+            if (newSP == sp) {
+                return false;
+            } else {
+                characterDataModFlag |= DBChar.Character;
+                validateStat(false);
+                return true;
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public boolean incSTR(int inc, boolean onlyFull) {
+        lock.lock();
+        try {
+            int STR = character.getCharacterStat().getSTR();
+            if (onlyFull && (STR + inc < 0 || STR + inc > 999)) {
+                return false;
+            }
+            int newSTR = Math.max(Math.min(STR + inc, 999), 0);
+            character.getCharacterStat().setSTR((short) newSTR);
+            if (newSTR == STR) {
+                return false;
+            } else {
+                characterDataModFlag |= DBChar.Character;
+                validateStat(false);
+                return true;
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public int initEXP() {
+        if (lock()) {
+            try {
+                if (character.getCharacterStat().getLevel() >= 200 && character.getCharacterStat().getEXP() > 0) {
+                    character.getCharacterStat().setEXP(0);
+                    characterDataModFlag |= DBChar.Character;
+                    return CharacterStatType.EXP;
+                }
+            } finally {
+                unlock();
+            }
+        }
+        return 0;
+    }
+    
+    public boolean isValidStat(int STR, int DEX, int INT, int LUK, int remainAP) {
+        // TODO
+        return false;
+    }
+    
+    public void setFace(int val) {
+        lock.lock();
+        try {
+            characterDataModFlag |= DBChar.Character;
+            character.getCharacterStat().setFace(val);
+            validateStat(false);
+        } finally {
+            unlock();
+        }
+    }
+    
+    public void setGender(int val) {
+        lock.lock();
+        try {
+            characterDataModFlag |= DBChar.Character;
+            character.getCharacterStat().setGender((byte) val);
+            validateStat(false);
+        } finally {
+            unlock();
+        }
+    }
+    
+    public void setHair(int val) {
+        lock.lock();
+        try {
+            characterDataModFlag |= DBChar.Character;
+            character.getCharacterStat().setHair(val);
+            validateStat(false);
+        } finally {
+            unlock();
+        }
+    }
+    
+    public void setJob(int val) {
+        // TODO
+    }
+    
+    public void setSkin(int val) {
+        lock.lock();
+        try {
+            characterDataModFlag |= DBChar.Character;
+            character.getCharacterStat().setSkin((byte) val);
+            validateStat(false);
+        } finally {
+            unlock();
+        }
+    }
+    
+    public void statChange(int inc, int dec, short incHP, short incMP) {
+        lock.lock();
+        try {
+            switch (inc) {
+                case CharacterStatType.STR:
+                    incSTR(1, true);
+                    break;
+                case CharacterStatType.DEX:
+                    incDEX(1, true);
+                    break;
+                case CharacterStatType.INT:
+                    incINT(1, true);
+                    break;
+                case CharacterStatType.LUK:
+                    incLUK(1, true);
+                    break;
+            }
+            switch (inc) {
+                case CharacterStatType.STR:
+                    incSTR(-1, true);
+                    break;
+                case CharacterStatType.DEX:
+                    incDEX(-1, true);
+                    break;
+                case CharacterStatType.INT:
+                    incINT(-1, true);
+                    break;
+                case CharacterStatType.LUK:
+                    incLUK(-1, true);
+                    break;
+            }
+            if (inc == CharacterStatType.MHP || dec == CharacterStatType.MHP)
+                character.getCharacterStat().setMHP((short) (character.getCharacterStat().getMHP() + incHP));
+            if (inc == CharacterStatType.MMP || dec == CharacterStatType.MMP)
+                character.getCharacterStat().setMMP((short) (character.getCharacterStat().getMMP() + incMP));
+        } finally {
+            unlock();
+        }
+    }
+    ///////////////////////////// CQWUser END ///////////////////////
+    
+    public void addCharacterDataMod(int flag) {
+        this.characterDataModFlag |= flag;
+    }
+    
+    public boolean canAttachAdditionalProcess() {
+        if (socket != null && !onTransferField && getHP() > 0) {
+            
+        }
+        return false;
+    }
+    
     public void destroyAdditionalProcess() {
         lock.lock();
         try {
@@ -279,38 +759,6 @@ public class User extends Creature {
     
     public byte getWorldID() {
         return worldID;
-    }
-    
-    public boolean incMoney(int inc, boolean onlyFull) {
-        return incMoney(inc, onlyFull, false);
-    }
-    
-    public boolean incMoney(int inc, boolean onlyFull, boolean totalMoneyChange) {
-        lock.lock();
-        try {
-            if (InventoryManipulator.rawIncMoney(character, inc, onlyFull)) {
-                characterDataModFlag |= DBChar.Character;
-                return true;
-            }
-            return false;
-        } finally {
-            unlock();
-        }
-    }
-    
-    public int initEXP() {
-        if (lock()) {
-            try {
-                if (character.getCharacterStat().getLevel() >= 200 && character.getCharacterStat().getEXP() > 0) {
-                    character.getCharacterStat().setEXP(0);
-                    characterDataModFlag |= DBChar.Character;
-                    return CharacterStatType.EXP;
-                }
-            } finally {
-                unlock();
-            }
-        }
-        return 0;
     }
     
     public boolean isGM() {
@@ -481,6 +929,9 @@ public class User extends Creature {
             case ClientPacket.UserDropMoneyRequest:
                 onDropMoneyRequest(packet);
                 break;
+            case ClientPacket.UserSkillUpRequest:
+                onSkillUpRequest(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -556,6 +1007,22 @@ public class User extends Creature {
         }
     }
     
+    public void onSkillUpRequest(InPacket packet) {
+        lock.lock();
+        try {
+            int skillID = packet.decodeInt();
+            List<SkillRecord> change = new ArrayList<>();
+            if (UserSkillRecord.skillUp(this, skillID, true, change)) {
+                validateStat(false);
+                sendCharacterStat(Request.None, CharacterStatType.SP);
+            }
+            sendPacket(WvsContext.onChangeSkillRecordResult(Request.Excl, change));
+            change.clear();
+        } finally {
+            lock.unlock();
+        }
+    }
+    
     public void onTransferFieldRequest(InPacket packet) {
         int fieldID = packet.decodeInt();
         String portal = packet.decodeString();
@@ -612,7 +1079,7 @@ public class User extends Creature {
         lock.lock();
         try {
             character.getCharacterStat().setMoney(character.getCharacterStat().getMoney() - character.getMoneyTrading());
-            sendPacket(WvsContext.onStatChanged(request, character.getCharacterStat(), secondaryStat, flag));
+            sendPacket(WvsContext.onStatChanged(request, character.getCharacterStat(), null, flag));
             character.getCharacterStat().setMoney(character.getCharacterStat().getMoney() + character.getMoneyTrading());
         } finally {
             unlock();
@@ -653,8 +1120,114 @@ public class User extends Creature {
         character.getCharacterStat().setPortal(portal);
     }
     
-    public void update(long time) {
+    public boolean isWearItemOnNeed(int necessaryItemID) {
+        int i = 0;
+        while (character.getEquipped().get(i) == null || character.getEquipped().get(i).getItemID() != necessaryItemID) {
+            ++i;
+            if (i > BodyPart.BP_Count)
+                return false;
+        }
+        return true;
+    }
+    
+    private void onUserDead() {
         
+    }
+    
+    public void onLevelUp() {
+        onUserEffect(true, true, UserEffect.LevelUp);
+    }
+    
+    public void update(long time) {
+        resetTemporaryStat(time, 0);
+        flushCharacterData(time, false);
+        checkCashItemExpire(time);
+        checkGeneralItemExpire(time);
+    }
+    
+    public void checkGeneralItemExpire(long time) {
+        // TODO: Item Expirations
+    }
+    
+    public void checkCashItemExpire(long time) {
+        if (time - nextCheckCashItemExpire >= 0) {
+            // TODO: Cash Item Expiration
+        }
+    }
+    
+    public void flushCharacterData(long time, boolean force) {
+        if (lock()) {
+            try {
+                if (force || time - lastCharacterDataFlush >= 300000) {
+                    if (characterDataModFlag != 0) {
+                        // TODO: DB Saving
+                        
+                        characterDataModFlag = 0;
+                    }
+                    //if (miniRoom != null)
+                    //  miniRoom.save();
+                    lastCharacterDataFlush = time;
+                }
+            } finally {
+                unlock();
+            }
+        }
+    }
+    
+    public void resetTemporaryStat(long time, int reasonID) {
+        lock.lock();
+        try {
+            int reset;
+            if (reasonID > 0)
+                reset = 0;//TODO: secondaryStat.resetByReasonID(reasonID);
+            else
+                reset = 0;//TODO: secondaryStat.resetByTime(time);
+            if (reset != 0) {
+                validateStat(false);
+                sendTemporaryStatReset(reset);
+            }
+        } finally {
+            unlock();
+        }
+    }
+    
+    public void sendTemporaryStatReset(int reset) {
+        if (reset != 0) {
+            lock.lock();
+            try {
+                // Does CalcDamageStat even exist yet? Probably not.
+                sendPacket(WvsContext.onTemporaryStatReset(reset));
+                // TODO: SecondaryStat.FilterForRemote, SplitSendPacket.
+            } finally {
+                unlock();
+            }
+        }
+    }
+    
+    public void onUserEffect(boolean local, boolean remote, byte effect) {
+        if (remote) {
+            getField().splitSendPacket(getSplit(), UserRemote.onEffect(getCharacterID(), effect, 0, 0), this);
+        }
+        if (local) {
+            sendPacket(UserLocal.onEffect(effect, 0, 0));
+        }
+    }
+    
+    public final void validateStat(boolean calledByConstructor) {
+        lock.lock();
+        try {
+            int flag = 0;
+            
+            if (!calledByConstructor) {
+                if (flag != 0)
+                    sendCharacterStat(Request.None, flag);
+            }
+            if (isGM() && character.getSkillRecord().isEmpty()) {
+                // TODO: Max all skills
+            }
+        } finally {
+            unlock();
+        }
     }
     
     public class UserEffect {

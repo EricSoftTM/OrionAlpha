@@ -17,6 +17,9 @@
  */
 package game;
 
+import game.field.FieldMan;
+import game.field.life.mob.MobTemplate;
+import game.field.life.npc.NpcTemplate;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.InetSocketAddress;
@@ -113,17 +116,17 @@ public class GameApp implements Runnable {
         
         // Load Mobs
         time = System.currentTimeMillis();
-        
+        MobTemplate.load();
         Logger.logReport("Loaded Mob Attributes in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
         
         // Load Npcs
         time = System.currentTimeMillis();
-        
+        NpcTemplate.load();
         Logger.logReport("Loaded Npc Attributes in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
         
         // Load Maps
         time = System.currentTimeMillis();
-        
+        FieldMan.getInstance();
         Logger.logReport("Loaded map (field) data from map files in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
     }
     

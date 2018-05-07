@@ -96,7 +96,7 @@ public class WvsContext {
     }
     
     public static OutPacket onChangeSkillRecordResult(byte onExclRequest, List<SkillRecord> change) {
-        OutPacket packet = new OutPacket(LoopbackPacket.InventoryGrow);
+        OutPacket packet = new OutPacket(LoopbackPacket.ChangeSkillRecordResult);
         packet.encodeByte(onExclRequest);
         packet.encodeShort(change.size());
         for (SkillRecord skill : change) {

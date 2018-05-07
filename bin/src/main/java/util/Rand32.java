@@ -29,6 +29,10 @@ public class Rand32 {
     private int s2;
     private int s3;
     
+    public Rand32() {
+        this((int) (System.currentTimeMillis() / 1000));
+    }
+    
     public Rand32(int seed) {
         int rand = crtRand(seed);
         

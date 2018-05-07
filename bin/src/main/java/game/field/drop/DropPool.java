@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
@@ -74,7 +75,6 @@ public class DropPool {
                     for (FieldSplit split : drop.getSplits()) {
                         field.splitRegisterFieldObj(split, 4, drop, drop.makeEnterFieldPacket(Drop.Create, delay));
                     }
-                    Logger.logReport("Dropping mesos");
                     field.splitNotifyFieldObj(centerSplit, drop.makeEnterFieldPacket(Drop.JustShowing, delay), drop);
                 } else {
                     Logger.logError("Cannot Create Drop [ ptHitx : %d, ptHity : %d, cx : %d, FieldID: %d ]", x1, y1, x2, field.getFieldID());
@@ -105,9 +105,9 @@ public class DropPool {
     }
     
     public void onPacket(User user, byte type, InPacket packet) {
-        /*if (type == ClientPacket.DropPickUpRequest) {
+        if (type == ClientPacket.DropPickUpRequest) {
             onPickUpRequest(user, packet);
-        }*/
+        }
     }
     
     public void remove(int id, int delay) {

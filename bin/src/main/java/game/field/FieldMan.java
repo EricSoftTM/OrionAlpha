@@ -38,12 +38,20 @@ public class FieldMan {
     
     private final Map<Integer, Field> fields;
     private final Lock lock;
+    private long lastUpdateForField;
     
     public FieldMan() {
         this.fields = new HashMap<>();
         this.lock = new ReentrantLock();
         
-        
+        /*
+        TimerThread.Field.Register(new Runnable() {
+            @Override
+            public void run() {
+                FieldMan.this.Update(System.currentTimeMillis());
+            }
+        }, 100, 1000);
+        */
     }
     
     public static FieldMan getInstance() {
@@ -100,5 +108,24 @@ public class FieldMan {
         field.getSpace2D().load(field, propFoothold, ladderOrRope, info);
         field.setLeftTop(new Point(field.getSpace2D().getMBR().left, field.getSpace2D().getMBR().top));
         field.setMapSize(new Size(field.getSpace2D().getMBR().right - field.getSpace2D().getMBR().left, field.getSpace2D().getMBR().bottom - field.getSpace2D().getMBR().top));
+    }
+    
+    private void update(long time) {
+        updateField(time);
+    }
+    
+    private void updateField(long time) {
+        if (!fields.isEmpty()) {
+            lock.lock();
+            try {
+                for (Field field : fields.values()) {
+                    field.update(time);
+                }
+            } finally {
+                lock.unlock();
+            }
+        } else {
+            lastUpdateForField = System.currentTimeMillis();
+        }
     }
 }

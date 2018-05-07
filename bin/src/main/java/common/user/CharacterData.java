@@ -144,6 +144,14 @@ public class CharacterData {
         }
     }
     
+    public List<ItemSlotBase> getEquipped() {
+        return equipped;
+    }
+    
+    public List<ItemSlotBase> getEquipped2() {
+        return equipped2;
+    }
+    
     public final CharacterStat getCharacterStat() {
         return characterStat;
     }
@@ -162,6 +170,10 @@ public class CharacterData {
     
     public int getMoneyTrading() {
         return moneyTrading;
+    }
+    
+    public Map<Integer, Integer> getSkillRecord() {
+        return skillRecord;
     }
     
     public void load(ResultSet rs, byte flag) throws SQLException {

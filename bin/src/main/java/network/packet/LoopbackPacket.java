@@ -88,8 +88,7 @@ public class LoopbackPacket {
             BEGIN_MOB = 60,
             MobMove = 61,
             MobCtrlAck = 62,
-            // Might not be CtrlHint, need to confirm..,
-            MobCtrlHint = 63,
+            MobAffected = 63,
             END_MOB = 64,
             END_MOBPOOL = 65,
             BEGIN_NPCPOOL = 66,
@@ -97,7 +96,7 @@ public class LoopbackPacket {
             NpcLeaveField = 68,
             NpcChangeController = 69,
             BEGIN_NPC = 70,
-            NpcSpecialAction = 71,
+            NpcMove = 71,
             BEGIN_NPCTEMPLATE = 72,
             END_NPCTEMPLATE = 73,
             END_NPC = 74,
@@ -124,6 +123,7 @@ public class LoopbackPacket {
             CashShopChargeParamResult = 95,
             CashShopQueryCashResult = 96,
             CashShopCashItemResult = 97,
-            END_CASHSHOP = 98
+            END_CASHSHOP = 98,
+            NO = 99
     ;
 }

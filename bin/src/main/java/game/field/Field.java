@@ -20,6 +20,8 @@ package game.field;
 import game.field.MovePath.Elem;
 import game.field.drop.DropPool;
 import game.field.life.LifePool;
+import game.field.life.npc.Npc;
+import game.field.life.npc.NpcPool;
 import game.field.portal.PortalMap;
 import game.user.User;
 import game.user.UserRemote;
@@ -33,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
 import util.Logger;
@@ -258,7 +261,9 @@ public class Field {
     public boolean onEnter(final User user) {
         if (lock(1500)) {
             try {
-                // dropPool.onEnter
+                if (!dropPool.onEnter(user)) {
+                    return false;
+                }
                 if (!splitRegisterFieldObj(user.getCurrentPosition().x, user.getCurrentPosition().y, 0, user)) {
                     Logger.logError("Incorrect field position [%09d]", field);
                     return false;
@@ -266,7 +271,7 @@ public class Field {
                 splitRegisterUser(null, user.getSplit(), user);
                 user.setPosMap(this.field);
                 users.put(user.getCharacterID(), user);
-                // lifePool.InsertController
+                lifePool.insertController(user);
                 // Weather
                 // Jukebox
                 if (clock) {
@@ -292,11 +297,59 @@ public class Field {
         }
     }
     
+    public void onNpcMove(User ctrl, Npc npc, InPacket packet) {
+        if (npc.getController() != null && npc.getController().getUser() == ctrl) {
+            byte action = packet.decodeByte();
+            byte chatIdx = packet.decodeByte();
+            MovePath mp = null;
+            if (npc.getNpcTemplate().isMove()) {
+                mp = new MovePath();
+                mp.decode(packet);
+                if (!mp.getElem().isEmpty()) {
+                    Elem tail = mp.getElem().getLast();
+                    if (tail != null) {
+                        FieldSplit split = npc.getSplit();
+                        FieldSplit centerSplit = null;
+                        int x = ScreenHeightOffset * split.getCol() + leftTop.x - 100;
+                        int y = ScreenHeightOffset * split.getRow() + leftTop.y - 75;
+                        if (tail.getX() < x || tail.getX() > (x + WvsScreenWidth) || tail.getY() < y || tail.getY() > (y + WvsScreenHeight)) {
+                            centerSplit = splitFromPoint(tail.getX(), tail.getY());
+                            if (centerSplit == null) {
+                                Logger.logError("Incorrect field position from NPC [%d]", npc.getTemplateID());
+                                return;
+                            }
+                        }
+                        if (tail.getX() < npc.getOriginalPos().x - 50 || tail.getX() > npc.getOriginalPos().x + 50 || tail.getY() < npc.getOriginalPos().y - 50 || tail.getY() > npc.getOriginalPos().y + 50) {
+                            Logger.logError("Invalid NPC Position [ id : %d, field : %d, pos : %d, %d ]", npc.getTemplateID(), field, tail.getX(), tail.getY());
+                            lifePool.removeNpc(npc);
+                            return;
+                        }
+                        npc.setMovePosition(tail.getX(), tail.getY(), (byte) (tail.getMoveAction() & 0xFF), tail.getFh());
+                        if (centerSplit != null) {
+                            splitMigrateFieldObj(centerSplit, FieldSplit.Npc, npc);
+                        }
+                    }
+                }
+            }
+            splitSendPacket(ctrl.getSplit(), NpcPool.onMove(npc.getGameObjectID(), action, chatIdx, mp), ctrl);
+            ctrl.sendPacket(NpcPool.onMove(npc.getGameObjectID(), action, chatIdx, mp));
+            if (mp != null) {
+                mp.getElem().clear();
+            }
+        }
+    }
+    
     public void onPacket(User user, byte type, InPacket packet) {
-        
+        if (type >= ClientPacket.BEGIN_LIFEPOOL && type <= ClientPacket.END_LIFEPOOL) {
+            lifePool.onPacket(user, type, packet);
+        } else if (type >= ClientPacket.BEGIN_DROPPOOL && type <= ClientPacket.END_DROPPOOL) {
+            dropPool.onPacket(user, type, packet);
+        }
     }
     
     public void onUserMove(User user, InPacket packet, Rect move) {
+        packet.decodeByte(); // Unknown -> v3 = *(_BYTE *)(dword_60423C + 180);
+        
         MovePath mp = new MovePath();
         mp.decode(packet);
         if (mp.getElem().isEmpty()) {
@@ -517,7 +570,6 @@ public class Field {
                     }
                     if (splitNew != null) {
                         splitNew.getUser().add(user);
-                        //pUser.postHPChanged(false);
                     }
                 }
             } finally {
@@ -571,7 +623,7 @@ public class Field {
     }
     
     public void update(long time) {
-        //lifePool.update(time);
+        lifePool.update(time);
         dropPool.tryExpire(false);
     }
 }

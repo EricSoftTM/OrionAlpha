@@ -35,7 +35,6 @@ public class MovePath {
     }
     
     public void decode(InPacket packet) {
-        packet.decodeByte(); // Unknown -> v3 = *(_BYTE *)(dword_60423C + 180);
         this.x = packet.decodeShort();
         this.y = packet.decodeShort();
         

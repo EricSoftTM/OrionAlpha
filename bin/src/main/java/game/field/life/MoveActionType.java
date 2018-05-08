@@ -15,16 +15,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.field.life.mob;
+package game.field.life;
 
 /**
  *
  * @author Eric
  */
-public class MobLeaveField {
+public class MoveActionType {
     public static final byte
-            ETC                 = 0,
-            RemainHP            = 1,
-            SelfDestruct        = 2
+            Walk                = 1,
+            Move                = 1,
+            Stand               = 2,
+            Jump                = 3,
+            Alert               = 4,
+            Prone               = 5,
+            Fly1                = 6,
+            Ladder              = 7,
+            Rope                = 8,
+            Dead                = 9,
+            Sit                 = 10,
+            Stand0              = 11,
+            NO                  = 12
     ;
 }

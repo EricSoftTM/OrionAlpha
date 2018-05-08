@@ -23,14 +23,18 @@ import game.field.GameObjectType;
 import game.field.MovePath;
 import game.field.drop.Reward;
 import game.field.life.Controller;
+import game.field.life.MoveAbility;
 import game.user.User;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import network.packet.OutPacket;
+import util.Logger;
 import util.Pointer;
+import util.Rand32;
 
 /**
  *
@@ -113,6 +117,14 @@ public class Mob extends Creature {
         stat.encodeTemporary(packet, 0);
     }
     
+    public Controller getController() {
+        return controller;
+    }
+    
+    public Point getCurrentPos() {
+        return curPos;
+    }
+    
     public int getEXP() {
         return template.getEXP();
     }
@@ -120,6 +132,10 @@ public class Mob extends Creature {
     @Override
     public int getGameObjectTypeID() {
         return GameObjectType.Mob;
+    }
+    
+    public int getHP() {
+        return hp;
     }
     
     public final byte getLevel() {
@@ -136,6 +152,14 @@ public class Mob extends Creature {
     
     public void getMobStat(MobStat mobStat) {
         
+    }
+    
+    public int getMP() {
+        return mp;
+    }
+    
+    public MobTemplate getTemplate() {
+        return template;
     }
     
     @Override
@@ -159,6 +183,10 @@ public class Mob extends Creature {
         
     }
     
+    public boolean isNextAttackPossible() {
+        return nextAttackPossible;
+    }
+    
     public boolean isTimeToRemove(long time, boolean fixedMob) {
         if (fixedMob) {
             return System.currentTimeMillis() - create >= 30000;
@@ -179,5 +207,91 @@ public class Mob extends Creature {
             deadType = MobLeaveField.ETC;
         }
         return MobPool.onMobLeaveField(getGameObjectID(), deadType);
+    }
+    
+    public boolean onMobMove(boolean nextAttackPossible, byte action, int data) {
+        // TODO
+        
+        return true;
+    }
+    
+    public void sendChangeControllerPacket(User user, byte level) {
+        if (user != null) {
+            if (level != 0) {
+                user.sendPacket(MobPool.onMobChangeController(this, 0, level));
+            } else {
+                sendReleaseControlPacket(user, getGameObjectID());
+            }
+        }
+    }
+    
+    public static void sendReleaseControlPacket(User user, int mobID) {
+        if (user != null) {
+            user.sendPacket(MobPool.onMobChangeController(null, mobID, (byte) 0));
+        }
+    }
+    
+    public void setController(Controller ctrl) {
+        this.nextAttackPossible = false;
+        //this.skillCommand = 0;
+        this.controller = ctrl;
+        long time = System.currentTimeMillis();
+        this.lastAttack = time;
+        this.lastMove = time;
+    }
+    
+    public void setForcedDead(boolean forced) {
+        this.forcedDead = forced;
+    }
+    
+    public void setMobType(int type) {
+        this.mobType = type;
+    }
+    
+    public boolean setMovePosition(int x, int y, byte moveAction, short sn) {
+        byte action = (byte) (moveAction >> 1);
+        if (action < 1 || action >= 17) {
+            return false;
+        } else {
+            if (this.curPos == null) {
+                this.curPos = new Point(0, 0);
+            }
+            this.curPos.x = x;
+            this.curPos.y = y;
+            this.moveAction = moveAction;
+            this.footholdSN = template.getMoveAbility() != MoveAbility.Fly ? sn : 0;
+            return true;
+        }
+    }
+    
+    public void setRemoved() {
+        GameObjectBase.unregisterGameObject(this);
+        if (mobGen != null) {
+            if (mobGen.regenInterval != 0) {
+                int mobCount = mobGen.mobCount.decrementAndGet();
+                if (mobCount == 0) {
+                    long regen = 0;
+                    int delay = 7 * mobGen.regenInterval / 10;
+                    if (delay != 0)
+                        regen = 13 * mobGen.regenInterval / 10 + Rand32.getInstance().random() % delay;
+                    mobGen.regenAfter = regen + System.currentTimeMillis();
+                }
+            }
+        }
+    }
+    
+    public void update(long time) {
+        if (hp <= 0)
+            return;
+        if (time - lastMove > 5000) {
+            getField().getLifePool().changeMobController(0, this, false);
+            lastAttack = time;
+            lastMove = time;
+        }
+        for (Iterator<Integer> it = attackers.values().iterator(); it.hasNext();) {
+            int attackTime = it.next();
+            if (time - attackTime > 1000 * 5)
+                it.remove();
+        }
     }
 }

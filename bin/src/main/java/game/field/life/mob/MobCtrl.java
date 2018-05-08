@@ -21,10 +21,15 @@ package game.field.life.mob;
  *
  * @author Eric
  */
-public class MobLeaveField {
+public class MobCtrl {
     public static final byte
-            ETC                 = 0,
-            RemainHP            = 1,
-            SelfDestruct        = 2
+            Passive         = -1,
+            Passive0        = -2,
+            Passive1        = -3,
+
+            Active_Int      = 1,
+            Active_Req      = 2,
+            Active_Perm0    = 3,
+            Active_Perm1    = 4
     ;
 }

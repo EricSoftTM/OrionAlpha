@@ -18,15 +18,18 @@
 package game.field.life;
 
 import game.field.Field;
+import game.field.FieldOpt;
 import game.field.StaticFoothold;
 import game.field.life.heapbase.CompareCtrlMax;
 import game.field.life.heapbase.CompareCtrlMin;
 import game.field.life.mob.Mob;
+import game.field.life.mob.MobCtrl;
 import game.field.life.mob.MobGen;
 import game.field.life.mob.MobTemplate;
 import game.field.life.npc.Npc;
 import game.field.life.npc.NpcTemplate;
 import game.user.User;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +41,7 @@ import util.Logger;
 import util.Pointer;
 import util.Rand32;
 import util.Range;
+import util.Rect;
 import util.wz.WzProperty;
 import util.wz.WzUtil;
 
@@ -124,13 +128,93 @@ public class LifePool {
         }
     }
     
+    public boolean createMob(int templateID, MobGen pmg, int x, int y, short fh, boolean noDropPriority, byte left, int mobType, Controller owner) {
+        if (owner == null) {
+            if (ctrlMin.getCount() != 0) {
+                owner = ctrlMin.getHeap().get(0);
+            }
+        }
+        if (owner != null && owner.getCtrlCount() >= 50) {
+            if (mobType != 2 || !giveUpMobController(owner)) {
+                owner = null;
+            }
+        }
+        if (pmg != null && pmg.regenInterval < 0) {
+            owner = ctrlNull;
+        }
+        MobTemplate template = MobTemplate.getMobTemplate(templateID);
+        if (template != null && owner != null) {
+            if (owner.getUser().isHide()) {
+                return false;
+            }
+            Mob mob = new Mob(field, template, noDropPriority);
+            mob.init(pmg, fh);
+            byte moveAction;
+            if (template.getMoveAbility() == MoveAbility.Fly) {
+                moveAction = MoveActionType.Fly1;
+            } else {
+                moveAction = template.getMoveAbility() == MoveAbility.Stop ? MoveActionType.Stand : MoveActionType.Move;
+            }
+            mob.setMovePosition(x, y, (byte) ((left & 1 | 2 * moveAction) & 0xFF), fh);
+            //mob.setMoveRect(new Rect(x, y, x, y));
+            mob.setController(owner);
+            
+            if (mobType == 1) {
+                if (subMobCount < 0)
+                    subMobCount = 0;
+                ++subMobCount;
+                mob.setMobType(1);
+            }
+            if (mobType == 2)
+                mob.setMobType(2);
+            
+            Point pt = field.makePointInSplit(x, y);
+            field.splitRegisterFieldObj(pt.x, pt.y, 1, mob);
+            
+            mobs.put(mob.getGameObjectID(), mob);
+            mob.sendChangeControllerPacket(owner.getUser(), MobCtrl.Active_Int);
+            owner.getCtrlMob().add(mob);
+            updateCtrlHeap(owner);
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean giveUpMobController(Controller ctrl) {
+        Logger.logError("* GiveUpMobController Happened");
+        if (ctrl != null && !ctrl.getCtrlMob().isEmpty()) {
+            Mob ctrlMob = ctrl.getCtrlMob().get(0);//pHead
+            if (ctrlMob != null) {
+                for (Mob mob : ctrl.getCtrlMob()) {
+                    if (mob != null) {
+                        ctrlMob = mob;
+                    }
+                }
+            }
+            if (ctrlMob != null) {
+                ctrl.getCtrlMob().remove(ctrlMob);
+                updateCtrlHeap(ctrl);
+                ctrlNull.getCtrlMob().add(ctrlMob);
+                ctrlMob.setController(ctrlNull);
+                updateCtrlHeap(ctrlNull);//func literally ignores pCtrlNull but they call it anyway, k.
+                ctrlMob.sendChangeControllerPacket(ctrl.getUser(), (byte) 0);
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void init(Field field, WzProperty mapData) {
         if (getField() != field || mapData == null) {
             return;
         }
         
-        this.mobCapacityMin = 0;
-        this.mobCapacityMax = 0;
+        int mapWidth = Math.max(field.getMapSize().cx, Field.WvsScreenWidth);
+        int mapHeight = Math.max(field.getMapSize().cy - Field.ScreenHeightOffset, Field.WvsScreenHeight);
+        int mobCapacity = Math.min(40, Math.max(1, (int) ((double) (mapHeight * mapWidth) * field.getMobRate() * 0.0000078125d)));
+        
+        this.mobCapacityMin = mobCapacity;
+        this.mobCapacityMax = 1 << mobCapacity;
         for (WzProperty life : mapData.getNode("life").getChildNodes()) {
             String id = WzUtil.getString(life.getNode("id"), "");
             String type = WzUtil.getString(life.getNode("type"), "");
@@ -179,6 +263,7 @@ public class LifePool {
                 }
                 pmg.mobCount.set(0);
                 
+                Logger.logReport("added mob %s to field %d", id, field.getFieldID());
                 this.mobGen.add(pmg);
                 this.initMobGenCount++;
             }
@@ -188,8 +273,37 @@ public class LifePool {
         this.tryCreateMob(true);
     }
     
+    public void removeAllMob() {
+        if (field.lock()) {
+            try {
+                List<Mob> mob = new ArrayList<>(mobs.values());
+                for (Mob m : mob) {
+                    m.setForcedDead(true);
+                    removeMob(m);
+                }
+                mob.clear();
+            } finally {
+                field.unlock();
+            }
+        }
+    }
+    
     public void update(long time) {
-        
+        if (field.lock(1200)) {
+            try {
+                //for (Npc npc : npcs.values()) {
+                //    npc.update(time);
+                //}
+                List<Mob> mob = new ArrayList<>(mobs.values());
+                for (Mob m : mob) {
+                    m.update(time);
+                }
+                mob.clear();
+            } finally {
+                field.unlock();
+            }
+        }
+        tryCreateMob(false);
     }
     
     public void insertController(User user) {
@@ -248,7 +362,7 @@ public class LifePool {
             it.remove();
         }
         // Assume reiteration from head.
-        /*index = 0;
+        index = 0;
         for (Iterator<Mob> it = controller.getCtrlMob().iterator(); it.hasNext();) {
             Mob mob = it.next();
             ctrl = ctrlMin.getHeap().get(index);
@@ -260,50 +374,48 @@ public class LifePool {
             updateCtrlHeap(ctrl);
             mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
             it.remove();
-        }*/
+        }
         // Assume final reiteration from head of each heap.
         index = 0;
         while (true) {
-            Controller pCtrlMin = ctrlMin.getHeap().get(index);
-            Controller pCtrlMax = ctrlMax.getHeap().get(index);
+            Controller minCtrl = ctrlMin.getHeap().get(index);
+            Controller maxCtrl = ctrlMax.getHeap().get(index);
             
-            if (pCtrlMax.getCtrlCount() <= pCtrlMin.getCtrlCount() || pCtrlMax.getCtrlCount() <= 20) {
+            if (maxCtrl.getCtrlCount() <= minCtrl.getCtrlCount() || maxCtrl.getCtrlCount() <= 20) {
                 return;
             }
             
-            if (!pCtrlMax.getCtrlNpc().isEmpty()) {
-                Npc npc = pCtrlMax.getCtrlNpc().remove(0);
-                updateCtrlHeap(pCtrlMax);
-                pCtrlMin.getCtrlNpc().add(npc);
-                npc.setController(pCtrlMin);
-                updateCtrlHeap(pCtrlMin);
-                npc.sendChangeControllerPacket(pCtrlMax.getUser(), false);
-                npc.sendChangeControllerPacket(pCtrlMin.getUser(), true);
+            if (!maxCtrl.getCtrlNpc().isEmpty()) {
+                Npc npc = maxCtrl.getCtrlNpc().remove(0);
+                updateCtrlHeap(maxCtrl);
+                minCtrl.getCtrlNpc().add(npc);
+                npc.setController(minCtrl);
+                updateCtrlHeap(minCtrl);
+                npc.sendChangeControllerPacket(maxCtrl.getUser(), false);
+                npc.sendChangeControllerPacket(minCtrl.getUser(), true);
                 continue;
             }
             
-            if (pCtrlMax.getCtrlMob().isEmpty() || pCtrlMax.getCtrlMob().get(0) == null)
+            if (maxCtrl.getCtrlMob().isEmpty() || maxCtrl.getCtrlMob().get(0) == null)
                 break;
-            /*
-            Mob mob = pCtrlMax.getCtrlMob().get(0);
-            if (mob == null || mob.getTemplateID() == Mob.FixedMobID) {
-                for (Mob p : pCtrlMax.getCtrlMob()) {
-                    if (p != null && p.getTemplateID() != Mob.FixedMobID) {
+            Mob mob = maxCtrl.getCtrlMob().get(0);
+            if (mob == null) {
+                for (Mob p : maxCtrl.getCtrlMob()) {
+                    if (p != null) {
                         mob = p;
                         break;
                     }
                 }
             }
-            if (mob == null || mob.getTemplateID() == Mob.FixedMobID)
+            if (mob == null)
                 break;
-            pCtrlMax.getCtrlMob().remove(mob);
-            updateCtrlHeap(pCtrlMax);
-            pCtrlMin.getCtrlMob().add(mob);
-            mob.setController(pCtrlMin);
-            updateCtrlHeap(pCtrlMin);
-            mob.sendChangeControllerPacket(pCtrlMax.getUser(), 0);
-            mob.sendChangeControllerPacket(pCtrlMin.getUser(), MobCtrl.Active_Int);
-            */
+            maxCtrl.getCtrlMob().remove(mob);
+            updateCtrlHeap(maxCtrl);
+            minCtrl.getCtrlMob().add(mob);
+            mob.setController(minCtrl);
+            updateCtrlHeap(minCtrl);
+            mob.sendChangeControllerPacket(maxCtrl.getUser(), (byte) 0);
+            mob.sendChangeControllerPacket(minCtrl.getUser(), MobCtrl.Active_Int);
         }
     }
     
@@ -311,12 +423,123 @@ public class LifePool {
         return true;
     }
     
-    public void tryCreateMob(boolean reset) {
-        
+    public void setMobGen(boolean mobGen, Integer mobTemplateID) {
+        if (mobTemplateID != 0) {
+            if (mobGen) {
+                mobGenExcept.remove(mobTemplateID);
+            } else {
+                if (!mobGenExcept.contains(mobTemplateID)) {
+                    mobGenExcept.add(mobTemplateID);
+                }
+            }
+        } else {
+            mobGenEnable = mobGen;
+        }
     }
     
-    public boolean createMob() {
-        return true;
+    public void tryCreateMob(boolean reset) {
+        if (reset) {
+            setMobGen(true, 0);
+        }
+        if (mobGen.isEmpty() || mobGenCount == 0) {
+            return;
+        }
+        long time = System.currentTimeMillis();
+        if (reset || (time - lastCreateMobTime) >= 7000) {
+            int mobCapacity;
+            if (ctrlMin.getCount() > mobCapacityMin / 2) {
+                mobCapacity = ctrlMin.getCount() < 2 * mobCapacityMin ? mobCapacityMin + (mobCapacityMax - mobCapacityMin) * (2 * ctrlMin.getCount() - mobCapacityMin) / (3 * mobCapacityMin) : mobCapacityMax;
+            } else {
+                mobCapacity = mobCapacityMin;
+            }
+            int mobCount = mobCapacity - mobs.size();
+            if (mobCount <= 0) {
+                return;
+            }
+            if (field.lock()) {
+                try {
+                    final List<Mob> mob = new ArrayList<>(mobs.values());
+                    final List<Point> points = new ArrayList<>();
+                    final List<MobGen> mobGens = new ArrayList<>();
+                    int count = 0;
+                    for (Iterator<Mob> it = mob.iterator(); it.hasNext();) {
+                        Mob m = it.next();
+                        if (m != null) {
+                            if (m.getTemplateID() != 9999999) {
+                                points.add(new Point(m.getCurrentPos().x, m.getCurrentPos().y));
+                            }
+                        } else {
+                            it.remove();
+                        }
+                    }
+                    boolean checkArea = false;
+                    for (MobGen pmg : mobGen) {
+                        if (!mobGenEnable) {
+                            break;
+                        }
+                        if (!mobGenExcept.contains(pmg.templateID)) {
+                            if (pmg.regenInterval == 0) {
+                                checkArea = true;
+                            } else {
+                                if (pmg.regenInterval >= 0 || reset) {
+                                    if (pmg.mobCount.get() == 0 && time - pmg.regenAfter >= 0) {
+                                        mobGens.add(pmg);
+                                        points.add(new Point(pmg.x, pmg.y));
+                                    }
+                                }
+                            }
+                        }
+                        if (checkArea) {
+                            Rect rc = new Rect(pmg.x - 100, pmg.y - 100, pmg.x + 100, pmg.y + 100);
+                            boolean add = true;
+                            int i = 0;
+                            while (i < points.size()) {
+                                Point pt = points.get(i);
+                                if (pt == null) {
+                                    break;
+                                }
+                                if (rc.ptInRect(pt)) {
+                                    add = false;
+                                    break;
+                                }
+                                ++i;
+                            }
+                            if (add) {
+                                mobGens.add(pmg);
+                                points.add(new Point(pmg.x, pmg.y));
+                            }
+                            checkArea = false;
+                        }
+                        ++count;
+                        if (count >= mobGenCount) {
+                            break;
+                        }
+                    }
+                    if (!mobGens.isEmpty()) {
+                        int index;
+                        while (true) {
+                            if (mobGens.isEmpty())
+                                break;
+                            index = (int) (Rand32.getInstance().random() % mobGens.size());
+                            MobGen pmg = mobGens.remove(index);
+                            if (pmg == null)
+                                continue;
+                            if (createMob(pmg.templateID, pmg, pmg.x, pmg.y, pmg.fh, false, pmg.f, 0, null))
+                                --mobCount;
+                            if (mobCount <= 0) {
+                                break;
+                            }
+                        }
+                    }
+                    mob.clear();
+                    points.clear();
+                    mobGens.clear();
+                } finally {
+                    field.unlock();
+                }
+                lastCreateMobTime = time;
+            }
+        }
     }
     
     public void removeMob(Mob mob) {
@@ -328,7 +551,19 @@ public class LifePool {
     }
     
     public void onMobPacket(User user, byte type, InPacket packet) {
-        
+        int mobID = packet.decodeInt();
+        if (mobs.containsKey(mobID)) {
+            Mob mob = mobs.get(mobID);
+            switch (type) {
+                case ClientPacket.MobMove:
+                    field.onMobMove(user, mob, packet);
+                    break;
+            }
+        } else {
+            if (type == ClientPacket.MobMove) {
+                Mob.sendReleaseControlPacket(user, mobID);
+            }
+        }
     }
     
     public void onPacket(User user, byte type, InPacket packet) {

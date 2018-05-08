@@ -20,6 +20,8 @@ package game.field;
 import game.field.MovePath.Elem;
 import game.field.drop.DropPool;
 import game.field.life.LifePool;
+import game.field.life.mob.Mob;
+import game.field.life.mob.MobPool;
 import game.field.life.npc.Npc;
 import game.field.life.npc.NpcPool;
 import game.field.portal.PortalMap;
@@ -112,6 +114,14 @@ public class Field {
     
     public LifePool getLifePool() {
         return lifePool;
+    }
+    
+    public Size getMapSize() {
+        return map;
+    }
+    
+    public double getMobRate() {
+        return mobRate;
     }
     
     public WvsPhysicalSpace2D getSpace2D() {
@@ -294,6 +304,61 @@ public class Field {
             } finally {
                 unlock();
             }
+        }
+    }
+    
+    public void onMobMove(User ctrl, Mob mob, InPacket packet) {
+        short mobCtrlSN = packet.decodeShort();
+        byte mobCtrlState = packet.decodeByte();//bDirLeft | (unsigned __int8)(16 * nMobCtrlState)
+        boolean nextAttackPossible = (mobCtrlState & 0xF) != 0;
+        byte action = packet.decodeByte();//2 * nAction | bLeft & 1
+        int data = packet.decodeInt();
+        
+        if (mob.getController().getUser() != ctrl && ((mobCtrlState & 0xF0) == 0 || mob.isNextAttackPossible() 
+                || !lifePool.changeMobController(ctrl.getCharacterID(), mob, true))) {
+            mob.sendChangeControllerPacket(ctrl, (byte) 0);
+            return;
+        }
+        
+        byte left = action;
+        if (action < 0)
+            action = -1;
+        else
+            action = (byte) ((action >> 1) & 0xFF);
+        if (mob.onMobMove(nextAttackPossible, action, data)) {
+            ctrl.sendPacket(MobPool.onCtrlAck(mob.getGameObjectID(), mobCtrlSN, nextAttackPossible, mob.getMP()));
+            MovePath mp = new MovePath();
+            mp.decode(packet);
+            if (!mp.getElem().isEmpty()) {
+                Elem tail = mp.getElem().getLast();
+                FieldSplit splitOld = mob.getSplit();
+                FieldSplit centerSplit = null;
+                int x = tail.getX();
+                int y = tail.getY();
+                if (splitOld == null 
+                        || tail.getX() < (x = ScreenWidthOffset * splitOld.getCol() + leftTop.x - 100) 
+                        || tail.getX() > (x + WvsScreenWidth)
+                        || tail.getY() < (y = ScreenHeightOffset * splitOld.getRow() + leftTop.y - 75)
+                        || tail.getY() > (y + WvsScreenHeight)) {
+                    centerSplit = splitFromPoint(tail.getX(), tail.getY());
+                    if (splitOld == null || centerSplit == null) {
+                        Logger.logError("Incorrect field position from mob [%d,%d] [%p,(%d,%d)] [%p,%p,%d]");
+                        if (!mob.getTemplate().isBoss()) {//pMob.dwTemplateID / 10000 != 880 && pMob.dwTemplateID / 10000 != 881;
+                            lifePool.removeMob(mob);
+                        }
+                        return;
+                    }
+                }
+                if (!mob.setMovePosition(tail.getX(), tail.getY(), (byte) (tail.getMoveAction() & 0xFF), tail.getFh())) {
+                    Logger.logError("Invalid Mob MoveAction (Disconnect), Level : %d", ctrl.getLevel());
+                    //ctrl.incHackingCount(HackingAutoBlock.Move);
+                }
+                if (centerSplit != null) {
+                    splitMigrateFieldObj(centerSplit, FieldSplit.Mob, mob);
+                }
+                splitSendPacket(mob.getSplit(), MobPool.onMove(mob.getGameObjectID(), nextAttackPossible, left, data, mp), ctrl);
+            }
+            mp.getElem().clear();
         }
     }
     

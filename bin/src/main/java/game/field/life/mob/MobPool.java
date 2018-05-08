@@ -48,7 +48,7 @@ public class MobPool {
         return packet;
     }
     
-    public static OutPacket onCtrlAck(int mobID, short mobCtrlSN, boolean nextAttackPossible, short mp) {
+    public static OutPacket onCtrlAck(int mobID, short mobCtrlSN, boolean nextAttackPossible, int mp) {
         OutPacket packet = new OutPacket(LoopbackPacket.MobCtrlAck);
         packet.encodeInt(mobID);
         packet.encodeShort(mobCtrlSN);

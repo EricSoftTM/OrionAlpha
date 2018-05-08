@@ -108,8 +108,8 @@ public class UserRemote {
         OutPacket packet = new OutPacket(LoopbackPacket.UserAvatarModified);
         packet.encodeInt(user.getCharacterID());
         packet.encodeInt(avatarModFlag);
-        if ((avatarModFlag & AvatarLook.Unknown1) != 0) {
-            packet.encodeInt(0);
+        if ((avatarModFlag & AvatarLook.Face) != 0) {
+            packet.encodeInt(user.getCharacter().getCharacterStat().getFace());
         }
         if ((avatarModFlag & AvatarLook.Unknown2) != 0) {
             packet.encodeInt(0);

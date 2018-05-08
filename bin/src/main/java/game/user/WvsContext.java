@@ -91,7 +91,7 @@ public class WvsContext {
         packet.encodeByte(user.getCharacter().getCharacterStat().getLevel());
         packet.encodeShort(user.getCharacter().getCharacterStat().getJob());
         packet.encodeShort(user.getCharacter().getCharacterStat().getPOP());
-        packet.encodeString(user.getCharacterName());// i think?
+        packet.encodeString(user.getCommunity());
         return packet;
     }
     

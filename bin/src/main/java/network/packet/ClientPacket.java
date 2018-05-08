@@ -42,7 +42,7 @@ public class ClientPacket {
             UserMeleeAttack = 16,
             UserShootAttack = 17,
             UserMagicAttack = 18,
-            BEGIN_UNKNOWN = 19,
+            Unknown19 = 19,
             UserHit = 20, 
             UserChat = 21,
             UserEmotion = 22,
@@ -59,9 +59,9 @@ public class ClientPacket {
             UserSkillUpRequest = 33, // 00596859
             UserSkillUseRequest = 34, // 00548191
             UserDropMoneyRequest = 35,
-            Unknown36 = 36, // 00596C14
-            END_UNKNOWN = 37,
-            Unknown38 = 38, // 00596DDA
+            UserGivePopularityRequest = 36, // 00596C14
+            UserPartyRequest = 37, 
+            UserCharacterInfoRequest = 38, // 00596DDA
             Unknown39 = 39, // 00486F0C, command-related?
             Whisper = 40, // 004879AA
             Messenger = 41, // 00503603

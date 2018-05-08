@@ -31,11 +31,11 @@ public class UserPool {
         packet.encodeInt(user.getCharacterID());
         
         packet.encodeString(user.getCharacterName());
-        packet.encodeByte(0);
+        packet.encodeByte(user.getCharacter().getCharacterStat().getGender());
         
         user.getSecondaryStat().encodeForRemote(packet, 0);
         
-        packet.encodeInt(0);
+        packet.encodeInt(user.getCharacter().getCharacterStat().getFace());
         packet.encodeInt(0);
         packet.encodeInt(0);
         

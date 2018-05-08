@@ -408,7 +408,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
         }
         if (type == ClientPacket.AliveAck) {
-            
+            sendPacket(onAliveReq(packet.decodeInt()), false);
         } else if (type >= ClientPacket.BEGIN_SOCKET && type <= ClientPacket.END_SOCKET) {
             switch (type) {
                 case ClientPacket.CheckPassword:

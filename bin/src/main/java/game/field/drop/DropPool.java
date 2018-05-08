@@ -21,6 +21,8 @@ import game.field.Field;
 import game.field.FieldSplit;
 import game.field.StaticFoothold;
 import game.user.User;
+import game.user.WvsContext;
+import game.user.WvsContext.Request;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -157,7 +159,38 @@ public class DropPool {
     }
     
     public void onPickUpRequest(User user, InPacket packet) {
-        // soonTM
+        // TODO: Check if in DarkSight
+        
+        int dropID = packet.decodeInt();
+        if (field.lock(1200)) {
+            try {
+                Drop drop = drops.get(dropID);
+                if (drop == null) {
+                    return;
+                }
+                if (!drop.isShowTo(user)) {
+                    user.sendDropPickUpFailPacket(Request.Excl);
+                    return;
+                }
+                if (drop.getItem() != null) {
+                    // TODO: Check if item is one-of-a-kind and if they already have one.
+                }
+                boolean pickUp = false;
+                if (drop.isEverlasting()) {
+                    // these don't technically exist yet, so ignore these.
+                } else {
+                    pickUp = user.sendDropPickUpResultPacket(drop, Request.Excl);
+                }
+                if (pickUp) {
+                    drops.remove(dropID);
+                    for (FieldSplit split : drop.getSplits()) {
+                        field.splitUnregisterFieldObj(split, 4, drop, drop.makeLeaveFieldPacket(Drop.PickedUpByUser, user.getCharacterID()));
+                    }
+                }
+            } finally {
+                field.unlock();
+            }
+        }
     }
     
     public static OutPacket onDropEnterField(Drop drop, int enterType, int delay) {

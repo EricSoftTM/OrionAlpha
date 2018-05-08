@@ -1241,7 +1241,9 @@ public class User extends Creature {
             try {
                 if (force || time - lastCharacterDataFlush >= 300000) {
                     if (characterDataModFlag != 0) {
-                        // TODO: DB Saving
+                        if ((characterDataModFlag & DBChar.Character) != 0) {
+                            GameDB.rawSaveCharacter(character.getCharacterStat());
+                        }
                         
                         characterDataModFlag = 0;
                     }

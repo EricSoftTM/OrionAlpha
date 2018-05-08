@@ -27,6 +27,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 import util.FileTime;
 
 /**
@@ -159,6 +160,18 @@ public class GameDB {
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE `character` SET `CharacterName` = ?, `Gender` = ?, `Skin` = ?, `Face` = ?, `Hair` = ?, `Level` = ?, `Job` = ?, `STR` = ?, `DEX` = ?, `INT` = ?, `LUK` = ?, `HP` = ?, `MP` = ?, `MaxHP` = ?, `MaxMP` = ?, `AP` = ?, `SP` = ?, `EXP` = ?, `POP` = ?, `Money` = ?, `Map` = ?, `Portal` = ? WHERE `CharacterID` = ?")) {
                 Database.execute(con, ps, cs.getName(), cs.getGender(), cs.getSkin(), cs.getFace(), cs.getHair(), cs.getLevel(), cs.getJob(), cs.getSTR(), cs.getDEX(), cs.getINT(), cs.getLUK(), cs.getHP(), cs.getMP(), cs.getMHP(), cs.getMMP(), cs.getAP(), cs.getSP(), cs.getEXP(), cs.getPOP(), cs.getMoney(), cs.getPosMap(), cs.getPortal(), cs.getCharacterID());
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public static void rawSaveSkillRecord(int characterID, Map<Integer, Integer> skillRecord) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `skillrecord` SET `Info` = ? WHERE `CharacterID` = ? AND `SkillID` = ?")) {
+                for (Map.Entry<Integer, Integer> skill : skillRecord.entrySet()) {
+                    Database.execute(con, ps, skill.getValue(), characterID, skill.getKey());
+                }
             }
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);

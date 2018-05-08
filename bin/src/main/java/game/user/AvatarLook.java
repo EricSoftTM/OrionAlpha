@@ -18,6 +18,8 @@
 package game.user;
 
 import common.item.BodyPart;
+import common.item.ItemSlotBase;
+import common.user.CharacterStat;
 import java.util.ArrayList;
 import java.util.List;
 import network.packet.OutPacket;
@@ -28,39 +30,45 @@ import network.packet.OutPacket;
  */
 public class AvatarLook {
     public static final int
-            Unknown1    = 0x1,
-            Look        = 0x2,//Hack mask until I figure this shit out
+            Face        = 0x1,
+            Look        = 0x2,//Hack mask
             Unknown2    = 0x4,
             Unknown3    = 0x8
     ;
     
-    private final List<Integer> equipped;
-    private final List<Integer> equipped2;
+    private final List<Integer> hairEquip;
     
     public AvatarLook() {
-        this.equipped = new ArrayList<>();
-        this.equipped2 = new ArrayList<>();
+        this.hairEquip = new ArrayList<>();
         for (int i = 0; i < BodyPart.BP_Count + 1; i++) {
-            this.equipped.add(i, 0);
-            //this.equipped2.add(i, 0);
+            this.hairEquip.add(i, 0);
+        }
+    }
+    
+    public void load(CharacterStat cs, List<ItemSlotBase> equipped, List<ItemSlotBase> equipped2) {
+        this.hairEquip.set(0, cs.getHair());
+        for (int i = 1; i <= BodyPart.BP_Count; i++) {
+            if (equipped2.get(i) != null) {
+                this.hairEquip.set(i, equipped2.get(i).getItemID());
+            } else {
+                if (equipped.get(i) != null) {
+                    this.hairEquip.set(i, equipped.get(i).getItemID());
+                }
+            }
         }
     }
     
     public void encode(OutPacket packet) {
-        for (int pos = 1; pos < equipped.size(); pos++) {
-            if (equipped.get(pos) > 0) {
+        for (int pos = 0; pos < hairEquip.size(); pos++) {
+            if (hairEquip.get(pos) > 0) {
                 packet.encodeByte(pos);
-                packet.encodeInt(equipped.get(pos));
+                packet.encodeInt(hairEquip.get(pos));
             }
         }
         packet.encodeByte(-1);
     }
     
     public List<Integer> getEquipped() {
-        return equipped;
-    }
-    
-    public List<Integer> getEquipped2() {
-        return equipped2;
+        return hairEquip;
     }
 }

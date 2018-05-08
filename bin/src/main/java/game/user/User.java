@@ -18,6 +18,7 @@
 package game.user;
 
 import common.item.BodyPart;
+import common.item.ItemSlotBase;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.DBChar;
@@ -26,14 +27,17 @@ import game.field.Field;
 import game.field.FieldMan;
 import game.field.GameObjectType;
 import game.field.Stage;
+import game.field.drop.Drop;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.field.life.AttackIndex;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
 import game.user.WvsContext.Request;
+import game.user.item.ChangeLog;
 import game.user.item.InventoryManipulator;
 import game.user.skill.SkillRecord;
+import game.user.skill.UserSkill;
 import game.user.skill.UserSkillRecord;
 import game.user.stat.SecondaryStat;
 import java.awt.Point;
@@ -82,7 +86,9 @@ public class User extends Creature {
     private long lastCharacterDataFlush;
     private long nextGeneralItemCheck;
     private long nextCheckCashItemExpire;
-    
+    private String community;
+    // Skills
+    private final UserSkill userSkill;
     // Hide
     private boolean hide;
     private boolean adminHide;
@@ -168,6 +174,7 @@ public class User extends Creature {
         this.nextCheckCashItemExpire = time;
         this.nexonClubID = "";
         this.characterName = "";
+        this.community = "#TeamEric";
         
         this.curPos = new Point(0, 0);
         this.lock = new ReentrantLock();
@@ -175,6 +182,7 @@ public class User extends Creature {
         this.secondaryStat = new SecondaryStat();
         this.avatarLook = new AvatarLook();
         this.rndActionMan = new Rand32();
+        this.userSkill = new UserSkill(this);
         this.character = GameDB.rawLoadCharacter(characterID);
     }
     
@@ -819,6 +827,10 @@ public class User extends Creature {
         return false;
     }
     
+    public String getCommunity() {
+        return community;
+    }
+    
     public Point getCurrentPosition() {
         return curPos;
     }
@@ -938,7 +950,7 @@ public class User extends Creature {
                 onDropMoneyRequest(packet);
                 break;
             case ClientPacket.UserSkillUpRequest:
-                onSkillUpRequest(packet);
+                userSkill.onSkillUpRequest(packet);
                 break;
             case ClientPacket.UserHit:
                 onHit(packet);
@@ -947,6 +959,12 @@ public class User extends Creature {
             case ClientPacket.UserShootAttack:
             case ClientPacket.UserMagicAttack:
                 onAttack(packet);
+                break;
+            case ClientPacket.UserSkillUseRequest:
+                userSkill.onSkillUseRequest(packet);
+                break;
+            case ClientPacket.UserCharacterInfoRequest:
+                onCharacterInfoRequest(packet);
                 break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
@@ -1003,9 +1021,26 @@ public class User extends Creature {
                     sendPacket(WvsContext.onStatChanged(Request.None, character.getCharacterStat(), secondaryStat, CharacterStatType.Job));
                 }
             }
+            if (arg[0].equals("!fixme")) {
+                sendPacket(WvsContext.onStatChanged(Request.Excl, null, null, 0));
+            }
         }
         
         getField().splitSendPacket(getSplit(), UserCommon.onChat(characterID, text), null);
+    }
+    
+    public void onCharacterInfoRequest(InPacket packet) {
+        User target = User.findUser(packet.decodeInt());
+        if (target == null || target.isGM()) {
+            sendCharacterStat(Request.Excl, 0);
+        } else {
+            target.lock.lock();
+            try {
+                sendPacket(WvsContext.onCharacterInfo(target));
+            } finally {
+                target.unlock();
+            }
+        }
     }
     
     public void onEmotion(InPacket packet) {
@@ -1088,22 +1123,6 @@ public class User extends Creature {
         getField().splitSendPacket(getSplit(), UserRemote.onHit(this.characterID, mobAttackIdx, clientDamage, mobTemplateID, left, reflect, mobID, hitAction, hit), this);
     }
     
-    public void onSkillUpRequest(InPacket packet) {
-        lock.lock();
-        try {
-            int skillID = packet.decodeInt();
-            List<SkillRecord> change = new ArrayList<>();
-            if (UserSkillRecord.skillUp(this, skillID, true, change)) {
-                validateStat(false);
-                sendCharacterStat(Request.None, CharacterStatType.SP);
-            }
-            sendPacket(WvsContext.onChangeSkillRecordResult(Request.Excl, change));
-            change.clear();
-        } finally {
-            lock.unlock();
-        }
-    }
-    
     public void onTransferFieldRequest(InPacket packet) {
         int fieldID = packet.decodeInt();
         String portal = packet.decodeString();
@@ -1167,6 +1186,67 @@ public class User extends Creature {
         }
     }
     
+    public boolean sendDropPickUpResultPacket(Drop pr, byte onExclRequest) {
+        boolean pickUp = false;
+        lock.lock();
+        try {
+            if (pr == null) {
+                //Inventory.sendInventoryOperation(this, onExclRequest, null);
+                return pickUp;
+            }
+            List<ChangeLog> changeLog = new ArrayList<>();
+            Pointer<Integer> incRet = new Pointer<>(0);
+            if (pr.isMoney()) {
+                int money = pr.getMoney();
+                if (pr.getMoney() == 0) {
+                    if (pr.getItem() != null)
+                        money = pr.getItem().getItemID();//wtf u doing here nexon
+                    else
+                        money = 0;
+                }
+                incMoney(money, false, true);
+                sendCharacterStat(onExclRequest, CharacterStatType.Money);
+                pickUp = true;
+            } else {
+                if (pr.getItem() != null) {
+                    ItemSlotBase item = pr.getItem().makeClone();
+                    int ti = item.getItemID() / 1000000;
+                    /* TODO: Handle inventories
+                    if (InventoryManipulator.RawAddItem(character, nTI, pItem, aChangeLog, nIncRet)) {
+                            pr.pItem.SetItemNumber(pr.pItem.GetItemNumber() - nIncRet.Get());//-= nIncRet
+
+                            if (ItemConstants.IsTreatSingly(pr.pItem) || pr.pItem.GetItemNumber() <= 0) {
+                                bPickUp = true;
+                            }
+                            usCharacterDataModFlag |= ItemConstants.get_item_type_from_typeindex(nTI);
+                            if (ItemConstants.is_javelin_item(pr.pItem.nItemID) && nIncRet.Get() == 0)
+                                bConsumeOnPickup = true;
+                            if (pr.dwSourceID == 0 && pr.nOwnType == Drop.UserOwn) {
+                                User pUser = User.FindUser(pr.nOwnType == Drop.UserOwn ? pr.dwOwnerID : pr.dwOwnPartyID);
+                                if (pUser != null) {
+                                    pUser.FlushCharacterData(0, true);
+                                }
+                            }
+                        }
+                    */
+                }
+                //Inventory.sendInventoryOperation(this, onExclRequest, changeLog);
+                changeLog.clear();
+            }
+            if (pr.isMoney() || incRet.get() > 0) {
+                // TODO: Find OnDropPickUpMessage T_T
+            }
+            return pickUp;
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    public void sendDropPickUpFailPacket(byte onExclRequest) {
+        sendCharacterStat(onExclRequest, 0);
+        // TODO: WvsContext.OnDropPickUpMessage, does it exist? 
+    }
+    
     public void sendSetFieldPacket(boolean characterData) {
         if (characterData) {
             int s1 = Rand32.getInstance().random().intValue();
@@ -1191,6 +1271,10 @@ public class User extends Creature {
         } finally {
             lockSocket.unlock();
         }
+    }
+    
+    public void setCommunity(String name) {
+        this.community = name;
     }
     
     public void setPosMap(int map) {
@@ -1243,6 +1327,9 @@ public class User extends Creature {
                     if (characterDataModFlag != 0) {
                         if ((characterDataModFlag & DBChar.Character) != 0) {
                             GameDB.rawSaveCharacter(character.getCharacterStat());
+                        }
+                        if ((characterDataModFlag & DBChar.SkillRecord) != 0) {
+                            GameDB.rawSaveSkillRecord(getCharacterID(), character.getSkillRecord());
                         }
                         
                         characterDataModFlag = 0;
@@ -1298,6 +1385,8 @@ public class User extends Creature {
     public final void validateStat(boolean calledByConstructor) {
         lock.lock();
         try {
+            avatarLook.load(character.getCharacterStat(), character.getEquipped(), character.getEquipped2());
+            
             int flag = 0;
             
             if (!calledByConstructor) {

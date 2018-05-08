@@ -85,14 +85,14 @@ public class UserRemote {
         return packet;
     }
     
-    public static OutPacket onHit(int characterID, byte mobAttackIdx, int clientDamage, int mobTemplateID, boolean left, byte reflect, int mobID, byte hitAction, Point hit) {
+    public static OutPacket onHit(int characterID, byte mobAttackIdx, int clientDamage, int mobTemplateID, byte left, byte reflect, int mobID, byte hitAction, Point hit) {
         OutPacket packet = new OutPacket(LoopbackPacket.UserHit);
         packet.encodeInt(characterID);
         packet.encodeByte(mobAttackIdx);
         packet.encodeInt(clientDamage);
         if (mobAttackIdx > AttackIndex.Counter) {
             packet.encodeInt(mobTemplateID);
-            packet.encodeBool(left);
+            packet.encodeByte(left);
             packet.encodeByte(reflect);
             if (reflect > 0) {
                 packet.encodeInt(mobID);

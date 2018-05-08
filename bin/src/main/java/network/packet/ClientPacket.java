@@ -38,12 +38,12 @@ public class ClientPacket {
             BEGIN_USER = 12,
             UserTransferFieldRequest = 13,
             UserMigrateToCashShopRequest = 14,
-            UserMove = 15, // 00574639
+            UserMove = 15, 
             UserMeleeAttack = 16,
             UserShootAttack = 17,
             UserMagicAttack = 18,
             BEGIN_UNKNOWN = 19,
-            UserHit = 20, // 005436CB
+            UserHit = 20, 
             UserChat = 21,
             UserEmotion = 22,
             UserSelectNpc = 23,
@@ -73,10 +73,10 @@ public class ClientPacket {
             BEGIN_FIELD = 47,
             BEGIN_LIFEPOOL = 48,
             BEGIN_MOB = 49,
-            MobMove = 50, // 004A4DA5, might be mob movement
+            MobMove = 50,
             END_MOB = 51,
             BEGIN_NPC = 52,
-            NpcMove = 53, // 004B9617
+            NpcMove = 53,
             END_NPC = 54,
             END_LIFEPOOL = 55,
             BEGIN_DROPPOOL = 56,

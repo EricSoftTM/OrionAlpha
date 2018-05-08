@@ -273,7 +273,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             onMigrateIn(packet);
         } else {
             if (type < ClientPacket.BEGIN_USER) {
-                Logger.logReport("New packet found: %s", packet.dumpString());
+                Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
                 return;
             }
             processUserPacket(type, packet);

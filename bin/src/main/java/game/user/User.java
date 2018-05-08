@@ -28,6 +28,7 @@ import game.field.GameObjectType;
 import game.field.Stage;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
+import game.field.life.AttackIndex;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
 import game.user.WvsContext.Request;
@@ -939,10 +940,41 @@ public class User extends Creature {
             case ClientPacket.UserSkillUpRequest:
                 onSkillUpRequest(packet);
                 break;
+            case ClientPacket.UserHit:
+                onHit(packet);
+                break;
+            case ClientPacket.UserMeleeAttack:
+            case ClientPacket.UserShootAttack:
+            case ClientPacket.UserMagicAttack:
+                onAttack(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
+                } else {
+                    Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
                 }
+            }
+        }
+    }
+    
+    public void onAttack(InPacket packet) {
+        byte attackInfo = packet.decodeByte();//nDamagePerMob | 16 * nMobCount
+        byte damagePerMob = (byte) (attackInfo & 0xF);
+        byte mobCount = (byte) ((attackInfo >>> 4) & 0xF);
+        int skillID = packet.decodeInt();
+        byte action = packet.decodeByte();//((_BYTE)bLeft << 7) | nAction & 0x7F
+        byte attackActionType = packet.decodeByte();
+        for (int i = 0; i < mobCount; i++) {
+            int mobID = packet.decodeInt();//dwMobID
+            packet.decodeByte();//nHitAction?
+            packet.decodeShort();//ptHit.x
+            packet.decodeShort();//ptHit.y
+            packet.decodeShort();//tDelay
+            for (int j = 0; j < damagePerMob; j++) {
+                int damage = packet.decodeShort();//aDamageCli
+                
+                Logger.logReport("[DEBUG] DamagePerMob: %d MobCount: %d Skill: %d MobID: %d Damage: %d", damagePerMob, mobCount, skillID, mobID, damage);
             }
         }
     }
@@ -978,7 +1010,7 @@ public class User extends Creature {
     
     public void onEmotion(InPacket packet) {
         if (getField() != null) {
-            int emotion = packet.decodeInt();
+            emotion = packet.decodeInt();
             if (emotion < 8) {
                 getField().splitSendPacket(getSplit(), UserRemote.onEmotion(this.characterID, emotion), this);
             }
@@ -1012,6 +1044,48 @@ public class User extends Creature {
                 }
             }
         }
+    }
+    
+    public void onHit(InPacket packet) {
+        byte mobAttackIdx = packet.decodeByte();
+        int obstacleData = 0;
+        int clientDamage = 0;
+        int mobTemplateID = 0;
+        byte left = 0;
+        byte reflect = 0;
+        int mobID = 0;
+        byte hitAction = 0;
+        Point hit = new Point(0, 0);
+        if (mobAttackIdx <= AttackIndex.Counter) {
+            obstacleData = packet.decodeInt();
+        } else {
+            clientDamage = packet.decodeInt();
+            mobTemplateID = packet.decodeInt();
+            left = packet.decodeByte();
+            reflect = packet.decodeByte();
+            if (reflect != 0) {
+                mobID = packet.decodeInt();
+                hitAction = packet.decodeByte();
+                hit.x = packet.decodeShort();
+                hit.y = packet.decodeShort();
+            }
+        }
+        if (getField() == null) {
+            return;
+        }
+        if (lock()) {
+            try {
+                if (getHP() > 0) {
+                    // TODO: Implement all the checks here..
+                    // For now, we'll just simply deduct whatever damage was received.
+                    
+                    incHP(-clientDamage, false);
+                }
+            } finally {
+                unlock();
+            }
+        }
+        getField().splitSendPacket(getSplit(), UserRemote.onHit(this.characterID, mobAttackIdx, clientDamage, mobTemplateID, left, reflect, mobID, hitAction, hit), this);
     }
     
     public void onSkillUpRequest(InPacket packet) {
@@ -1057,7 +1131,7 @@ public class User extends Creature {
                 setPortal(pt.getPortalIdx());
                 setMovePosition(pt.getPortalPos().x, pt.getPortalPos().y, (byte) 0, (short) 0);
                 characterDataModFlag |= DBChar.Character;
-                //avatarModFlag = 0;
+                avatarModFlag = 0;
             } finally {
                 unlock();
             }
@@ -1202,7 +1276,6 @@ public class User extends Creature {
         if (reset != 0) {
             lock.lock();
             try {
-                // Does CalcDamageStat even exist yet? Probably not.
                 sendPacket(WvsContext.onTemporaryStatReset(reset));
                 // TODO: SecondaryStat.FilterForRemote, SplitSendPacket.
             } finally {

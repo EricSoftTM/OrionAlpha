@@ -26,7 +26,6 @@ import game.field.Field;
 import game.field.FieldMan;
 import game.field.GameObjectType;
 import game.field.Stage;
-import game.field.drop.Drop;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.field.portal.Portal;
@@ -763,6 +762,14 @@ public class User extends Creature {
     
     public boolean isGM() {
         return gradeCode >= 3;//TODO: Proper GradeCode
+    }
+    
+    public boolean isAdminHide() {
+        return adminHide;
+    }
+    
+    public boolean isHide() {
+        return hide;
     }
     
     public void leaveField() {

@@ -263,7 +263,6 @@ public class LifePool {
                 }
                 pmg.mobCount.set(0);
                 
-                Logger.logReport("added mob %s to field %d", id, field.getFieldID());
                 this.mobGen.add(pmg);
                 this.initMobGenCount++;
             }

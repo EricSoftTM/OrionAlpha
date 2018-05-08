@@ -17,23 +17,14 @@
  */
 package game.field.life.mob;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  *
  * @author Eric
  */
-public class MobGen {
-    public int templateID;
-    public short x;
-    public short y;
-    public short fh;
-    public int regenInterval;
-    public long regenAfter;
-    public final AtomicInteger mobCount;
-    public byte f;
-    
-    public MobGen() {
-        this.mobCount = new AtomicInteger(0);
-    }
+public class MobLeaveField {
+    public static final byte
+            RemainHP            = 0,
+            ETC                 = 1,
+            SelfDestruct        = 2
+    ;
 }

@@ -79,6 +79,10 @@ public class Npc extends Creature {
         }
     }
     
+    public Controller getController() {
+        return controller;
+    }
+    
     public int getFieldID() {
         return getField().getFieldID();
     }
@@ -86,6 +90,14 @@ public class Npc extends Creature {
     @Override
     public int getGameObjectTypeID() {
         return GameObjectType.Npc;
+    }
+    
+    public NpcTemplate getNpcTemplate() {
+        return npcTemplate;
+    }
+    
+    public Point getOriginalPos() {
+        return originalPos;
     }
     
     @Override
@@ -107,6 +119,14 @@ public class Npc extends Creature {
         if (user != null) {
             user.sendPacket(NpcPool.onNpcChangeController(this, ctrl));
         }
+    }
+    
+    public void setController(Controller ctrl) {
+        this.controller = ctrl;
+    }
+    
+    public void setHorz(Range horz) {
+        this.horz = horz;
     }
     
     public void setMovePosition(int x, int y, byte moveAction, short fh) {

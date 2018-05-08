@@ -29,6 +29,12 @@ public class Rand32 {
     private int s2;
     private int s3;
     
+    /**
+     * Construct a new Rand32 RNG.
+     * 
+     * Initializes the seeds of the RNG with the respective default values.
+     * All initial seeds will be modified by the time(0) 
+     */
     public Rand32() {
         this((int) (System.currentTimeMillis() / 1000));
     }
@@ -41,17 +47,78 @@ public class Rand32 {
         this.s3 = crtRand(rand) | 0x10;
     }
     
+    /**
+     * For use with all global/static Rand32 generated Randoms.
+     * This is considered to be our global rand (g_rand).
+     * 
+     * @return The global Rand32 instance
+     */
     public static Rand32 getInstance() {
         if (g_rand == null) {
-            g_rand = new Rand32((int) (System.currentTimeMillis() / 1000));
+            g_rand = new Rand32();
         }
         return g_rand;
     }
     
-    public static int crtRand(int rand) {
-        return 214013 * rand + 2531011;
+    /**
+     * Nexon's old RNG formula used to create a random.
+     * 
+     * This formula is used when generating a Random in
+     * KMS Beta clients and other old versions. In addition,
+     * Nexon uses this formula for their Center communication
+     * sequences.
+     * 
+     * @param seed The seed value to create the random.
+     * @return The newly created Rand
+     */
+    public static int crtRand(int seed) {
+        return 214013 * seed + 2531011;
     }
     
+    /**
+     * Generates a new random within a specified range (R) 
+     * and beginning at a specified start (N).
+     * 
+     * @param range The maximum range of the random
+     * @param start The minimum random
+     * @return A new random
+     */
+    public static final Long getRand(int range, int start) {
+        if (range != 0)
+            return getInstance().random() % range + start;
+        return getInstance().random();
+    }
+    
+    /**
+     * A shortcut to generating a random versus:
+     * g_rand->Random()
+     * or: GetInstance()->Random()
+     * or: new Rand32().Random()
+     * 
+     * @return A new pseudorandom number
+     */
+    public static final Long genRandom() {
+        return getInstance().random();
+    }
+    
+    /**
+     * Uses the available unsigned integer seeds,
+     * bitshifts them around, updates the past seeds,
+     * updates the current seeds, and returns an 
+     * unsigned integer of the newly generated Random.
+     * 
+     * -->We do not need to unsigned shiftright because
+     * we choose to use a standard int64 (long) as our
+     * initialized v3~v6 variables. Only in the end do
+     * we need to cast back our long to the bits of an
+     * unsigned integer. 
+     * 
+     * -->In addition, we use a Long object for the simple
+     * reason that we have the free ability to cast the Long
+     * back into a intValue() returned by the object.
+     * 
+     * @return An unsigned integer Random
+     */
     public Long random() {
         int v3;
         int v4;

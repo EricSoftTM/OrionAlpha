@@ -23,11 +23,15 @@ import game.field.life.npc.NpcTemplate;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import network.GameAcceptor;
 import network.database.Database;
+import network.database.GameDB;
 import util.Logger;
 import util.TimerThread;
 
@@ -42,12 +46,21 @@ public class GameApp implements Runnable {
     private CenterSocket socket;
     private int connectionLimit;
     private int waitingFirstPacket;
-    public final long serverStartTime;
+    private byte worldID;
+    private final long serverStartTime;
+    private final AtomicLong itemInitSN;
+    private final AtomicLong cashItemInitSN;
+    private final Lock lockItemSN;
+    private final Lock lockCashItemSN;
     
     public GameApp() {
         this.connectionLimit = 4000;
         this.waitingFirstPacket = 1000 * 15;
         this.serverStartTime = System.currentTimeMillis();
+        this.itemInitSN = new AtomicLong(0);
+        this.cashItemInitSN = new AtomicLong(0);
+        this.lockItemSN = new ReentrantLock();
+        this.lockCashItemSN = new ReentrantLock();
     }
     
     public static GameApp getInstance() {
@@ -55,12 +68,14 @@ public class GameApp implements Runnable {
     }
     
     private void connectCenter() {
-        socket = new CenterSocket();
-        socket.connect();
+        this.socket = new CenterSocket();
+        this.socket.connect();
+        
+        this.worldID = Byte.parseByte(System.getProperty("gameID", "0"));
     }
     
-    public void createAcceptor() {
-        try (JsonReader reader = Json.createReader(new FileReader("Game" + System.getProperty("gameID", "0") + ".img"))) {
+    private void createAcceptor() {
+        try (JsonReader reader = Json.createReader(new FileReader(String.format("Game%d.img", getWorldID())))) {
             JsonObject gameData = reader.readObject();
             
             String ip = gameData.getString("PublicIP", "127.0.0.1");
@@ -79,12 +94,42 @@ public class GameApp implements Runnable {
         return acceptor;
     }
     
+    public final long getNextCashSN() {
+        lockCashItemSN.lock();
+        try {
+            final long cashItemSN = cashItemInitSN.incrementAndGet();
+            
+            return cashItemSN;
+        } finally {
+            lockCashItemSN.unlock();
+        }
+    }
+    
+    public final long getNextSN() {
+        lockItemSN.lock();
+        try {
+            final long itemSN = itemInitSN.incrementAndGet();
+            
+            return itemSN;
+        } finally {
+            lockItemSN.unlock();
+        }
+    }
+    
     public int getConnectionLimit() {
         return connectionLimit;
     }
     
+    public long getServerStartTime() {
+        return serverStartTime;
+    }
+    
     public int getWaitingFirstPacket() {
         return waitingFirstPacket;
+    }
+    
+    public byte getWorldID() {
+        return worldID;
     }
     
     private void initializeDB() {
@@ -108,7 +153,7 @@ public class GameApp implements Runnable {
         }
     }
     
-    public void initializeGameData() {
+    private void initializeGameData() {
         long time;
         
         // Load Items and Equipment
@@ -131,6 +176,10 @@ public class GameApp implements Runnable {
         Logger.logReport("Loaded map (field) data from map files in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
     }
     
+    private void initializeItemSN() {
+        GameDB.rawLoadItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
+    }
+    
     public static void main(String[] args) {
         GameApp.getInstance().run();
     }
@@ -140,6 +189,7 @@ public class GameApp implements Runnable {
         TimerThread.createTimerThread();
         
         initializeDB();
+        initializeItemSN();
         initializeGameData();
         connectCenter();
         createAcceptor();
@@ -148,5 +198,9 @@ public class GameApp implements Runnable {
     
     public void setConnectionLimit(int limit) {
         this.connectionLimit = limit;
+    }
+    
+    public void updateItemInitSN() {
+        GameDB.rawUpdateItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
     }
 }

@@ -108,4 +108,8 @@ public class ItemSlotEquip extends ItemSlotBase {
     public void setItemNumber(short number) {
         
     }
+    
+    public void setItemSN(long sn) {
+        this.sn = sn;
+    }
 }

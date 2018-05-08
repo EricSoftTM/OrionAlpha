@@ -19,9 +19,11 @@ package game.user;
 
 import common.item.BodyPart;
 import common.item.ItemSlotBase;
+import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.DBChar;
+import game.GameApp;
 import game.field.Creature;
 import game.field.Field;
 import game.field.FieldMan;
@@ -183,6 +185,7 @@ public class User extends Creature {
         this.avatarLook = new AvatarLook();
         this.rndActionMan = new Rand32();
         this.userSkill = new UserSkill(this);
+        // TODO: Nexon-like user caching to avoid DB load upon each login/migrate.
         this.character = GameDB.rawLoadCharacter(characterID);
     }
     
@@ -1324,6 +1327,10 @@ public class User extends Creature {
         if (lock()) {
             try {
                 if (force || time - lastCharacterDataFlush >= 300000) {
+                    // Best way to constantly update the ItemSN's without over-saving
+                    // is by simply updating the SN upon each user save. This is either
+                    // every 5 minutes, or whenever a user logs out.
+                    GameApp.getInstance().updateItemInitSN();
                     if (characterDataModFlag != 0) {
                         if ((characterDataModFlag & DBChar.Character) != 0) {
                             GameDB.rawSaveCharacter(character.getCharacterStat());
@@ -1331,7 +1338,13 @@ public class User extends Creature {
                         if ((characterDataModFlag & DBChar.SkillRecord) != 0) {
                             GameDB.rawSaveSkillRecord(getCharacterID(), character.getSkillRecord());
                         }
-                        
+                        if ((characterDataModFlag & DBChar.ItemSlotEquip) != 0) {
+                            GameDB.rawUpdateItemEquip(characterID, character.getEquipped(), character.getEquipped2(), character.getItemSlot().get(ItemType.Equip));
+                        }
+                        if ((characterDataModFlag & DBChar.ItemSlotConsume) != 0 || (characterDataModFlag & DBChar.ItemSlotInstall) != 0 
+                                || (characterDataModFlag & DBChar.ItemSlotEtc) != 0) {
+                            GameDB.rawUpdateItemBundle(characterID, character.getItemSlot());
+                        }
                         characterDataModFlag = 0;
                     }
                     //if (miniRoom != null)

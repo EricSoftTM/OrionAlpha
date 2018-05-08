@@ -17,6 +17,8 @@
  */
 package network.database;
 
+import common.item.BodyPart;
+import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
 import common.item.ItemSlotEquip;
 import common.item.ItemType;
@@ -27,7 +29,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 import util.FileTime;
 
 /**
@@ -156,6 +161,22 @@ public class GameDB {
         return null;
     }
     
+    public static void rawLoadItemInitSN(byte worldID, AtomicLong itemSN, AtomicLong cashItemSN) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `iteminitsn` WHERE `WorldID` = ?")) {
+                ps.setInt(1, worldID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        itemSN.set(rs.getLong("ItemSN") + 1);
+                        cashItemSN.set(rs.getLong("CashItemSN") + 1);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
     public static void rawSaveCharacter(CharacterStat cs) {
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE `character` SET `CharacterName` = ?, `Gender` = ?, `Skin` = ?, `Face` = ?, `Hair` = ?, `Level` = ?, `Job` = ?, `STR` = ?, `DEX` = ?, `INT` = ?, `LUK` = ?, `HP` = ?, `MP` = ?, `MaxHP` = ?, `MaxMP` = ?, `AP` = ?, `SP` = ?, `EXP` = ?, `POP` = ?, `Money` = ?, `Map` = ?, `Portal` = ? WHERE `CharacterID` = ?")) {
@@ -172,6 +193,133 @@ public class GameDB {
                 for (Map.Entry<Integer, Integer> skill : skillRecord.entrySet()) {
                     Database.execute(con, ps, skill.getValue(), characterID, skill.getKey());
                 }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public static void rawSetInventorySize(int characterID, List<Integer> inventorySize) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `inventorysize` SET `EquipCount` = ?, `ConsumeCount` = ?, `InstallCount` = ?, `EtcCount` = ? WHERE `CharacterID` = ?")) {
+                Database.execute(con, ps, inventorySize.get(0), inventorySize.get(1), inventorySize.get(2), inventorySize.get(3), characterID);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public static void rawUpdateItemBundle(int characterID, List<List<ItemSlotBase>> itemSlot) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            String removeSN = "";
+            String removeCashSN = "";
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `itemslotbundle` SET `CharacterID` = ?, `POS` = ?, `ItemID` = ?, `Number` = ?, `TI` = ?, `ExpireDate` = ? WHERE `ItemSN` = ? AND `CashItemSN` = ?")) {
+                for (int ti = ItemType.Consume; ti <= ItemType.Etc; ti++) {
+                    for (int pos = 1; pos < itemSlot.get(ti).size(); pos++) {
+                        ItemSlotBundle item = (ItemSlotBundle) itemSlot.get(ti).get(pos);
+                        if (item != null) {
+                            if (item.getSN() > 0) {
+                                removeSN += item.getSN() + ", ";
+                            }
+                            if (item.getCashItemSN() > 0) {
+                                removeCashSN += item.getCashItemSN() + ", ";
+                            }
+                            Database.execute(con, ps, characterID, pos, item.getItemID(), item.getItemNumber(), ti, item.getDateExpire().fileTimeToLong(), item.getSN(), item.getCashItemSN());
+                        }
+                    }
+                }
+            }
+            if (removeSN.isEmpty() && removeCashSN.isEmpty()) {
+                return;//wouldn't want to kill their inventory ;)
+            }
+            String query = "DELETE FROM `itemslotbundle` WHERE `CharacterID` = ?";
+            if (!removeSN.isEmpty()) {
+                query += String.format(" AND `SN` NOT IN (%s)", removeSN.substring(0, removeSN.length() - 2));
+            }
+            if (!removeCashSN.isEmpty()) {
+                query += String.format(" AND `CashItemSN` NOT IN (%s)", removeCashSN.substring(0, removeCashSN.length() - 2));
+            }
+            try (PreparedStatement ps = con.prepareStatement(query)) {
+                ps.setInt(1, characterID);
+                ps.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public static void rawUpdateItemEquip(int characterID, List<ItemSlotBase> equipped, List<ItemSlotBase> cashEquipped, List<ItemSlotBase> itemSlot) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            String removeSN = "";
+            String removeCashSN = "";
+            // Equip Inventory
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `itemslotequip` SET `CharacterID` = ?, `POS` = ?, `ItemID` = ?, `RUC` = ?, `CUC` = ?, `I_STR` = ?, `I_DEX` = ?, `I_INT` = ?, `I_LUK` = ?, `I_MaxHP` = ?, `I_MaxMP` = ?, `I_PAD` = ?, `I_MAD` = ?, `I_PDD` = ?, `I_MDD` = ?, `I_ACC` = ?, `I_EVA` = ?, `I_Craft` = ?, `I_Speed` = ?, `I_Jump` = ?, `ExpireDate` = ? WHERE `ItemSN` = ? AND `CashItemSN` = ?")) {
+                for (int pos = 1; pos < itemSlot.size(); pos++) {
+                    ItemSlotEquip item = (ItemSlotEquip) itemSlot.get(pos);
+                    if (item != null) {
+                        if (item.getSN() > 0) {
+                            removeSN += item.getSN() + ", ";
+                        }
+                        if (item.getCashItemSN() > 0) {
+                            removeCashSN += item.getCashItemSN() + ", ";
+                        }
+                        Database.execute(con, ps, characterID, pos, item.getItemID(), item.ruc, item.cuc, item.iSTR, item.iDEX, item.iINT, item.iLUK, item.iMaxHP, item.iMaxMP, item.iPAD, item.iMAD, item.iPDD, item.iMDD, item.iACC, item.iEVA, item.iCraft, item.iSpeed, item.iJump, item.getDateExpire().fileTimeToLong(), item.getSN(), item.getCashItemSN());
+                    }
+                }
+            }
+            // Equipped Inventory
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `itemslotequip` SET `CharacterID` = ?, `POS` = ?, `ItemID` = ?, `RUC` = ?, `CUC` = ?, `I_STR` = ?, `I_DEX` = ?, `I_INT` = ?, `I_LUK` = ?, `I_MaxHP` = ?, `I_MaxMP` = ?, `I_PAD` = ?, `I_MAD` = ?, `I_PDD` = ?, `I_MDD` = ?, `I_ACC` = ?, `I_EVA` = ?, `I_Craft` = ?, `I_Speed` = ?, `I_Jump` = ?, `ExpireDate` = ? WHERE `ItemSN` = ? AND `CashItemSN` = ?")) {
+                for (int pos = 1; pos < equipped.size(); pos++) {
+                    ItemSlotEquip item = (ItemSlotEquip) equipped.get(pos);
+                    if (item != null) {
+                        if (item.getSN() > 0) {
+                            removeSN += item.getSN() + ", ";
+                        }
+                        if (item.getCashItemSN() > 0) {
+                            removeCashSN += item.getCashItemSN() + ", ";
+                        }
+                        Database.execute(con, ps, characterID, -pos, item.getItemID(), item.ruc, item.cuc, item.iSTR, item.iDEX, item.iINT, item.iLUK, item.iMaxHP, item.iMaxMP, item.iPAD, item.iMAD, item.iPDD, item.iMDD, item.iACC, item.iEVA, item.iCraft, item.iSpeed, item.iJump, item.getDateExpire().fileTimeToLong(), item.getSN(), item.getCashItemSN());
+                    }
+                }
+            }
+            // Cash Equipped Inventory
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `itemslotequip` SET `CharacterID` = ?, `POS` = ?, `ItemID` = ?, `RUC` = ?, `CUC` = ?, `I_STR` = ?, `I_DEX` = ?, `I_INT` = ?, `I_LUK` = ?, `I_MaxHP` = ?, `I_MaxMP` = ?, `I_PAD` = ?, `I_MAD` = ?, `I_PDD` = ?, `I_MDD` = ?, `I_ACC` = ?, `I_EVA` = ?, `I_Craft` = ?, `I_Speed` = ?, `I_Jump` = ?, `ExpireDate` = ? WHERE `ItemSN` = ? AND `CashItemSN` = ?")) {
+                for (int pos = 1; pos < cashEquipped.size(); pos++) {
+                    ItemSlotEquip item = (ItemSlotEquip) cashEquipped.get(pos);
+                    if (item != null) {
+                        if (item.getSN() > 0) {
+                            removeSN += item.getSN() + ", ";
+                        }
+                        if (item.getCashItemSN() > 0) {
+                            removeCashSN += item.getCashItemSN() + ", ";
+                        }
+                        Database.execute(con, ps, characterID, -pos - BodyPart.Sticker, item.getItemID(), item.ruc, item.cuc, item.iSTR, item.iDEX, item.iINT, item.iLUK, item.iMaxHP, item.iMaxMP, item.iPAD, item.iMAD, item.iPDD, item.iMDD, item.iACC, item.iEVA, item.iCraft, item.iSpeed, item.iJump, item.getDateExpire().fileTimeToLong(), item.getSN(), item.getCashItemSN());
+                    }
+                }
+            }
+            if (removeSN.isEmpty() && removeCashSN.isEmpty()) {
+                return;//wouldn't want to kill their inventory ;)
+            }
+            String query = "DELETE FROM `itemslotequip` WHERE `CharacterID` = ?";
+            if (!removeSN.isEmpty()) {
+                query += String.format(" AND `SN` NOT IN (%s)", removeSN.substring(0, removeSN.length() - 2));
+            }
+            if (!removeCashSN.isEmpty()) {
+                query += String.format(" AND `CashItemSN` NOT IN (%s)", removeCashSN.substring(0, removeCashSN.length() - 2));
+            }
+            try (PreparedStatement ps = con.prepareStatement(query)) {
+                ps.setInt(1, characterID);
+                ps.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public static void rawUpdateItemInitSN(byte worldID, AtomicLong itemSN, AtomicLong cashItemSN) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `iteminitsn` SET `ItemSN` = ?, `CashItemSN` = ? WHERE `WorldID` = ?")) {
+                Database.execute(con, ps, itemSN.get(), cashItemSN.get(), worldID);
             }
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);

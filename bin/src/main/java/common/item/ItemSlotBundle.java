@@ -69,7 +69,7 @@ public class ItemSlotBundle extends ItemSlotBase {
         this.number = number;
     }
     
-    private void setItemSN(long sn) {
+    public void setItemSN(long sn) {
         this.sn = sn;
     }
 }

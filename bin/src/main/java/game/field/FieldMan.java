@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import util.Size;
+import util.TimerThread;
 import util.wz.WzFileSystem;
 import util.wz.WzPackage;
 import util.wz.WzProperty;
@@ -44,14 +45,9 @@ public class FieldMan {
         this.fields = new HashMap<>();
         this.lock = new ReentrantLock();
         
-        /*
-        TimerThread.Field.Register(new Runnable() {
-            @Override
-            public void run() {
-                FieldMan.this.Update(System.currentTimeMillis());
-            }
+        TimerThread.Field.Register(() -> {
+            FieldMan.this.update(System.currentTimeMillis());
         }, 100, 1000);
-        */
     }
     
     public static FieldMan getInstance() {

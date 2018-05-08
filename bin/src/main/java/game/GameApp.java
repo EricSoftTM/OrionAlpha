@@ -29,6 +29,7 @@ import javax.json.JsonReader;
 import network.GameAcceptor;
 import network.database.Database;
 import util.Logger;
+import util.TimerThread;
 
 /**
  *
@@ -136,7 +137,7 @@ public class GameApp implements Runnable {
     
     @Override
     public void run() {
-        // CreateTimerThread
+        TimerThread.createTimerThread();
         
         initializeDB();
         initializeGameData();

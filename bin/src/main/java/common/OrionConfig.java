@@ -46,5 +46,5 @@ public class OrionConfig {
     public static final String MASTER_PASSWORD = "$2a$10$SdXGImegkpvdeHohjas29.ZBR7LwmvpXxNBy..chrmXiMFqyntJZm";
     
     // Log Packets
-    public static final boolean LOG_PACKETS = true;
+    public static final boolean LOG_PACKETS = false;
 }

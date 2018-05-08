@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import login.LoginApp;
-import login.user.client.ClientSocket;
+import login.user.ClientSocket;
 import util.Logger;
 
 /**

@@ -21,7 +21,7 @@ import common.user.CharacterData;
 import common.user.DBChar;
 import java.util.List;
 import login.avatar.Avatar;
-import login.user.client.ClientSocket;
+import login.user.ClientSocket;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 

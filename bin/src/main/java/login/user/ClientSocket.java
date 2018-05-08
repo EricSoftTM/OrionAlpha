@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package login.user.client;
+package login.user;
 
 import common.OrionConfig;
 import common.user.CharacterData;
@@ -51,6 +51,7 @@ import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 import network.security.XORCipher;
 import util.Logger;
+import util.Rand32;
 import util.Utilities;
 
 /**
@@ -221,10 +222,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     }
     
     public void initSequence() {
-        //this.uSeqRcv = Rand32.GetInstance().Random().intValue();
-        //this.uSeqSnd = Rand32.GetInstance().Random().intValue();
-        this.seqRcv = 42;
-        this.seqSnd = 69;
+        this.seqRcv = Rand32.getInstance().random().intValue();
+        this.seqSnd = Rand32.getInstance().random().intValue();
         this.cipher = new XORCipher(seqSnd, seqRcv);
     }
     
@@ -430,6 +429,9 @@ public class ClientSocket extends SimpleChannelInboundHandler {
                 case ClientPacket.SelectCharacter:
                     onSelectCharacter(packet);
                     break;
+                default: {
+                    Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+                }
             }
         }
     }

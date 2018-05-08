@@ -28,7 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import login.avatar.Avatar;
-import login.user.client.ClientSocket;
+import login.user.ClientSocket;
 import network.security.BCrypt;
 import util.FileTime;
 

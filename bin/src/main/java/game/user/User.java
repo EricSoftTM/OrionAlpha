@@ -39,6 +39,7 @@ import game.field.portal.Portal;
 import game.field.portal.PortalMap;
 import game.user.WvsContext.Request;
 import game.user.item.ChangeLog;
+import game.user.item.Inventory;
 import game.user.item.InventoryManipulator;
 import game.user.skill.SkillEntry;
 import game.user.skill.Skills.*;
@@ -979,6 +980,9 @@ public class User extends Creature {
             case ClientPacket.UserCharacterInfoRequest:
                 onCharacterInfoRequest(packet);
                 break;
+            case ClientPacket.UserChangeSlotPositionRequest:
+                onChangeSlotPositionRequest(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -1140,6 +1144,14 @@ public class User extends Creature {
                 target.unlock();
             }
         }
+    }
+    
+    public void onChangeSlotPositionRequest(InPacket packet) {
+        byte type = packet.decodeByte();
+        short oldPos = packet.decodeShort();
+        short newPos = packet.decodeShort();
+        short count = packet.decodeShort();
+        Inventory.changeSlotPosition(this, Request.Excl, type, oldPos, newPos, count);
     }
     
     public void onEmotion(InPacket packet) {

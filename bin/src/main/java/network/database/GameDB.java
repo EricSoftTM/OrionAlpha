@@ -108,7 +108,7 @@ public class GameDB {
                     while (rs.next()) {
                         int itemID = rs.getInt("ItemID");
                         int pos = rs.getInt("POS");
-                        int ti = rs.getInt("TI");
+                        byte ti = rs.getByte("TI");
                         
                         ItemSlotBundle item = new ItemSlotBundle(itemID);
                         item.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpireDate")));

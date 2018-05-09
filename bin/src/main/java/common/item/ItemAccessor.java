@@ -18,12 +18,35 @@
 package common.item;
 
 import common.user.DBChar;
+import util.FileTime;
 
 /**
  *
  * @author Eric
  */
 public class ItemAccessor {
+    
+    public static boolean isTreatSingly(ItemSlotBase p) {
+        byte ti = getItemTypeIndexFromID(p.getItemID());
+        return !isBundleTypeIndex(ti) || isRechargeableItem(p.getItemID()) || FileTime.compareFileTime(p.getDateExpire(), FileTime.END) < 0;
+    }
+    
+    public static boolean isTreatSingly(int itemID) {
+        byte ti = getItemTypeIndexFromID(itemID);
+        return !isBundleTypeIndex(ti) || isRechargeableItem(itemID);
+    }
+    
+    public static boolean isBundleTypeIndex(byte ti) {
+        return ti == ItemType.Consume || ti == ItemType.Install || ti == ItemType.Etc;
+    }
+    
+    public static boolean isJavelinItem(int itemID) {
+        return itemID / 10000 == 207; // lol throwing stars xd
+    }
+    
+    public static boolean isRechargeableItem(int itemID) {
+        return isJavelinItem(itemID);
+    }
     
     public static byte getItemTypeIndexFromID(int itemID) {
         return (byte) (itemID / 1000000);

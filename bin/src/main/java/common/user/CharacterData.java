@@ -164,6 +164,116 @@ public class CharacterData {
         return itemSlot.get(ti);
     }
     
+    public List<List<Integer>> getItemTrading() {
+        return itemTrading;
+    }
+    
+    public int findCashItemSlotPosition(int ti, long sn) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Etc && sn > 0) {
+            int slotCount = getItemSlotCount(ti);
+            for (int i = 1; i <= slotCount; i++) {
+                ItemSlotBase item = itemSlot.get(ti).get(i);
+                if (item != null) {
+                    if (item.getCashItemSN() == sn) {
+                        return i;
+                    }
+                }
+            }
+            if (ti == ItemType.Equip) {
+                for (int bodyPart = 1; bodyPart <= BodyPartCount; bodyPart++) {
+                    ItemSlotBase item = equipped2.get(bodyPart);
+                    if (item != null) {
+                        if (item.getCashItemSN() == sn) {
+                            return -bodyPart - Sticker;
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+    
+    public int findEmptySlotPosition(int ti) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+            int slotCount = getItemSlotCount(ti);
+            for (int i = 1; i <= slotCount; i++) {
+                ItemSlotBase item = itemSlot.get(ti).get(i);
+                if (item == null) {
+                    return i;
+                }
+            }
+        }
+        return 0;
+    }
+    
+    public int findItemSlotPosition(ItemSlotBase item) {
+        if (item != null) {
+            int ti = item.getItemID() / 1000000;
+            if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+                int slotCount = getItemSlotCount(ti);
+                for (int i = 1; i <= slotCount; i++) {
+                    ItemSlotBase other = itemSlot.get(ti).get(i);
+                    if (other != null && other.getItemID() == item.getItemID()) {
+                        if (other.isSameItem(item)) {
+                            return i;
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    }
+    
+    public int getEmptySlotCount(int ti) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+            int emptySlotCount = 0;
+            int slotCount = getItemSlotCount(ti);
+            for (int i = 1; i <= slotCount; i++) {
+                ItemSlotBase item = itemSlot.get(ti).get(i);
+                if (item == null) {
+                    ++emptySlotCount;
+                }
+            }
+            return emptySlotCount;
+        }
+        return 0;
+    }
+    
+    public ItemSlotBase getItem(byte ti, int pos) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+            if (ti == ItemType.Equip) {
+                if (pos != 0 && (pos >= -BodyPartCount || pos < -Sticker) && pos <= getItemSlotCount(ItemType.Equip) && pos >= -Sticker - BodyPartCount) {
+                    if (pos >= -Sticker) {
+                        if (pos >= 0) {
+                            return itemSlot.get(ItemType.Equip).get(pos);
+                        } else {
+                            return equipped.get(-pos);
+                        }
+                    } else {
+                        return equipped2.get(-Sticker - pos);
+                    }
+                }
+            } else {
+                if (pos > 0 && pos <= getItemSlotCount(ti)) {
+                    return itemSlot.get(ti).get(pos);
+                }
+            }
+        }
+        return null;
+    }
+    
+    public int getItemCount(byte ti, int itemID) {
+        int count = 0;
+        int slotCount = getItemSlotCount(ti);
+        for (int i = 1; i <= slotCount; i++) {
+            ItemSlotBase item = getItem(ti, i);
+            if (item != null && item.getItemID() == itemID) {
+                ++count;
+            }
+        }
+        return count;
+    }
+    
     public int getItemSlotCount(int ti) {
         return itemSlot.get(ti).size() - 1;
     }
@@ -193,7 +303,7 @@ public class CharacterData {
         }
     }
     
-    public boolean setItem(int ti, int pos, ItemSlotBase item) {
+    public boolean setItem(byte ti, int pos, ItemSlotBase item) {
         if (ti < ItemType.Equip || ti > ItemType.Etc) {
             return false;
         }

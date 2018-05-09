@@ -762,9 +762,7 @@ public class LifePool {
                     for (Iterator<Mob> it = mob.iterator(); it.hasNext();) {
                         Mob m = it.next();
                         if (m != null) {
-                            if (m.getTemplateID() != 9999999) {
-                                points.add(new Point(m.getCurrentPos().x, m.getCurrentPos().y));
-                            }
+                            points.add(new Point(m.getCurrentPos().x, m.getCurrentPos().y));
                         } else {
                             it.remove();
                         }

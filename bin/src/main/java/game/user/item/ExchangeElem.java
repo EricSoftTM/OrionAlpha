@@ -15,20 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package common.item;
+package game.user.item;
 
 /**
  *
  * @author Eric
  */
-public class ItemType {
-    public static final byte
-            // ItemType
-            NotDefine       = 0,
-            Equip           = 1,
-            Consume         = 2,
-            Install         = 3,
-            Etc             = 4,
-            NO              = 5
-    ;
+public class ExchangeElem {
+    
 }

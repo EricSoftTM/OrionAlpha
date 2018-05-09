@@ -31,8 +31,10 @@ public class ClientPacket {
             CheckDuplicatedID = 5,
             CreateNewCharacter = 6,
             DeleteCharacter = 7,
+            // Both 0x8 and 0x9 are their own "AliveAck".. 
+            // Maybe one is an acknowledge and the other is a request? idk
             AliveAck = 8,
-            Unknown9 = 9, // 0058B285
+            AliveAck2 = 9, // 0058B285
             ExceptionLog = 10, // 0058B3B0
             END_SOCKET = 11,
             BEGIN_USER = 12,
@@ -61,7 +63,7 @@ public class ClientPacket {
             UserDropMoneyRequest = 35,
             UserGivePopularityRequest = 36, // 00596C14
             UserPartyRequest = 37, 
-            UserCharacterInfoRequest = 38, // 00596DDA
+            UserCharacterInfoRequest = 38,
             Unknown39 = 39, // 00486F0C, command-related?
             Whisper = 40, // 004879AA
             Messenger = 41, // 00503603

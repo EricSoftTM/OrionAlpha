@@ -33,14 +33,17 @@ import game.field.drop.Drop;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.field.life.AttackIndex;
+import game.field.life.AttackInfo;
+import game.field.life.mob.Mob;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
 import game.user.WvsContext.Request;
 import game.user.item.ChangeLog;
 import game.user.item.InventoryManipulator;
-import game.user.skill.SkillRecord;
+import game.user.skill.SkillEntry;
+import game.user.skill.Skills.*;
 import game.user.skill.UserSkill;
-import game.user.skill.UserSkillRecord;
+import game.user.stat.CharacterTemporaryStat;
 import game.user.stat.SecondaryStat;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -55,6 +58,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import network.database.GameDB;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
+import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 import util.Logger;
 import util.Pointer;
@@ -91,6 +95,12 @@ public class User extends Creature {
     private String community;
     // Skills
     private final UserSkill userSkill;
+    private long lastAttack;
+    private long lastAttackTime;
+    private long lastAttackDelay;
+    private long finalAttackDelay;
+    private int attackCheckIgnoreCnt;
+    private int attackSpeedErr;
     // Hide
     private boolean hide;
     private boolean adminHide;
@@ -961,7 +971,7 @@ public class User extends Creature {
             case ClientPacket.UserMeleeAttack:
             case ClientPacket.UserShootAttack:
             case ClientPacket.UserMagicAttack:
-                onAttack(packet);
+                onAttack(type, packet);
                 break;
             case ClientPacket.UserSkillUseRequest:
                 userSkill.onSkillUseRequest(packet);
@@ -979,23 +989,109 @@ public class User extends Creature {
         }
     }
     
-    public void onAttack(InPacket packet) {
+    public void onAttack(byte type, InPacket packet) {
         byte attackInfo = packet.decodeByte();//nDamagePerMob | 16 * nMobCount
         byte damagePerMob = (byte) (attackInfo & 0xF);
         byte mobCount = (byte) ((attackInfo >>> 4) & 0xF);
         int skillID = packet.decodeInt();
+        
+        this.lastAttack = System.currentTimeMillis();
+        int bulletItemID = 0;
+        
+        boolean darkSight = false;//TODO: SecondaryStat checking
+        if (darkSight) {
+            //sendTemporaryStatReset(secondaryStat.resetByCTS(CharacterTemporaryStat.DarkSight));
+        }
+        
         byte action = packet.decodeByte();//((_BYTE)bLeft << 7) | nAction & 0x7F
+        byte left = (byte) ((action >> 7) & 1);
         byte attackActionType = packet.decodeByte();
-        for (int i = 0; i < mobCount; i++) {
-            int mobID = packet.decodeInt();//dwMobID
-            packet.decodeByte();//nHitAction?
-            packet.decodeShort();//ptHit.x
-            packet.decodeShort();//ptHit.y
-            packet.decodeShort();//tDelay
-            for (int j = 0; j < damagePerMob; j++) {
-                int damage = packet.decodeShort();//aDamageCli
+        
+        if (getHP() > 0 && getField() != null) {
+            if (skillID == Fighter.FinalAttack || skillID == Fighter.FinalAttackEx || skillID == Page.FinalAttack || skillID == Page.FinalAttackEx 
+                    || skillID == Spearman.FinalAttack || skillID == Spearman.FinalAttackEx || skillID == Hunter.FinalAttack_Bow || skillID == Crossbowman.FinalAttack_Crossbow)
+                    this.lastAttackDelay = this.finalAttackDelay;
+            long attackTime = System.currentTimeMillis();
+            if (attackCheckIgnoreCnt <= 0) {
+                if (attackTime - lastAttackTime >= lastAttackDelay) {
+                    attackSpeedErr = 0;
+                } else {
+                    if (attackSpeedErr == 2) {
+                        Logger.logError("[ User ] user's attack speed is abnormally fast [ name=%s, actionNo=%d, skillID=%d, userDelay=%d < minDelay=%d, finalAttack=%d, boosterLevel=%d, fieldid=%d ]");
+                        return;
+                    }
+                    attackSpeedErr++;
+                }
+            } else {
+                attackCheckIgnoreCnt--;
+            }
+            lastAttackTime = attackTime;
+            lastAttackDelay = 0;
+            finalAttackDelay = 0;
+            byte bulletItemPos = 0;
+            byte slv = 0;
+            
+            if (type == ClientPacket.UserShootAttack) {
                 
-                Logger.logReport("[DEBUG] DamagePerMob: %d MobCount: %d Skill: %d MobID: %d Damage: %d", damagePerMob, mobCount, skillID, mobID, damage);
+            }
+            
+            List<AttackInfo> attack = new ArrayList<>(mobCount);
+            for (int i = 0; i < mobCount; i++) {
+                AttackInfo info = new AttackInfo();
+                info.mobID = packet.decodeInt();
+                Mob mob = null;//TODO: getField().getLifePool().getMob(info.mobID);
+                if (mob != null) {
+                    info.templateID = mob.getTemplateID();
+                }
+                info.hitAction = packet.decodeByte();
+                info.hit.x = packet.decodeShort();
+                info.hit.y = packet.decodeShort();
+                info.delay = packet.decodeShort();
+                info.attackCount = damagePerMob;
+                for (int j = 0; j < damagePerMob; j++) {
+                    info.damageCli.add(packet.decodeShort());
+                }
+                attack.add(info);
+            }
+            
+            Point ballStart = new Point();
+            if (type == ClientPacket.UserShootAttack) {
+                // ptStart? TODO Check ShootAttack decodes
+            }
+            
+            if (bulletItemPos > 0) {
+                
+            }
+            
+            byte attackType;
+            if (type == ClientPacket.UserMagicAttack) {
+                attackType = LoopbackPacket.UserMagicAttack;
+            } else if (type == ClientPacket.UserShootAttack) {
+                attackType = LoopbackPacket.UserShootAttack;
+            } else if (type == ClientPacket.UserMeleeAttack) {
+                attackType = LoopbackPacket.UserMeleeAttack;
+            } else {
+                Logger.logError("Attack Type Error %d", type);
+                return;
+            }
+            
+            SkillEntry skill = null;
+            int maxCount = 1;
+            if (skillID > 0) {
+                slv = 0;
+                skill = null;
+                if (skill != null) {
+                    //maxCount = skillData.mobCount
+                }
+            }
+            if (maxCount <= 1)
+                maxCount = 1;
+            if (maxCount < mobCount) {
+                Logger.logError("Invalid mob count (Skill:%d,Lv:%d,Mob:%d)", skillID, slv, -1);
+            } else {
+                if (getField().getLifePool().onUserAttack(this, attackType, mobCount, damagePerMob, skill, slv, action, left, bulletItemID, attack, ballStart)) {
+                    
+                }
             }
         }
     }

@@ -17,6 +17,7 @@
  */
 package game.field.life;
 
+import common.user.CharacterStat.CharacterStatType;
 import game.field.Field;
 import game.field.FieldOpt;
 import game.field.StaticFoothold;
@@ -29,6 +30,12 @@ import game.field.life.mob.MobTemplate;
 import game.field.life.npc.Npc;
 import game.field.life.npc.NpcTemplate;
 import game.user.User;
+import game.user.WvsContext;
+import game.user.WvsContext.Request;
+import game.user.skill.SkillEntry;
+import game.user.skill.Skills;
+import game.user.skill.Skills.Assassin;
+import game.user.skill.Skills.Thief;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
+import network.packet.OutPacket;
 import util.Logger;
 import util.Pointer;
 import util.Rand32;
@@ -80,52 +88,69 @@ public class LifePool {
         this.lastCreateMobTime = System.currentTimeMillis();
     }
     
-    public Field getField() {
-        return field;
+    public boolean changeMobController(User user, int mobIdWanted, boolean chase) {
+        if (field.lock()) {
+            try {
+                if (mobs.containsKey(mobIdWanted)) {
+                    Mob mobWanted = mobs.get(mobIdWanted);
+                    if (mobWanted != null) {
+                        return changeMobController(user.getCharacterID(), mobWanted, chase);
+                    }
+                }
+            } finally {
+                field.unlock();
+            }
+        }
+        return false;
     }
     
-    public Npc createNpc(WzProperty prop, int templateID, int x, int y) {
-        short fh;
-        byte f;
-        Range horz = new Range();
-        if (prop != null) {
-            templateID = WzUtil.getInt32(prop.getNode("id"), templateID);
-            x = WzUtil.getInt32(prop.getNode("x"), x);
-            y = WzUtil.getInt32(prop.getNode("cy"), y);
-            fh = WzUtil.getShort(prop.getNode("fh"), (short) 0);
-            horz.low = WzUtil.getInt32(prop.getNode("rx0"), 0);
-            horz.high = WzUtil.getInt32(prop.getNode("rx1"), 0);
-            f = WzUtil.getByte(prop.getNode("f"), (byte) 0);
-            if (f == 0) {
-                f = 1;
+    public boolean changeMobController(int characterID, Mob mobWanted, boolean chase) {
+        Controller ctrl = null;
+        Controller controller = mobWanted.getController();
+        if (characterID != 0) {
+            if (!controllers.containsKey(characterID)) {
+                return false;
+            } else {
+                ctrl = controllers.get(characterID);
+                if (ctrl == null)
+                    return false;
+            }
+            if (controller == ctrl) {
+                return true;
             }
         } else {
-            StaticFoothold pfh = field.getSpace2D().getFootholdUnderneath(x, y, new Pointer<>(x));
-            if (pfh == null) {
-                Logger.logError("Cannot found foothold (%d, %d) in map(%d)", x, y, field.getFieldID());
-                return null;
+            if (ctrlMin.getCount() == 0 || ctrlMin.getHeap().isEmpty() || ctrlMin.getHeap().get(0) == null)
+                return false;
+            for (Controller p : ctrlMin.getHeap()) {
+                if (p != null && p != controller && p.getCtrlCount() < 50) {
+                    ctrl = p;
+                    break;
+                }
+                ctrl = null;
             }
-            f = 1;
-            fh = (short) pfh.getSN();
-            horz.low = x - 50;
-            horz.high = x + 50;
+            if (ctrl == null)
+                return false;
         }
-        
-        NpcTemplate template = NpcTemplate.getNpcTemplate(templateID);
+        controller.getCtrlMob().remove(mobWanted);
+        updateCtrlHeap(controller);
+        ctrl.getCtrlMob().add(mobWanted);
+        updateCtrlHeap(ctrl);
+        mobWanted.setController(ctrl);
+        mobWanted.sendChangeControllerPacket(controller.getUser(), (byte) 0);
+        mobWanted.sendChangeControllerPacket(ctrl.getUser(), chase ? MobCtrl.Active_Req : MobCtrl.Active_Int);
+        return true;
+    }
+    
+    public Mob createMob(int templateID) {
+        MobTemplate template = MobTemplate.getMobTemplate(templateID);
         if (template != null) {
-            Npc npc = Npc.createNpc(template, x, y);
-            npc.setField(field);
-            npc.setHorz(horz);
-            npc.setMovePosition(x, y, f, fh);
-            npc.setController(ctrlNull);
-            npcs.put(npc.getGameObjectID(), npc);
-            ctrlNull.getCtrlNpc().add(npc);
-            field.splitRegisterFieldObj(x, y, 2, npc);
-            return npc;
-        } else {
-            Logger.logError("Failed in creating Npc(%d) in map(%d)", templateID, field.getFieldID());
-            return null;
+            return new Mob(field, MobTemplate.getMobTemplate(templateID), false);
         }
+        return null;
+    }
+    
+    public boolean createMob(Mob mob, Point pt) {
+        return createMob(mob.getTemplateID(), mob.getMobGen(), pt.x, pt.y, (short) field.getSpace2D().getFootholdUnderneath(pt.x, pt.y).getSN(), false, (byte) 0, 0, null);
     }
     
     public boolean createMob(int templateID, MobGen pmg, int x, int y, short fh, boolean noDropPriority, byte left, int mobType, Controller owner) {
@@ -178,6 +203,152 @@ public class LifePool {
             return true;
         }
         return false;
+    }
+    
+    public Npc createNpc(WzProperty prop, int templateID, int x, int y) {
+        short fh;
+        byte f;
+        Range horz = new Range();
+        if (prop != null) {
+            templateID = WzUtil.getInt32(prop.getNode("id"), templateID);
+            x = WzUtil.getInt32(prop.getNode("x"), x);
+            y = WzUtil.getInt32(prop.getNode("cy"), y);
+            fh = WzUtil.getShort(prop.getNode("fh"), (short) 0);
+            horz.low = WzUtil.getInt32(prop.getNode("rx0"), 0);
+            horz.high = WzUtil.getInt32(prop.getNode("rx1"), 0);
+            f = WzUtil.getByte(prop.getNode("f"), (byte) 0);
+            if (f == 0) {
+                f = 1;
+            }
+        } else {
+            StaticFoothold pfh = field.getSpace2D().getFootholdUnderneath(x, y, new Pointer<>(x));
+            if (pfh == null) {
+                Logger.logError("Cannot found foothold (%d, %d) in map(%d)", x, y, field.getFieldID());
+                return null;
+            }
+            f = 1;
+            fh = (short) pfh.getSN();
+            horz.low = x - 50;
+            horz.high = x + 50;
+        }
+        
+        NpcTemplate template = NpcTemplate.getNpcTemplate(templateID);
+        if (template != null) {
+            Npc npc = Npc.createNpc(template, x, y);
+            npc.setField(field);
+            npc.setHorz(horz);
+            npc.setMovePosition(x, y, f, fh);
+            npc.setController(ctrlNull);
+            npcs.put(npc.getGameObjectID(), npc);
+            ctrlNull.getCtrlNpc().add(npc);
+            field.splitRegisterFieldObj(x, y, 2, npc);
+            return npc;
+        } else {
+            Logger.logError("Failed in creating Npc(%d) in map(%d)", templateID, field.getFieldID());
+            return null;
+        }
+    }
+    
+    public Field getField() {
+        return field;
+    }
+    
+    public Mob getMob(int mobID) {
+        if (field.lock()) {
+            try {
+                if (mobs.containsKey(mobID)) {
+                    return mobs.get(mobID);
+                }
+            } finally {
+                field.unlock();
+            }
+        }
+        return null;
+    }
+    
+    public Mob getMobByTemplateID(int templateID) {
+        if (field.lock()) {
+            try {
+                List<Mob> mob = new ArrayList<>(mobs.values());
+                for (Mob m : mob) {
+                    if (m.getTemplateID() == templateID) {
+                        return m;
+                    }
+                }
+                mob.clear();
+            } finally {
+                field.unlock();
+            }
+        }
+        return null;
+    }
+    
+    public int getMobCount(int mobID) {
+        int count = 0;
+        List<Mob> mob = new ArrayList<>(mobs.values());
+        for (Mob m : mob) {
+            if (m != null && m.getTemplateID() == mobID) {
+                ++count;
+            }
+        }
+        mob.clear();
+        return count;
+    }
+    
+    public int getMobHP(int mobID) {
+        List<Mob> mob = new ArrayList<>(mobs.values());
+        for (Mob m : mob) {
+            if (m != null && m.getTemplateID() == mobID) {
+                return m.getHP();
+            }
+        }
+        mob.clear();
+        return -1;
+    }
+    
+    public Npc getNpc(String name) {
+        if (field.lock()) {
+            try {
+                List<Npc> npc = new ArrayList<>(npcs.values());
+                for (Npc n : npc) {
+                    if (n.getNpcTemplate().getName().equals(name)) {
+                        return n;
+                    }
+                }
+                npc.clear();
+            } finally {
+                field.unlock();
+            }
+        }
+        return null;
+    }
+    
+    public Npc getNpc(int id) {
+        if (field.lock()) {
+            try {
+                if (npcs.containsKey(id)) {
+                    return npcs.get(id);
+                }
+            } finally {
+                field.unlock();
+            }
+        }
+        return null;
+    }
+    
+    public Npc getNpcByTemplateID(int templateID) {
+        if (field.lock()) {
+            try {
+                for (Npc npc : npcs.values()) {//TODO: lNpc?
+                    if (npc.getTemplateID() == templateID) {
+                        return npc;
+                    }
+                }
+            } finally {
+                field.unlock();
+            }
+        }
+        return null;
     }
     
     public boolean giveUpMobController(Controller ctrl) {
@@ -272,39 +443,6 @@ public class LifePool {
         this.tryCreateMob(true);
     }
     
-    public void removeAllMob() {
-        if (field.lock()) {
-            try {
-                List<Mob> mob = new ArrayList<>(mobs.values());
-                for (Mob m : mob) {
-                    m.setForcedDead(true);
-                    removeMob(m);
-                }
-                mob.clear();
-            } finally {
-                field.unlock();
-            }
-        }
-    }
-    
-    public void update(long time) {
-        if (field.lock(1200)) {
-            try {
-                //for (Npc npc : npcs.values()) {
-                //    npc.update(time);
-                //}
-                List<Mob> mob = new ArrayList<>(mobs.values());
-                for (Mob m : mob) {
-                    m.update(time);
-                }
-                mob.clear();
-            } finally {
-                field.unlock();
-            }
-        }
-        tryCreateMob(false);
-    }
-    
     public void insertController(User user) {
         if (field.lock()) {
             try {
@@ -321,16 +459,39 @@ public class LifePool {
         }
     }
     
-    public void removeController(User user) {
-        if (field.lock()) {
-            try {
-                Controller ctrl = controllers.remove(user.getCharacterID());
-                if (ctrl != null) {
-                    // TODO
-                }
-            } finally {
-                field.unlock();
+    public void onMobPacket(User user, byte type, InPacket packet) {
+        int mobID = packet.decodeInt();
+        if (mobs.containsKey(mobID)) {
+            Mob mob = mobs.get(mobID);
+            switch (type) {
+                case ClientPacket.MobMove:
+                    field.onMobMove(user, mob, packet);
+                    break;
             }
+        } else {
+            if (type == ClientPacket.MobMove) {
+                Mob.sendReleaseControlPacket(user, mobID);
+            }
+        }
+    }
+    
+    public void onNpcPacket(User user, byte type, InPacket packet) {
+        int npcID = packet.decodeInt();
+        if (npcs.containsKey(npcID)) {
+            Npc npc = npcs.get(npcID);
+            switch (type) {
+                case ClientPacket.NpcMove:
+                    field.onNpcMove(user, npc, packet);
+                    break;
+            }
+        }
+    }
+    
+    public void onPacket(User user, byte type, InPacket packet) {
+        if (type >= ClientPacket.BEGIN_MOB && type <= ClientPacket.END_MOB) {
+            onMobPacket(user, type, packet);
+        } else if (type >= ClientPacket.BEGIN_NPC && type <= ClientPacket.END_NPC) {
+            onNpcPacket(user, type, packet);
         }
     }
     
@@ -418,8 +579,145 @@ public class LifePool {
         }
     }
     
-    public boolean changeMobController(int characterID, Mob mobWanted, boolean chase) {
-        return true;
+    public void removeAllMob() {
+        if (field.lock()) {
+            try {
+                List<Mob> mob = new ArrayList<>(mobs.values());
+                for (Mob m : mob) {
+                    m.setForcedDead(true);
+                    removeMob(m);
+                }
+                mob.clear();
+            } finally {
+                field.unlock();
+            }
+        }
+    }
+    
+    public void removeController(User user) {
+        if (field.lock()) {
+            try {
+                Controller ctrl = controllers.remove(user.getCharacterID());
+                if (ctrl != null) {
+                    List<Mob> ctrlMob = new ArrayList<>(ctrl.getCtrlMob());
+                    List<Npc> ctrlNpc = new ArrayList<>(ctrl.getCtrlNpc());
+                    
+                    if (ctrl.getPosMinHeap() > 0 && ctrl.getPosMaxHeap() > 0) {
+                        ctrlMin.removeAt(ctrl.getPosMinHeap());
+                        ctrlMax.removeAt(ctrl.getPosMaxHeap());
+                    }
+                    
+                    // It's hard to tell if Nexon ever truly increments nIndex.
+                    // I think they truly continue to force the controller on
+                    // whoever has the least amount of controllers and then on
+                    // each new controller they update the heap. Each new adjustment
+                    // causes them to shift upward, allowing the new user with the
+                    // least controllers to be next in line.
+                    int index = 0;
+                    for (Mob mob : ctrlMob) {
+                        if (mob == null)
+                            break;
+                        if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(index)) == null || ctrl.getCtrlCount() >= 50) {
+                            ctrl = ctrlNull;
+                        }
+                        
+                        ctrl.getCtrlMob().add(mob);
+                        updateCtrlHeap(ctrl);
+                        mob.setController(ctrl);
+                        mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
+                    }
+                    // Assume reiteration from head.
+                    index = 0;
+                    for (Npc npc : ctrlNpc) {
+                        if (npc == null)
+                            break;
+                        if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(index)) == null || ctrl.getCtrlCount() >= 50) {
+                            ctrl = ctrlNull;
+                        }
+                        
+                        ctrl.getCtrlNpc().add(npc);
+                        updateCtrlHeap(ctrl);
+                        npc.setController(ctrl);
+                        npc.sendChangeControllerPacket(ctrl.getUser(), true);
+                    }
+                    ctrlMob.clear();
+                    ctrlNpc.clear();
+                }
+            } finally {
+                field.unlock();
+            }
+        }
+    }
+    
+    public void removeMob(Mob mob) {
+        mobs.remove(mob.getGameObjectID());
+        if (mob.getController() != null) {
+            mob.getController().getCtrlMob().remove(mob);
+            updateCtrlHeap(mob.getController());
+            mob.sendChangeControllerPacket(mob.getController().getUser(), (byte) 0);
+        }
+        field.splitUnregisterFieldObj(1, mob);
+        mob.setRemoved();
+    }
+    
+    public void removeMob(int mobTemplateID) {
+        if (field.lock()) {
+            try {
+                List<Mob> mob = new ArrayList<>(mobs.values());
+                for (Mob m : mob) {
+                    if (m.getTemplateID() == mobTemplateID) {
+                        m.setForcedDead(true);
+                        removeMob(m);
+                    }
+                }
+                mob.clear();
+            } finally {
+                field.unlock();
+            }
+        }
+    }
+    
+    public void removeNpc(Npc npc) {
+        int templateID = npc.getTemplateID();
+        
+        npcs.remove(npc.getGameObjectID());
+        npc.getController().getCtrlNpc().remove(npc);
+        updateCtrlHeap(npc.getController());
+        npc.sendChangeControllerPacket(npc.getController().getUser(), false);
+        npc.getField().splitUnregisterFieldObj(2, npc);
+        
+        //Not sure why Nexon seems to re-create the Npc after removal..
+        NpcTemplate template = NpcTemplate.getNpcTemplate(templateID);
+        if (template != null) {
+            // Parse the Map that the Npc is currently in
+            // Iterate the life
+            // Check if it's a Npc and if the ID is equal to the one removed
+            // CreateNpc(pData, 0, 0, 0);
+        }
+        
+        redistributeLife();
+    }
+    
+    public void removeNpcByTemplate(int templateID) {
+        if (field.lock()) {
+            try {
+                List<Npc> npc = new ArrayList<>(npcs.values());
+                for (Npc n : npc) {
+                    if (n.getTemplateID() == templateID) {
+                        removeNpc(n);
+                    }
+                }
+                npc.clear();
+            } finally {
+                field.unlock();
+            }
+        }
+    }
+    
+    public void reset() {
+        mobGenExcept.clear();
+        removeAllMob();
+        tryCreateMob(true);
     }
     
     public void setMobGen(boolean mobGen, Integer mobTemplateID) {
@@ -541,75 +839,22 @@ public class LifePool {
         }
     }
     
-    public void removeMob(Mob mob) {
-        
-    }
-    
-    public void insertMobGen(MobGen mobGen) {
-        
-    }
-    
-    public void onMobPacket(User user, byte type, InPacket packet) {
-        int mobID = packet.decodeInt();
-        if (mobs.containsKey(mobID)) {
-            Mob mob = mobs.get(mobID);
-            switch (type) {
-                case ClientPacket.MobMove:
-                    field.onMobMove(user, mob, packet);
-                    break;
-            }
-        } else {
-            if (type == ClientPacket.MobMove) {
-                Mob.sendReleaseControlPacket(user, mobID);
+    public void update(long time) {
+        if (field.lock(1200)) {
+            try {
+                //for (Npc npc : npcs.values()) {
+                //    npc.update(time);
+                //}
+                List<Mob> mob = new ArrayList<>(mobs.values());
+                for (Mob m : mob) {
+                    m.update(time);
+                }
+                mob.clear();
+            } finally {
+                field.unlock();
             }
         }
-    }
-    
-    public void onPacket(User user, byte type, InPacket packet) {
-        if (type >= ClientPacket.BEGIN_MOB && type <= ClientPacket.END_MOB) {
-            onMobPacket(user, type, packet);
-        } else if (type >= ClientPacket.BEGIN_NPC && type <= ClientPacket.END_NPC) {
-            onNpcPacket(user, type, packet);
-        }
-    }
-    
-    public void onNpcPacket(User user, byte type, InPacket packet) {
-        int npcID = packet.decodeInt();
-        if (npcs.containsKey(npcID)) {
-            Npc npc = npcs.get(npcID);
-            switch (type) {
-                case ClientPacket.NpcMove:
-                    field.onNpcMove(user, npc, packet);
-                    break;
-            }
-        }
-    }
-    
-    public void removeNpc(Npc npc) {
-        int templateID = npc.getTemplateID();
-        
-        npcs.remove(npc.getGameObjectID());
-        npc.getController().getCtrlNpc().remove(npc);
-        updateCtrlHeap(npc.getController());
-        npc.sendChangeControllerPacket(npc.getController().getUser(), false);
-        npc.getField().splitUnregisterFieldObj(2, npc);
-        
-        //Not sure why Nexon seems to re-create the Npc after removal..
-        NpcTemplate template = NpcTemplate.getNpcTemplate(templateID);
-        if (template != null) {
-            // Parse the Map that the Npc is currently in
-            // Iterate the life
-            // Check if it's a Npc and if the ID is equal to the one removed
-            // CreateNpc(pData, 0, 0, 0);
-        }
-        
-        redistributeLife();
-    }
-    
-    public void reset() {
-        mobGenExcept.clear();
-        //removeAllMob(false);
-        tryCreateMob(true);
+        tryCreateMob(false);
     }
     
     public void updateCtrlHeap(Controller ctrl) {
@@ -617,5 +862,92 @@ public class LifePool {
             ctrlMin.updateAt(ctrl.getPosMinHeap());
             ctrlMax.updateAt(ctrl.getPosMaxHeap());
         }
+    }
+    
+    public boolean onUserAttack(User user, byte attackType, byte mobCount, byte damagePerMob, SkillEntry skill, byte slv, byte action, byte left, int bulletItemID, List<AttackInfo> attack, Point ballStart) {
+        if (field.lock(1200)) {
+            try {
+                if (user.lock()) {
+                    try {
+                        int skillID = 0;
+                        if (skill != null) {
+                            //skillID = skill.skillID
+                        }
+                        
+                        if (mobCount > 0) {
+                            // Handle CalcDamage, if it exists..
+                        }
+                        
+                        OutPacket packet = new OutPacket(attackType);
+                        packet.encodeInt(user.getCharacterID());
+                        packet.encodeByte(damagePerMob | 16 * mobCount);
+                        packet.encodeByte(slv);
+                        if (slv > 0) {
+                            packet.encodeInt(skillID);
+                        }
+                        packet.encodeByte(action);
+                        packet.encodeByte(0);// Unknown
+                        packet.encodeByte(0);// Unknown
+                        packet.encodeInt(bulletItemID);
+                        for (AttackInfo info : attack) {
+                            packet.encodeInt(info.mobID);
+                            packet.encodeByte(info.hitAction);
+                            for (int i = 0; i < damagePerMob; i++) {
+                                packet.encodeShort(info.damageCli.get(i));
+                            }
+                        }
+                        getField().splitSendPacket(user.getSplit(), packet, user);
+                        
+                        if (mobCount > 0) {
+                            for (Iterator<AttackInfo> it = attack.iterator(); it.hasNext();) {
+                                AttackInfo info = it.next();
+                                if (!mobs.containsKey(info.mobID)) {
+                                    it.remove();
+                                    continue;
+                                }
+                                Mob mob = mobs.get(info.mobID);
+                                
+                                Rect hitPoint = new Rect(mob.getCurrentPos().x, mob.getCurrentPos().y, mob.getCurrentPos().x, mob.getCurrentPos().y);
+                                hitPoint.inflateRect(100, 100);
+                                if (!hitPoint.ptInRect(info.hit)) {
+                                    info.hit = mob.getCurrentPos();
+                                }
+                                
+                                int damageSum = 0;
+                                if (damagePerMob > 0) {
+                                    for (int damage : info.damageCli) {
+                                        damageSum += damage;
+                                        if (mob.onMobHit(user, damage, attackType)) {
+                                            removeMob(mob);
+                                            mob.onMobDead(info.hit, info.delay);
+                                            break;
+                                        }
+                                    }
+                                }
+                                
+                                if (skill != null && slv > 0) {
+                                    if (skillID == Thief.Steal) {
+                                        //if (!mob.getTemplate().isBoss() && Rand32.genRandom() % 100 < level.prop) {
+                                            //mob.giveReward(user.getCharacterID(), info.hit, info.delay, true);
+                                        //}
+                                    } else if (skillID == Assassin.Drain) {
+                                        //int hp = Math.min(Math.min(damageSum * level.nX / 100, user.getCharacter().getCharacterStat().getMHP() / 2), mob.getMaxHP());
+                                        //if (user.incHP(hp, false))
+                                        //    user.sendCharacterStat(Request.None, CharacterStatType.HP);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        return mobCount != 0;
+                    } finally {
+                        user.unlock();
+                    }
+                }
+            } finally {
+                field.unlock();
+            }
+        }
+        return false;
     }
 }

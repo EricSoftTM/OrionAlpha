@@ -22,8 +22,10 @@ import game.field.Field;
 import game.field.GameObjectType;
 import game.field.MovePath;
 import game.field.drop.Reward;
+import game.field.drop.RewardType;
 import game.field.life.Controller;
 import game.field.life.MoveAbility;
+import game.field.life.mob.MobDamageLog.Info;
 import game.user.User;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -52,6 +54,7 @@ public class Mob extends Creature {
     private boolean nextAttackPossible;
     private int hp;
     private int mp;
+    private MobDamageLog damageLog;
     private Point curPos;
     private byte moveAction;
     private short footholdSN;
@@ -62,7 +65,7 @@ public class Mob extends Creature {
     private long lastAttack;
     private long lastMove;
     private long create;
-    private final Map<Integer, Integer> attackers;
+    private final Map<Integer, Long> attackers;
     
     public Mob(Field field, MobTemplate template, boolean noDropPriority) {
         super();
@@ -73,6 +76,7 @@ public class Mob extends Creature {
         this.mobType = 0;//MobSpecies.Beast
         this.controller = null;
         this.nextAttackPossible = false;
+        this.damageLog = new MobDamageLog();
         this.footholdSN = 0;
         this.rewardPicked = new ArrayList<>();
         this.alreadyStealed = false;
@@ -100,7 +104,7 @@ public class Mob extends Creature {
         return true;
     }
     
-    public int distributeExp(Pointer<Integer> ownType, Pointer<Integer> lastDamageCharacterID) {
+    public int distributeExp(Pointer<Integer> lastDamageCharacterID) {
         // TODO: Exp distribution handling
         
         return 0;
@@ -150,6 +154,10 @@ public class Mob extends Creature {
         return template.getMaxMP();
     }
     
+    public MobGen getMobGen() {
+        return mobGen;
+    }
+    
     public void getMobStat(MobStat mobStat) {
         
     }
@@ -167,20 +175,69 @@ public class Mob extends Creature {
         return templateID;
     }
     
-    public void giveMoney(User user) {//, AttackInfo ai, int attackCount
-        
-    }
-    
     public void giveReward(int ownerID, Point hit, short delay, boolean steal) {
-        
+        if (!alreadyStealed || !steal) {
+            User user = User.findUser(ownerID);
+            int ownerDropRate = 1;
+            int ownerDropRate_Ticket = 1;
+            if (user != null) {
+                ownerDropRate = 1;//getMesoRate
+                ownerDropRate_Ticket = 1;//getDropRate
+            }
+            List<Reward> rewards = Reward.create(template.getRewardInfo(), ownerDropRate, ownerDropRate_Ticket);
+            if (rewards == null || rewards.isEmpty()) {
+                return;
+            }
+            if (steal) {
+                Reward reward = rewards.get((int) (Rand32.getInstance().random() % rewards.size()));
+                if (reward.getItem() != null) {
+                    itemID_Stolen = reward.getItem().getItemID();
+                }
+                if (reward.getType() == RewardType.Money) {
+                    reward.setMoney(reward.getMoney() / 2);
+                }
+                rewards.clear();
+                rewards.add(reward);
+                alreadyStealed = true;
+            } else {
+                if (alreadyStealed && itemID_Stolen != 0) {
+                    for (Iterator<Reward> it = rewards.iterator(); it.hasNext();) {
+                        Reward reward = it.next();
+                        if (reward.getItem() != null && reward.getItem().getItemID() == itemID_Stolen) {
+                            it.remove();
+                        }
+                    }
+                }
+            }
+            int x2 = hit.x + rewards.size() * -10;
+            for (Reward reward : rewards) {
+                getField().getDropPool().create(reward, ownerID, getGameObjectID(), hit.x, hit.y, x2, 0, delay, false, 0);
+                x2 += 20;
+            }
+            if (steal) {
+                if (rewards.get(0).getItem() != null)
+                    itemID_Stolen = rewards.get(0).getItem().getItemID();
+            }
+        }
     }
     
     public void heal(int min, int max) {
-        // can mobs even heal yet? guess so because HPRecovery/MPRecovery exists
+        int decHP;
+        if (max == min)
+            decHP = Rand32.genRandom().intValue();
+        else
+            decHP = min + Rand32.genRandom().intValue() % (max - min);
+        setMobHP(Math.min(decHP + getHP(), getMaxHP()));
     }
     
     public void init(MobGen mobGen, short fh) {
-        
+        this.damageLog.vainDamage = 0;
+        this.damageLog.fieldID = getField().getFieldID();
+        this.damageLog.initHP = getHP();
+        if (mobGen != null && mobGen.regenInterval != 0)
+            mobGen.mobCount.incrementAndGet();
+        this.mobGen = mobGen;
+        this.homeFoothold = template.getMoveAbility() != MoveAbility.Fly ? fh : 0;
     }
     
     public boolean isNextAttackPossible() {
@@ -209,9 +266,63 @@ public class Mob extends Creature {
         return MobPool.onMobLeaveField(getGameObjectID(), deadType);
     }
     
+    public void onMobDead(Point hit, short delay) {
+        Pointer<Integer> lastDamageCharacterID = new Pointer<>(0);
+        int ownerID = distributeExp(lastDamageCharacterID);
+        if (ownerID != 0) {
+            giveReward(ownerID, hit, delay, false);
+        }
+    }
+    
+    public boolean onMobHit(User user, int damage, byte attackType) {
+        int characterID = user.getCharacterID();
+        long time = System.currentTimeMillis();
+        if (time - lastAttack > 5000 && (controller == null || user != controller.getUser()) && !nextAttackPossible)
+            getField().getLifePool().changeMobController(characterID, this, true);
+        attackers.put(characterID, time);
+        if (damage > 0) {
+            if (damage > 9999) {
+                Logger.logError("Invalid Mob Damage. Name : %s, Damage: %d", user.getCharacterName(), damage);
+                return false;
+            }
+            if (hp > 0) {
+                damage = Math.min(damage, hp);
+                damageLog.addLog(characterID, damage, time);
+                setMobHP(hp - damage);
+                return hp <= 0;
+            }
+        }
+        return false;
+    }
+    
     public boolean onMobMove(boolean nextAttackPossible, byte action, int data) {
-        // TODO
-        
+        long time = System.currentTimeMillis();
+        lastMove = time;
+        if (action >= 0) {//>= MobAct.Move
+            // Wait, mob attacks don't exist yet because there's no MobSkill..
+        }
+        if (time - lastAttack > 5000) {
+            int characterID = 0;
+            if (controller != null && controller.getUser() != null)
+                characterID = controller.getUser().getCharacterID();
+            Info infoAdd = null;
+            for (Info info : damageLog.getLog()) {
+                if (info.characterID == characterID) {
+                    infoAdd = info;
+                }
+            }
+            if (infoAdd == null || time - infoAdd.time > 5000) {
+                for (Iterator<Info> it = damageLog.getLog().descendingIterator(); it.hasNext();) {
+                    Info info = it.next();
+                    if (time - info.time > 5000)
+                        break;
+                    if (info.characterID != characterID && getField().getLifePool().changeMobController(info.characterID, this, true))
+                        return false;
+                }
+            }
+            this.lastAttack = time;
+        }
+        this.nextAttackPossible = nextAttackPossible;
         return true;
     }
     
@@ -242,6 +353,12 @@ public class Mob extends Creature {
     
     public void setForcedDead(boolean forced) {
         this.forcedDead = forced;
+    }
+    
+    public void setMobHP(int hp) {
+        if (hp >= 0 && hp <= getMaxHP() && hp != getHP()) {
+            this.hp = hp;
+        }
     }
     
     public void setMobType(int type) {
@@ -288,8 +405,8 @@ public class Mob extends Creature {
             lastAttack = time;
             lastMove = time;
         }
-        for (Iterator<Integer> it = attackers.values().iterator(); it.hasNext();) {
-            int attackTime = it.next();
+        for (Iterator<Long> it = attackers.values().iterator(); it.hasNext();) {
+            long attackTime = it.next();
             if (time - attackTime > 1000 * 5)
                 it.remove();
         }

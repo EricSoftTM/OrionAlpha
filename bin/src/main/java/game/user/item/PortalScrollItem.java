@@ -3,7 +3,6 @@ package game.user.item;
 
 /**
  * @author Arnah
- * @since May 11, 2018
 */
 public class PortalScrollItem{
 

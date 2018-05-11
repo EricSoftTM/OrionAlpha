@@ -69,6 +69,10 @@ public class ItemInfo {
 		return itemString.get(itemID);
 	}
 
+	public static String getMapName(int mapID){
+		return mapString.get(mapID);
+	}
+
 	public static int getBulletPAD(int itemID){
 		BundleItem item = getBundleItem(itemID);
 		if(item == null) return 0;
@@ -96,8 +100,8 @@ public class ItemInfo {
 
 		Logger.logReport("Loading Bundle Info");
 		iterateBundleItem();
+		iterateMapString();
 	}
-
 
 	private static void registerEquipItemInfo(WzProperty itemData){
 		EquipItem item = new EquipItem();
@@ -171,8 +175,6 @@ public class ItemInfo {
 
 			// unitPrice, iconRaw, incMDD, icon, incACC, slotMax, incLUK, incDEX, incJump, price, success, incSpeed, name, incINT, incSTR, incPDD, incMAD, incEVA, incPAD, cash, incMHP, desc
 		}
-		// no bTimeLimited for bms check
-		// no nRequiredLEV for bms check
 		int type = item.itemID / 10000;
 
 		switch (type){
@@ -274,5 +276,15 @@ public class ItemInfo {
 			item.success = WzUtil.getByte(info.getNode("success"), (byte) 0);
 		}
 		upgradeItem.put(item.itemID, item);
+	}
+
+	private static void iterateMapString(){
+		for(WzProperty map : fieldDir.getEntries().values()){
+			int mapid = Integer.parseInt(map.getNodeName().replace(".img", ""));
+			WzProperty info = map.getNode("info");
+			if(info != null) {
+				mapString.put(mapid, WzUtil.getString(info.getNode("mapName"), "NULL"));
+			}
+		}
 	}
 }

@@ -17,9 +17,6 @@
  */
 package game;
 
-import game.field.FieldMan;
-import game.field.life.mob.MobTemplate;
-import game.field.life.npc.NpcTemplate;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.InetSocketAddress;
@@ -28,9 +25,15 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+
+import game.field.FieldMan;
+import game.field.life.mob.MobTemplate;
+import game.field.life.npc.NpcTemplate;
+import game.user.item.ItemInfo;
 import network.GameAcceptor;
 import network.database.Database;
 import network.database.GameDB;
@@ -179,7 +182,10 @@ public class GameApp implements Runnable {
         long time;
         
         // Load Items and Equipment
-        
+		time = System.currentTimeMillis();
+		ItemInfo.load();
+		Logger.logReport("Loaded Item Info in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
+       
         // Load Skills
         
         // Load Mobs

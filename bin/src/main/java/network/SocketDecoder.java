@@ -25,7 +25,7 @@ import io.netty.handler.codec.ReplayingDecoder;
 import java.nio.ByteOrder;
 import java.util.List;
 import network.packet.InPacket;
-import network.security.XORCipher;
+import network.security.XORCrypter;
 import util.Logger;
 import util.Pointer;
 import util.Utilities;
@@ -37,9 +37,9 @@ import util.Utilities;
  * @author Eric
  */
 public class SocketDecoder extends ReplayingDecoder<Void> {
-    private final XORCipher cipher;
+    private final XORCrypter cipher;
     
-    public SocketDecoder(XORCipher cipher) {
+    public SocketDecoder(XORCrypter cipher) {
         this.cipher = cipher;
     }
     

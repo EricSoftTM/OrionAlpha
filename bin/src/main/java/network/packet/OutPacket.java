@@ -17,14 +17,12 @@
  */
 package network.packet;
 
-import common.OrionConfig;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.nio.charset.Charset;
 import java.util.List;
-import network.security.XORCipher;
+import network.security.XORCrypter;
 import util.FileTime;
-import util.Logger;
 import util.Pointer;
 import util.Utilities;
 
@@ -38,50 +36,96 @@ public class OutPacket {
     
     private final ByteBuf sendBuff;
     
+    /**
+     * Construct a new OutPacket with a default size. 
+     * 
+     * @param type The operational code of this packet
+     */
     public OutPacket(int type) {
         this(type, DEFAULT_BUFFER_ALLOC);
     }
     
+    /**
+     * Constructs a new OutPacket with a fixed size total.
+     * 
+     * @param type The operational code of this packet
+     * @param bufferAlloc The size of the overall packet
+     */
     public OutPacket (int type, int bufferAlloc) {
         this.sendBuff = Unpooled.buffer(bufferAlloc);
         this.init(type);
     }
     
+    /**
+     * Initializes the packet with the given packet header.
+     * If the <code>type</code> is equal to <b>Integer.MAX_VALUE</b>,
+     * then the packet header is ignored.
+     * 
+     * @param type The header of the packet
+     */
     private void init(int type) {
         if (type != Integer.MAX_VALUE) {
             initByte(type);
         }
     }
     
+    /**
+     * Initializes the byte header of this packet.
+     * In KMS Alpha, packet headers are written as bytes and not shorts.
+     * 
+     * @param type The packet header to encode
+     */
     private void initByte(int type) {
         if (type != Integer.MAX_VALUE) {
             encodeByte(type);
         }
     }
     
+    /**
+     * Retrieve the current index of the overall buffer's writer.
+     * 
+     * @return The current index of the writer
+     */
     public int getOffset() {
         return sendBuff.writerIndex();
     }
     
-    public int encodeSeqBase(int seqBase, Pointer<Integer> seqKey) {
+    /**
+     * Using the raw <code>seqBase</code> and the crypter's <code>seqKey</code>,
+     * this method will perform bitwise operation which will result in encoding
+     * the final sequence base containing both the version of the game, and the
+     * client's current sequence.
+     * 
+     * This method is designed to encode a sequence that determines if the packet 
+     * is both correct, and that the server's version matches the client's version.
+     * 
+     * @param seqBase The sequence base (or, version) of the game
+     * @param seqKey The sequencing key of the client's crypter
+     * 
+     * @return The encoded sequence base of the packet
+     */
+    public int encodeSeqBase(int seqBase, int seqKey) {
         if (seqBase != 0) {
             seqBase = (short) ((((0xFFFF - seqBase) >> 8) & 0xFF) | (((0xFFFF - seqBase) << 8) & 0xFF00));
         }
         
-        int uSeqKey = 0;
-        if (seqKey != null)
-            uSeqKey = seqKey.get();
-        
-        if (uSeqKey != 0) {
+        if (seqKey != 0) {
             // ((unsigned __int16)(*puSeqKey >> 16) >> 8) ^ uSeqBase;
-            uSeqKey = (short) ((((uSeqKey >> 24) & 0xFF) | (((uSeqKey >> 16) << 8) & 0xFF00)) ^ seqBase);
+            seqKey = (short) ((((seqKey >> 24) & 0xFF) | (((seqKey >> 16) << 8) & 0xFF00)) ^ seqBase);
         } else {
-            uSeqKey = seqBase;
+            seqKey = seqBase;
         }
-        return uSeqKey;
+        return seqKey;
     }
     
-    public void makeBufferList(List<byte[]> l, int seqBase, XORCipher cipher) {
+    /**
+     * 
+     * 
+     * @param l The list of buffer blocks to be flushed to socket
+     * @param seqBase The sequence base (a.k.a the game version)
+     * @param cipher The client's crypter
+     */
+    public void makeBufferList(List<byte[]> l, int seqBase, XORCrypter cipher) {
         // The source buffer to encrypt - do NOT encrypt directly;
         // all output of encrypted buffer should be in pDes, not pSrc.
         byte[] src = toArray();
@@ -115,7 +159,7 @@ public class OutPacket {
         
         // Encode the sequence base and write it to the first 2 bytes of the
         // TCP packet header.
-        int rawSeq = encodeSeqBase(seqBase, new Pointer<>(cipher.getSeqSnd()));
+        int rawSeq = encodeSeqBase(seqBase, cipher.getSeqSnd());
         byte[] dest = new byte[4];
         //*(unsigned __int16 *)pDes = uRawSeq;
         dest[des++] = (byte) ((rawSeq >>> 8) & 0xFF);
@@ -158,42 +202,95 @@ public class OutPacket {
         }
     }
     
+    /**
+     * Encodes a single byte from a boolean.
+     * 
+     * @param b The value of the boolean to encode
+     */
     public void encodeBool(boolean b) {
         sendBuff.writeBoolean(b);
     }
     
+    /**
+     * Encodes a single byte.
+     * 
+     * @param b The value of the byte to encode
+     */
     public void encodeByte(byte b) {
         sendBuff.writeByte(b);
     }
     
+    /**
+     * Encodes a single byte (or, unsigned byte).
+     * 
+     * @param b The value of the byte (or, unsigned byte) to encode
+     */
     public void encodeByte(int b) {
         sendBuff.writeByte(b);
     }
     
+    /**
+     * Encodes a 2-byte short.
+     * 
+     * @param n The value of the short to encode
+     */
     public void encodeShort(short n) {
         sendBuff.writeShortLE(n);
     }
     
+    /**
+     * Encodes a 2-byte short with any datatype up to an integer.
+     * 
+     * @param n The value of the short to encode
+     */
     public void encodeShort(int n) {
         sendBuff.writeShortLE(n);
     }
     
+    /**
+     * Encodes a 4-byte integer.
+     * 
+     * @param n The value of the integer to encode
+     */
     public void encodeInt(int n) {
         sendBuff.writeIntLE(n);
     }
     
+    /**
+     * Encodes a 8-byte long.
+     * 
+     * @param l The value of the long to encode
+     */
     public void encodeLong(long l) {
         sendBuff.writeLongLE(l);
     }
     
+    /**
+     * Encodes a 4-byte float.
+     * 
+     * @param f The value of the float to encode
+     */
     public void encodeFloat(float f) {
         sendBuff.writeFloatLE(f);
     }
     
+    /**
+     * Encodes a 8-byte double.
+     * 
+     * @param d The value of the double to encode
+     */
     public void encodeDouble(double d) {
         sendBuff.writeDoubleLE(d);
     }
     
+    /**
+     * Encodes a MapleStory String.
+     * A MapleStory String is encoded as follows:
+     *      [01 00] -> The size of the string
+     *      [00] -> The <code>OUT_ENCODING</code> character(s) to encode
+     * 
+     * @param str The string to encode
+     */
     public void encodeString(String str) {
         byte[] src = str.getBytes(OUT_ENCODING);
         
@@ -201,6 +298,15 @@ public class OutPacket {
         encodeBuffer(src);
     }
     
+    /**
+     * Encodes a fixed-length string.
+     * A fixed-length is a length that the MapleStory client requires.
+     * If the string is shorter than <code>size</code>, then it will append
+     * null-termination characters to fill the remaining length.
+     * 
+     * @param str The string
+     * @param size The required length of the buffer
+     */
     public void encodeString(String str, int size) {
         byte[] src = str.getBytes(OUT_ENCODING);
         
@@ -213,25 +319,56 @@ public class OutPacket {
         }
     }
     
+    /**
+     * Encodes a 8-byte FileTime buffer.
+     * 
+     * @param ft The FileTime object to encode
+     */
     public void encodeFileTime(FileTime ft) {
         encodeInt(ft.getLowDateTime());
         encodeInt(ft.getHighDateTime());
     }
     
+    /**
+     * Encodes an array of bytes.
+     * The amount of bytes written in total length will be equivalent to the 
+     * total size of the array.
+     * 
+     * @param buffer The array of bytes to encode
+     */
     public void encodeBuffer(byte[] buffer) {
         sendBuff.writeBytes(buffer);
     }
     
+    /**
+     * Encodes the remaining bytes left within the buffer of <code>packet</code>.
+     * 
+     * @param packet The InPacket buffer to copy bytes from
+     */
     public void encodePacket(InPacket packet) {
         packet.copyTo(this);
     }
     
+    /**
+     * This method will simply encode zeroes <code>count</code> amount of times.
+     * 
+     * While this should never actually be relied on, this will help with packets
+     * that contain unknown lengths or are crashing from lack of data. Using this
+     * should help identify the remaining bytes and how many are missing.
+     * 
+     * @param count The amount of bytes to pad
+     */
     public void encodePadding(int count) {
         for (int i = 0; i < count; i++) {
             encodeByte(0);
         }
     }
     
+    /**
+     * Transforms the current send buffer into an array of bytes.
+     * 
+     * @return This packet's buffer represented as an array of bytes
+     */
     public byte[] toArray() {
         byte[] src = new byte[sendBuff.writerIndex()];
         sendBuff.readBytes(src);
@@ -239,10 +376,21 @@ public class OutPacket {
         return src;
     }
     
+    /**
+     * Constructs a readable string displaying the original bytes of the packet.
+     * 
+     * @return A readable string containing the bytes of this packet 
+     */
     public String dumpString() {
         return Utilities.toHexString(sendBuff.array());
     }
     
+    /**
+     * Dumps the packet data into a readable string.
+     * 
+     * @see dumpString()
+     * @return A readable string displaying the bytes of the packet
+     */
     @Override
     public String toString() {
         return dumpString();

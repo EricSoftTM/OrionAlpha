@@ -21,7 +21,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 import java.util.Arrays;
-import network.security.XORCipher;
+import network.security.XORCrypter;
 
 /**
  * The server-end networking encoder. 
@@ -30,9 +30,9 @@ import network.security.XORCipher;
  * @author Eric
  */
 public class SocketEncoder extends MessageToByteEncoder<byte[]> {
-    private final XORCipher cipher;
+    private final XORCrypter cipher;
     
-    public SocketEncoder(XORCipher cipher) {
+    public SocketEncoder(XORCrypter cipher) {
         this.cipher = cipher;
     }
     
@@ -43,7 +43,7 @@ public class SocketEncoder extends MessageToByteEncoder<byte[]> {
         out.writeBytes(Arrays.copyOf(oPacket, oPacket.length));
     }
     
-    public final XORCipher getCipher() {
+    public final XORCrypter getCipher() {
         return cipher;
     }
 }

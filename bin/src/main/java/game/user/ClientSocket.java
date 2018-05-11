@@ -43,7 +43,7 @@ import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
-import network.security.XORCipher;
+import network.security.XORCrypter;
 import util.Logger;
 
 /**
@@ -70,7 +70,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private final Channel channel;
     private SocketDecoder decoder;
     private SocketEncoder encoder;
-    private XORCipher cipher;
+    private XORCrypter cipher;
     private ScheduledFuture update;
     private int localSocketSN;
     private int seqSnd;
@@ -204,7 +204,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     public void initSequence() {
         this.seqRcv = 42;
         this.seqSnd = 69;
-        this.cipher = new XORCipher(this.seqSnd, this.seqRcv);
+        this.cipher = new XORCrypter(this.seqSnd, this.seqRcv);
     }
     
     public void onClose() {

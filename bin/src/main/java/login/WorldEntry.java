@@ -46,7 +46,7 @@ public class WorldEntry {
         return this.channels;
     }
     
-    public final GameSocket getGameSocket() {
+    public final GameSocket getSocket() {
         return socket;
     }
     

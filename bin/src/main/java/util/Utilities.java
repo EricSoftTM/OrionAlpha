@@ -36,14 +36,6 @@ public class Utilities {
         }
         return arr;
     }
-    
-    public static short toInt16(byte[] buf, int idx) {
-        return (short) (((buf[idx + 1] & 0xFF) << 8) | (buf[idx] & 0xFF));
-    }
-    
-     public static int toInt32(byte[] buf, int idx) {
-        return (((buf[3] & 0xFF) << 24) | ((buf[2] & 0xFF) << 16) | ((buf[1] & 0xFF) << 8) | (buf[0] & 0xFF));
-    }
      
      /**
      * Converts a standard byte-array into a readable hex string AoB.
@@ -64,17 +56,36 @@ public class Utilities {
         return str.toString();
     }
     
-    public static final Long inet_aton(String inp) {
-        Long dwIP = 0L;
-        String[] aIP = inp.split("\\.");
+    /**
+     * Converts an IP from a string to an integer.
+     * e.g "127.0.0.1" -> 16777343
+     * 
+     * @param addr The string representation of the IP
+     * 
+     * @return The value of the IP as an integer
+     */
+    public static final int netIPToInt32(String addr) {
+        if (addr.length() < "0.0.0.0".length()) {
+            return 0;
+        }
+        Long netaddr = 0L;
+        String[] ip = addr.split("\\.");
         
         for (int i = 0; i < 4; i++) {
-            dwIP += Long.parseLong(aIP[i]) << (i * 8);
+            netaddr += Long.parseLong(ip[i]) << (i << 3);
         }
-        return dwIP;
+        return netaddr.intValue();
     }
     
-    public static final String inet_ntoa(long netaddr) {
-        return (netaddr & 0xFF) + "." + ((netaddr >> 8) & 0xFF) + "." + ((netaddr >> 16) & 0xFF) + "." + ((netaddr >> 24) & 0xFF);
+    /**
+     * Converts an IP from an integer representation into a string.
+     * e.g 16777343 -> "127.0.0.1"
+     * 
+     * @param netaddr The integer representation of the IP
+     * 
+     * @return The string representation of the IP
+     */
+    public static final String netIPToString(long netaddr) {
+        return String.format("%d.%d.%d.%d", (netaddr & 0xFF), ((netaddr >> 8) & 0xFF), ((netaddr >> 16) & 0xFF), ((netaddr >> 24) & 0xFF));
     }
 }

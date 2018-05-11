@@ -38,10 +38,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- *
- * @author Eric
- */
-/**
  * Our server acceptor.
  * Initializes all incoming connections.
  * 
@@ -52,18 +48,18 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
     private final Map<Integer, ClientSocket> sn2pSocket;
     private final Lock lock;
     private final InetSocketAddress addr;
+    private final AtomicInteger remainedSocket;
     private EventLoopGroup workerGroup, childGroup;
     private Channel channel;
     private boolean acceptorClosed;
-    private final AtomicInteger remainedSocket;
     
     /**
-     * Constructs Game Server-specific acceptors for each World and Channel.
+     * Constructs Game Server specific acceptors for each World and Channel.
      * 
-     * @param pAddr Our IP Socket Address that contains the IP and Port to bind to
+     * @param addr Our IP Socket Address that contains the IP and Port to bind to
      */
-    public GameAcceptor(InetSocketAddress pAddr) {
-        this.addr = pAddr;
+    public GameAcceptor(InetSocketAddress addr) {
+        this.addr = addr;
         this.serialNoCounter = new AtomicInteger(0);
         this.remainedSocket = new AtomicInteger(0);
         this.sn2pSocket = new HashMap<>();
@@ -75,14 +71,40 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
         return GameApp.getInstance().getAcceptor();
     }
     
+    /**
+     * Decrement the remaining sockets waiting to close session.
+     * 
+     * @return The new decremented value of remaining sockets
+     */
     public int decRemainedSocket() {
         return this.remainedSocket.decrementAndGet();
     }
     
-    public int incRemainedSocket() {
-        return this.remainedSocket.incrementAndGet();
+    /**
+     * Retrieves the IP address of the Game Server.
+     * 
+     * @return The IP of the server
+     */
+    public String getAddr() {
+        return this.addr.getAddress().getHostAddress().split(":")[0];
     }
     
+    /**
+     * Retrieves the Port of the Game Server.
+     * 
+     * @return The Port of the server
+     */
+    public short getPort() {
+        return (short) this.addr.getPort();
+    }
+    
+    /**
+     * Finds a ClientSocket from the pool by their <code>localSocketSN</code>.
+     * 
+     * @param localSocketSN The SocketSN of the client to find
+     * 
+     * @return The reference (if it exists) of the client
+     */
     public ClientSocket getSocket(int localSocketSN) {
         lock.lock();
         try {
@@ -92,6 +114,53 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
         }
     }
     
+    /**
+     * Increment the remaining sockets waiting to close session.
+     * 
+     * @return The new incremented value of remaining sockets
+     */
+    public int incRemainedSocket() {
+        return this.remainedSocket.incrementAndGet();
+    }
+    
+    /**
+     * Initializes an incoming SocketChannel, constructs their new ClientSocket,
+     * and inserts the channel into the pipeline.
+     * 
+     * @param ch The incoming socket channel
+     * @throws Exception 
+     */
+    @Override
+    protected void initChannel(SocketChannel ch) throws Exception {
+        lock.lock();
+        try {
+            if (acceptorClosed) {
+                return;
+            }
+            ClientSocket socket = new ClientSocket(ch);
+            socket.setAddr(String.format("%s:%d", socket.getSocketRemoteIP(), addr.getPort()));
+            socket.initSequence();
+            int serialNo = serialNoCounter.incrementAndGet();
+            socket.setLocalSocketSN(serialNo);
+            sn2pSocket.put(serialNo, socket);
+            ch.pipeline().addLast("ClientSocket", socket);
+            if (sn2pSocket.size() > GameApp.getInstance().getConnectionLimit()) {
+                for (ClientSocket client : sn2pSocket.values()) {
+                    if (client != null && client.getMigrateState() == MigrateState.WaitMigrateIn) {
+                        client.postClose();
+                    }
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    /**
+     * Removes the <code>socket</code> from the ClientSocket pool.
+     * 
+     * @param socket The ClientSocket to remove
+     */
     public void removeSocket(ClientSocket socket) {
         lock.lock();
         try {
@@ -125,51 +194,13 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
     }
     
     /**
-     * Once the server socket has been closed,
-     * we gracefully shutdown (or unbind) the server.
+     * Once the server socket has been closed, we gracefully shutdown (or unbind) 
+     * the game acceptor's channel and workers.
+     * 
      */
     public void unbind() {
         channel.close();
         workerGroup.shutdownGracefully();
         childGroup.shutdownGracefully();
-    }
-
-    /**
-     * Initializes an incoming SocketChannel,
-     * constructs their ClientSocket handler,
-     * and inserts the channel into the
-     * pipeline. 
-     * 
-     * This method will also update the
-     * current active connections count 
-     * on our GUI.
-     * 
-     * @param ch Incoming socket channel
-     * @throws Exception 
-     */
-    @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
-        lock.lock();
-        try {
-            if (acceptorClosed) {
-                return;
-            }
-            ClientSocket socket = new ClientSocket(ch);
-            socket.setAddr(String.format("%s:%d", socket.getSocketRemoteIP(), addr.getPort()));
-            socket.initSequence();
-            int serialNo = serialNoCounter.incrementAndGet();
-            socket.setLocalSocketSN(serialNo);
-            sn2pSocket.put(serialNo, socket);
-            ch.pipeline().addLast("ClientSocket", socket);
-            if (sn2pSocket.size() > GameApp.getInstance().getConnectionLimit()) {
-                for (ClientSocket client : sn2pSocket.values()) {
-                    if (client != null && client.getMigrateState() == MigrateState.WaitMigrateIn) {
-                        client.postClose();
-                    }
-                }
-            }
-        } finally {
-            lock.unlock();
-        }
     }
 }

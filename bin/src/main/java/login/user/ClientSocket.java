@@ -49,7 +49,7 @@ import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
-import network.security.XORCipher;
+import network.security.XORCrypter;
 import util.Logger;
 import util.Rand32;
 import util.Utilities;
@@ -65,7 +65,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private SocketDecoder decoder;
     private SocketEncoder encoder;
     private final Lock lockSend;
-    private XORCipher cipher;
+    private XORCrypter cipher;
     
     public int loginState;
     public int failCount;
@@ -224,7 +224,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     public void initSequence() {
         this.seqRcv = Rand32.getInstance().random().intValue();
         this.seqSnd = Rand32.getInstance().random().intValue();
-        this.cipher = new XORCipher(seqSnd, seqRcv);
+        this.cipher = new XORCrypter(seqSnd, seqRcv);
     }
     
     public boolean isAdmin() {
@@ -323,7 +323,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         // TODO: Check Character Equips
         
         WorldEntry world = LoginApp.getInstance().getWorld(this.worldID);
-        if (ret && world != null && world.getGameSocket() != null) {
+        if (ret && world != null && world.getSocket() != null) {
             // TODO: Insert into DB
             
             Avatar avatar = new Avatar();
@@ -360,7 +360,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
                 loginState = 9;
                 
                 // TODO: Handle addresses for each WorldEntry.
-                sendPacket(LoginPacket.onSelectCharacterResult((byte) 1, Utilities.inet_aton("127.0.0.1").intValue(), (short) 8585, characterID), false);
+                sendPacket(LoginPacket.onSelectCharacterResult((byte) 1, Utilities.netIPToInt32("127.0.0.1"), (short) 8585, characterID), false);
             }
         } else {
             postClose();

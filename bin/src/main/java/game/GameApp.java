@@ -23,6 +23,8 @@ import game.field.life.npc.NpcTemplate;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -44,14 +46,17 @@ public class GameApp implements Runnable {
     
     private GameAcceptor acceptor;
     private CenterSocket socket;
-    private int connectionLimit;
-    private int waitingFirstPacket;
+    private String addr;
+    private int port;
     private byte worldID;
+    private int connectionLimit;
+    private final int waitingFirstPacket;
     private final long serverStartTime;
     private final AtomicLong itemInitSN;
     private final AtomicLong cashItemInitSN;
     private final Lock lockItemSN;
     private final Lock lockCashItemSN;
+    private final List<Channel> channels;
     
     public GameApp() {
         this.connectionLimit = 4000;
@@ -61,6 +66,7 @@ public class GameApp implements Runnable {
         this.cashItemInitSN = new AtomicLong(0);
         this.lockItemSN = new ReentrantLock();
         this.lockCashItemSN = new ReentrantLock();
+        this.channels = new ArrayList<>();
     }
     
     public static GameApp getInstance() {
@@ -68,30 +74,46 @@ public class GameApp implements Runnable {
     }
     
     private void connectCenter() {
-        this.socket = new CenterSocket();
-        this.socket.connect();
-        
-        this.worldID = Byte.parseByte(System.getProperty("gameID", "0"));
-    }
-    
-    private void createAcceptor() {
         try (JsonReader reader = Json.createReader(new FileReader(String.format("Game%d.img", getWorldID())))) {
             JsonObject gameData = reader.readObject();
             
-            String ip = gameData.getString("PublicIP", "127.0.0.1");
-            int port = gameData.getInt("port", 8585);
+            this.addr = gameData.getString("PublicIP", "127.0.0.1");
+            this.port = gameData.getInt("port", 8585);
             
-            acceptor = new GameAcceptor(new InetSocketAddress(ip, port));
-            acceptor.run();
+            Integer world = gameData.getInt("gameWorldId", getWorldID());
+            if (world != getWorldID()) {
+                this.worldID = world.byteValue();
+            }
             
-            Logger.logReport("Socket acceptor started");
+            JsonObject loginData = gameData.getJsonObject("login");
+            if (loginData != null) {
+                this.socket = new CenterSocket();
+                this.socket.init(loginData);
+                this.socket.connect();
+            }
+            
+            int channelNo = gameData.getInt("channelNo", 1);
+            for (int i = 0; i < channelNo; i++) {
+                this.channels.add(new Channel((byte) i));
+            }
         } catch (FileNotFoundException ex) {
             ex.printStackTrace(System.err);
         }
     }
     
+    private void createAcceptor() {
+        this.acceptor = new GameAcceptor(new InetSocketAddress(addr, port));
+        this.acceptor.run();
+
+        Logger.logReport("Socket acceptor started");
+    }
+    
     public final GameAcceptor getAcceptor() {
         return acceptor;
+    }
+    
+    public final List<Channel> getChannels() {
+        return channels;
     }
     
     public final long getNextCashSN() {
@@ -186,6 +208,8 @@ public class GameApp implements Runnable {
     
     @Override
     public void run() {
+        this.worldID = Byte.parseByte(System.getProperty("gameID", "0"));
+        
         TimerThread.createTimerThread();
         
         initializeDB();

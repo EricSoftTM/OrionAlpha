@@ -2,6 +2,7 @@
 	"port": 8585,
 	
 	"gameWorldId": 0,
+	"channelNo": 1,
 	
 	"PublicIP": "127.0.0.1",
 	"PrivateIP": "127.0.0.1",

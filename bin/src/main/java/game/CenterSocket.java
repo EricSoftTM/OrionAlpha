@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import javax.json.JsonObject;
 import network.GameAcceptor;
 import network.packet.InPacket;
 import network.packet.OutPacket;
@@ -48,14 +49,19 @@ import util.Logger;
  */
 public class CenterSocket extends SimpleChannelInboundHandler {
     private Channel channel;
-    private final EventLoopGroup workerGroup;
     private Bootstrap bootstrap;
+    private final EventLoopGroup workerGroup;
     private final Lock lock;
     private final Lock lockSend;
-    public boolean bClosePosted;
+    private boolean closePosted;
+    private String worldName;
+    private String addr;
+    private int port;
     
     public CenterSocket() {
-        this.bClosePosted = false;
+        this.worldName = "";
+        this.addr = "";
+        this.closePosted = false;
         this.lock = new ReentrantLock();
         this.lockSend = new ReentrantLock();
         this.workerGroup = new NioEventLoopGroup();
@@ -115,8 +121,7 @@ public class CenterSocket extends SimpleChannelInboundHandler {
                     });
             
             // Connect to the Center socket
-            String sAddr = "127.0.0.1:8383";
-            channel = bootstrap.connect(sAddr.split(":")[0], Integer.parseInt(sAddr.split(":")[1]))
+            channel = bootstrap.connect(getAddr(), getPort())
                     .syncUninterruptibly()
                     .channel()
                     .closeFuture()
@@ -124,9 +129,9 @@ public class CenterSocket extends SimpleChannelInboundHandler {
             
             // Send the Center Server the Login server information request
             OutPacket packet = new OutPacket(Byte.MAX_VALUE);
-            packet.encodeByte(Integer.valueOf(System.getProperty("gameID", "0")));
-            packet.encodeString(OrionConfig.SERVER_NAME);//WorldName
-            packet.encodeByte(1);//TODO: Channels
+            packet.encodeByte(GameApp.getInstance().getWorldID());
+            packet.encodeString(getWorldName());
+            packet.encodeByte(GameApp.getInstance().getChannels().size());
             sendPacket(packet);
             
             Logger.logReport("Center socket connected successfully");
@@ -135,11 +140,29 @@ public class CenterSocket extends SimpleChannelInboundHandler {
         }
     }
     
+    public String getAddr() {
+        return addr;
+    }
+    
+    public int getPort() {
+        return port;
+    }
+    
+    public String getWorldName() {
+        return worldName;
+    }
+    
+    public void init(JsonObject data) {
+        this.addr = data.getString("ip", "127.0.0.1");
+        this.port = data.getInt("port", 8383);
+        this.worldName = data.getString("worldName", OrionConfig.SERVER_NAME);
+    }
+    
     public void postCloseMessage() {
         lock.lock();
         try {
-            if (!bClosePosted) {
-                bClosePosted = true;
+            if (!closePosted) {
+                closePosted = true;
                 channel.close();
                 workerGroup.shutdownGracefully();
             }

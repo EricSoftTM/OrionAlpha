@@ -44,12 +44,4 @@ public class Stage {
         }
         return packet;
     }
-    
-    public static OutPacket onSetCashShop(User user) {
-        OutPacket packet = new OutPacket(LoopbackPacket.SetCashShop);
-        packet.encodeInt(user.getCharacterID());//No idea actually
-        
-        user.getCharacter().encode(packet, DBChar.All);
-        return packet;
-    }
 }

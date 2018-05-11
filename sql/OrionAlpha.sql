@@ -53,7 +53,7 @@ CREATE TABLE `character` (
   `Map` int(11) unsigned NOT NULL,
   `Portal` tinyint(4) unsigned NOT NULL,
   PRIMARY KEY (`CharacterID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `character`
@@ -61,7 +61,8 @@ CREATE TABLE `character` (
 
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
 INSERT INTO `character` (`CharacterID`,`AccountID`,`WorldID`,`CharacterName`,`Gender`,`Skin`,`Face`,`Hair`,`Level`,`Job`,`STR`,`DEX`,`INT`,`LUK`,`HP`,`MP`,`MaxHP`,`MaxMP`,`AP`,`SP`,`EXP`,`POP`,`Money`,`Map`,`Portal`) VALUES 
- (1,1,0,'Eric',0,0,20000,30000,30,420,100,200,300,400,999,999,999,999,5,10,1337,1337,10000000,100000000,0);
+ (1,1,0,'Eric',0,0,20001,30000,30,110,100,200,300,400,999,999,999,999,5,10,1337,1337,9999990,104040000,2),
+ (2,1,0,'Erica',1,0,21000,31000,42,230,999,999,999,999,30000,30000,30000,30000,5,10,1337,1337,9999990,104040000,2);
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 
 
@@ -85,8 +86,32 @@ CREATE TABLE `inventorysize` (
 
 /*!40000 ALTER TABLE `inventorysize` DISABLE KEYS */;
 INSERT INTO `inventorysize` (`CharacterID`,`EquipCount`,`ConsumeCount`,`InstallCount`,`EtcCount`) VALUES 
- (1,24,24,24,24);
+ (1,24,24,24,24),
+ (2,24,24,24,24);
 /*!40000 ALTER TABLE `inventorysize` ENABLE KEYS */;
+
+
+--
+-- Definition of table `iteminitsn`
+--
+
+DROP TABLE IF EXISTS `iteminitsn`;
+CREATE TABLE `iteminitsn` (
+  `WorldID` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `ItemSN` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `CashItemSN` bigint(20) unsigned NOT NULL DEFAULT 1,
+  PRIMARY KEY (`WorldID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `iteminitsn`
+--
+
+/*!40000 ALTER TABLE `iteminitsn` DISABLE KEYS */;
+INSERT INTO `iteminitsn` (`WorldID`,`ItemSN`,`CashItemSN`) VALUES 
+ (0,4,4),
+ (1,1,1);
+/*!40000 ALTER TABLE `iteminitsn` ENABLE KEYS */;
 
 
 --
@@ -97,6 +122,7 @@ DROP TABLE IF EXISTS `itemslotbundle`;
 CREATE TABLE `itemslotbundle` (
   `SN` bigint(10) unsigned NOT NULL AUTO_INCREMENT,
   `ItemSN` bigint(10) unsigned NOT NULL DEFAULT 0,
+  `CashItemSN` bigint(20) DEFAULT 0,
   `CharacterID` int(11) NOT NULL,
   `POS` int(11) NOT NULL DEFAULT 0,
   `ItemID` int(11) NOT NULL DEFAULT 0,
@@ -123,6 +149,7 @@ DROP TABLE IF EXISTS `itemslotequip`;
 CREATE TABLE `itemslotequip` (
   `SN` bigint(10) unsigned NOT NULL AUTO_INCREMENT,
   `ItemSN` bigint(10) unsigned NOT NULL DEFAULT 0,
+  `CashItemSN` bigint(20) DEFAULT 0,
   `CharacterID` int(11) DEFAULT NULL,
   `POS` int(11) NOT NULL DEFAULT 0,
   `ItemID` int(11) NOT NULL DEFAULT 0,
@@ -146,17 +173,18 @@ CREATE TABLE `itemslotequip` (
   `ExpireDate` bigint(20) NOT NULL DEFAULT -1,
   PRIMARY KEY (`SN`),
   UNIQUE KEY `ItemSN` (`ItemSN`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `itemslotequip`
 --
 
 /*!40000 ALTER TABLE `itemslotequip` DISABLE KEYS */;
-INSERT INTO `itemslotequip` (`SN`,`ItemSN`,`CharacterID`,`POS`,`ItemID`,`RUC`,`CUC`,`I_STR`,`I_DEX`,`I_INT`,`I_LUK`,`I_MaxHP`,`I_MaxMP`,`I_PAD`,`I_MAD`,`I_PDD`,`I_MDD`,`I_ACC`,`I_EVA`,`I_Craft`,`I_Speed`,`I_Jump`,`ExpireDate`) VALUES 
- (1,1,1,-1,1002140,7,0,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,-1),
- (2,2,1,-5,1042003,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1),
- (3,3,1,-11,1302000,7,0,0,0,0,0,0,0,0,0,1337,1337,0,0,0,0,0,-1);
+INSERT INTO `itemslotequip` (`SN`,`ItemSN`,`CashItemSN`,`CharacterID`,`POS`,`ItemID`,`RUC`,`CUC`,`I_STR`,`I_DEX`,`I_INT`,`I_LUK`,`I_MaxHP`,`I_MaxMP`,`I_PAD`,`I_MAD`,`I_PDD`,`I_MDD`,`I_ACC`,`I_EVA`,`I_Craft`,`I_Speed`,`I_Jump`,`ExpireDate`) VALUES 
+ (1,1,0,1,-1,1002140,7,0,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,-1),
+ (2,2,0,1,-5,1042003,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1),
+ (3,3,0,1,-11,1302000,7,0,0,0,0,0,0,0,0,0,1337,1337,0,0,0,0,0,-1),
+ (4,0,0,1,-11,1302000,7,0,0,0,0,0,0,0,0,0,1337,1337,0,0,0,0,0,-1);
 /*!40000 ALTER TABLE `itemslotequip` ENABLE KEYS */;
 
 
@@ -196,7 +224,7 @@ CREATE TABLE `skillrecord` (
   `Info` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`SN`),
   UNIQUE KEY `SkillID` (`SkillID`,`CharacterID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `skillrecord`
@@ -204,7 +232,21 @@ CREATE TABLE `skillrecord` (
 
 /*!40000 ALTER TABLE `skillrecord` DISABLE KEYS */;
 INSERT INTO `skillrecord` (`SN`,`CharacterID`,`SkillID`,`Info`) VALUES 
- (1,1,4101004,10);
+ (1,1,4101004,10),
+ (2,1,1001005,15),
+ (3,1,1001004,15),
+ (4,1,1001003,10),
+ (5,1,1000002,8),
+ (6,1,1000001,10),
+ (7,1,1000000,16),
+ (8,1,1100000,10),
+ (9,1,1100001,10),
+ (10,1,1100002,10),
+ (11,1,1100003,10),
+ (12,1,1101004,10),
+ (13,1,1101006,5),
+ (14,1,1101007,5),
+ (15,1,2301001,20);
 /*!40000 ALTER TABLE `skillrecord` ENABLE KEYS */;
 
 

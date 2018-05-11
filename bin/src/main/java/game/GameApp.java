@@ -182,9 +182,9 @@ public class GameApp implements Runnable {
         long time;
         
         // Load Items and Equipment
-		time = System.currentTimeMillis();
-		ItemInfo.load();
-		Logger.logReport("Loaded Item Info in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
+        time = System.currentTimeMillis();
+        ItemInfo.load();
+        Logger.logReport("Loaded Item Info in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
        
         // Load Skills
         

@@ -34,6 +34,7 @@ import game.field.FieldMan;
 import game.field.life.mob.MobTemplate;
 import game.field.life.npc.NpcTemplate;
 import game.user.item.ItemInfo;
+import game.user.skill.SkillInfo;
 import network.GameAcceptor;
 import network.database.Database;
 import network.database.GameDB;
@@ -187,6 +188,9 @@ public class GameApp implements Runnable {
         Logger.logReport("Loaded Item Info in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
        
         // Load Skills
+        time = System.currentTimeMillis();
+        SkillInfo.getInstance();
+        Logger.logReport("Loaded Skill Info in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
         
         // Load Mobs
         time = System.currentTimeMillis();

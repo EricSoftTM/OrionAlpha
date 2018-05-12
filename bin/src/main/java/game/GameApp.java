@@ -80,12 +80,17 @@ public class GameApp implements Runnable {
         try (JsonReader reader = Json.createReader(new FileReader(String.format("Game%d.img", getWorldID())))) {
             JsonObject gameData = reader.readObject();
             
-            this.addr = gameData.getString("PublicIP", "127.0.0.1");
-            this.port = gameData.getInt("port", 8585);
-            
             Integer world = gameData.getInt("gameWorldId", getWorldID());
             if (world != getWorldID()) {
                 this.worldID = world.byteValue();
+            }
+            
+            this.addr = gameData.getString("PublicIP", "127.0.0.1");
+            this.port = gameData.getInt("port", 8585);
+            
+            int channelNo = gameData.getInt("channelNo", 1);
+            for (int i = 0; i < channelNo; i++) {
+                this.channels.add(new Channel((byte) i));
             }
             
             JsonObject loginData = gameData.getJsonObject("login");
@@ -93,11 +98,6 @@ public class GameApp implements Runnable {
                 this.socket = new CenterSocket();
                 this.socket.init(loginData);
                 this.socket.connect();
-            }
-            
-            int channelNo = gameData.getInt("channelNo", 1);
-            for (int i = 0; i < channelNo; i++) {
-                this.channels.add(new Channel((byte) i));
             }
         } catch (FileNotFoundException ex) {
             ex.printStackTrace(System.err);

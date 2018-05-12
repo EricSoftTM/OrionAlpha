@@ -27,8 +27,7 @@ import shop.user.User;
  */
 public class ShopPacket {
 
-    
-    public static OutPacket queryCash(User user) {
+    public static OutPacket onQueryCash(User user) {
         OutPacket packet = new OutPacket(LoopbackPacket.CashShopQueryCashResult);
         packet.encodeInt(user.getNexonCash());
         return packet;

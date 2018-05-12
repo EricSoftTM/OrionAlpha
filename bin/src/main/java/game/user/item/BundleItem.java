@@ -22,11 +22,67 @@ package game.user.item;
 */
 public class BundleItem {
 
-    public int itemID;
-    public String itemName;
-    public short incPAD;
-    public int sellPrice;// price
-    public double unitPrice;
-    public boolean cash;
-    public int slotMax;
+    private int itemID;
+    private String itemName;
+    private short incPAD;
+    private int sellPrice;// price
+    private double unitPrice;
+    private boolean cash;
+    private int slotMax;
+
+    public int getItemID() {
+        return itemID;
+    }
+
+    public void setItemID(int itemID) {
+        this.itemID = itemID;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public short getIncPAD() {
+        return incPAD;
+    }
+
+    public void setIncPAD(short incPAD) {
+        this.incPAD = incPAD;
+    }
+
+    public int getSellPrice() {
+        return sellPrice;
+    }
+
+    public void setSellPrice(int sellPrice) {
+        this.sellPrice = sellPrice;
+    }
+
+    public double getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(double unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public boolean isCash() {
+        return cash;
+    }
+
+    public void setCash(boolean cash) {
+        this.cash = cash;
+    }
+
+    public int getSlotMax() {
+        return slotMax;
+    }
+
+    public void setSlotMax(int slotMax) {
+        this.slotMax = slotMax;
+    }
 }

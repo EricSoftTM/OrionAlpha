@@ -23,11 +23,131 @@ package game.user.item;
 */
 public class UpgradeItem {
 
-    public int itemID;
-    public short incMaxHP;// incMHP
-    public short incSTR, incDEX, incINT, incLUK;
-    public short incACC, incEVA;
-    public short incSpeed, incJump;
-    public short incPAD, incPDD, incMAD, incMDD;
-    public byte success;
+    private int itemID;
+    private short incMaxHP;// incMHP
+    private short incSTR, incDEX, incINT, incLUK;
+    private short incACC, incEVA;
+    private short incSpeed, incJump;
+    private short incPAD, incPDD, incMAD, incMDD;
+    private byte success;
+
+    public int getItemID() {
+        return itemID;
+    }
+
+    public void setItemID(int itemID) {
+        this.itemID = itemID;
+    }
+
+    public short getIncMaxHP() {
+        return incMaxHP;
+    }
+
+    public void setIncMaxHP(short incMaxHP) {
+        this.incMaxHP = incMaxHP;
+    }
+
+    public short getIncSTR() {
+        return incSTR;
+    }
+
+    public void setIncSTR(short incSTR) {
+        this.incSTR = incSTR;
+    }
+
+    public short getIncDEX() {
+        return incDEX;
+    }
+
+    public void setIncDEX(short incDEX) {
+        this.incDEX = incDEX;
+    }
+
+    public short getIncINT() {
+        return incINT;
+    }
+
+    public void setIncINT(short incINT) {
+        this.incINT = incINT;
+    }
+
+    public short getIncLUK() {
+        return incLUK;
+    }
+
+    public void setIncLUK(short incLUK) {
+        this.incLUK = incLUK;
+    }
+
+    public short getIncACC() {
+        return incACC;
+    }
+
+    public void setIncACC(short incACC) {
+        this.incACC = incACC;
+    }
+
+    public short getIncEVA() {
+        return incEVA;
+    }
+
+    public void setIncEVA(short incEVA) {
+        this.incEVA = incEVA;
+    }
+
+    public short getIncSpeed() {
+        return incSpeed;
+    }
+
+    public void setIncSpeed(short incSpeed) {
+        this.incSpeed = incSpeed;
+    }
+
+    public short getIncJump() {
+        return incJump;
+    }
+
+    public void setIncJump(short incJump) {
+        this.incJump = incJump;
+    }
+
+    public short getIncPAD() {
+        return incPAD;
+    }
+
+    public void setIncPAD(short incPAD) {
+        this.incPAD = incPAD;
+    }
+
+    public short getIncPDD() {
+        return incPDD;
+    }
+
+    public void setIncPDD(short incPDD) {
+        this.incPDD = incPDD;
+    }
+
+    public short getIncMAD() {
+        return incMAD;
+    }
+
+    public void setIncMAD(short incMAD) {
+        this.incMAD = incMAD;
+    }
+
+    public short getIncMDD() {
+        return incMDD;
+    }
+
+    public void setIncMDD(short incMDD) {
+        this.incMDD = incMDD;
+    }
+
+    public byte getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(byte success) {
+        this.success = success;
+    }
 }

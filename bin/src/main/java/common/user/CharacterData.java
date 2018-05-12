@@ -34,12 +34,11 @@ import network.packet.OutPacket;
  * @author Eric
  */
 public class CharacterData {
-    static final int 
-            BodyPartCount = BodyPart.BP_Count,
+
+    static final int BodyPartCount = BodyPart.BP_Count,
             ItemTypeCount = ItemType.NO,
-            Sticker       = BodyPart.Sticker
-    ;
-    
+            Sticker = BodyPart.Sticker;
+
     private final CharacterStat characterStat;
     private final List<ItemSlotBase> equipped;
     private final List<ItemSlotBase> equipped2;
@@ -48,7 +47,7 @@ public class CharacterData {
     private final Map<Integer, Integer> skillRecord;
     private final Map<String, String> questRecord;
     private int moneyTrading;
-    
+
     public CharacterData() {
         this.characterStat = new CharacterStat();
         this.equipped = new ArrayList<>(BodyPartCount + 1);
@@ -57,7 +56,7 @@ public class CharacterData {
         this.itemTrading = new ArrayList<>(ItemType.NO);
         this.skillRecord = new HashMap<>();
         this.questRecord = new HashMap<>();
-        
+
         for (int i = 0; i <= BodyPartCount; i++) {
             equipped.add(i, null);
             equipped2.add(i, null);
@@ -67,11 +66,11 @@ public class CharacterData {
             itemTrading.add(i, new ArrayList<>());
         }
     }
-    
+
     public void backupItemSlot(List<List<ItemSlotBase>> backupItem, List<List<Integer>> backupItemTrading) {
-        
+
     }
-    
+
     public void clearTradingInfo() {
         this.moneyTrading = 0;
         for (int i = 0; i < ItemType.NO; i++) {
@@ -80,7 +79,7 @@ public class CharacterData {
             }
         }
     }
-    
+
     public void encode(OutPacket packet, byte flag) {
         packet.encodeByte(flag);
         if ((flag & DBChar.Character) != 0) {
@@ -143,31 +142,31 @@ public class CharacterData {
             }
         }
     }
-    
+
     public List<ItemSlotBase> getEquipped() {
         return equipped;
     }
-    
+
     public List<ItemSlotBase> getEquipped2() {
         return equipped2;
     }
-    
+
     public final CharacterStat getCharacterStat() {
         return characterStat;
     }
-    
+
     public List<List<ItemSlotBase>> getItemSlot() {
         return itemSlot;
     }
-    
+
     public List<ItemSlotBase> getItemSlot(int ti) {
         return itemSlot.get(ti);
     }
-    
+
     public List<List<Integer>> getItemTrading() {
         return itemTrading;
     }
-    
+
     public int findCashItemSlotPosition(int ti, long sn) {
         if (ti >= ItemType.Equip && ti <= ItemType.Etc && sn > 0) {
             int slotCount = getItemSlotCount(ti);
@@ -192,7 +191,7 @@ public class CharacterData {
         }
         return 0;
     }
-    
+
     public int findEmptySlotPosition(int ti) {
         if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
             int slotCount = getItemSlotCount(ti);
@@ -205,7 +204,7 @@ public class CharacterData {
         }
         return 0;
     }
-    
+
     public int findItemSlotPosition(ItemSlotBase item) {
         if (item != null) {
             int ti = item.getItemID() / 1000000;
@@ -223,7 +222,7 @@ public class CharacterData {
         }
         return 0;
     }
-    
+
     public int getEmptySlotCount(int ti) {
         if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
             int emptySlotCount = 0;
@@ -238,7 +237,7 @@ public class CharacterData {
         }
         return 0;
     }
-    
+
     public ItemSlotBase getItem(byte ti, int pos) {
         if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
             if (ti == ItemType.Equip) {
@@ -261,7 +260,7 @@ public class CharacterData {
         }
         return null;
     }
-    
+
     public int getItemCount(byte ti, int itemID) {
         int count = 0;
         int slotCount = getItemSlotCount(ti);
@@ -273,24 +272,24 @@ public class CharacterData {
         }
         return count;
     }
-    
+
     public int getItemSlotCount(int ti) {
         return itemSlot.get(ti).size() - 1;
     }
-    
+
     public int getMoneyTrading() {
         return moneyTrading;
     }
-    
+
     public Map<Integer, Integer> getSkillRecord() {
         return skillRecord;
     }
-    
+
     public void load(ResultSet rs, byte flag) throws SQLException {
         if ((flag & DBChar.Character) != 0) {
             characterStat.load(rs);
         }
-        
+
         if ((flag & DBChar.SkillRecord) != 0) {
             while (rs.next()) {
                 skillRecord.put(rs.getInt("SkillID"), rs.getInt("Info"));
@@ -302,7 +301,7 @@ public class CharacterData {
             }
         }
     }
-    
+
     public boolean setItem(byte ti, int pos, ItemSlotBase item) {
         if (ti < ItemType.Equip || ti > ItemType.Etc) {
             return false;

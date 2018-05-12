@@ -26,9 +26,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import static network.database.GameDB.rawGetInventorySize;
-import static network.database.GameDB.rawGetItemBundle;
-import static network.database.GameDB.rawGetItemEquip;
+import shop.user.CashItemInfo;
+import shop.user.User;
 import util.FileTime;
 
 /**
@@ -120,7 +119,48 @@ public class ShopDB {
         }
     }
 
-    public static CharacterData rawLoadCharacter(int characterID) {
+    private static void rawGetItemLocker(User user) {
+         try (Connection con = Database.getDB().poolConnection()) {
+              try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemlocker` WHERE `AccountID` = ?")) {
+                ps.setInt(1, user.getAccountID());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        CashItemInfo cashItemInfo = new CashItemInfo();
+                        cashItemInfo.setCashItemSN(rs.getInt("CashItemSN"));
+                        cashItemInfo.setAccountID(user.getAccountID());
+                        cashItemInfo.setCharacterID(rs.getInt("CharacterID"));
+                        cashItemInfo.setItemID(rs.getInt("ItemID"));
+                        cashItemInfo.setCommodityID(rs.getInt("CommodityID"));
+                        cashItemInfo.setNumber(rs.getShort("Number"));
+                        cashItemInfo.setBuyCharacterID(rs.getString("BuyCharacterID"));
+                        cashItemInfo.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpiredDate")));
+                        user.GetCashItemInfo().add(cashItemInfo);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+
+    public static void rawLoadAccount(int characterID, User user) {
+        try (Connection con = Database.getDB().poolConnection()) {
+              try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterID = ?")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                       user.setNexonCash(rs.getInt("NexonCash"));
+                       user.setAccountID(rs.getInt("AccountID"));
+                       // more will be added when I get there
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+
+    public static CharacterData rawLoadCharacter(int characterID, User user) {
         try (Connection con = Database.getDB().poolConnection()) {
             CharacterData cd = new CharacterData();
             // Load Stats
@@ -136,6 +176,8 @@ public class ShopDB {
             rawGetInventorySize(characterID, cd);
             rawGetItemEquip(characterID, cd);
             rawGetItemBundle(characterID, cd);
+            
+            rawGetItemLocker(user);
             return cd;
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);

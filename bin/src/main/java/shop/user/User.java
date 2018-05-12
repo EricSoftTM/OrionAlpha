@@ -18,7 +18,6 @@
 package shop.user;
 
 import common.user.CharacterData;
-import game.field.Creature;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,7 +42,7 @@ import util.SystemTime;
  *
  * @author sunnyboy
  */
-public class User extends Creature {
+public class User {
 
     private int accountID;
     private boolean alreadyAcceptedRequest;
@@ -82,7 +81,6 @@ public class User extends Creature {
     /*
      nMaplePoint   dd ?
      nGiftToken    dd ?*/
-    private byte tranxState;
     public byte purchaseType;
     /*tDelayedLoopbackPacket dd ?
      nDelayedLoopbackPacket dd ?
@@ -140,9 +138,10 @@ public class User extends Creature {
         this.cashItemInfo = new ArrayList<>();
         this.itemCount = new ArrayList<>();
         this.nexonCash = 0;
-        this.tranxState = 0;
         this.purchaseType = -1;
-        this.character = ShopDB.rawLoadCharacter(characterID);
+
+        ShopDB.rawLoadAccount(characterID, User.this);
+        this.character = ShopDB.rawLoadCharacter(characterID, User.this);
 
         if (this.nexonClubID != null && !this.nexonClubID.isEmpty()) {
             this.cashShopAuthorized = true;
@@ -253,8 +252,12 @@ public class User extends Creature {
         }
     }
 
+    public List<CashItemInfo> GetCashItemInfo() {
+        return this.cashItemInfo;
+    }
+
     private void checkCashItemExpire(long cur) {
-        if (this.tranxState == 0 && cur - this.nextCheckCashItemExpire >= 0 && this.doCheckCashItemExpire != true) {
+        if (cur - this.nextCheckCashItemExpire >= 0 && this.doCheckCashItemExpire != true) {
             FileTime ftCur;
             if ((ftCur = SystemTime.getLocalTime().systemTimeToFileTime()) != null) {
                 this.nextCheckCashItemExpire = cur + 180000;
@@ -262,8 +265,6 @@ public class User extends Creature {
                     CashItemInfo cashItem = it.next();
                     if (FileTime.compareFileTime(cashItem.getDateExpire(), ftCur) <= 0) {
                         this.doCheckCashItemExpire = true;
-                        //PostExpireCashItemRequest, ask eric how he will handle requests
-                        // update the inventory?
                         it.remove();
                     }
                 }
@@ -291,6 +292,10 @@ public class User extends Creature {
         // probably save all the changes occured during cs trip
     }
 
+    public int getAccountID() {
+        return this.accountID;
+    }
+
     public CharacterData getCharacter() {
         return character;
     }
@@ -313,15 +318,49 @@ public class User extends Creature {
 
     private void onCashItemRequest(InPacket packet) {
         // uncoded still
+        switch (packet.decodeByte()) {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                break;
+            case 8:
+                break;
+            case 9:
+                break;
+            case 10:
+                break;
+            case 11:
+                break;
+            case 12:
+                break;
+            case 13:
+                break;
+            default:
+                this.sendRemainCashRequest();
+                return;
+        }
     }
 
     private void onChargeParamRequest(InPacket packet) {
-        // it's empty
+        sendPacket(ShopPacket.onQueryCash(this)); // prevent getting stuck
     }
 
     public void onMigrateInSuccess() {
         Logger.logReport("User login from (%s)", this.characterName);
         sendPacket(Stage.onSetCashShop(this));
+        sendPacket(ShopPacket.onQueryCash(this));
     }
 
     public void onPacket(byte type, InPacket packet) {
@@ -342,15 +381,15 @@ public class User extends Creature {
     }
 
     private void onQueryCashRequest(InPacket packet) {
-        if (this.alreadyAcceptedRequest) {
-            this.alreadyAcceptedRequest = true;
-            if (tranxState != 0) {
-                Logger.logError("Transaction state mismatch [State:%d]", tranxState);
-                closeSocket();
-            }
-            sendRemainCashRequest();
-            this.tranxState = 4;
-        }
+        /*if (this.alreadyAcceptedRequest) {
+         this.alreadyAcceptedRequest = true;
+         if (tranxState != 0) {
+         Logger.logError("Transaction state mismatch [State:%d]", tranxState);
+         closeSocket();
+         }*/
+        sendRemainCashRequest();
+        /*  this.tranxState = 4;
+         }*/
     }
 
     public void onSocketDestroyed(boolean migrate) {
@@ -368,7 +407,7 @@ public class User extends Creature {
     }
 
     private void sendMigrateOutPacket() {
-       socket.onFilterMigrateOut();
+        socket.onFilterMigrateOut();
     }
 
     public void sendPacket(OutPacket packet) {
@@ -384,8 +423,12 @@ public class User extends Creature {
 
     private void sendRemainCashRequest() {
         if (this.cashShopAuthorized) {
-            sendPacket(ShopPacket.queryCash(this));
+            sendPacket(ShopPacket.onQueryCash(this));
         }
+    }
+
+    public void setAccountID(int accountID) {
+        this.accountID = accountID;
     }
 
     public void setNexonCash(int nexonCash) {
@@ -396,14 +439,8 @@ public class User extends Creature {
         if (isBlockedMachineID()) {
             closeSocket();
         }
-        if (tranxState != 10 && tranxState != 8) {
-            checkCashItemExpire(cur);
-            // will malProc be used?
-            return true;
-        } else {
-            Logger.logError("Time out while waiting for purchase-confirm(or use-coupon-done) notification from cash-daemon");
-            return false;
-        }
+        checkCashItemExpire(cur);
+        return true;
     }
 
     private void validateStat(boolean calledByConstructor) {

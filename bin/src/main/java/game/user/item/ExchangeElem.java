@@ -17,6 +17,7 @@
  */
 package game.user.item;
 
+import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemType;
 
@@ -28,42 +29,46 @@ import common.item.ItemType;
 public class ExchangeElem {
 
     public boolean add;
-    public Add a = new Add();
-    public Remove r = new Remove();
+    public Add a;
+    public Remove r;
+
+    public ExchangeElem() {
+        this.a = new Add();
+        this.r = new Remove();
+    }
 
     public class Add {
 
         public int itemID;
-        public int count;
+        public short count;
         public ItemSlotBase item;
     }
 
     public class Remove {
 
         public int itemID;
-        public int count;
-        public int ti;
-        public int pos;
+        public short count;
+        public byte ti;
+        public short pos;
     }
 
-    public boolean initAdd(int nItemID, int nCount, ItemSlotBase pItem) {
+    public boolean initAdd(int itemID, short count, ItemSlotBase item) {
         this.add = true;
-        this.a.itemID = nItemID;
-        this.a.count = nCount;
-        this.a.item = pItem;
-        if (pItem != null) {
-            nItemID = pItem.getItemID();
-            nCount = pItem.getItemNumber();
+        this.a.itemID = itemID;
+        this.a.count = count;
+        this.a.item = item;
+        if (item != null) {
+            itemID = item.getItemID();
+            count = item.getItemNumber();
         }
-        int nTI = nItemID / 1000000;
-        if (nTI == ItemType.Consume || nTI == ItemType.Install || nTI == ItemType.Etc) {
-            if (nItemID / 10000 == 207) {
-                if (nCount > 2000) {
+        int ti = itemID / 1000000;
+        if (ti == ItemType.Consume || ti == ItemType.Install || ti == ItemType.Etc) {
+            if (ItemAccessor.isRechargeableItem(itemID)) {
+                if (count > 2000) {
                     return false;
                 }
             } else {
-                // should be private, verifty w/ eric to call getter and not var
-                if (ItemInfo.getBundleItem(nItemID).slotMax < nCount) {
+                if (ItemInfo.getBundleItem(itemID).getSlotMax() < count) {
                     return false;
                 }
             }

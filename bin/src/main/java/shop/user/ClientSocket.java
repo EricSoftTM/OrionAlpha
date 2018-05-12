@@ -250,13 +250,11 @@ public class ClientSocket extends SimpleChannelInboundHandler {
 
     public void onUpdate() {
         long cur = System.currentTimeMillis();
-
         if (isWaitMigrateInState() && ((cur - this.acceptTime >= ShopApp.getInstance().getWaitingFirstPacket()))) {
             Logger.logError("Disconnect dummy connection - %d(ms) : %s", (cur - acceptTime), addr);
             postClose();
         } else {
             if (this.aliveReqSent != 0) {
-                //SecuritySession Update, unknown if it will be added
                 if (cur - this.aliveReqSent > 180000) {
                     Logger.logError("Alive check failed : Ack lost");
                     postClose();
@@ -290,6 +288,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         if (OrionConfig.LOG_PACKETS) {
             Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
         }
+        Logger.logReport("Recieved " + "[0x" + Integer.toHexString(type).toUpperCase() + "]");
         switch (type) {
             case ClientPacket.AliveAck:
                 sendPacket(onAliveReq(packet.decodeInt()), false);
@@ -305,7 +304,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
                  Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
                  return;
                  }*/
-                Logger.logReport("Recieved " + "[0x" + Integer.toHexString(type).toUpperCase() + "]");
                 processUserPacket(type, packet);
                 break;
         }
@@ -373,7 +371,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     }
 
     public void onFilterMigrateOut() {
-        if (user == null) {
+        if (user != null) {
             onMigrateOut();
         }
     }
@@ -384,7 +382,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32("127.0.0.1"), (short) 8585), false); // get ip/port from GameApp in future
         }
     }
-    
+
     /**
      * Migrates a remote client to a different game server.
      *

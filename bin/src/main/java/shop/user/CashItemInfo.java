@@ -26,32 +26,32 @@ import util.FileTime;
  */
 public class CashItemInfo {
 
-    private long liSN;
-    private long liCashItemSN;
+    private long sn;
+    private long cashItemSN;
     private int accountID;
     private int characterID;
     private int itemID;
     private int commodityID;
-    private int number;
+    private short number;
     private String buyCharacterID = "";
     private FileTime dateExpire;
     private int paybackRate;
     private int discountRate;
 
-    public long getLiSN() {
-        return liSN;
+    public long getSN() {
+        return sn;
     }
 
-    public void setLiSN(long liSN) {
-        this.liSN = liSN;
+    public void setSN(long sn) {
+        this.sn = sn;
     }
 
-    public long getLiCashItemSN() {
-        return liCashItemSN;
+    public long getCashItemSN() {
+        return cashItemSN;
     }
 
-    public void setLiCashItemSN(long liCashItemSN) {
-        this.liCashItemSN = liCashItemSN;
+    public void setCashItemSN(long CashItemSN) {
+        this.cashItemSN = CashItemSN;
     }
 
     public int getAccountID() {
@@ -90,7 +90,7 @@ public class CashItemInfo {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(short number) {
         this.number = number;
     }
 
@@ -126,8 +126,9 @@ public class CashItemInfo {
         this.discountRate = discountRate;
     }
 
-    public void encode(OutPacket op) {//verify struct
-        op.encodeLong(liCashItemSN);
+    // change encode
+    public void encode(OutPacket op) {
+        op.encodeLong(cashItemSN);
         op.encodeInt(accountID);
         op.encodeInt(characterID);
         op.encodeInt(itemID);

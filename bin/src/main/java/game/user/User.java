@@ -600,7 +600,7 @@ public class User extends Creature {
     }
 
     private void onMigrateToCashShopRequest(InPacket packet) {
-        sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32(ShopApp.getInstance().getIP()), ShopApp.getInstance().getPort()));
+        sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32("127.0.0.1"), 8787));
     }
     
     

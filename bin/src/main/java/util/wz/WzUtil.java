@@ -29,8 +29,8 @@ public class WzUtil {
         return getInt32(p, def ? 1 : 0) != 0;
     }
     
-    public static byte getByte(WzProperty p, byte def) {
-        return (byte) getInt32(p, def);
+    public static byte getByte(WzProperty p, int def) {
+        return (byte) getInt32(p, (byte) def);
     }
     
     public static double getDouble(WzProperty p, double def) {
@@ -66,8 +66,8 @@ public class WzUtil {
         return def;
     }
     
-    public static short getShort(WzProperty p, short def) {
-        return (short) getInt32(p, def);
+    public static short getShort(WzProperty p, int def) {
+        return (short) getInt32(p, (short) def);
     }
     
     public static String getString(WzProperty p, String def) {

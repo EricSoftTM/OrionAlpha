@@ -22,10 +22,106 @@ package game.user.item;
 */
 public class StateChangeItem {
 
-    public int itemID;
-    public int hp, mp;
-    public int hpR, mpR;
-    public int acc, eva, mad, pdd, pad;
-    public int speed;
-    public int time;
+    private int itemID;
+    private int hp, mp;
+    private int hpR, mpR;
+    private int acc, eva, mad, pdd, pad;
+    private int speed;
+    private int time;
+
+    public int getItemID() {
+        return itemID;
+    }
+
+    public void setItemID(int itemID) {
+        this.itemID = itemID;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    public int getMp() {
+        return mp;
+    }
+
+    public void setMp(int mp) {
+        this.mp = mp;
+    }
+
+    public int getHpR() {
+        return hpR;
+    }
+
+    public void setHpR(int hpR) {
+        this.hpR = hpR;
+    }
+
+    public int getMpR() {
+        return mpR;
+    }
+
+    public void setMpR(int mpR) {
+        this.mpR = mpR;
+    }
+
+    public int getAcc() {
+        return acc;
+    }
+
+    public void setAcc(int acc) {
+        this.acc = acc;
+    }
+
+    public int getEva() {
+        return eva;
+    }
+
+    public void setEva(int eva) {
+        this.eva = eva;
+    }
+
+    public int getMad() {
+        return mad;
+    }
+
+    public void setMad(int mad) {
+        this.mad = mad;
+    }
+
+    public int getPdd() {
+        return pdd;
+    }
+
+    public void setPdd(int pdd) {
+        this.pdd = pdd;
+    }
+
+    public int getPad() {
+        return pad;
+    }
+
+    public void setPad(int pad) {
+        this.pad = pad;
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        this.speed = speed;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
 }

@@ -83,10 +83,6 @@ public class ShopApp implements Runnable {
         return acceptor;
     }
 
-    public String getIP() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
     public final long getNextCashSN() {
         lockCashItemSN.lock();
         try {

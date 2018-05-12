@@ -71,10 +71,10 @@ public class SkillInfo {
         if (info != null) {
             maxPerSlot = info.slotMax;
             if (cd != null && ItemAccessor.isRechargeableItem(itemID)) {
-                Pointer<SkillEntry> ppSkill = new Pointer<>();
-                int slv = getSkillLevel(cd, Assassin.JavelinMastery);
+                Pointer<SkillEntry> skill = new Pointer<>();
+                int slv = getSkillLevel(cd, Assassin.JavelinMastery, skill);
                 if (slv > 0) {
-                    maxPerSlot += ppSkill.get().getLevelData(slv).getY();
+                    maxPerSlot += skill.get().getLevelData(slv).getY();
                 }
             }
         }
@@ -87,6 +87,22 @@ public class SkillInfo {
             return 0;
         }
         return level;
+    }
+    
+    public int getSkillLevel(CharacterData cd, int skillID, Pointer<SkillEntry> skillEntry) {
+        SkillEntry skill = null;
+        if (skillEntry != null)
+            skill = skillEntry.get();
+        if (skill == null)
+            skill = skills.get(skillID);
+        if (skillEntry != null && skillEntry.get() == null)
+            skillEntry.set(skill);
+        if (cd != null && skill != null) {
+            if (cd.getSkillRecord().containsKey(skillID)) {
+                return Math.min(cd.getSkillRecord().get(skillID), skill.getLevelData().length);
+            }
+        }
+        return 0;
     }
 
     public SkillRoot getSkillRoot(int skillRootID) {
@@ -101,8 +117,6 @@ public class SkillInfo {
         for (WzProperty root : skillDir.getEntries().values()) {
             loadSkillRoot(root);
         }
-        SkillEntry entry = getSkill(1000001);
-        System.out.println(entry.getSkillRequirements());
     }
 
     private void loadSkillRoot(WzProperty root) {

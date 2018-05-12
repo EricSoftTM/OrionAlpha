@@ -44,7 +44,6 @@ import game.user.item.InventoryManipulator;
 import game.user.skill.SkillEntry;
 import game.user.skill.Skills.*;
 import game.user.skill.UserSkill;
-import game.user.stat.CharacterTemporaryStat;
 import game.user.stat.SecondaryStat;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -61,10 +60,12 @@ import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
+import shop.ShopApp;
 import util.Logger;
 import util.Pointer;
 import util.Rand32;
 import util.Rect;
+import util.Utilities;
 
 /**
  *
@@ -597,6 +598,11 @@ public class User extends Creature {
         // TODO
         return false;
     }
+
+    private void onMigrateToCashShopRequest(InPacket packet) {
+        sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32(ShopApp.getInstance().getIP()), ShopApp.getInstance().getPort()));
+    }
+    
     
     public void setFace(int val) {
         lock.lock();
@@ -950,6 +956,9 @@ public class User extends Creature {
         switch (type) {
             case ClientPacket.UserTransferFieldRequest:
                 onTransferFieldRequest(packet);
+                break;
+            case ClientPacket.UserMigrateToCashShopRequest:
+                onMigrateToCashShopRequest(packet);
                 break;
             case ClientPacket.UserMove:
                 onMove(packet);

@@ -17,7 +17,6 @@
  */
 package shop.user;
 
-import network.packet.OutPacket;
 import util.FileTime;
 
 /**
@@ -26,7 +25,6 @@ import util.FileTime;
  */
 public class CashItemInfo {
 
-    private long sn;
     private long cashItemSN;
     private int accountID;
     private int characterID;
@@ -35,16 +33,6 @@ public class CashItemInfo {
     private short number;
     private String buyCharacterID = "";
     private FileTime dateExpire;
-    private int paybackRate;
-    private int discountRate;
-
-    public long getSN() {
-        return sn;
-    }
-
-    public void setSN(long sn) {
-        this.sn = sn;
-    }
 
     public long getCashItemSN() {
         return cashItemSN;
@@ -86,7 +74,7 @@ public class CashItemInfo {
         this.commodityID = commodityID;
     }
 
-    public int getNumber() {
+    public short getNumber() {
         return number;
     }
 
@@ -108,35 +96,5 @@ public class CashItemInfo {
 
     public void setDateExpire(FileTime dateExpire) {
         this.dateExpire = dateExpire;
-    }
-
-    public int getPaybackRate() {
-        return paybackRate;
-    }
-
-    public void setPaybackRate(int paybackRate) {
-        this.paybackRate = paybackRate;
-    }
-
-    public int getDiscountRate() {
-        return discountRate;
-    }
-
-    public void setDiscountRate(int discountRate) {
-        this.discountRate = discountRate;
-    }
-
-    // change encode
-    public void encode(OutPacket op) {
-        op.encodeLong(cashItemSN);
-        op.encodeInt(accountID);
-        op.encodeInt(characterID);
-        op.encodeInt(itemID);
-        op.encodeInt(commodityID);
-        op.encodeShort(number);
-        op.encodeString(buyCharacterID, 13);
-        op.encodeFileTime(dateExpire);
-       // op.encodeInt(paybackRate);
-       // op.encodeInt(discountRate);
     }
 }

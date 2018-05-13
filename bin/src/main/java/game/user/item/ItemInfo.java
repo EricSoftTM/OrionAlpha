@@ -17,6 +17,7 @@
  */
 package game.user.item;
 
+import common.item.ItemType;
 import game.field.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -84,12 +85,19 @@ public class ItemInfo {
     }
 
     public static boolean isCashItem(int itemID) {
-        if (itemID / 1000000 == 5) {
+        if (itemID / 1000000 == ItemType.NO) {
             return true;
         }
-        BundleItem item = getBundleItem(itemID);
-        if (item != null) {
-            return item.isCash();
+        if (itemID / 1000000 == ItemType.Equip) {
+            EquipItem equip = getEquipItem(itemID);
+            if (equip != null) {
+                return equip.isCash();
+            }
+        } else {
+            BundleItem item = getBundleItem(itemID);
+            if (item != null) {
+                return item.isCash();
+            }
         }
         return false;
     }

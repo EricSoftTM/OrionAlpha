@@ -17,9 +17,12 @@
  */
 package shop;
 
+import game.user.item.ItemInfo;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,6 +32,10 @@ import javax.json.JsonReader;
 import network.ShopAcceptor;
 import network.database.Database;
 import util.Logger;
+import util.wz.WzFileSystem;
+import util.wz.WzPackage;
+import util.wz.WzProperty;
+import util.wz.WzUtil;
 
 /**
  *
@@ -36,19 +43,21 @@ import util.Logger;
  */
 public class ShopApp implements Runnable {
 
-    private static final ShopApp instance = new ShopApp();
-
     private ShopAcceptor acceptor;
-    private byte worldID;
-    private int waitingFirstPacket;
-    private int connectionLimit;
-    private final long serverStartTime;
-    private final AtomicLong itemInitSN;
     private final AtomicLong cashItemInitSN;
-    private final Lock lockItemSN;
-    private final Lock lockCashItemSN;
-    private short port;
+    private final Map<Long, Commodity> commodity;
+    private int connectionLimit;
     private String ip;
+    private final AtomicLong itemInitSN;
+    private final Lock lockCashItemSN;
+    private final Lock lockItemSN;
+    private short port;
+    private final long serverStartTime;
+    private int waitingFirstPacket;
+    private byte worldID;
+
+    private final static WzPackage etcDir = new WzFileSystem().init("Etc").getPackage();
+    private static final ShopApp instance = new ShopApp();
 
     public ShopApp() {
         this.waitingFirstPacket = 1000 * 15;
@@ -58,18 +67,23 @@ public class ShopApp implements Runnable {
         this.cashItemInitSN = new AtomicLong(0);
         this.lockItemSN = new ReentrantLock();
         this.lockCashItemSN = new ReentrantLock();
+        this.commodity = new HashMap<>();
     }
 
     public static final ShopApp getInstance() {
         return instance;
     }
 
+    public static void main(String[] args) {
+        ShopApp.getInstance().run();
+    }
+
     private void createAcceptor() {
         try (JsonReader reader = Json.createReader(new FileReader("Shop.img"))) {
             JsonObject shopData = reader.readObject();
 
-            ip = shopData.getString("PublicIP", "127.0.0.1");
-            port = (short) shopData.getInt("port", 8787);
+            this.ip = shopData.getString("PublicIP", "127.0.0.1");
+            this.port = (short) shopData.getInt("port", 8787);
             acceptor = new ShopAcceptor(new InetSocketAddress(ip, port));
             acceptor.run();
 
@@ -81,6 +95,25 @@ public class ShopApp implements Runnable {
 
     public final ShopAcceptor getAcceptor() {
         return acceptor;
+    }
+
+    public Map<Long, Commodity> getCommodity() {
+        return this.commodity;
+    }
+
+    public Commodity findCommodity(long commoditySN) {
+        if (commodity.containsKey(commoditySN)) {
+            return commodity.get(commoditySN);
+        }
+        return null;
+    }
+
+    public int getConnectionLimit() {
+        return connectionLimit;
+    }
+
+    public String getIp() {
+        return ip;
     }
 
     public final long getNextCashSN() {
@@ -109,14 +142,6 @@ public class ShopApp implements Runnable {
         return port;
     }
 
-    public String getIp() {
-        return ip;
-    }
-
-    public int getConnectionLimit() {
-        return connectionLimit;
-    }
-
     public long getServerStartTime() {
         return serverStartTime;
     }
@@ -127,6 +152,32 @@ public class ShopApp implements Runnable {
 
     public byte getWorldID() {
         return worldID;
+    }
+
+    private void initializeCommodity() {
+        long time;
+
+        time = System.currentTimeMillis();
+        ItemInfo.load();
+        Logger.logReport("Loaded Item Info in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
+
+        try {
+            time = System.currentTimeMillis();
+            WzProperty img = etcDir.getItem("Commodity.img");
+            for (WzProperty imgDir : img.getChildNodes()) {
+                Commodity comm = new Commodity();
+                comm.setSN(WzUtil.getInt32(imgDir.getNode("SN"), 0));
+                comm.setItemID(WzUtil.getInt32(imgDir.getNode("ItemId"), 0));
+                comm.setCount(WzUtil.getShort(imgDir.getNode("Count"), 0));
+                comm.setPrice(WzUtil.getInt32(imgDir.getNode("Price"), 0));
+                comm.setPeriod(WzUtil.getByte(imgDir.getNode("Period"), 0));
+                comm.setPriority(WzUtil.getByte(imgDir.getNode("Priority"), 0));
+                commodity.put(comm.getSN(), comm);
+            }
+            Logger.logReport("Loaded Commodity in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initializeDB() {
@@ -154,14 +205,11 @@ public class ShopApp implements Runnable {
         //ShopDB.rawLoadItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
     }
 
-    public static void main(String[] args) {
-        ShopApp.getInstance().run();
-    }
-
     @Override
     public void run() {
         initializeDB();
         initializeItemSN();
+        initializeCommodity();
         createAcceptor();
         Logger.logReport("WvsShop has been initialized in " + ((System.currentTimeMillis() - serverStartTime) / 1000.0) + " seconds.");
     }

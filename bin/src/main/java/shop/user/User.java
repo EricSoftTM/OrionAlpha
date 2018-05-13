@@ -17,7 +17,15 @@
  */
 package shop.user;
 
+import common.item.ItemSlotBase;
+import static common.item.ItemSlotBase.CreateItem;
+import common.item.ItemSlotBundle;
+import common.item.ItemSlotEquip;
+import common.item.ItemSlotType;
+import common.item.ItemType;
 import common.user.CharacterData;
+import static common.user.DBChar.ItemSlotEquip;
+import game.user.item.ItemInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,12 +33,15 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import network.database.ShopDB;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
+import shop.Commodity;
+import shop.ShopApp;
 import shop.ShopPacket;
 import shop.field.Stage;
 import util.FileTime;
@@ -60,6 +71,7 @@ public class User {
     private byte gradeCode;
 
     private List<Integer> itemCount;
+    private long lastCharacterDataFlush;
     private byte level;
     private int localSocketSN;
     private final Lock lock;
@@ -67,6 +79,10 @@ public class User {
 
     private final Lock lockSocket;
     private boolean migrateOutPosted;
+    /*
+     nMaplePoint   dd ?
+     nGiftToken    dd ?*/
+    private int modFlag;
     private boolean msMessenger;
     private int nexonCash;
     private String nexonClubID;
@@ -75,13 +91,10 @@ public class User {
     private int privateStatusID;
 
     private int purchaseExp;
+    private byte purchaseType;
 
     private FileTime registerDate;
     private ClientSocket socket;
-    /*
-     nMaplePoint   dd ?
-     nGiftToken    dd ?*/
-    public byte purchaseType;
     /*tDelayedLoopbackPacket dd ?
      nDelayedLoopbackPacket dd ?
      tLastCheckMalProc dd ?
@@ -118,7 +131,6 @@ public class User {
      aniNew        ZArray<_ULARGE_INTEGER> ?
      aChangeLog    ZArray<CInventoryManipulator::CHANGELOG> ?
      aaItemSlotBackUp ZArray<ZRef<GW_ItemSlotBase> > 6 dup(?)
-     usModFlag     dw ?
      nStockState   dd ?
      nMaplePointInPackage dd ?*/
     /*   private ClientSocket socket;
@@ -139,7 +151,7 @@ public class User {
         this.itemCount = new ArrayList<>();
         this.nexonCash = 0;
         this.purchaseType = -1;
-
+        this.modFlag = 0;
         ShopDB.rawLoadAccount(characterID, User.this);
         this.character = ShopDB.rawLoadCharacter(characterID, User.this);
 
@@ -227,7 +239,7 @@ public class User {
         return Collections.unmodifiableCollection(users.values());
     }
 
-    public static synchronized final boolean registerUser(User user) {
+    public static final synchronized boolean registerUser(User user) {
         lockUser.lock();
         try {
             if (users.containsKey(user.characterID)) {
@@ -289,7 +301,30 @@ public class User {
     }
 
     private void flushCharacterData(int cur, boolean force) {
-        // probably save all the changes occured during cs trip
+        if (lock()) {
+            try {
+                if (force || cur - lastCharacterDataFlush >= 300000) {
+                    ShopApp.getInstance().updateItemInitSN();
+                    if (this.modFlag != 0) {
+                        if ((modFlag & 0x1) != 0) {
+                            // update Cash
+                            ShopDB.rawUpdateNexonCash(this.accountID, this.nexonCash);
+                        }
+                        if ((modFlag & 0x2) != 0) {
+                            // broken and unsure how cash SN will be handled, so leave saving for the end!
+                            //   ShopDB.rawUpdateItemLocker(this.characterID, this.cashItemInfo);
+                        }
+                        if ((modFlag & 0x4) != 0) {
+                            // update inventory when items taken out of cash locker
+                        }
+                        modFlag = 0;
+                    }
+                    lastCharacterDataFlush = cur;
+                }
+            } finally {
+                unlock();
+            }
+        }
     }
 
     public int getAccountID() {
@@ -316,54 +351,159 @@ public class User {
         return gradeCode >= 3;//TODO: Proper GradeCode
     }
 
+    public final boolean lock() {
+        return lock(700);
+    }
+
+    public final boolean lock(long timeout) {
+        try {
+            return lock.tryLock(timeout, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace(System.err);
+        }
+        return false;
+    }
+
+    private void onBuyDone(InPacket packet) {
+        int commoditySN = packet.decodeInt();
+        Commodity comm = ShopApp.getInstance().findCommodity(commoditySN);
+        if (comm != null && ItemInfo.isCashItem(comm.getItemID()) && this.getNexonCash() >= comm.getPrice()) {
+            CashItemInfo cashItem = new CashItemInfo();
+            cashItem.setCashItemSN(ShopApp.getInstance().getNextCashSN());
+            cashItem.setAccountID(this.accountID);
+            cashItem.setCharacterID(this.characterID);
+            cashItem.setItemID(comm.getItemID());
+            cashItem.setCommodityID(commoditySN);
+            cashItem.setNumber(comm.getCount());
+            cashItem.setBuyCharacterID(this.characterName);
+            FileTime ftExpire = FileTime.systemTimeToFileTime();
+            ftExpire.add(FileTime.FILETIME_DAY, comm.getPeriod());
+            cashItem.setDateExpire(ftExpire);
+            this.cashItemInfo.add(cashItem);
+            this.nexonCash -= comm.getPrice();
+            // cash doesn't update WHY
+            this.modFlag |= 0x1 | 0x2;
+            this.sendRemainCashRequest();
+            sendPacket(ShopPacket.onBuyDone(cashItem));
+        }
+    }
+
     private void onCashItemRequest(InPacket packet) {
-        // uncoded still
-        switch (packet.decodeByte()) {
-            case 0:
+        byte type = packet.decodeByte();
+        Logger.logReport("onCashItemRequest triggered with type " + type);
+
+        switch (type) {
+            case 1: // buy
+                onBuyDone(packet);
                 break;
-            case 1:
+            case 2: // probably gift
                 break;
-            case 2:
+            case 3: //inc slot
                 break;
-            case 3:
+            case 6: // Locker to inv
+                onMoveLToS(packet);
                 break;
-            case 4:
+            case 7:// inv to Locker
+                onMoveSToL(packet);
                 break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
-                break;
-            case 9:
-                break;
-            case 10:
-                break;
-            case 11:
-                break;
-            case 12:
-                break;
-            case 13:
-                break;
-            default:
-                this.sendRemainCashRequest();
-                return;
         }
     }
 
     private void onChargeParamRequest(InPacket packet) {
+        packet.decodeByte();
+        packet.decodeInt();
         sendPacket(ShopPacket.onQueryCash(this)); // prevent getting stuck
     }
 
     public void onMigrateInSuccess() {
         Logger.logReport("User login from (%s)", this.characterName);
         sendPacket(Stage.onSetCashShop(this));
+        sendPacket(ShopPacket.onLoadLockerDone(this.cashItemInfo));
         sendPacket(ShopPacket.onQueryCash(this));
+
+    }
+
+    private void onMoveLToS(InPacket packet) {
+        if (this.cashShopAuthorized) {
+            long sn = packet.decodeLong();
+            byte ti = packet.decodeByte();
+            short pos = packet.decodeShort();
+
+            if (ti < 1 || ti > 4) {
+                Logger.logError("Invalid item type index (sn: %d, pos: %d for ti %d)", sn, pos, ti);
+                return;
+            }
+            if (pos <= 0 || pos > this.character.getItemSlotCount(ti) || this.character.getItem(ti, pos) != null) {
+                Logger.logError("Invalid item slot position (sn: %d) at pos: %d", sn, pos);
+                return;
+            }
+            if (this.character.findEmptySlotPosition(ti) < 0) {
+                Logger.logError("No valid slot remains for sn: %d", sn);
+                return;
+            }
+
+            ItemSlotBase item = null;
+            if (ti == ItemType.Equip) {
+                item = (ItemSlotEquip) CreateItem(ItemSlotType.Equip);
+            } else if (ti == ItemType.Consume) {
+                item = (ItemSlotBundle) CreateItem(ItemSlotType.Bundle);
+            }
+            List<CashItemInfo> tempArray = new ArrayList<>();
+            if (item != null) {
+                for (Iterator<CashItemInfo> it = this.cashItemInfo.iterator(); it.hasNext();) {
+                    CashItemInfo cashItem = it.next();
+                    if (cashItem != null && cashItem.getCashItemSN() == sn) {
+                        //assign the item it's stats and remove from array
+                        item.setCashItemSN(cashItem.getCashItemSN());
+                        item.setAccountID(cashItem.getAccountID());
+                        item.setCharacterID(cashItem.getCharacterID());
+                        item.setItemID(cashItem.getItemID());
+                        item.setCommodityID(cashItem.getCommodityID());
+                        item.setItemNumber(cashItem.getNumber());
+                        item.setBuyCharacterID(cashItem.getBuyCharacterID());
+                        item.setDateExpire(cashItem.getDateExpire());
+                      //it.remove();
+                        tempArray.add(cashItem); // temp, old way was wacky with a bug
+                        break;// should only be 1 anyway
+                    }
+                }
+                this.cashItemInfo.removeAll(tempArray); // temp
+                character.setItem(ti, pos, item);
+                sendPacket(ShopPacket.onMoveLToS(pos, item, ti));
+            }
+        }
+    }
+
+    private void onMoveSToL(InPacket packet) {
+        if (this.cashShopAuthorized) {
+            long sn = packet.decodeLong();
+            byte ti = packet.decodeByte();
+            int pos = character.findCashItemSlotPosition(ti, sn);
+            if (pos <= 0) {
+                Logger.logError("Inexistent cash item(sn: %d, ti: %d) in locker for characterID %d ", sn, ti, this.characterID);
+                return;
+            }
+            ItemSlotBase item = this.character.getItem(ti, pos);
+            if (item != null) {
+                CashItemInfo cashItem = new CashItemInfo();
+                cashItem.setCashItemSN(item.getCashItemSN());
+                cashItem.setAccountID(item.getAccountID());
+                cashItem.setCharacterID(item.getCharacterID());
+                cashItem.setItemID(item.getItemID());
+                cashItem.setCommodityID(item.getCommodityID());
+                cashItem.setNumber(item.getItemNumber());
+                cashItem.setBuyCharacterID(item.getBuyCharacterID());
+                cashItem.setDateExpire(item.getDateExpire());
+                this.cashItemInfo.add(cashItem);
+              //  this.modFlag |= // add a flag to notify that item has left inventory for locker
+                this.character.setItem(ti, pos, null);
+                sendPacket(ShopPacket.onMoveSToL(cashItem));
+            }
+        }
     }
 
     public void onPacket(byte type, InPacket packet) {
+        Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
         switch (type) {
             case ClientPacket.UserTransferFieldRequest:
                 onTransferFieldRequest();
@@ -372,7 +512,7 @@ public class User {
                 onChargeParamRequest(packet);
                 break;
             case ClientPacket.CashShopQueryCashRequest:
-                onQueryCashRequest(packet);
+                onQueryCashRequest();
                 break;
             case ClientPacket.CashShopCashItemRequest:
                 onCashItemRequest(packet);
@@ -380,16 +520,8 @@ public class User {
         }
     }
 
-    private void onQueryCashRequest(InPacket packet) {
-        /*if (this.alreadyAcceptedRequest) {
-         this.alreadyAcceptedRequest = true;
-         if (tranxState != 0) {
-         Logger.logError("Transaction state mismatch [State:%d]", tranxState);
-         closeSocket();
-         }*/
+    private void onQueryCashRequest() {
         sendRemainCashRequest();
-        /*  this.tranxState = 4;
-         }*/
     }
 
     public void onSocketDestroyed(boolean migrate) {
@@ -435,6 +567,14 @@ public class User {
         this.nexonCash = nexonCash;
     }
 
+    public void setNexonClubID(String nexonClubID) {
+        this.nexonClubID = nexonClubID;
+    }
+
+    public final void unlock() {
+        lock.unlock();
+    }
+
     public boolean update(long cur) {
         if (isBlockedMachineID()) {
             closeSocket();
@@ -445,5 +585,23 @@ public class User {
 
     private void validateStat(boolean calledByConstructor) {
 
+    }
+
+    public class CashItemRequest {
+
+        public static final byte LoadLockerDone = 10;
+        public static final byte LoadLockerFailed = 11;
+        public static final byte BuyDone = 12;
+        public static final byte BuyFailed = 13;
+        public static final byte GiftDone = 14;
+        public static final byte GiftFailed = 15;
+        public static final byte IncSlotCountDone = 16;
+        public static final byte IncSlotCountFailed = 17;
+        public static final byte MoveLtoSDone = 18;
+        public static final byte MoveLToSFailed = 19 /*not sure if this is legit*/;
+        public static final byte MoveSToLDone = 20;
+        public static final byte MoveSToLFailed = 21;
+        public static final byte DestroyDone = 22;
+        public static final byte DestroyFailed = 23;
     }
 }

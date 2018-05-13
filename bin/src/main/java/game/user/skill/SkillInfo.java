@@ -69,7 +69,7 @@ public class SkillInfo {
         int maxPerSlot = 0;
         BundleItem info = ItemInfo.getBundleItem(itemID);
         if (info != null) {
-            maxPerSlot = info.slotMax;
+            maxPerSlot = info.getSlotMax();
             if (cd != null && ItemAccessor.isRechargeableItem(itemID)) {
                 Pointer<SkillEntry> skill = new Pointer<>();
                 int slv = getSkillLevel(cd, Assassin.JavelinMastery, skill);

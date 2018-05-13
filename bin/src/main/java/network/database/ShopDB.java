@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import shop.user.CashItemInfo;
 import shop.user.User;
 import util.FileTime;
@@ -50,6 +51,29 @@ public class ShopDB {
                                 cd.getItemSlot(i).add(j, null);
                             }
                         }
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+
+    public static void rawGetItemBundle(int characterID, CharacterData cd) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemslotbundle` WHERE `CharacterID` = ? ORDER BY `SN`")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int itemID = rs.getInt("ItemID");
+                        int pos = rs.getInt("POS");
+                        byte ti = rs.getByte("TI");
+                        
+                        ItemSlotBundle item = new ItemSlotBundle(itemID);
+                        item.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpireDate")));
+                        item.setItemNumber(rs.getShort("Number"));
+                        
+                        cd.setItem(ti, pos, item);
                     }
                 }
             }
@@ -96,32 +120,9 @@ public class ShopDB {
         }
     }
 
-    public static void rawGetItemBundle(int characterID, CharacterData cd) {
-        try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemslotbundle` WHERE `CharacterID` = ? ORDER BY `SN`")) {
-                ps.setInt(1, characterID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        int itemID = rs.getInt("ItemID");
-                        int pos = rs.getInt("POS");
-                        byte ti = rs.getByte("TI");
-
-                        ItemSlotBundle item = new ItemSlotBundle(itemID);
-                        item.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpireDate")));
-                        item.setItemNumber(rs.getShort("Number"));
-
-                        cd.setItem(ti, pos, item);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-        }
-    }
-
     private static void rawGetItemLocker(User user) {
-         try (Connection con = Database.getDB().poolConnection()) {
-              try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemlocker` WHERE `AccountID` = ?")) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemlocker` WHERE `AccountID` = ?")) {
                 ps.setInt(1, user.getAccountID());
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -145,13 +146,14 @@ public class ShopDB {
 
     public static void rawLoadAccount(int characterID, User user) {
         try (Connection con = Database.getDB().poolConnection()) {
-              try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterID = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterID = ?")) {
                 ps.setInt(1, characterID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                       user.setNexonCash(rs.getInt("NexonCash"));
-                       user.setAccountID(rs.getInt("AccountID"));
-                       // more will be added when I get there
+                        user.setNexonCash(rs.getInt("NexonCash"));
+                        user.setAccountID(rs.getInt("AccountID"));
+                        user.setNexonClubID(rs.getString("LoginID"));
+                        // more will be added when I get there
                     }
                 }
             }
@@ -176,7 +178,7 @@ public class ShopDB {
             rawGetInventorySize(characterID, cd);
             rawGetItemEquip(characterID, cd);
             rawGetItemBundle(characterID, cd);
-            
+
             rawGetItemLocker(user);
             return cd;
         } catch (SQLException ex) {
@@ -186,4 +188,42 @@ public class ShopDB {
         return null;
     }
 
+    public static void rawUpdateItemLocker(int characterID, List<CashItemInfo> cashItemInfo) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            String removeCashSN = "";
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `itemlocker` SET `AccountID` = ?, `CharacterID` = ?, `ItemID` = ?, `CommodityID` = ?, `Number` = ?, `BuyCharacterID` = ?, `ExpiredDate` = ? WHERE `CashItemSN` = ?")) {
+                for (CashItemInfo cashInfo : cashItemInfo) {
+                    if (cashInfo != null) {
+                        if (cashInfo.getCashItemSN() > 0) {
+                            removeCashSN += cashInfo.getCashItemSN() + ", ";
+                        }
+                        Database.execute(con, ps, cashInfo.getAccountID(), cashInfo.getCharacterID(), cashInfo.getItemID(), cashInfo.getCommodityID(), cashInfo.getNumber(), cashInfo.getBuyCharacterID(), cashInfo.getDateExpire().fileTimeToLong(), cashInfo.getCashItemSN());
+                    }
+                }
+            }
+            if (removeCashSN.isEmpty()) {
+                return;//wouldn't want to kill their inventory ;)
+            }
+            String query = "DELETE FROM `itemlocker` WHERE `CharacterID` = ?";
+            if (!removeCashSN.isEmpty()) {
+                query += String.format(" AND `CashItemSN` NOT IN (%s)", removeCashSN.substring(0, removeCashSN.length() - 2));
+            }
+            try (PreparedStatement ps = con.prepareStatement(query)) {
+                ps.setInt(1, characterID);
+                ps.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+
+    public static void rawUpdateNexonCash(int accountID, int nexonCash) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `users` SET `NexonCash` = ? WHERE `AccountID` = ?")) {
+                Database.execute(con, ps, nexonCash, accountID);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
 }

@@ -17,15 +17,77 @@
  */
 package shop;
 
+import common.item.ItemSlotBase;
+import java.util.List;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
+import shop.user.CashItemInfo;
 import shop.user.User;
+import shop.user.User.CashItemRequest;
 
 /**
  *
  * @author sunnyboy
  */
 public class ShopPacket {
+
+    public static OutPacket onLoadLockerDone(List<CashItemInfo> cashItemInfo) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.LoadLockerDone);
+        packet.encodeByte(cashItemInfo.size());
+        for (CashItemInfo cashItem : cashItemInfo) {
+            packet.encodeLong(cashItem.getCashItemSN());
+            packet.encodeInt(cashItem.getAccountID());
+            packet.encodeInt(cashItem.getCharacterID());
+            packet.encodeInt(cashItem.getItemID());
+            packet.encodeShort(cashItem.getNumber());
+            packet.encodeString(cashItem.getBuyCharacterID(), 13);
+            packet.encodeFileTime(cashItem.getDateExpire());
+        }
+        return packet;
+    }
+
+    public static OutPacket onBuyDone(CashItemInfo cashItemInfo) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.BuyDone);
+        packet.encodeLong(cashItemInfo.getCashItemSN());
+        packet.encodeInt(cashItemInfo.getAccountID());
+        packet.encodeInt(cashItemInfo.getCharacterID());
+        packet.encodeInt(cashItemInfo.getItemID());
+        packet.encodeShort(cashItemInfo.getNumber());
+        packet.encodeString(cashItemInfo.getBuyCharacterID(), 13);
+        packet.encodeFileTime(cashItemInfo.getDateExpire());
+        return packet;
+    }
+
+    public static OutPacket onBuyFailed() {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.BuyFailed);
+        packet.encodeByte(0x22);
+        return packet;
+    }
+
+    public static OutPacket onMoveLToS(short pos, ItemSlotBase item, byte ti) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.MoveLtoSDone);
+        packet.encodeShort(pos);
+        packet.encodeByte(ti);
+        item.encode(packet);
+        return packet;
+    }
+
+    public static OutPacket onMoveSToL(CashItemInfo cashItem) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.MoveSToLDone);
+        packet.encodeLong(cashItem.getCashItemSN());
+        packet.encodeInt(cashItem.getAccountID());
+        packet.encodeInt(cashItem.getCharacterID());
+        packet.encodeInt(cashItem.getItemID());
+        packet.encodeShort(cashItem.getNumber());
+        packet.encodeString(cashItem.getBuyCharacterID(), 13);
+        packet.encodeFileTime(cashItem.getDateExpire());
+        return packet;
+    }
 
     public static OutPacket onQueryCash(User user) {
         OutPacket packet = new OutPacket(LoopbackPacket.CashShopQueryCashResult);

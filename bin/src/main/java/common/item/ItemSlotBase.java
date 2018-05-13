@@ -25,23 +25,27 @@ import util.FileTime;
  * @author Eric
  */
 public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
+
     private int itemID;
     private long cashItemSN;
+    private int accountID;
+    private int characterID;
+    private int commodityID;
+    private String buyCharacterID;
     private FileTime dateExpire;
-    
+
     public ItemSlotBase(int itemID) {
         this.itemID = itemID;
         this.cashItemSN = 0;
         this.dateExpire = FileTime.END;
     }
-    
+
     /**
-     * Constructs (or, creates) a new Item object.
-     * This method is designed to create a "placeholder"
-     * item where nothing has been assigned nor being used,
-     * as it is only to be used for Cloning an item, or 
-     * Decoding a item from a remote server (Center/Login/etc)
-     * 
+     * Constructs (or, creates) a new Item object. This method is designed to
+     * create a "placeholder" item where nothing has been assigned nor being
+     * used, as it is only to be used for Cloning an item, or Decoding a item
+     * from a remote server (Center/Login/etc)
+     *
      * @param slotType The ItemSlotType of the item to construct
      * @return A new constructed Item type base
      */
@@ -59,49 +63,48 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
         }
         return item;
     }
-    
+
     public String dumpString() {
         return toString();
     }
-    
+
     /**
-     * Encodes, or writes, the current item's information
-     * into the OutPacket buffer. 
-     * 
+     * Encodes, or writes, the current item's information into the OutPacket
+     * buffer.
+     *
      * @param packet The OutPacket buffer
      */
     public void encode(OutPacket packet) {
         rawEncode(packet);
     }
-    
+
     public long getCashItemSN() {
         return cashItemSN;
     }
-    
+
     public FileTime getDateExpire() {
         return dateExpire;
     }
-    
+
     public int getItemID() {
         return itemID;
     }
-    
+
     /**
-     * Determines if the item has a valid Cash Item Serial Number
-     * that is greater than zero, marking this item a Cash Item.
-     * 
+     * Determines if the item has a valid Cash Item Serial Number that is
+     * greater than zero, marking this item a Cash Item.
+     *
      * @return If the item is a cash item
      */
     public boolean isCashItem() {
         return cashItemSN > 0;
     }
-    
+
     /**
-     * An in-depth comparison of two items. 
-     * If the two items are equips, it will
-     * continue to compare each individual 
-     * equipment stats to determine equality.
-     * 
+     * An in-depth comparison of two items. If the two items are equips, it will
+     * continue to compare each individual equipment stats to determine
+     * equality.
+     *
      * @param src The item to compare
      * @return If the two items are the same
      */
@@ -116,15 +119,14 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
             }
         }
     }
-    
+
     /**
-     * Encodes, or writes, the raw item information,
-     * such as the ItemID, CashItemSN, and expiration.
-     * 
-     * A note about this packet is that each inherited
-     * class will override this function to encode
-     * all of the additional data that the class has.
-     * 
+     * Encodes, or writes, the raw item information, such as the ItemID,
+     * CashItemSN, and expiration.
+     *
+     * A note about this packet is that each inherited class will override this
+     * function to encode all of the additional data that the class has.
+     *
      * @param packet The OutPacket stream
      */
     public void rawEncode(OutPacket packet) {
@@ -137,19 +139,51 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
             packet.encodeBool(false);
         }
     }
-    
+
+    public int getAccountID() {
+        return accountID;
+    }
+
+    public void setAccountID(int accountID) {
+        this.accountID = accountID;
+    }
+
+    public int getCharacterID() {
+        return characterID;
+    }
+
+    public void setCharacterID(int characterID) {
+        this.characterID = characterID;
+    }
+
+    public int getCommodityID() {
+        return commodityID;
+    }
+
+    public void setCommodityID(int commodityID) {
+        this.commodityID = commodityID;
+    }
+
+    public String getBuyCharacterID() {
+        return buyCharacterID;
+    }
+
+    public void setBuyCharacterID(String buyCharacterID) {
+        this.buyCharacterID = buyCharacterID;
+    }
+
     public void setItemID(int itemID) {
         this.itemID = itemID;
     }
-    
+
     public void setCashItemSN(long sn) {
         this.cashItemSN = sn;
     }
-    
+
     public void setDateExpire(FileTime ft) {
         this.dateExpire = ft;
     }
-    
+
     @Override
     public int compareTo(ItemSlotBase o) {
         if (!isSameItem(o)) {
@@ -161,49 +195,45 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
         }
         return 0;
     }
-    
+
     @Override
     public String toString() {
         return String.format("ItemID: %d / CashItemSN: %d", this.itemID, this.cashItemSN);
     }
-    
+
     /**
-     * The quantity of the item. This variable
-     * should only ever be changed for items
-     * whose type is of Bundle. All others
-     * should remain 1.
-     * 
-     * @return 
+     * The quantity of the item. This variable should only ever be changed for
+     * items whose type is of Bundle. All others should remain 1.
+     *
+     * @return
      */
     public abstract short getItemNumber();
+
     public abstract void setItemNumber(int number);
-    
+
     /**
-     * A base will include a generated CashItemSN,
-     * but regular SN's are generated/read per class.
-     * This will get the item's regular tracking SN.
-     * 
-     * @return 
+     * A base will include a generated CashItemSN, but regular SN's are
+     * generated/read per class. This will get the item's regular tracking SN.
+     *
+     * @return
      */
     public abstract long getSN();
-    
+
     /**
-     * While the Center server determines the base
-     * Type Index by the ItemID the base holds,
-     * each inherited class will return their
-     * proper Item Slot Type value.
-     * 
-     * @return 
+     * While the Center server determines the base Type Index by the ItemID the
+     * base holds, each inherited class will return their proper Item Slot Type
+     * value.
+     *
+     * @return
      */
     public abstract int getType();
-    
+
     /**
-     * Nexon has the ability to construct a clone
-     * by using an inherited GetDataSize block and
-     * copying the memory to the new base class.
-     * We can't do that so we'll override it per class.
-     * 
-     * @return 
+     * Nexon has the ability to construct a clone by using an inherited
+     * GetDataSize block and copying the memory to the new base class. We can't
+     * do that so we'll override it per class.
+     *
+     * @return
      */
     public abstract ItemSlotBase makeClone();
 }

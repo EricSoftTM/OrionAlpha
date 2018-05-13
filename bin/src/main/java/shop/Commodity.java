@@ -23,7 +23,6 @@ package shop;
  */
 public class Commodity {
 
-
     private long sn;
     private int itemID;
     private short count;

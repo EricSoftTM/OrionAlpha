@@ -35,9 +35,11 @@ import network.packet.OutPacket;
  */
 public class CharacterData {
 
-    static final int BodyPartCount = BodyPart.BP_Count,
+    static final int 
+            BodyPartCount = BodyPart.BP_Count,
             ItemTypeCount = ItemType.NO,
-            Sticker = BodyPart.Sticker;
+            Sticker = BodyPart.Sticker
+    ;
 
     private final CharacterStat characterStat;
     private final List<ItemSlotBase> equipped;

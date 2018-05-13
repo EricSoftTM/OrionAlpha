@@ -77,8 +77,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private int localSocketSN;
     private int seqSnd;
     private int seqRcv;
-    private AtomicBoolean closePosted;
-    private AtomicBoolean updatePosted;
+    private final AtomicBoolean closePosted;
+    private final AtomicBoolean updatePosted;
     private String addr;
     public long aliveReqSent;
     public long lastAliveAck;

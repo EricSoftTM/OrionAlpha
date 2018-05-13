@@ -61,7 +61,6 @@ import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
-import shop.ShopApp;
 import util.Logger;
 import util.Pointer;
 import util.Rand32;
@@ -599,11 +598,6 @@ public class User extends Creature {
         // TODO
         return false;
     }
-
-    private void onMigrateToCashShopRequest(InPacket packet) {
-        sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32("127.0.0.1"), 8787));
-    }
-    
     
     public void setFace(int val) {
         lock.lock();
@@ -1242,6 +1236,10 @@ public class User extends Creature {
             }
         }
         getField().splitSendPacket(getSplit(), UserRemote.onHit(this.characterID, mobAttackIdx, clientDamage, mobTemplateID, left, reflect, mobID, hitAction, hit), this);
+    }
+    
+    public void onMigrateToCashShopRequest(InPacket packet) {
+        sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32("127.0.0.1"), 8787));
     }
     
     public void onTransferFieldRequest(InPacket packet) {

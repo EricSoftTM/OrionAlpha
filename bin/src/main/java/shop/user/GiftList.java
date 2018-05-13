@@ -23,7 +23,7 @@ package shop.user;
  */
 public class GiftList {
 
-    private long liSN;
+    private long sn;
     private int itemID;
     private String buyCharacterName;//13
     private String text;//73
@@ -32,12 +32,12 @@ public class GiftList {
 
     }
 
-    public long getLiSN() {
-        return liSN;
+    public long getSN() {
+        return sn;
     }
 
-    public void setLiSN(long liSN) {
-        this.liSN = liSN;
+    public void setSN(long sn) {
+        this.sn = sn;
     }
 
     public int getItemID() {

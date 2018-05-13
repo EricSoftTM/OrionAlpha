@@ -61,8 +61,7 @@ public class ExchangeElem {
             itemID = item.getItemID();
             count = item.getItemNumber();
         }
-        int ti = itemID / 1000000;
-        if (ti == ItemType.Consume || ti == ItemType.Install || ti == ItemType.Etc) {
+        if (ItemAccessor.isBundleTypeIndex(ItemAccessor.getItemTypeIndexFromID(itemID))) {
             if (ItemAccessor.isRechargeableItem(itemID)) {
                 if (count > 2000) {
                     return false;

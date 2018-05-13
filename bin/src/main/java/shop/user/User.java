@@ -24,7 +24,6 @@ import common.item.ItemSlotEquip;
 import common.item.ItemSlotType;
 import common.item.ItemType;
 import common.user.CharacterData;
-import static common.user.DBChar.ItemSlotEquip;
 import game.user.item.ItemInfo;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -264,18 +263,18 @@ public class User {
         }
     }
 
-    public List<CashItemInfo> GetCashItemInfo() {
+    public List<CashItemInfo> getCashItemInfo() {
         return this.cashItemInfo;
     }
 
-    private void checkCashItemExpire(long cur) {
-        if (cur - this.nextCheckCashItemExpire >= 0 && this.doCheckCashItemExpire != true) {
-            FileTime ftCur;
-            if ((ftCur = SystemTime.getLocalTime().systemTimeToFileTime()) != null) {
-                this.nextCheckCashItemExpire = cur + 180000;
+    private void checkCashItemExpire(long time) {
+        if (time - this.nextCheckCashItemExpire >= 0 && this.doCheckCashItemExpire != true) {
+            FileTime cur;
+            if ((cur = SystemTime.getLocalTime().systemTimeToFileTime()) != null) {
+                this.nextCheckCashItemExpire = time + 180000;
                 for (Iterator<CashItemInfo> it = this.cashItemInfo.iterator(); it.hasNext();) {
                     CashItemInfo cashItem = it.next();
-                    if (FileTime.compareFileTime(cashItem.getDateExpire(), ftCur) <= 0) {
+                    if (FileTime.compareFileTime(cashItem.getDateExpire(), cur) <= 0) {
                         this.doCheckCashItemExpire = true;
                         it.remove();
                     }
@@ -429,7 +428,7 @@ public class User {
             byte ti = packet.decodeByte();
             short pos = packet.decodeShort();
 
-            if (ti < 1 || ti > 4) {
+            if (ti < ItemType.NotDefine || ti > ItemType.Etc) {
                 Logger.logError("Invalid item type index (sn: %d, pos: %d for ti %d)", sn, pos, ti);
                 return;
             }

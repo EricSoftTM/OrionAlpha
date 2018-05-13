@@ -56,7 +56,7 @@ public class ShopApp implements Runnable {
     private int waitingFirstPacket;
     private byte worldID;
 
-    private final static WzPackage etcDir = new WzFileSystem().init("Etc").getPackage();
+    private static final WzPackage etcDir = new WzFileSystem().init("Etc").getPackage();
     private static final ShopApp instance = new ShopApp();
 
     public ShopApp() {

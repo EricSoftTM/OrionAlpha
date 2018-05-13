@@ -65,8 +65,8 @@ public class ItemSlotBundle extends ItemSlotBase {
     }
     
     @Override
-    public void setItemNumber(short number) {
-        this.number = number;
+    public void setItemNumber(int number) {
+        this.number = (short) number;
     }
     
     public void setItemSN(long sn) {

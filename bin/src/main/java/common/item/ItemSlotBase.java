@@ -176,7 +176,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
      * @return 
      */
     public abstract short getItemNumber();
-    public abstract void setItemNumber(short number);
+    public abstract void setItemNumber(int number);
     
     /**
      * A base will include a generated CashItemSN,

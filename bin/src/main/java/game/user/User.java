@@ -18,6 +18,7 @@
 package game.user;
 
 import common.item.BodyPart;
+import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemType;
 import common.user.CharacterData;
@@ -1311,7 +1312,7 @@ public class User extends Creature {
         lock.lock();
         try {
             if (pr == null) {
-                //Inventory.sendInventoryOperation(this, onExclRequest, null);
+                Inventory.sendInventoryOperation(this, onExclRequest, null);
                 return pickUp;
             }
             List<ChangeLog> changeLog = new ArrayList<>();
@@ -1330,27 +1331,25 @@ public class User extends Creature {
             } else {
                 if (pr.getItem() != null) {
                     ItemSlotBase item = pr.getItem().makeClone();
-                    int ti = item.getItemID() / 1000000;
-                    /* TODO: Handle inventories
-                    if (InventoryManipulator.RawAddItem(character, nTI, pItem, aChangeLog, nIncRet)) {
-                            pr.pItem.SetItemNumber(pr.pItem.GetItemNumber() - nIncRet.Get());//-= nIncRet
+                    byte ti = ItemAccessor.getItemTypeIndexFromID(item.getItemID());
+                    if (InventoryManipulator.rawAddItem(character, ti, item, changeLog, incRet)) {
+                        pr.getItem().setItemNumber(pr.getItem().getItemNumber() - incRet.get());//-= nIncRet
 
-                            if (ItemConstants.IsTreatSingly(pr.pItem) || pr.pItem.GetItemNumber() <= 0) {
-                                bPickUp = true;
-                            }
-                            usCharacterDataModFlag |= ItemConstants.get_item_type_from_typeindex(nTI);
-                            if (ItemConstants.is_javelin_item(pr.pItem.nItemID) && nIncRet.Get() == 0)
-                                bConsumeOnPickup = true;
-                            if (pr.dwSourceID == 0 && pr.nOwnType == Drop.UserOwn) {
-                                User pUser = User.FindUser(pr.nOwnType == Drop.UserOwn ? pr.dwOwnerID : pr.dwOwnPartyID);
-                                if (pUser != null) {
-                                    pUser.FlushCharacterData(0, true);
-                                }
+                        if (ItemAccessor.isTreatSingly(pr.getItem()) || pr.getItem().getItemNumber() <= 0) {
+                            pickUp = true;
+                        }
+                        characterDataModFlag |= ItemAccessor.getItemTypeFromTypeIndex(ti);
+                        //if (ItemAccessor.isJavelinItem(pr.getItem().getItemID()) && incRet.Get() == 0)
+                        //    consumeOnPickup = true;
+                        if (pr.getSourceID() == 0 /*&& pr.getOwnType() == Drop.UserOwn*/) {
+                            User user = User.findUser(pr.getOwnerID());
+                            if (user != null) {
+                                user.flushCharacterData(0, true);
                             }
                         }
-                    */
+                    }
                 }
-                //Inventory.sendInventoryOperation(this, onExclRequest, changeLog);
+                Inventory.sendInventoryOperation(this, onExclRequest, changeLog);
                 changeLog.clear();
             }
             if (pr.isMoney() || incRet.get() > 0) {

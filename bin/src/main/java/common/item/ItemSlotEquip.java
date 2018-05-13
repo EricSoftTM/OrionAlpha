@@ -105,7 +105,7 @@ public class ItemSlotEquip extends ItemSlotBase {
     }
     
     @Override
-    public void setItemNumber(short number) {
+    public void setItemNumber(int number) {
         
     }
     

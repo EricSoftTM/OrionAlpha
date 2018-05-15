@@ -18,6 +18,7 @@
 package game.user;
 
 import common.user.CharacterStat;
+import game.field.drop.DropPickup;
 import game.user.item.ChangeLog;
 import game.user.item.InventoryManipulator;
 import game.user.skill.SkillRecord;
@@ -82,6 +83,24 @@ public class WvsContext {
         OutPacket packet = new OutPacket(LoopbackPacket.BroadcastMsg);
         packet.encodeByte(type);
         packet.encodeString(msg);
+        return packet;
+    }
+    
+    public static OutPacket onDropPickUpMessage(int dropType, int incMeso, int itemID, int quantity) {
+        OutPacket packet = new OutPacket(LoopbackPacket.DropPickUpMessage);
+        packet.encodeByte(dropType);
+        if (dropType == DropPickup.AddInventoryItem) {
+            packet.encodeInt(itemID);
+            packet.encodeInt(quantity);
+        } else if (dropType == DropPickup.Messo) {
+            packet.encodeInt(incMeso);
+        }
+        return packet;
+    }
+    
+    public static OutPacket onIncEXPMessage(int inc) {
+        OutPacket packet = new OutPacket(LoopbackPacket.IncEXPMessage);
+        packet.encodeInt(inc);
         return packet;
     }
     

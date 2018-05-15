@@ -32,6 +32,7 @@ import game.field.FieldMan;
 import game.field.GameObjectType;
 import game.field.Stage;
 import game.field.drop.Drop;
+import game.field.drop.DropPickup;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.field.life.AttackIndex;
@@ -1136,6 +1137,9 @@ public class User extends Creature {
             if (arg[0].equals("!fixme")) {
                 sendCharacterStat(Request.Excl, 0);
             }
+            if (arg[0].equals("!packet")) {
+                sendPacket(WvsContext.onIncEXPMessage(1));
+            }
             if (arg[0].equals("!drop") || arg[0].equals("!item")) {
                 if (arg.length > 1) {
                     int itemID = Integer.parseInt(arg[1]);
@@ -1393,7 +1397,9 @@ public class User extends Creature {
                 changeLog.clear();
             }
             if (pr.isMoney() || incRet.get() > 0) {
-                // TODO: Find OnDropPickUpMessage T_T
+                sendPacket(WvsContext.onDropPickUpMessage(pr.isMoney() ? DropPickup.Messo : DropPickup.AddInventoryItem, pr.getDropInfo(), pr.getItem() != null ? pr.getItem().getItemID() : 0, incRet.get()));
+            } else {
+                sendPacket(WvsContext.onDropPickUpMessage(DropPickup.Done, 0, 0, 0));
             }
             return pickUp;
         } finally {
@@ -1403,7 +1409,7 @@ public class User extends Creature {
     
     public void sendDropPickUpFailPacket(byte onExclRequest) {
         sendCharacterStat(onExclRequest, 0);
-        // TODO: WvsContext.OnDropPickUpMessage, does it exist? 
+        sendPacket(WvsContext.onDropPickUpMessage(DropPickup.Done, 0, 0, 0));
     }
     
     public void sendSetFieldPacket(boolean characterData) {

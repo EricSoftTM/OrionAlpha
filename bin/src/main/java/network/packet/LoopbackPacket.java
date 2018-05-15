@@ -43,8 +43,8 @@ public class LoopbackPacket {
             ChangeSkillRecordResult = 15,
             SkillUseResult = 16,
             // Unknown = 17
-            // Unknown = 18
-            // Unknown = 19
+            DropPickUpMessage = 18,
+            IncEXPMessage = 19,
             // Unknown = 20
             BroadcastMsg = 21,
             CharacterInfo = 22,

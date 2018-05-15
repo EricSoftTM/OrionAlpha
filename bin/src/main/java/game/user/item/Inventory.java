@@ -41,7 +41,7 @@ public class Inventory {
     public static boolean changeSlotPosition(User user, byte onExclRequest, byte ti, short pos1, short pos2, short count) {
         if (user.getHP() == 0)
             return false;
-        if (ti <= ItemType.NotDefine || ti > ItemType.NO) {
+        if (ti <= ItemType.NotDefine || ti >= ItemType.NO) {
             Logger.logError("Invalid Item Type Index");
             return false;
         }

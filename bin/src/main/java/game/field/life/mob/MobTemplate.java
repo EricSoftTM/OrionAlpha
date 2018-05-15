@@ -115,16 +115,16 @@ public class MobTemplate {
         template.name = WzUtil.getString(info.getNode("name"), "NULL");
         template.bodyAttack = WzUtil.getBoolean(info.getNode("bodyAttack"), false);
         template.boss = WzUtil.getBoolean(info.getNode("boss"), false);
-        template.level = WzUtil.getByte(info.getNode("level"), (byte) 1);
-        template.maxHP = WzUtil.getShort(info.getNode("maxHP"), (short) 0);
-        template.maxMP = WzUtil.getShort(info.getNode("maxMP"), (short) 0);
-        template.speed = (byte) Math.min(140, Math.max(0, WzUtil.getByte(info.getNode("speed"), (byte) 0)));
-        template.pad = (short) Math.min(1999, Math.max(0, WzUtil.getShort(info.getNode("PADamage"), (short) 0)));
-        template.pdd = (short) Math.min(1999, Math.max(0, WzUtil.getShort(info.getNode("PDDamage"), (short) 0)));
-        template.mad = (short) Math.min(1999, Math.max(0, WzUtil.getShort(info.getNode("MADamage"), (short) 0)));
-        template.mdd = (short) Math.min(1999, Math.max(0, WzUtil.getShort(info.getNode("MDDamage"), (short) 0)));
-        template.acc = WzUtil.getByte(info.getNode("acc"), (byte) 0);
-        template.eva = WzUtil.getByte(info.getNode("eva"), (byte) 0);
+        template.level = WzUtil.getByte(info.getNode("level"), 1);
+        template.maxHP = WzUtil.getShort(info.getNode("maxHP"), 0);
+        template.maxMP = WzUtil.getShort(info.getNode("maxMP"), 0);
+        template.speed = (byte) Math.min(140, Math.max(0, WzUtil.getByte(info.getNode("speed"), 0)));
+        template.pad = (short) Math.min(1999, Math.max(0, WzUtil.getShort(info.getNode("PADamage"), 0)));
+        template.pdd = (short) Math.min(1999, Math.max(0, WzUtil.getShort(info.getNode("PDDamage"), 0)));
+        template.mad = (short) Math.min(1999, Math.max(0, WzUtil.getShort(info.getNode("MADamage"), 0)));
+        template.mdd = (short) Math.min(1999, Math.max(0, WzUtil.getShort(info.getNode("MDDamage"), 0)));
+        template.acc = WzUtil.getByte(info.getNode("acc"), 0);
+        template.eva = WzUtil.getByte(info.getNode("eva"), 0);
         template.exp = WzUtil.getInt32(info.getNode("exp"), 0);
         template.pushedDamage = WzUtil.getInt32(info.getNode("pushed"), 1);
         
@@ -138,8 +138,8 @@ public class MobTemplate {
             }
         }
         
-        template.hpRecovery = WzUtil.getShort(info.getNode("hpRecovery"), (short) 0);
-        template.mpRecovery = WzUtil.getShort(info.getNode("mpRecovery"), (short) 0);
+        template.hpRecovery = WzUtil.getShort(info.getNode("hpRecovery"), 0);
+        template.mpRecovery = WzUtil.getShort(info.getNode("mpRecovery"), 0);
         template.undead = WzUtil.getBoolean(info.getNode("undead"), false);
         
         for (int i = 1; ; i++) {
@@ -149,8 +149,8 @@ public class MobTemplate {
             }
             WzProperty attackInfo = attack.getNode("info");
             if (attackInfo != null) {
-                byte type = WzUtil.getByte(attackInfo.getNode("type"), (byte) 0);
-                short conMP = WzUtil.getShort(attackInfo.getNode("conMP"), (short) 0);
+                byte type = WzUtil.getByte(attackInfo.getNode("type"), 0);
+                short conMP = WzUtil.getShort(attackInfo.getNode("conMP"), 0);
                 boolean magic = WzUtil.getBoolean(attackInfo.getNode("magic"), false);
                 
                 template.attackInfo.add(new MobAttackInfo(type, conMP, magic));

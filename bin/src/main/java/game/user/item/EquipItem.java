@@ -31,7 +31,8 @@ public class EquipItem {
     private short incMaxHP, incMaxMP;// incMHP, incMMP
     private short incPAD, incMAD, incPDD, incMDD;
     private short incACC, incEVA, incCraft, incSpeed, incJump, incSwim;
-    private int knockback;
+    private int knockback, attackSpeed;
+    private byte tuc;//Total Upgrade Count
 
     public int getItemID() {
         return itemID;
@@ -265,13 +266,11 @@ public class EquipItem {
         this.attackSpeed = attackSpeed;
     }
 
-    public int getTuc() {
+    public byte getTUC() {
         return tuc;
     }
 
-    public void setTuc(int tuc) {
-        this.tuc = tuc;
+    public void setTUC(int tuc) {
+        this.tuc = (byte) tuc;
     }
-    private int attackSpeed;
-    private int tuc;
 }

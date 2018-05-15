@@ -213,10 +213,10 @@ public class LifePool {
             templateID = WzUtil.getInt32(prop.getNode("id"), templateID);
             x = WzUtil.getInt32(prop.getNode("x"), x);
             y = WzUtil.getInt32(prop.getNode("cy"), y);
-            fh = WzUtil.getShort(prop.getNode("fh"), (short) 0);
+            fh = WzUtil.getShort(prop.getNode("fh"), 0);
             horz.low = WzUtil.getInt32(prop.getNode("rx0"), 0);
             horz.high = WzUtil.getInt32(prop.getNode("rx1"), 0);
-            f = WzUtil.getByte(prop.getNode("f"), (byte) 0);
+            f = WzUtil.getByte(prop.getNode("f"), 0);
             if (f == 0) {
                 f = 1;
             }
@@ -408,15 +408,15 @@ public class LifePool {
                 }
                 MobGen pmg = new MobGen();
                 pmg.templateID = template.getTemplateID();
-                pmg.x = WzUtil.getShort(life.getNode("x"), (short) 0);
+                pmg.x = WzUtil.getShort(life.getNode("x"), 0);
                 
-                short y = WzUtil.getShort(life.getNode("y"), (short) 0);
-                short cy = WzUtil.getShort(life.getNode("cy"), (short) 0);
-                short fh = WzUtil.getShort(life.getNode("fh"), (short) 0);
+                short y = WzUtil.getShort(life.getNode("y"), 0);
+                short cy = WzUtil.getShort(life.getNode("cy"), 0);
+                short fh = WzUtil.getShort(life.getNode("fh"), 0);
                 
                 pmg.regenInterval = 1000 * WzUtil.getInt32(life.getNode("mobTime"), 0);
                 pmg.regenAfter = 0;
-                pmg.f = WzUtil.getByte(life.getNode("f"), (byte) 0);
+                pmg.f = WzUtil.getByte(life.getNode("f"), 0);
                 
                 if (template.getMoveAbility() == MoveAbility.Fly) {
                     pmg.y = y;

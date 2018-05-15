@@ -18,6 +18,9 @@
 package game.user.item;
 
 import common.item.ItemAccessor;
+import common.item.ItemSlotBase;
+import common.item.ItemSlotBundle;
+import common.item.ItemSlotEquip;
 import common.item.ItemType;
 import game.field.Field;
 import java.util.HashMap;
@@ -36,17 +39,35 @@ import util.wz.WzUtil;
  */
 public class ItemInfo {
 
-    private static final WzPackage characterDir = new WzFileSystem().init("Character").getPackage();
-    private static final WzPackage itemDir = new WzFileSystem().init("Item").getPackage();
-    private static final WzPackage fieldDir = new WzFileSystem().init("Map/Map").getPackage();
-    protected static final Map<Integer, BundleItem> bundleItem = new HashMap<>();
-    protected static final Map<Integer, EquipItem> equipItem = new HashMap<>();
-    protected static final Map<Integer, StateChangeItem> statChangeItem = new HashMap<>();
-    protected static final Map<Integer, PortalScrollItem> portalScrollItem = new HashMap<>();
-    protected static final Map<Integer, UpgradeItem> upgradeItem = new HashMap<>();
+    private static WzPackage characterDir;
+    private static WzPackage itemDir;
+    private static WzPackage fieldDir;
+    protected static final Map<Integer, BundleItem> bundleItem;
+    protected static final Map<Integer, EquipItem> equipItem;
+    protected static final Map<Integer, StateChangeItem> statChangeItem;
+    protected static final Map<Integer, PortalScrollItem> portalScrollItem;
+    protected static final Map<Integer, UpgradeItem> upgradeItem;
     //
-    protected static final Map<Integer, String> mapString = new HashMap<>();
-    protected static final Map<Integer, String> itemString = new HashMap<>();
+    protected static final Map<Integer, String> mapString;
+    protected static final Map<Integer, String> itemString;
+    
+    static {
+        // Initialize Packages
+        characterDir = new WzFileSystem().init("Character").getPackage();
+        itemDir = new WzFileSystem().init("Item").getPackage();
+        fieldDir = new WzFileSystem().init("Map/Map").getPackage();
+        
+        // Initialize Item Containers
+        bundleItem = new HashMap<>();
+        equipItem = new HashMap<>();
+        statChangeItem = new HashMap<>();
+        portalScrollItem = new HashMap<>();
+        upgradeItem = new HashMap<>();
+        
+        // Initialize Strings
+        mapString = new HashMap<>();
+        itemString = new HashMap<>();
+    }
 
     public static BundleItem getBundleItem(int itemID) {
         return bundleItem.get(itemID);
@@ -84,6 +105,50 @@ public class ItemInfo {
             return item.getIncPAD();
         }
     }
+    
+    public static ItemSlotBase getItemSlot(int itemID, int option) {
+        byte ti = ItemAccessor.getItemTypeIndexFromID(itemID);
+        if (ti == ItemType.Equip) {
+            EquipItem info = getEquipItem(itemID);
+            if (info == null) {
+                Logger.logError("Inexistant item [%d]", itemID);
+                return null;
+            }
+            ItemSlotEquip item = new ItemSlotEquip(itemID);
+            item.ruc = ItemVariationOption.getVariation(info.getTUC(), option).byteValue();//Total Upgrade Count
+            item.iSTR = ItemVariationOption.getVariation(info.getIncSTR(), option).shortValue();
+            item.iDEX = ItemVariationOption.getVariation(info.getIncDEX(), option).shortValue();
+            item.iINT = ItemVariationOption.getVariation(info.getIncINT(), option).shortValue();
+            item.iLUK = ItemVariationOption.getVariation(info.getIncLUK(), option).shortValue();
+            item.iMaxHP = ItemVariationOption.getVariation(info.getIncMaxHP(), option).shortValue();
+            item.iMaxMP = ItemVariationOption.getVariation(info.getIncMaxMP(), option).shortValue();
+            item.iPAD = ItemVariationOption.getVariation(info.getIncPAD(), option).shortValue();
+            item.iMAD = ItemVariationOption.getVariation(info.getIncMAD(), option).shortValue();
+            item.iPDD = ItemVariationOption.getVariation(info.getIncPDD(), option).shortValue();
+            item.iMDD = ItemVariationOption.getVariation(info.getIncMDD(), option).shortValue();
+            item.iACC = ItemVariationOption.getVariation(info.getIncACC(), option).shortValue();
+            item.iEVA = ItemVariationOption.getVariation(info.getIncEVA(), option).shortValue();
+            item.iCraft = ItemVariationOption.getVariation(info.getIncCraft(), option).shortValue();
+            item.iSpeed = ItemVariationOption.getVariation(info.getIncSpeed(), option).shortValue();
+            item.iJump = ItemVariationOption.getVariation(info.getIncJump(), option).shortValue();
+            
+            return item.makeClone();
+        } else {
+            if (ti <= ItemType.Equip) {
+                Logger.logError("Inexistant item [%d]", itemID);
+                return null;
+            }
+            if (ti <= ItemType.Etc) {
+                BundleItem info = getBundleItem(itemID);
+                if (info != null) {
+                    ItemSlotBundle item = new ItemSlotBundle(itemID);
+                    return item;
+                }
+            }
+        }
+        // Cash Items don't exist yet..
+        return null;
+    }
 
     public static boolean isCashItem(int itemID) {
         if (ItemAccessor.getItemTypeIndexFromID(itemID) == ItemType.Equip) {
@@ -103,19 +168,22 @@ public class ItemInfo {
     public static void load() {
         Logger.logReport("Loading Equip Info");
         for (Entry<String, WzPackage> category : characterDir.getChildren().entrySet()) {
-            if (category.getKey().equals("Afterimage")) {
-                continue;
+            if (!category.getKey().equals("Afterimage")) {
+                for (WzProperty itemData : category.getValue().getEntries().values()) {
+                    registerEquipItemInfo(itemData);
+                }
             }
-            // int size = equipItem.size();
-            for (WzProperty itemData : category.getValue().getEntries().values()) {
-                registerEquipItemInfo(itemData);
-            }
-            // Logger.logReport("%d Item(s) loaded successfully from [%S]", equipItem.size() - size, category.getKey());
+            category.getValue().release();
         }
+        characterDir.release();
 
         Logger.logReport("Loading Bundle Info");
         iterateBundleItem();
         iterateMapString();
+        
+        characterDir = null;
+        itemDir = null;
+        fieldDir = null;
     }
 
     private static void registerEquipItemInfo(WzProperty itemData) {
@@ -155,7 +223,7 @@ public class ItemInfo {
 
             item.setKnockback(WzUtil.getInt32(info.getNode("knockback"), 0));
             item.setAttackSpeed(WzUtil.getInt32(info.getNode("attackSpeed"), 0));
-            item.setTuc(WzUtil.getInt32(info.getNode("tuc"), 0));
+            item.setTUC(WzUtil.getInt32(info.getNode("tuc"), 0));
             // vslot, iconRaw, tuc, sfx, incMDD, icon, reqLUK, reqLevel, knockback, reqDEX, incJump, price, attack, incINT, islot, incSTR, incPDD, stand, cash, incMHP, reqPOP, afterImage, incACC, incLUK, nameTag, incMMD, incDEX, reqJob, chatBalloon, incSpeed, attackSpeed, name, incEVA, incMMP, incMAD, incPAD, reqINT, walk, reqSTR, desc
 
         }
@@ -172,7 +240,9 @@ public class ItemInfo {
                     loadBundleItem(itemData);
                 }
             }
+            pack.release();
         }
+        itemDir.release();
     }
 
     private static void loadBundleItem(WzProperty itemData) {
@@ -301,5 +371,6 @@ public class ItemInfo {
                 mapString.put(mapid, WzUtil.getString(info.getNode("mapName"), "NULL"));
             }
         }
+        fieldDir.release();
     }
 }

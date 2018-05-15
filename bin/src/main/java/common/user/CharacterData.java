@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import network.packet.OutPacket;
+import util.Logger;
 
 /**
  *
@@ -82,7 +83,7 @@ public class CharacterData {
         }
     }
 
-    public void encode(OutPacket packet, byte flag) {
+    public void encode(OutPacket packet, int flag) {
         packet.encodeByte(flag);
         if ((flag & DBChar.Character) != 0) {
             characterStat.encode(packet);
@@ -309,7 +310,9 @@ public class CharacterData {
             return false;
         }
         if (ti == ItemType.Equip) {
+            Logger.logReport("Moving item %d into pos %d", (item == null ? 0 : item.getItemID()), pos);
             if (pos == 0 || pos < -BodyPartCount && pos >= -Sticker || pos > getItemSlotCount(ItemType.Equip) || pos < -Sticker - BodyPartCount) {
+                Logger.logError("Failed to set item %d into slot %d", (item == null ? 0 : item.getItemID()), pos);
                 return false;
             }
             if (pos >= -Sticker) {

@@ -15,24 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package login.avatar;
-
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+package login.user.item;
 
 /**
- * CAvatar
- * 
+ *
  * @author Eric
  */
-public class Avatar extends AvatarData {
-    public boolean modified;
-    public final Lock lock;
-    public long lastAccessed;
+public class NewEquip {
+    private byte gender;
+    private byte type;
+    private int itemID;
     
-    public Avatar() {
-        super();
-        this.lock = new ReentrantLock();
-        this.modified = false;
+    public NewEquip(int gender, int type, int itemID) {
+        this.gender = (byte) gender;
+        this.type = (byte) type;
+        this.itemID = itemID;
+    }
+    
+    public byte getGender() {
+        return gender;
+    }
+    
+    public byte getType() {
+        return type;
+    }
+    
+    public int getItemID() {
+        return itemID;
     }
 }

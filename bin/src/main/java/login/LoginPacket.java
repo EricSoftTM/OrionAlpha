@@ -20,7 +20,6 @@ package login;
 import common.user.CharacterData;
 import common.user.DBChar;
 import java.util.List;
-import login.avatar.Avatar;
 import login.user.ClientSocket;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
@@ -60,8 +59,8 @@ public class LoginPacket {
             packet.encodeInt(1); // Unknown
             
             packet.encodeByte(characters.size());
-            for (CharacterData cd : characters) {
-                cd.encode(packet, (byte) (DBChar.Character | DBChar.ItemSlotEquip));
+            for (CharacterData character : characters) {
+                character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip);
             }
         }
         return packet;
@@ -74,23 +73,23 @@ public class LoginPacket {
         return packet;
     }
     
-    public static OutPacket onCreateNewCharacterResult(byte msg, Avatar avatar) {
+    public static OutPacket onCreateNewCharacterResult(int msg, CharacterData character) {
         OutPacket packet = new OutPacket(LoopbackPacket.CreateNewCharacterResult);
         packet.encodeByte(msg);
         if (msg == 0) {
-            avatar.encode(packet);
+            character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip);
         }
         return packet;
     }
     
-    public static OutPacket onDeleteCharacterResult(int characterID, byte msg) {
+    public static OutPacket onDeleteCharacterResult(int characterID, int msg) {
         OutPacket packet = new OutPacket(LoopbackPacket.DeleteCharacterResult);
         packet.encodeInt(characterID);
         packet.encodeByte(msg);
         return packet;
     }
     
-    public static OutPacket onSelectCharacterResult(byte result, int ip, short port, int characterID) {
+    public static OutPacket onSelectCharacterResult(int result, int ip, short port, int characterID) {
         OutPacket packet = new OutPacket(LoopbackPacket.SelectCharacterResult);
         packet.encodeByte(result);
         if (result == 1) {

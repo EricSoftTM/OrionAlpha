@@ -17,18 +17,28 @@
  */
 package login;
 
+import game.user.item.ItemInfo;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import login.user.item.NewEquip;
 import network.CenterAcceptor;
 import network.LoginAcceptor;
+import network.database.CommonDB;
 import network.database.Database;
 import util.Logger;
+import util.wz.WzFileSystem;
+import util.wz.WzPackage;
+import util.wz.WzProperty;
+import util.wz.WzUtil;
 
 /**
  *
@@ -40,14 +50,26 @@ public class LoginApp implements Runnable {
     private LoginAcceptor acceptor;
     private CenterAcceptor centerAcceptor;
     private final List<WorldEntry> worlds;
-    public final long serverStartTime;
+    private final List<NewEquip> newEquip;
+    private final List<String> forbiddenNames;
+    private final long serverStartTime;
+    private final AtomicLong cashItemInitSN;
+    private final AtomicLong itemInitSN;
+    private final Lock lockCashItemSN;
+    private final Lock lockItemSN;
     private String addr;
     private int port;
     private int centerPort;
     
     public LoginApp() {
         this.worlds = new ArrayList<>();
+        this.newEquip = new ArrayList<>();
+        this.forbiddenNames = new ArrayList<>();
         this.serverStartTime = System.currentTimeMillis();
+        this.itemInitSN = new AtomicLong(0);
+        this.cashItemInitSN = new AtomicLong(0);
+        this.lockItemSN = new ReentrantLock();
+        this.lockCashItemSN = new ReentrantLock();
     }
     
     public final LoginAcceptor getAcceptor() {
@@ -64,6 +86,38 @@ public class LoginApp implements Runnable {
     
     public void addWorld(WorldEntry world) {
         this.worlds.add(world);
+    }
+    
+    public boolean checkCharEquip(int gender, int type, int itemID) {
+        for (NewEquip equip : newEquip) {
+            if (equip.getGender() == gender && equip.getType() == type && equip.getItemID() == itemID) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean checkCharName(String charName, boolean wordCheck) {
+        // Check if the name is null, empty, or has spaces
+        if (charName == null || charName.isEmpty() || charName.contains(" ")) {
+            return false;
+        }
+        // Check if the name contains invalid symbols (excluding korean)
+        for (char c : charName.toCharArray()) {
+            if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9')) {
+                if ((c & 0x80) == 0 || c < 176 || c > 200)
+                    return false;
+            }
+        }
+        // Check if the name is forbidden
+        if (wordCheck) {
+            for (String forbiddenName : forbiddenNames) {
+                if (charName.toLowerCase().contains(forbiddenName)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     
     private void createAcceptor() {
@@ -87,6 +141,30 @@ public class LoginApp implements Runnable {
     
     public final List<WorldEntry> getWorlds() {
         return this.worlds;
+    }
+    
+    public final long getNextCashSN() {
+        lockCashItemSN.lock();
+        try {
+            return cashItemInitSN.get();
+        } finally {
+            lockCashItemSN.unlock();
+        }
+    }
+
+    public final long getNextSN() {
+        lockItemSN.lock();
+        try {
+            final long itemSN = itemInitSN.decrementAndGet();
+
+            return itemSN;
+        } finally {
+            lockItemSN.unlock();
+        }
+    }
+    
+    public long getServerStartTime() {
+        return serverStartTime;
     }
     
     private void initializeCenter() {
@@ -124,6 +202,37 @@ public class LoginApp implements Runnable {
         }
     }
     
+    private void initializeItemSN() {
+        CommonDB.rawLoadItemInitSN(-1, this.itemInitSN, this.cashItemInitSN);
+    }
+    
+    private void loadNewCharInfo() {
+        WzPackage etcDir = new WzFileSystem().init("Etc").getPackage();
+        if (etcDir != null) {
+            WzProperty forbidden = etcDir.getItem("ForbiddenName.img");
+            if (forbidden != null) {
+                for (WzProperty name : forbidden.getChildNodes()) {
+                    this.forbiddenNames.add(WzUtil.getString(name, "-"));
+                }
+            }
+            
+            WzProperty makeChar = etcDir.getItem("MakeCharInfo.img");
+            if (makeChar != null) {
+                for (WzProperty makeGender : makeChar.getChildNodes()) {
+                    int gender = (makeGender.getNodeName().equals("CharMale") ? 0 : 1);
+                    for (WzProperty makeType : makeGender.getChildNodes()) {
+                        for (WzProperty makeInfo : makeType.getChildNodes()) {
+                            this.newEquip.add(new NewEquip(gender, Byte.parseByte(makeType.getNodeName()), WzUtil.getInt32(makeInfo, 0)));
+                        }
+                    }
+                }
+            }
+            
+            etcDir.release();
+        }
+        etcDir = null;
+    }
+    
     public static void main(String[] args) {
         LoginApp.getInstance().run();
     }
@@ -141,10 +250,18 @@ public class LoginApp implements Runnable {
     }
     
     public void setUp() {
+        loadNewCharInfo();
         initializeDB();
+        initializeItemSN();
         initializeCenter();
         createAcceptor();
         createCenterAcceptor();
+        
+        ItemInfo.load();
         // CreateTimerThread
+    }
+    
+    public void updateItemInitSN() {
+        CommonDB.rawUpdateItemInitSN(-1, this.itemInitSN, this.cashItemInitSN);
     }
 }

@@ -22,6 +22,8 @@ package common;
  * @author Eric
  */
 public enum JobAccessor {
+    // Beginner
+    Novice(0),
     // Warrior
     Swordman(100),
     Fighter(110),

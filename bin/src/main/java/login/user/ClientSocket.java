@@ -17,6 +17,7 @@
  */
 package login.user;
 
+import common.JobAccessor;
 import common.OrionConfig;
 import common.user.CharacterData;
 import io.netty.buffer.Unpooled;
@@ -40,7 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import login.LoginApp;
 import login.LoginPacket;
 import login.WorldEntry;
-import login.avatar.Avatar;
+import login.user.item.NewCharEquipType;
 import network.LoginAcceptor;
 import network.SocketDecoder;
 import network.SocketEncoder;
@@ -51,6 +52,7 @@ import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 import network.security.XORCrypter;
 import util.Logger;
+import util.Pointer;
 import util.Rand32;
 import util.Utilities;
 
@@ -67,11 +69,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private final Lock lockSend;
     private XORCrypter cipher;
     
-    public int loginState;
-    public int failCount;
-    public int failCountbyPinCode;
-    public boolean confirmEULA;
-    public boolean isPinCodeChecked;
+    private int loginState;
+    private int failCount;
     private int accountID;
     public short worldID;
     private byte channelID;
@@ -79,44 +78,37 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private byte gender;
     private byte gradeCode;
     private String nexonClubID;
-    public boolean adminClient;
-    public int birthDate;
-    public boolean closePosted;
+    private int birthDate;//Doesn't exist, this is KSSN instead.
+    private boolean closePosted;
     private final Map<Integer, String> characters;
     
-    public int localSocketSN;
-    public int seqSnd;
-    public int seqRcv;
-    public int seqRcvLast;
-    public int ipBlockType;
-    public long aliveReqSent;
-    public long lastAliveAck;
-    public boolean firstAliveAck;
-    public long ipCheckRequestSent;
-    public boolean premium;
-    public boolean tempBlockedIP;
-    public boolean processed;
+    private int localSocketSN;
+    private int seqSnd;
+    private int seqRcv;
+    private int ipBlockType;
+    private long aliveReqSent;
+    private long lastAliveAck;
+    private boolean firstAliveAck;
+    private long ipCheckRequestSent;
+    private boolean tempBlockedIP;
+    private boolean processed;
     
     public ClientSocket(Channel socket) {
         this.channel = socket;
         this.lockSend = new ReentrantLock();
         this.loginState = 1;
         this.failCount = 0;
-        this.failCountbyPinCode = 0;
-        this.isPinCodeChecked = false;
         this.accountID = 0;
         this.worldID = -1;
         this.channelID = -1;
         this.gradeCode = 0;
         this.nexonClubID = "";
-        this.adminClient = false;
         this.localSocketSN = 0;
         this.aliveReqSent = 0;
-        //this.bIPBlockType = IPFilter.Permit;
+        //this.ipBlockType = IPFilter.Permit;
         this.lastAliveAck = 0;
         this.firstAliveAck = true;
         this.ipCheckRequestSent = 0;
-        this.premium = false;
         this.tempBlockedIP = false;
         this.processed = false;
         this.characters = new HashMap<>();
@@ -224,7 +216,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     public void initSequence() {
         this.seqRcv = Rand32.getInstance().random().intValue();
         this.seqSnd = Rand32.getInstance().random().intValue();
-        this.cipher = new XORCrypter(seqSnd, seqRcv);
+        this.cipher = new XORCrypter(this.seqSnd, this.seqRcv);
     }
     
     public boolean isAdmin() {
@@ -265,11 +257,9 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     }
     
     public void onCheckDuplicateID(InPacket packet) {
-        if (loginState == 8) {
+        if (this.loginState == 8) {
             String checkedName = packet.decodeString();
-            
-            Logger.logReport("Checking if name %s is valid..", checkedName);
-            boolean nameUsed = false;//TODO Database
+            boolean nameUsed = LoginDB.rawCheckDuplicateID(checkedName, this.accountID);
             
             sendPacket(LoginPacket.onCheckDuplicateIDResult(checkedName, nameUsed), false);
         } else {
@@ -299,7 +289,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     
     public void onCreateNewCharacter(InPacket packet) {
         // [04 00 45 72 69 63] [21 4E 00 00] [4B 75 00 00] [8A DE 0F 00] [A2 2C 10 00] [85 5B 10 00] [F0 DD 13 00] [07 00 00 00] [06 00 00 00] [06 00 00 00] [06 00 00 00]
-        if (loginState != 8) {
+        if (this.loginState != 8) {
             postClose();
             return;
         }
@@ -308,31 +298,63 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         
         String charName = packet.decodeString();
         int face = packet.decodeInt();
-        int hair = packet.decodeInt();
+        int hairStyle = packet.decodeInt();
         int clothes = packet.decodeInt();
         int pants = packet.decodeInt();
         int shoes = packet.decodeInt();
         int weapon = packet.decodeInt();
         
+        // Dice Roll information
+        int totStat = 0;
         for (int i = 0; i < 4; i++) {
-            stat.add(packet.decodeInt()); // STR, DEX, INT, LUK
+            int val = packet.decodeInt();
+            if (val < 4) {
+                ret = false;
+            } else {
+                totStat += val;
+            }
+            stat.add(val);
         }
+        if (totStat > 25)
+            ret = false;
         
-        // TODO: CheckCharName
+        // Check Character Name
+        if (!LoginApp.getInstance().checkCharName(charName, true))
+            ret = false;
         
-        // TODO: Check Character Equips
+        // Check Character Equips
+        if (!LoginApp.getInstance().checkCharEquip(this.gender, NewCharEquipType.Face, face) 
+                || !LoginApp.getInstance().checkCharEquip(this.gender, NewCharEquipType.HairStyle, hairStyle) 
+                || !LoginApp.getInstance().checkCharEquip(this.gender, NewCharEquipType.Clothes, clothes)
+                || !LoginApp.getInstance().checkCharEquip(this.gender, NewCharEquipType.Pants, pants)
+                || !LoginApp.getInstance().checkCharEquip(this.gender, NewCharEquipType.Shoes, shoes)
+                || !LoginApp.getInstance().checkCharEquip(this.gender, NewCharEquipType.Weapon, weapon))
+            ret = false;
         
         WorldEntry world = LoginApp.getInstance().getWorld(this.worldID);
         if (ret && world != null && world.getSocket() != null) {
-            // TODO: Insert into DB
+            final int level = 1;
+            final int job = JobAccessor.Novice.getJob();
+            final int map = 0;
+            final Pointer<Integer> newCharacterID = new Pointer<>(0);
             
-            Avatar avatar = new Avatar();
-            sendPacket(LoginPacket.onCreateNewCharacterResult((byte) 0, avatar), false);
+            CharacterData character = null;
+            int result = LoginDB.rawCreateNewCharacter(this.accountID, this.worldID, charName, this.gender, face, 0, hairStyle, level, job, clothes, pants, shoes, weapon, stat, map, newCharacterID);
+            if (result == 1) {
+                character = LoginDB.rawLoadCharacter(newCharacterID.get());
+                result = 0;
+                // Best way to always have the login's SN up-to-date.
+                LoginApp.getInstance().updateItemInitSN();
+            }
+            
+            sendPacket(LoginPacket.onCreateNewCharacterResult(result, character), false);
         }
+        
+        stat.clear();
     }
     
     public void onDeleteCharacter(InPacket packet) {
-        if (loginState != 8) {
+        if (this.loginState != 8) {
             postClose();
             return;
         }
@@ -340,27 +362,27 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         boolean ret = true;//does only the client validate this? o.O
         
         if (ret) {
-            // TODO: Remove from DB
+            int result = 0;//TODO: LoginDB.rawDeleteCharacter
             
-            sendPacket(LoginPacket.onDeleteCharacterResult(characterId, (byte) 0), false);
+            sendPacket(LoginPacket.onDeleteCharacterResult(characterId, result), false);
         }
     }
     
     public void onSelectCharacter(InPacket packet) {
-        if (loginState == 8) {
-            characterID = packet.decodeInt();
+        if (this.loginState == 8) {
+            this.characterID = packet.decodeInt();
             
-            if (!characters.containsKey(characterID)) {
+            if (!this.characters.containsKey(this.characterID)) {
                 closeSocket();
                 return;
             }
             
-            WorldEntry pWorld = LoginApp.getInstance().getWorld(worldID);
+            WorldEntry pWorld = LoginApp.getInstance().getWorld(this.worldID);
             if (pWorld != null) {
-                loginState = 9;
+                this.loginState = 9;
                 
-                // TODO: Handle addresses for each WorldEntry.
-                sendPacket(LoginPacket.onSelectCharacterResult((byte) 1, Utilities.netIPToInt32("127.0.0.1"), (short) 8585, characterID), false);
+                short port = 8585;//TODO: Get proper port from channel..
+                sendPacket(LoginPacket.onSelectCharacterResult(1, Utilities.netIPToInt32(pWorld.getSocket().getAddr()), port, this.characterID), false);
             }
         } else {
             postClose();
@@ -371,7 +393,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         this.worldID = packet.decodeByte();
         this.channelID = packet.decodeByte();
         
-        WorldEntry pWorld = LoginApp.getInstance().getWorld(worldID);
+        WorldEntry pWorld = LoginApp.getInstance().getWorld(this.worldID);
         if (pWorld != null) {
             List<Integer> characterId = new ArrayList<>();
             int count = LoginDB.rawGetWorldCharList(this.accountID, this.worldID, characterId);
@@ -379,10 +401,10 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             List<CharacterData> avatars = new ArrayList<>();
             for (int i = 0; i < count; i++) {
                 avatars.add(LoginDB.rawLoadCharacter(characterId.get(i)));
-                characters.put(characterId.get(i), avatars.get(i).getCharacterStat().getName());
+                this.characters.put(characterId.get(i), avatars.get(i).getCharacterStat().getName());
             }
             
-            loginState = 8;
+            this.loginState = 8;
             sendPacket(LoginPacket.onSelectWorldResult(1, avatars), false);
         } else {
             Logger.logError("User %s attempting to connect to offline world %d", this.nexonClubID, this.worldID);
@@ -408,7 +430,19 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
         }
         if (type == ClientPacket.AliveAck) {
-            sendPacket(onAliveReq(packet.decodeInt()), false);
+            // This is always the same value that was sent in the request.
+            // When sending an aliveReq from this responses time, it causes
+            // the client to flood acks in millisecond intervals..
+            int time = packet.decodeInt();
+            //Logger.logReport("[AliveAck] Requested Time: %d", time);
+        } else if (type == ClientPacket.AliveAck2) {
+            // This ack is always received first. If there is no response,
+            // the client will continue to only respond with this packet.
+            // Once we send an aliveReq, the client will begin to send
+            // both AliveAck and AliveAck2 requests with the same timestamps.
+            int time = packet.decodeInt();
+            sendPacket(onAliveReq(time), false);
+            //Logger.logReport("[AliveAck2] Received Time: %d", time);
         } else if (type >= ClientPacket.BEGIN_SOCKET && type <= ClientPacket.END_SOCKET) {
             switch (type) {
                 case ClientPacket.CheckPassword:
@@ -447,7 +481,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         this.processed = false;
         this.ipCheckRequestSent = 0;
         this.tempBlockedIP = false;
-        this.premium = false;
         if (this.loginState == loginState) {
             ++this.failCount;
             if (this.failCount > 5)

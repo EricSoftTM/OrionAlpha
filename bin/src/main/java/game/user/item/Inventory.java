@@ -17,6 +17,7 @@
  */
 package game.user.item;
 
+import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
@@ -132,10 +133,55 @@ public class Inventory {
         if (item == null) {
             return;
         }
-        // TODO: Equipping items.
+        if (pos2 == -BodyPart.Pants) { // unequip the overall
+            ItemSlotBase top = user.getCharacter().getItem(ItemType.Equip, BodyPart.Clothes);
+            if (top != null && ItemAccessor.isLongCoat(top.getItemID())) {
+                if (Inventory.getRoomCountInSlot(user, ItemType.Equip) == 0) {
+                    return;
+                }
+                int pos = user.getCharacter().findEmptySlotPosition(ItemType.Equip);
+                unequip(user, -BodyPart.Clothes, pos, changeLog);
+            }
+        } else if (pos2 == -BodyPart.Clothes) {
+            ItemSlotBase bottom = user.getCharacter().getItem(ItemType.Equip, BodyPart.Pants);
+            if (bottom != null && ItemAccessor.isLongCoat(item.getItemID())) {
+                if (Inventory.getRoomCountInSlot(user, ItemType.Equip) == 0) {
+                    return;
+                }
+                int pos = user.getCharacter().findEmptySlotPosition(ItemType.Equip);
+                unequip(user, -BodyPart.Pants, pos, changeLog);
+            }
+        } else if (pos2 == -BodyPart.Shield) {// check if weapon is two-handed
+            ItemSlotBase weapon = user.getCharacter().getItem(ItemType.Equip, BodyPart.Weapon);
+            if (weapon != null && ItemInfo.isTwoHanded(weapon.getItemID())) {
+                if (Inventory.getRoomCountInSlot(user, ItemType.Equip) == 0) {
+                    return;
+                }
+                int pos = user.getCharacter().findEmptySlotPosition(ItemType.Equip);
+                unequip(user, -BodyPart.Weapon, pos, changeLog);
+            }
+        } else if (pos2 == -BodyPart.Weapon) {
+            ItemSlotBase shield = user.getCharacter().getItem(ItemType.Equip, BodyPart.Shield);
+            if (shield != null && ItemInfo.isTwoHanded(item.getItemID())) {
+                if (Inventory.getRoomCountInSlot(user, ItemType.Equip) == 0) {
+                    return;
+                }
+                int pos = user.getCharacter().findEmptySlotPosition(ItemType.Equip);
+                unequip(user, -BodyPart.Shield, pos, changeLog);
+            }
+        }
+        ItemSlotEquip itemSlot = (ItemSlotEquip) user.getCharacter().getItem(ItemType.Equip, pos2);
+        user.getCharacter().setItem(ItemType.Equip, pos1, itemSlot);
+        user.getCharacter().setItem(ItemType.Equip, pos2, item);
+        InventoryManipulator.insertChangeLog(changeLog, ChangeLog.Position, ItemType.Equip, pos2, item, pos1, (short) 0);
+        
+        //if (pUser.secondaryStat.GetStatOption(CharacterTemporaryStat.Booster) != 0 && ItemConstants.isWeapon(pItem.nItemID)) {
+        //    pUser.SendTemporaryStatReset(pUser.secondaryStat.ResetByCTS(CharacterTemporaryStat.Booster));
+        //}
+        user.validateStat(false);
     }
     
-    private static void unequip(User user, short pos1, short pos2, List<ChangeLog> changeLog) {
+    private static void unequip(User user, int pos1, int pos2, List<ChangeLog> changeLog) {
         ItemSlotEquip source = (ItemSlotEquip) user.getCharacter().getItem(ItemType.Equip, pos1);
         ItemSlotEquip target = (ItemSlotEquip) user.getCharacter().getItem(ItemType.Equip, pos2);
         if (pos2 < 0) {
@@ -152,12 +198,31 @@ public class Inventory {
         if (target != null) {
             user.getCharacter().setItem(ItemType.Equip, pos2, null);
         }
-        user.getCharacter().setItem(ItemType.Equip, pos1, source);
+        user.getCharacter().setItem(ItemType.Equip, pos2, source);
         if (target != null) {
             user.getCharacter().setItem(ItemType.Equip, pos1, target);
         }
-        InventoryManipulator.insertChangeLog(changeLog, ChangeLog.Position, ItemType.Equip, pos2, source, pos1, (short) 0);
+        InventoryManipulator.insertChangeLog(changeLog, ChangeLog.Position, ItemType.Equip, (short) pos2, source, (short) pos1, (short) 0);
         user.validateStat(false);
+    }
+    
+    public static byte getRoomCountInSlot(User user, int ti) {
+        if (user.lock()) {
+            try {
+                byte count = 0;
+                int slotCount = user.getCharacter().getItemSlotCount(ti);
+                if (slotCount >= 1) {
+                    for (int i = 1; i <= slotCount; i++) {
+                        if (user.getCharacter().getItemSlot(ti).get(i) == null)
+                            ++count;
+                    }
+                }
+                return count;
+            } finally {
+                user.unlock();
+            }
+        }
+        return 0;
     }
     
     public static boolean rawRemoveItem(User user, byte ti, short pos, short count, List<ChangeLog> changeLog, Pointer<Integer> decRet, Pointer<ItemSlotBase> itemRemoved) {

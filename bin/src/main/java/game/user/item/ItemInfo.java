@@ -164,6 +164,21 @@ public class ItemInfo {
         }
         return false;
     }
+    
+    public static boolean isTwoHanded(int itemID) {
+        int weaponType = itemID / 10000 % 100;
+        /*
+            TowHand_Sword(40),
+            TowHand_Axe(41),
+            TowHand_Mace(42),
+            Spear(43),
+            PoleArm(44),
+            Bow(45),
+            CrossBow(46),
+            ThrowingGloves(47),
+        */
+        return weaponType >= 40 && weaponType <= 47;
+    }
 
     public static void load() {
         Logger.logReport("Loading Equip Info");

@@ -44,6 +44,10 @@ public class ItemAccessor {
         return itemID / 10000 == 207; // lol throwing stars xd
     }
     
+    public static boolean isLongCoat(int itemID) {
+        return itemID / 10000 == 105;
+    }
+    
     public static boolean isRechargeableItem(int itemID) {
         return isJavelinItem(itemID);
     }

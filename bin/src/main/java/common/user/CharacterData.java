@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import network.packet.OutPacket;
-import util.Logger;
 
 /**
  *
@@ -38,8 +37,7 @@ public class CharacterData {
 
     static final int 
             BodyPartCount = BodyPart.BP_Count,
-            ItemTypeCount = ItemType.NO,
-            Sticker = BodyPart.Sticker
+            ItemTypeCount = ItemType.NO
     ;
 
     private final CharacterStat characterStat;
@@ -186,7 +184,7 @@ public class CharacterData {
                     ItemSlotBase item = equipped2.get(bodyPart);
                     if (item != null) {
                         if (item.getCashItemSN() == sn) {
-                            return -bodyPart - Sticker;
+                            return -bodyPart - BodyPartCount;
                         }
                     }
                 }
@@ -244,15 +242,15 @@ public class CharacterData {
     public ItemSlotBase getItem(byte ti, int pos) {
         if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
             if (ti == ItemType.Equip) {
-                if (pos != 0 && (pos >= -BodyPartCount || pos < -Sticker) && pos <= getItemSlotCount(ItemType.Equip) && pos >= -Sticker - BodyPartCount) {
-                    if (pos >= -Sticker) {
+                if (pos != 0 && (pos >= -BodyPartCount || pos < -BodyPartCount) && pos <= getItemSlotCount(ItemType.Equip) && pos >= -BodyPartCount - BodyPartCount) {
+                    if (pos >= -BodyPartCount) {
                         if (pos >= 0) {
                             return itemSlot.get(ItemType.Equip).get(pos);
                         } else {
                             return equipped.get(-pos);
                         }
                     } else {
-                        return equipped2.get(-Sticker - pos);
+                        return equipped2.get(-BodyPartCount - pos);
                     }
                 }
             } else {
@@ -310,19 +308,17 @@ public class CharacterData {
             return false;
         }
         if (ti == ItemType.Equip) {
-            Logger.logReport("Moving item %d into pos %d", (item == null ? 0 : item.getItemID()), pos);
-            if (pos == 0 || pos < -BodyPartCount && pos >= -Sticker || pos > getItemSlotCount(ItemType.Equip) || pos < -Sticker - BodyPartCount) {
-                Logger.logError("Failed to set item %d into slot %d", (item == null ? 0 : item.getItemID()), pos);
+            if (pos == 0 || pos < -BodyPartCount && pos >= -BodyPartCount || pos > getItemSlotCount(ItemType.Equip) || pos < -BodyPartCount - BodyPartCount) {
                 return false;
             }
-            if (pos >= -Sticker) {
+            if (pos >= -BodyPartCount) {
                 if (pos >= 0) {
                     itemSlot.get(ti).set(pos, item);
                 } else {
                     equipped.set(-pos, item);
                 }
             } else {
-                equipped2.set(-Sticker - pos, item);
+                equipped2.set(-BodyPartCount - pos, item);
             }
         } else {
             if (pos <= 0 || pos > getItemSlotCount(ti)) {

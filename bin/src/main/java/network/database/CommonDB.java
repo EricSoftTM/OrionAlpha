@@ -191,7 +191,7 @@ public class CommonDB {
                             if (item.getCashItemSN() > 0) {
                                 removeCashSN += item.getCashItemSN() + ", ";
                             }
-                            Database.execute(con, ps, characterID, -pos - BodyPart.Sticker, item.getItemID(), item.ruc, item.cuc, item.iSTR, item.iDEX, item.iINT, item.iLUK, item.iMaxHP, item.iMaxMP, item.iPAD, item.iMAD, item.iPDD, item.iMDD, item.iACC, item.iEVA, item.iCraft, item.iSpeed, item.iJump, item.getDateExpire().fileTimeToLong(), item.getSN(), item.getCashItemSN());
+                            Database.execute(con, ps, characterID, -pos - BodyPart.BP_Count, item.getItemID(), item.ruc, item.cuc, item.iSTR, item.iDEX, item.iINT, item.iLUK, item.iMaxHP, item.iMaxMP, item.iPAD, item.iMAD, item.iPDD, item.iMDD, item.iACC, item.iEVA, item.iCraft, item.iSpeed, item.iJump, item.getDateExpire().fileTimeToLong(), item.getSN(), item.getCashItemSN());
                         }
                     }
                 }

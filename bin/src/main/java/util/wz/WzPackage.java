@@ -18,6 +18,7 @@
 package util.wz;
 
 import java.io.File;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -70,5 +71,25 @@ public class WzPackage {
         }
         
         return prop;
+    }
+    
+    public final void release() {
+        for (Iterator<Map.Entry<String, WzPackage>> it = children.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<String, WzPackage> p = it.next();
+            if (p != null && p.getValue() != null) {
+                p.getValue().release();
+            }
+            it.remove();
+        }
+        for (Iterator<Map.Entry<String, WzProperty>> it = entries.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<String, WzProperty> p = it.next();
+            if (p != null && p.getValue() != null) {
+                p.getValue().release();
+            }
+            it.remove();
+        }
+        
+        this.children.clear();
+        this.entries.clear();
     }
 }

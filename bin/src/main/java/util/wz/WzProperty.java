@@ -35,6 +35,7 @@ import org.xml.sax.SAXException;
 public class WzProperty {
     private File file;
     private Node node;
+    private List<WzProperty> props;
     
     public WzProperty(File file) {
         this.file = file;
@@ -55,7 +56,11 @@ public class WzProperty {
     }
     
     public List<WzProperty> getChildNodes() {
-        List<WzProperty> props = new ArrayList<>();
+        if (props == null) {
+            props = new ArrayList<>();
+        } else {
+            props.clear();
+        }
         
         NodeList nodes = node.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -152,5 +157,25 @@ public class WzProperty {
             return new WzProperty(parent);
         }
         return null;
+    }
+    
+    public final void release() {
+        int children = node.getChildNodes().getLength();
+        if (children > 0) {
+            for (int i = 0; i < children; i++) {
+                Node child = node.getChildNodes().item(i);
+                if (child != null) {
+                    node.removeChild(node.getChildNodes().item(i));
+                }
+            }
+        }
+        
+        if (props != null) {
+            props.clear();
+        }
+        
+        this.node = null;
+        this.file = null;
+        this.props = null;
     }
 }

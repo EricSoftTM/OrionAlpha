@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import network.database.CommonDB;
 import network.database.GameDB;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
@@ -1453,7 +1454,7 @@ public class User extends Creature {
                             GameDB.rawSaveSkillRecord(getCharacterID(), character.getSkillRecord());
                         }
                         if ((characterDataModFlag & DBChar.ItemSlotEquip) != 0) {
-                            GameDB.rawUpdateItemEquip(characterID, character.getEquipped(), character.getEquipped2(), character.getItemSlot().get(ItemType.Equip));
+                            CommonDB.rawUpdateItemEquip(characterID, character.getEquipped(), character.getEquipped2(), character.getItemSlot().get(ItemType.Equip));
                         }
                         if ((characterDataModFlag & DBChar.ItemSlotConsume) != 0 || (characterDataModFlag & DBChar.ItemSlotInstall) != 0 
                                 || (characterDataModFlag & DBChar.ItemSlotEtc) != 0) {

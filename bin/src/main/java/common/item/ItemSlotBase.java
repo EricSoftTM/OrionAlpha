@@ -49,7 +49,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
      * @param slotType The ItemSlotType of the item to construct
      * @return A new constructed Item type base
      */
-    public static ItemSlotBase CreateItem(int slotType) {
+    public static ItemSlotBase createItem(int slotType) {
         ItemSlotBase item = null;
         switch (slotType) {
             case ItemSlotType.Equip:

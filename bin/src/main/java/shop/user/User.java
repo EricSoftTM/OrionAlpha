@@ -18,7 +18,6 @@
 package shop.user;
 
 import common.item.ItemSlotBase;
-import static common.item.ItemSlotBase.CreateItem;
 import common.item.ItemSlotBundle;
 import common.item.ItemSlotEquip;
 import common.item.ItemSlotType;
@@ -35,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import network.database.CommonDB;
 import network.database.ShopDB;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
@@ -311,9 +311,10 @@ public class User {
                         }
                         if ((modFlag & 0x2) != 0) {
                             // broken and unsure how cash SN will be handled, so leave saving for the end!
-                            //   ShopDB.rawUpdateItemLocker(this.characterID, this.cashItemInfo);
+                            ShopDB.rawUpdateItemLocker(this.characterID, this.cashItemInfo);
                         }
                         if ((modFlag & 0x4) != 0) {
+                            CommonDB.rawUpdateItemEquip(this.characterID, null, null, this.character.getItemSlot(ItemType.Equip));
                             // update inventory when items taken out of cash locker
                         }
                         modFlag = 0;
@@ -384,6 +385,9 @@ public class User {
             this.modFlag |= 0x1 | 0x2;
             this.sendRemainCashRequest();
             sendPacket(ShopPacket.onBuyDone(cashItem));
+            
+            // Always keep the shop server's initSN up-to-date.
+            ShopApp.getInstance().updateItemInitSN();
         }
     }
 
@@ -443,9 +447,9 @@ public class User {
 
             ItemSlotBase item = null;
             if (ti == ItemType.Equip) {
-                item = (ItemSlotEquip) CreateItem(ItemSlotType.Equip);
+                item = (ItemSlotEquip) ItemSlotBase.createItem(ItemSlotType.Equip);
             } else if (ti == ItemType.Consume) {
-                item = (ItemSlotBundle) CreateItem(ItemSlotType.Bundle);
+                item = (ItemSlotBundle) ItemSlotBase.createItem(ItemSlotType.Bundle);
             }
             List<CashItemInfo> tempArray = new ArrayList<>();
             if (item != null) {
@@ -467,6 +471,7 @@ public class User {
                     }
                 }
                 this.cashItemInfo.removeAll(tempArray); // temp
+                this.modFlag |= 0x4;
                 character.setItem(ti, pos, item);
                 sendPacket(ShopPacket.onMoveLToS(pos, item, ti));
             }
@@ -494,7 +499,7 @@ public class User {
                 cashItem.setBuyCharacterID(item.getBuyCharacterID());
                 cashItem.setDateExpire(item.getDateExpire());
                 this.cashItemInfo.add(cashItem);
-              //  this.modFlag |= // add a flag to notify that item has left inventory for locker
+                this.modFlag |= 0x4;
                 this.character.setItem(ti, pos, null);
                 sendPacket(ShopPacket.onMoveSToL(cashItem));
             }

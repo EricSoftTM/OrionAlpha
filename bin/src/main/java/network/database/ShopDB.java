@@ -17,9 +17,6 @@
  */
 package network.database;
 
-import common.item.ItemSlotBundle;
-import common.item.ItemSlotEquip;
-import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.DBChar;
 import java.sql.Connection;
@@ -38,96 +35,14 @@ import util.FileTime;
  */
 public class ShopDB {
 
-    public static void rawGetInventorySize(int characterID, CharacterData cd) {
-        try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `inventorysize` WHERE `CharacterID` = ?")) {
-                ps.setInt(1, characterID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        String[] types = {"Equip", "Consume", "Install", "Etc"};
-                        for (int i = 1; i <= types.length; i++) {
-                            int count = rs.getInt(String.format("%sCount", types[i - 1]));
-                            for (int j = 0; j <= count; j++) {
-                                cd.getItemSlot(i).add(j, null);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-        }
-    }
-
-    public static void rawGetItemBundle(int characterID, CharacterData cd) {
-        try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemslotbundle` WHERE `CharacterID` = ? ORDER BY `SN`")) {
-                ps.setInt(1, characterID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        int itemID = rs.getInt("ItemID");
-                        int pos = rs.getInt("POS");
-                        byte ti = rs.getByte("TI");
-                        
-                        ItemSlotBundle item = new ItemSlotBundle(itemID);
-                        item.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpireDate")));
-                        item.setItemNumber(rs.getShort("Number"));
-                        
-                        cd.setItem(ti, pos, item);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-        }
-    }
-
-    public static void rawGetItemEquip(int characterID, CharacterData cd) {
-        try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemslotequip` WHERE `CharacterID` = ? ORDER BY `SN`")) {
-                ps.setInt(1, characterID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        int itemID = rs.getInt("ItemID");
-                        int pos = rs.getInt("POS");
-
-                        ItemSlotEquip item = new ItemSlotEquip(itemID);
-                        item.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpireDate")));
-                        item.ruc = rs.getByte("RUC");
-                        item.cuc = rs.getByte("CUC");
-                        item.iSTR = rs.getShort("I_STR");
-                        item.iDEX = rs.getShort("I_DEX");
-                        item.iINT = rs.getShort("I_INT");
-                        item.iLUK = rs.getShort("I_LUK");
-                        item.iMaxHP = rs.getShort("I_MaxHP");
-                        item.iMaxMP = rs.getShort("I_MaxMP");
-                        item.iPAD = rs.getShort("I_PAD");
-                        item.iMAD = rs.getShort("I_MAD");
-                        item.iPDD = rs.getShort("I_PDD");
-                        item.iMDD = rs.getShort("I_MDD");
-                        item.iACC = rs.getShort("I_ACC");
-                        item.iEVA = rs.getShort("I_EVA");
-                        item.iCraft = rs.getShort("I_Craft");
-                        item.iSpeed = rs.getShort("I_Speed");
-                        item.iJump = rs.getShort("I_Jump");
-
-                        cd.setItem(ItemType.Equip, pos, item);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-        }
-    }
-
     private static void rawGetItemLocker(User user) {
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemlocker` WHERE `AccountID` = ?")) {
                 ps.setInt(1, user.getAccountID());
                 try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
+                    while (rs.next()) {
                         CashItemInfo cashItemInfo = new CashItemInfo();
-                        cashItemInfo.setCashItemSN(rs.getInt("CashItemSN"));
+                        cashItemInfo.setCashItemSN(rs.getLong("CashItemSN"));
                         cashItemInfo.setAccountID(user.getAccountID());
                         cashItemInfo.setCharacterID(rs.getInt("CharacterID"));
                         cashItemInfo.setItemID(rs.getInt("ItemID"));
@@ -135,7 +50,7 @@ public class ShopDB {
                         cashItemInfo.setNumber(rs.getShort("Number"));
                         cashItemInfo.setBuyCharacterID(rs.getString("BuyCharacterID"));
                         cashItemInfo.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpiredDate")));
-                        user.GetCashItemInfo().add(cashItemInfo);
+                        user.getCashItemInfo().add(cashItemInfo);
                     }
                 }
             }
@@ -175,9 +90,9 @@ public class ShopDB {
                 }
             }
             // Load Items
-            rawGetInventorySize(characterID, cd);
-            rawGetItemEquip(characterID, cd);
-            rawGetItemBundle(characterID, cd);
+            CommonDB.rawGetInventorySize(characterID, cd);
+            CommonDB.rawGetItemEquip(characterID, cd);
+            CommonDB.rawGetItemBundle(characterID, cd);
 
             rawGetItemLocker(user);
             return cd;
@@ -209,8 +124,7 @@ public class ShopDB {
                 query += String.format(" AND `CashItemSN` NOT IN (%s)", removeCashSN.substring(0, removeCashSN.length() - 2));
             }
             try (PreparedStatement ps = con.prepareStatement(query)) {
-                ps.setInt(1, characterID);
-                ps.executeUpdate();
+                Database.execute(con, ps, characterID);
             }
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);

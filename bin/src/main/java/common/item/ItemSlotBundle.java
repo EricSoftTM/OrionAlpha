@@ -50,7 +50,7 @@ public class ItemSlotBundle extends ItemSlotBase {
     
     @Override
     public ItemSlotBase makeClone() {
-        ItemSlotBundle item = (ItemSlotBundle) CreateItem(ItemSlotType.Bundle);
+        ItemSlotBundle item = (ItemSlotBundle) createItem(ItemSlotType.Bundle);
         item.setItemID(this.getItemID());
         item.setItemSN(this.getSN());
         item.setItemNumber(this.getItemNumber());

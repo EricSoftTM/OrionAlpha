@@ -73,9 +73,10 @@ public class ItemSlotEquip extends ItemSlotBase {
     
     @Override
     public ItemSlotBase makeClone() {
-        ItemSlotEquip item = (ItemSlotEquip) CreateItem(ItemSlotType.Equip);
+        ItemSlotEquip item = (ItemSlotEquip) createItem(ItemSlotType.Equip);
         item.setItemID(this.getItemID());
         item.setCashItemSN(this.getCashItemSN());
+        item.setItemSN(this.getSN());
         item.setDateExpire(this.getDateExpire());
         
         // TODO: Re-assign cloned stats

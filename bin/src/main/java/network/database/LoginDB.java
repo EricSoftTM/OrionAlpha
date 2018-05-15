@@ -18,19 +18,24 @@
 package network.database;
 
 import common.OrionConfig;
-import common.item.ItemSlotEquip;
-import common.item.ItemType;
+import common.item.BodyPart;
+import common.item.ItemSlotBase;
 import common.user.CharacterData;
 import common.user.DBChar;
+import game.user.item.ItemInfo;
+import game.user.item.ItemVariationOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
-import login.avatar.Avatar;
 import login.user.ClientSocket;
+import login.user.item.Inventory;
 import network.security.BCrypt;
-import util.FileTime;
+import util.Logger;
+import util.Pointer;
 
 /**
  * Login DB Processing
@@ -39,8 +44,27 @@ import util.FileTime;
  */
 public class LoginDB {
     
+    public static boolean rawCheckDuplicateID(String id, int accountID) {
+        boolean nameUsed = true;
+        
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(`CharacterName`) FROM `character` WHERE `CharacterName` = ?")) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        nameUsed = rs.getInt(1) != 0;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        
+        return nameUsed;
+    }
+    
     public static int rawCheckPassword(String id, String passwd, ClientSocket socket) {
-        int retCode = 1; //Success
+        int retCode = 2; //DBFail
         
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` WHERE `LoginID` = ?")) {
@@ -57,6 +81,8 @@ public class LoginDB {
                                 socket.setAccountID(rs.getInt("AccountID"));
                                 socket.setGender(rs.getByte("Gender"));
                                 socket.setGradeCode(rs.getByte("GradeCode"));
+                                
+                                retCode = 1; //Success
                             }
                         } else {
                             retCode = 4; //IncorrectPassword
@@ -67,7 +93,6 @@ public class LoginDB {
                 }
             }
         } catch (SQLException ex) {
-            retCode = 2; //DBFail
             ex.printStackTrace(System.err);
         }
         
@@ -75,7 +100,7 @@ public class LoginDB {
     }
     
     public static int rawCheckUserConnected(int accountID) {
-        int retCode = 1; //Success
+        int retCode = 2; //DBFail
         
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT `ConnectIP` FROM `userconnection` WHERE `AccountID` = ?")) {
@@ -83,11 +108,71 @@ public class LoginDB {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         retCode = 6; //AlreadyConnected
+                    } else {
+                        retCode = 1; //Success
                     }
                 }
             }
         } catch (SQLException ex) {
-            retCode = 2; //DBFail
+            ex.printStackTrace(System.err);
+        }
+        
+        return retCode;
+    }
+    
+    public static int rawCreateNewCharacter(int accountID, int worldIdx, String characterName, int gender, int face, int skin, int hair, int level, int job, int clothes, int pants, int shoes, int weapon, List<Integer> stats, int map, Pointer<Integer> characterID) {
+        int retCode = 2; //DBFail
+        int result;
+        
+        try (Connection con = Database.getDB().poolConnection()) {
+            // Construct the new character
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO `character` (`AccountID`, `WorldID`, `CharacterName`, `Gender`, `Skin`, `Face`, `Hair`, `Level`, `Job`, `STR`, `DEX`, `INT`, `LUK`, `Map`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+                result = Database.execute(con, ps, accountID, worldIdx, characterName, gender, skin, face, hair, level, job, stats.get(0), stats.get(1), stats.get(2), stats.get(3), map);
+                
+                if (result >= 0) {
+                    retCode = 1; //Success
+                }
+                
+                try (ResultSet rs = ps.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        characterID.set(rs.getInt(1));
+                    } else {
+                        retCode = 2; //DBFail
+                    }
+                }
+            }
+            if (retCode == 1) {
+                // Initialize their inventory size
+                try (PreparedStatement ps = con.prepareStatement("INSERT INTO `inventorysize` (`CharacterID`) VALUES (?)")) {
+                    result = Database.execute(con, ps, characterID.get());
+                    if (result <= 0) {
+                        retCode = 2; //DBFail
+                    }
+                }
+                // Construct their Avatar, make equipment
+                if (retCode == 1) {
+                    List<ItemSlotBase> equipped = new ArrayList<>();
+                    for (int i = 0; i <= BodyPart.BP_Count; i++) {
+                        if (i == BodyPart.Clothes && clothes != 0) {
+                            equipped.add(i, ItemInfo.getItemSlot(clothes, ItemVariationOption.None));
+                            Inventory.getNextSN(equipped.get(i), false);
+                        } else if (i == BodyPart.Pants && pants != 0) {
+                            equipped.add(i, ItemInfo.getItemSlot(pants, ItemVariationOption.None));
+                            Inventory.getNextSN(equipped.get(i), false);
+                        } else if (i == BodyPart.Shoes && shoes != 0) {
+                            equipped.add(i, ItemInfo.getItemSlot(shoes, ItemVariationOption.None));
+                            Inventory.getNextSN(equipped.get(i), false);
+                        } else if (i == BodyPart.Weapon && weapon != 0) {
+                            equipped.add(i, ItemInfo.getItemSlot(weapon, ItemVariationOption.None));
+                            Inventory.getNextSN(equipped.get(i), false);
+                        } else {
+                            equipped.add(i, null);
+                        }
+                    }
+                    CommonDB.rawUpdateItemEquip(characterID.get(), equipped, null, null);
+                }
+            }
+        } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
         
@@ -115,65 +200,6 @@ public class LoginDB {
         return count;
     }
     
-    public static void rawGetInventorySize(int characterID, CharacterData cd) {
-        try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `inventorysize` WHERE `CharacterID` = ?")) {
-                ps.setInt(1, characterID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        String[] types = {"Equip", "Consume", "Install", "Etc" };
-                        for (int i = 1; i <= types.length; i++) {
-                            int count = rs.getInt(String.format("%sCount", types[i - 1]));
-                            for (int j = 0; j <= count; j++) {
-                                cd.getItemSlot(i).add(j, null);
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-        }
-    }
-    
-    public static void rawGetItemEquip(int characterID, CharacterData cd) {
-        try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemslotequip` WHERE `CharacterID` = ? ORDER BY `SN`")) {
-                ps.setInt(1, characterID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        int itemID = rs.getInt("ItemID");
-                        int pos = rs.getInt("POS");
-                        
-                        ItemSlotEquip item = new ItemSlotEquip(itemID);
-                        item.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpireDate")));
-                        item.ruc = rs.getByte("RUC");
-                        item.cuc = rs.getByte("CUC");
-                        item.iSTR = rs.getShort("I_STR");
-                        item.iDEX = rs.getShort("I_DEX");
-                        item.iINT = rs.getShort("I_INT");
-                        item.iLUK = rs.getShort("I_LUK");
-                        item.iMaxHP = rs.getShort("I_MaxHP");
-                        item.iMaxMP = rs.getShort("I_MaxMP");
-                        item.iPAD = rs.getShort("I_PAD");
-                        item.iMAD = rs.getShort("I_MAD");
-                        item.iPDD = rs.getShort("I_PDD");
-                        item.iMDD = rs.getShort("I_MDD");
-                        item.iACC = rs.getShort("I_ACC");
-                        item.iEVA = rs.getShort("I_EVA");
-                        item.iCraft = rs.getShort("I_Craft");
-                        item.iSpeed = rs.getShort("I_Speed");
-                        item.iJump = rs.getShort("I_Jump");
-                        
-                        cd.setItem(ItemType.Equip, pos, item);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-        }
-    }
-    
     public static int rawGetWorldCharList(int accountID, int worldID, List<Integer> characterID) {
         int count = 0;
         
@@ -195,47 +221,30 @@ public class LoginDB {
         return count;
     }
     
-    public static void rawLoadAvatar(int accountID, int worldID, List<Avatar> avatars) {
-        try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `AccountID` = ? AND `WorldID` = ?")) {
-                ps.setInt(1, accountID);
-                ps.setInt(2, worldID);
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        Avatar avatar = new Avatar();
-                        avatar.getCharacterStat().load(rs);
-                        
-                        avatar.load(accountID, avatar.getCharacterStat().getCharacterID());
-                        
-                        avatars.add(avatar);
-                    }
-                }
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-        }
-    }
-    
     public static CharacterData rawLoadCharacter(int characterID) {
+        CharacterData cd = null;
+        
         try (Connection con = Database.getDB().poolConnection()) {
-            CharacterData cd = new CharacterData();
             // Load Stats
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `CharacterID` = ?")) {
                 ps.setInt(1, characterID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
+                        cd = new CharacterData();
                         cd.load(rs, DBChar.Character);
+                    } else {
+                        return cd;
                     }
                 }
             }
             // Load Items
-            rawGetInventorySize(characterID, cd);
-            rawGetItemEquip(characterID, cd);
+            CommonDB.rawGetInventorySize(characterID, cd);
+            CommonDB.rawGetItemEquip(characterID, cd);
             return cd;
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
         
-        return null;
+        return cd;
     }
 }

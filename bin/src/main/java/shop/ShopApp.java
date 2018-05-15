@@ -30,6 +30,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import network.ShopAcceptor;
+import network.database.CommonDB;
 import network.database.Database;
 import util.Logger;
 import util.wz.WzFileSystem;
@@ -44,10 +45,10 @@ import util.wz.WzUtil;
 public class ShopApp implements Runnable {
 
     private ShopAcceptor acceptor;
-    private final AtomicLong cashItemInitSN;
     private final Map<Long, Commodity> commodity;
     private int connectionLimit;
     private String ip;
+    private final AtomicLong cashItemInitSN;
     private final AtomicLong itemInitSN;
     private final Lock lockCashItemSN;
     private final Lock lockItemSN;
@@ -60,6 +61,7 @@ public class ShopApp implements Runnable {
     private static final ShopApp instance = new ShopApp();
 
     public ShopApp() {
+        this.worldID = -2;//ShopSvr
         this.waitingFirstPacket = 1000 * 15;
         this.connectionLimit = 1000;
         this.serverStartTime = System.currentTimeMillis();
@@ -119,7 +121,7 @@ public class ShopApp implements Runnable {
     public final long getNextCashSN() {
         lockCashItemSN.lock();
         try {
-            final long cashItemSN = cashItemInitSN.incrementAndGet();
+            final long cashItemSN = cashItemInitSN.decrementAndGet();
 
             return cashItemSN;
         } finally {
@@ -130,9 +132,7 @@ public class ShopApp implements Runnable {
     public final long getNextSN() {
         lockItemSN.lock();
         try {
-            final long itemSN = itemInitSN.incrementAndGet();
-
-            return itemSN;
+            return itemInitSN.get();
         } finally {
             lockItemSN.unlock();
         }
@@ -175,8 +175,8 @@ public class ShopApp implements Runnable {
                 commodity.put(comm.getSN(), comm);
             }
             Logger.logReport("Loaded Commodity in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
         }
     }
 
@@ -202,7 +202,7 @@ public class ShopApp implements Runnable {
     }
 
     private void initializeItemSN() {
-        //ShopDB.rawLoadItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
+        CommonDB.rawLoadItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
     }
 
     @Override
@@ -215,6 +215,6 @@ public class ShopApp implements Runnable {
     }
 
     public void updateItemInitSN() {
-        //ShopDB.rawUpdateItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
+        CommonDB.rawUpdateItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
     }
 }

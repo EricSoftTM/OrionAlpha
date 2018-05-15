@@ -36,6 +36,7 @@ import game.field.life.npc.NpcTemplate;
 import game.user.item.ItemInfo;
 import game.user.skill.SkillInfo;
 import network.GameAcceptor;
+import network.database.CommonDB;
 import network.database.Database;
 import network.database.GameDB;
 import util.Logger;
@@ -209,7 +210,7 @@ public class GameApp implements Runnable {
     }
     
     private void initializeItemSN() {
-        GameDB.rawLoadItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
+        CommonDB.rawLoadItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
     }
     
     public static void main(String[] args) {
@@ -235,6 +236,6 @@ public class GameApp implements Runnable {
     }
     
     public void updateItemInitSN() {
-        GameDB.rawUpdateItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
+        CommonDB.rawUpdateItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
     }
 }

@@ -27,6 +27,9 @@ import game.field.life.Controller;
 import game.field.life.MoveAbility;
 import game.field.life.mob.MobDamageLog.Info;
 import game.user.User;
+import game.user.skill.SkillEntry;
+import game.user.skill.SkillLevelData;
+import game.user.skill.Skills.*;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -324,6 +327,39 @@ public class Mob extends Creature {
         }
         this.nextAttackPossible = nextAttackPossible;
         return true;
+    }
+    
+    public void onMobStatChangeSkill(User user, SkillEntry skill, byte slv, int damageSum) {
+        SkillLevelData level = skill.getLevelData(slv);
+        int prop = level.getProp();
+        int skillID = skill.getSkillID();
+        if (prop == 0) {
+            prop = 100;
+        }
+        if (Rand32.genRandom() % 100 >= prop) {
+            return;
+        }
+        
+        switch (skillID) {
+            case Wizard2.ColdBeam: {
+                break;
+            }
+            case Hunter.ArrowBomb:
+            case Thief.Steal: {
+                break;
+            }
+            case Wizard1.PoisonBreath: {
+                break;
+            }
+            case Wizard1.Slow:
+            case Wizard2.Slow: {
+                break;
+            }
+            case Page.Threaten:
+            case Rogue.Disorder: {
+                break;
+            }
+        }
     }
     
     public void sendChangeControllerPacket(User user, byte level) {

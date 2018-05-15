@@ -56,19 +56,19 @@ public class WvsContext {
         return packet;
     }
     
-    public static OutPacket onStatChanged(byte onExclRequest, CharacterStat cs, SecondaryStat ss, int flag) {
+    public static OutPacket onStatChanged(byte onExclRequest, CharacterStat cs, int flag) {
         OutPacket packet = new OutPacket(LoopbackPacket.StatChanged);
         packet.encodeByte(onExclRequest);
-        if (cs != null) {
-            cs.encodeChangeStat(packet, flag);
-        } else {
-            packet.encodeInt(0);
-        }
-        if (ss != null) {
-            ss.encodeForLocal(packet);
-        } else {
-            packet.encodeInt(0);
-        }
+        cs.encodeChangeStat(packet, flag);
+        packet.encodeInt(0);//EncodeForLocal
+        return packet;
+    }
+    
+    public static OutPacket onTemporaryStatSet(byte onExclRequest, SecondaryStat ss, int flag) {
+        OutPacket packet = new OutPacket(LoopbackPacket.TemporaryStatSet);
+        packet.encodeByte(onExclRequest);
+        packet.encodeInt(0);//EncodeChangeStat
+        ss.encodeForLocal(packet, flag);
         return packet;
     }
     

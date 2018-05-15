@@ -103,19 +103,19 @@ public class SkillLevelData {
         this.mdd = mdd;
     }
 
-    public int getAcc() {
+    public int getACC() {
         return acc;
     }
 
-    public void setAcc(int acc) {
+    public void setACC(int acc) {
         this.acc = acc;
     }
 
-    public int getEva() {
+    public int getEVA() {
         return eva;
     }
 
-    public void setEva(int eva) {
+    public void setEVA(int eva) {
         this.eva = eva;
     }
 

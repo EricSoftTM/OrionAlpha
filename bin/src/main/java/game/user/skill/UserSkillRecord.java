@@ -21,7 +21,6 @@ import common.user.DBChar;
 import game.user.User;
 import java.util.ArrayList;
 import java.util.List;
-import util.Logger;
 
 /**
  *
@@ -35,74 +34,50 @@ public class UserSkillRecord {
                 if (user.getHP() == 0) {
                     return false;
                 }
-                /*if (!SkillInfo.getInstance().isSkillVisible(user.getCharacter(), skillID, null)) {
-                    Logger.logError("[SkillHack] %s trying to increase invisible skill level", user.getCharacterName());
+                int skillRoot = skillID / 10000;
+                if (user.getCharacter().getCharacterStat().getSP() <= 0) {
                     return false;
                 }
-                int skillRoot = skillID / 10000;
-                if (!JobConstants.IsBeginnerJob(skillRoot)) {
-                    if (user.getCharacter().getCharacterStat().getSP() <= 0) {
-                        return false;
-                    }
-                    List<Integer> a = new ArrayList<>();
-                    SkillConstants.get_skill_root_from_job(user.character.characterStat.nJob, a);
-                    int i = 0;
-                    for (;;) {
-                        if (a.isEmpty())
-                            break;
-                        if (i >= a.size() || a.get(i) == skillRoot)
-                            break;
-                        ++i;
-                    }
-                    if (a.isEmpty() || i >= a.size())
-                        return false;
-                    a.clear();
-                } else {
-                    if (SkillConstants.get_novice_skill_point(user.character) <= 0)
-                        return false;
+                List<Integer> a = new ArrayList<>();
+                SkillAccessor.getSkillRootFromJob(user.getCharacter().getCharacterStat().getJob(), a);
+                int i = 0;
+                for (;;) {
+                    if (a.isEmpty())
+                        break;
+                    if (i >= a.size() || a.get(i) == skillRoot)
+                        break;
+                    ++i;
                 }
-                SkillEntry skillEntry = SkillInfo.GetInstance().GetSkill(skillID);
+                if (a.isEmpty() || i >= a.size())
+                    return false;
+                a.clear();
+                SkillEntry skillEntry = SkillInfo.getInstance().getSkill(skillID);
                 if (skillEntry == null) {
                     return false;
                 }
-                for (SkillRecord skill : skillEntry.lReqSkill) {
-                    if (!user.getCharacter().skillRecord.containsKey(skill.getSkillID()))
+                for (SkillRecord skill : skillEntry.getSkillRequirements()) {
+                    if (!user.getCharacter().getSkillRecord().containsKey(skill.getSkillID()))
                         return false;
-                    if (user.getCharacter().skillRecord.get(skill.getSkillID()) < skill.getInfo())
+                    if (user.getCharacter().getSkillRecord().get(skill.getSkillID()) < skill.getInfo())
                         return false;
                 }
-                int nSLV = 0;
-                if (user.getCharacter().skillRecord.containsKey(skillID))
-                    nSLV = user.getCharacter().skillRecord.get(skillID);
-                if (nSLV >= skillEntry.aLevelData.size()) {
+                int slv = 0;
+                if (user.getCharacter().getSkillRecord().containsKey(skillID))
+                    slv = user.getCharacter().getSkillRecord().get(skillID);
+                if (slv >= skillEntry.getLevelData().length) {
                     return false;
                 }
-                if ((skillRoot % 100) != 0 && !JobConstants.IsBeginnerJob(user.character.characterStat.nJob) && !JobConstants.IsExtendSPJob(user.character.characterStat.nJob)) {
-                    if (JobConstants.IsDualJob(user.character.characterStat.nJob)) {
-                        if (!CanSkillUpDualJob(user, skillEntry)) {
-                            return false;
-                        }
-                    } else {
-                        if (!CanSkillUp(user, skillEntry)) {
-                            return false;
-                        }
+                if ((skillRoot % 100) != 0) {
+                    if (!canSkillUp(user, skillEntry)) {
+                        return false;
                     }
                 }
-                int nMasterLevel = 0;
-                if (SkillConstants.IsSkillNeedMasterLevel(skillID)) {
-                    nMasterLevel = user.character.mSkillMasterLev.get(skillID);
-                    if (nMasterLevel < nSLV + 1)
-                        return false;
-                }
-                if (JobConstants.IsBeginnerJob(skillRoot))
-                    decSP = false;
-                if (decSP && !user.IncSP(-1, true))
+                if (decSP && !user.incSP(-1, true))
                     return false;
-                ++nSLV;*/
+                ++slv;
                 
-                int nSLV = user.getCharacter().getSkillRecord().getOrDefault(skillID, 0) + 1;
-                user.getCharacter().getSkillRecord().put(skillID, nSLV);
-                change.add(new SkillRecord(skillID, nSLV));
+                user.getCharacter().getSkillRecord().put(skillID, slv);
+                change.add(new SkillRecord(skillID, slv));
                 user.addCharacterDataMod(DBChar.SkillRecord);
                 return true;
             } finally {
@@ -110,5 +85,11 @@ public class UserSkillRecord {
             }
         }
         return false;
+    }
+    
+    private static boolean canSkillUp(User user, SkillEntry skill) {
+        // TODO: Calculate skill information to validate if they can raise SLV.
+        
+        return true;
     }
 }

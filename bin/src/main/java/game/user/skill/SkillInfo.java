@@ -62,7 +62,7 @@ public class SkillInfo {
             return true;
         }
 
-        return false;
+        return true;
     }
 
     public int getBundleItemMaxPerSlot(int itemID, CharacterData cd) {
@@ -187,8 +187,8 @@ public class SkillInfo {
             levelData.setMAD(WzUtil.getInt32(level.getNode("mad"), 0));
             levelData.setMDD(WzUtil.getInt32(level.getNode("mdd"), 0));
 
-            levelData.setAcc(WzUtil.getInt32(level.getNode("acc"), 0));
-            levelData.setEva(WzUtil.getInt32(level.getNode("eva"), 0));
+            levelData.setACC(WzUtil.getInt32(level.getNode("acc"), 0));
+            levelData.setEVA(WzUtil.getInt32(level.getNode("eva"), 0));
             levelData.setSpeed(WzUtil.getInt32(level.getNode("speed"), 0));
             levelData.setJump(WzUtil.getInt32(level.getNode("jump"), 0));
 

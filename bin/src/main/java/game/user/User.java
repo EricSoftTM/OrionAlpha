@@ -20,6 +20,7 @@ package game.user;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
+import common.item.ItemSlotType;
 import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
@@ -38,10 +39,13 @@ import game.field.life.AttackInfo;
 import game.field.life.mob.Mob;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
+import game.user.WvsContext.BroadcastMsg;
 import game.user.WvsContext.Request;
 import game.user.item.ChangeLog;
 import game.user.item.Inventory;
 import game.user.item.InventoryManipulator;
+import game.user.item.ItemInfo;
+import game.user.item.ItemVariationOption;
 import game.user.skill.SkillEntry;
 import game.user.skill.Skills.*;
 import game.user.skill.UserSkill;
@@ -1121,16 +1125,49 @@ public class User extends Creature {
                 } else {
                     character.getCharacterStat().setLevel((byte) 99);
                 }
-                sendPacket(WvsContext.onStatChanged(Request.None, character.getCharacterStat(), secondaryStat, CharacterStatType.LEV));
+                sendCharacterStat(Request.Excl, CharacterStatType.LEV);
             }
             if (arg[0].equals("!job")) {
                 if (arg.length > 1) {
                     character.getCharacterStat().setJob(Short.parseShort(arg[1]));
-                    sendPacket(WvsContext.onStatChanged(Request.None, character.getCharacterStat(), secondaryStat, CharacterStatType.Job));
+                    sendCharacterStat(Request.Excl, CharacterStatType.Job);
                 }
             }
             if (arg[0].equals("!fixme")) {
-                sendPacket(WvsContext.onStatChanged(Request.Excl, null, null, 0));
+                sendCharacterStat(Request.Excl, 0);
+            }
+            if (arg[0].equals("!drop") || arg[0].equals("!item")) {
+                if (arg.length > 1) {
+                    int itemID = Integer.parseInt(arg[1]);
+                    ItemSlotBase item = ItemInfo.getItemSlot(itemID, ItemVariationOption.Normal);
+                    String itemName = ItemInfo.getItemName(itemID);
+                    if (itemName.isEmpty())
+                        itemName = String.valueOf(itemID);
+                    if (item != null) {
+                        if (item.getType() == ItemSlotType.Bundle) {
+                            item.setItemNumber(ItemInfo.getBundleItem(itemID).getSlotMax());
+                        }
+                        if (arg[0].equals("!item")) {
+                            List<ChangeLog> changeLog = new ArrayList<>();
+                            InventoryManipulator.rawAddItem(character, ItemAccessor.getItemTypeIndexFromID(itemID), item, changeLog, null);
+                            sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
+                            characterDataModFlag |= ItemAccessor.getItemTypeFromTypeIndex(ItemAccessor.getItemTypeIndexFromID(itemID));
+                        } else {
+                            Reward reward = new Reward(RewardType.Item, item, 0, 0);
+                            getField().getDropPool().create(reward, characterID, 0, curPos.x, curPos.y, curPos.x, 0, 0, isGM(), 0);
+                        }
+                        sendSystemMessage("The item (" + itemName + ") has been successfully created.");
+                    } else {
+                        sendSystemMessage("The Item (" + itemName + ") does not exist.");
+                    }
+                }
+            }
+            if (arg[0].equals("!sp")) {
+                if (arg.length > 1) {
+                    short sp = Short.parseShort(arg[1]);
+                    character.getCharacterStat().setSP(sp);
+                    sendCharacterStat(Request.Excl, CharacterStatType.SP);
+                }
             }
         }
         
@@ -1230,7 +1267,11 @@ public class User extends Creature {
                     // TODO: Implement all the checks here..
                     // For now, we'll just simply deduct whatever damage was received.
                     
-                    incHP(-clientDamage, false);
+                    int flag = 0;
+                    if (incHP(-clientDamage, false)) {
+                        flag |= CharacterStatType.HP;
+                    }
+                    sendCharacterStat(Request.Excl, flag);
                 }
             } finally {
                 unlock();
@@ -1299,7 +1340,7 @@ public class User extends Creature {
         lock.lock();
         try {
             character.getCharacterStat().setMoney(character.getCharacterStat().getMoney() - character.getMoneyTrading());
-            sendPacket(WvsContext.onStatChanged(request, character.getCharacterStat(), null, flag));
+            sendPacket(WvsContext.onStatChanged(request, character.getCharacterStat(), flag));
             character.getCharacterStat().setMoney(character.getCharacterStat().getMoney() + character.getMoneyTrading());
         } finally {
             unlock();
@@ -1389,6 +1430,10 @@ public class User extends Creature {
         } finally {
             lockSocket.unlock();
         }
+    }
+    
+    public void sendSystemMessage(String msg) {
+        sendPacket(WvsContext.onBroadcastMsg(BroadcastMsg.Notice, msg));
     }
     
     public void setCommunity(String name) {
@@ -1489,12 +1534,28 @@ public class User extends Creature {
         }
     }
     
+    public void sendTemporaryStatSet(int set) {
+        if (set != 0) {
+            lock.lock();
+            try {
+                sendPacket(WvsContext.onTemporaryStatSet(Request.Excl, secondaryStat, set));
+                if (getField() != null) {
+                    getField().splitSendPacket(getSplit(), UserRemote.onTemporaryStatSet(characterID, secondaryStat, set), this);
+                }
+            } finally {
+                unlock();
+            }
+        }
+    }
+    
     public void sendTemporaryStatReset(int reset) {
         if (reset != 0) {
             lock.lock();
             try {
                 sendPacket(WvsContext.onTemporaryStatReset(reset));
-                // TODO: SecondaryStat.FilterForRemote, SplitSendPacket.
+                if (getField() != null) {
+                    getField().splitSendPacket(getSplit(), UserRemote.onResetTemporaryStat(characterID, reset), this);
+                }
             } finally {
                 unlock();
             }

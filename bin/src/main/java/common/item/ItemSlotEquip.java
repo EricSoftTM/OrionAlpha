@@ -79,7 +79,25 @@ public class ItemSlotEquip extends ItemSlotBase {
         item.setItemSN(this.getSN());
         item.setDateExpire(this.getDateExpire());
         
-        // TODO: Re-assign cloned stats
+        // TODO: Apply and use setters with this class.
+        item.ruc = this.ruc;
+        item.cuc = this.cuc;
+        item.iSTR = this.iSTR;
+        item.iDEX = this.iDEX;
+        item.iINT = this.iINT;
+        item.iLUK = this.iLUK;
+        item.iMaxHP = this.iMaxHP;
+        item.iMaxMP = this.iMaxMP;
+        item.iPAD = this.iPAD;
+        item.iMAD = this.iMAD;
+        item.iPDD = this.iPDD;
+        item.iMDD = this.iMDD;
+        item.iACC = this.iACC;
+        item.iEVA = this.iEVA;
+        item.iCraft = this.iCraft;
+        item.iSpeed = this.iSpeed;
+        item.iJump = this.iJump;
+        
         return item;
     }
     

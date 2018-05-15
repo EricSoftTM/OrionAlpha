@@ -50,10 +50,10 @@ public class UserRemote {
         return packet;
     }
     
-    public static OutPacket onSetTemporaryStat(int characterID, SecondaryStat ss) {
+    public static OutPacket onTemporaryStatSet(int characterID, SecondaryStat ss, int flag) {
         OutPacket packet = new OutPacket(LoopbackPacket.UserTemporaryStatSet);
         packet.encodeInt(characterID);
-        ss.encodeForRemote(packet, 0);
+        ss.encodeForRemote(packet, flag);
         return packet;
     }
     

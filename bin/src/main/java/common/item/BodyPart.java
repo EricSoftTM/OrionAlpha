@@ -40,7 +40,6 @@ public class BodyPart {
             Ring2       = 13,
             PetWear     = 14,
             BP_Count    = 14,
-            BP_END      = 15,
-            Sticker     = 100
+            BP_END      = 15
     ;
 }

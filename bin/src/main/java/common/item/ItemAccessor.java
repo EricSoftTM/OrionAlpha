@@ -26,6 +26,13 @@ import util.FileTime;
  */
 public class ItemAccessor {
     
+    public static int getWeaponType(int itemID) {
+        if (getItemTypeIndexFromID(itemID) == ItemType.Equip) {
+            return itemID / 10000 % 100;
+        }
+        return 0;
+    }
+    
     public static boolean isTreatSingly(ItemSlotBase p) {
         byte ti = getItemTypeIndexFromID(p.getItemID());
         return !isBundleTypeIndex(ti) || isRechargeableItem(p.getItemID()) || FileTime.compareFileTime(p.getDateExpire(), FileTime.END) < 0;

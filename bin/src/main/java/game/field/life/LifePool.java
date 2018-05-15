@@ -475,6 +475,15 @@ public class LifePool {
         }
     }
     
+    public void onMobStatChangeSkill(User user, int mobID, SkillEntry skill, byte slv) {
+        if (mobID != 0 && mobs.containsKey(mobID)) {
+            Mob mob = mobs.get(mobID);
+            if (mob != null) {
+                mob.onMobStatChangeSkill(user, skill, slv, 0);
+            }
+        }
+    }
+    
     public void onNpcPacket(User user, byte type, InPacket packet) {
         int npcID = packet.decodeInt();
         if (npcs.containsKey(npcID)) {

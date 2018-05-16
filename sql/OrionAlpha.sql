@@ -28,32 +28,32 @@ USE orionalpha;
 DROP TABLE IF EXISTS `character`;
 CREATE TABLE `character` (
   `CharacterID` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `AccountID` int(11) DEFAULT NULL,
-  `WorldID` tinyint(2) unsigned NOT NULL,
+  `AccountID` int(11) NOT NULL,
+  `WorldID` tinyint(2) unsigned NOT NULL DEFAULT 0,
   `CharacterName` varchar(13) NOT NULL,
-  `Gender` tinyint(1) unsigned NOT NULL,
-  `Skin` tinyint(2) unsigned NOT NULL,
-  `Face` int(11) unsigned NOT NULL,
-  `Hair` int(11) unsigned NOT NULL,
-  `Level` tinyint(4) unsigned NOT NULL,
-  `Job` int(11) unsigned NOT NULL,
-  `STR` int(11) unsigned NOT NULL,
-  `DEX` int(11) unsigned NOT NULL,
-  `INT` int(11) unsigned NOT NULL,
-  `LUK` int(11) unsigned NOT NULL,
-  `HP` int(11) unsigned NOT NULL,
-  `MP` int(11) unsigned NOT NULL,
-  `MaxHP` int(11) unsigned NOT NULL,
-  `MaxMP` int(11) unsigned NOT NULL,
-  `AP` int(11) unsigned NOT NULL,
-  `SP` int(11) unsigned NOT NULL,
-  `EXP` int(11) unsigned NOT NULL,
-  `POP` int(11) unsigned NOT NULL,
-  `Money` int(11) unsigned NOT NULL,
-  `Map` int(11) unsigned NOT NULL,
-  `Portal` tinyint(4) unsigned NOT NULL,
+  `Gender` tinyint(1) unsigned DEFAULT 0,
+  `Skin` tinyint(2) unsigned DEFAULT 0,
+  `Face` int(11) unsigned DEFAULT 0,
+  `Hair` int(11) unsigned DEFAULT 0,
+  `Level` tinyint(4) unsigned DEFAULT 1,
+  `Job` int(11) unsigned DEFAULT 0,
+  `STR` int(11) unsigned DEFAULT 4,
+  `DEX` int(11) unsigned DEFAULT 4,
+  `INT` int(11) unsigned DEFAULT 4,
+  `LUK` int(11) unsigned DEFAULT 4,
+  `HP` int(11) unsigned DEFAULT 50,
+  `MP` int(11) unsigned DEFAULT 5,
+  `MaxHP` int(11) unsigned DEFAULT 50,
+  `MaxMP` int(11) unsigned DEFAULT 5,
+  `AP` int(11) unsigned DEFAULT 0,
+  `SP` int(11) unsigned DEFAULT 0,
+  `EXP` int(11) unsigned DEFAULT 0,
+  `POP` int(11) unsigned DEFAULT 0,
+  `Money` int(11) unsigned DEFAULT 0,
+  `Map` int(11) unsigned DEFAULT 0,
+  `Portal` tinyint(4) unsigned DEFAULT 0,
   PRIMARY KEY (`CharacterID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `character`
@@ -61,8 +61,10 @@ CREATE TABLE `character` (
 
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
 INSERT INTO `character` (`CharacterID`,`AccountID`,`WorldID`,`CharacterName`,`Gender`,`Skin`,`Face`,`Hair`,`Level`,`Job`,`STR`,`DEX`,`INT`,`LUK`,`HP`,`MP`,`MaxHP`,`MaxMP`,`AP`,`SP`,`EXP`,`POP`,`Money`,`Map`,`Portal`) VALUES 
- (1,1,0,'Eric',0,0,20001,30000,30,110,100,200,300,400,999,999,999,999,5,10,1337,1337,9999990,104040000,2),
- (2,1,0,'Erica',1,0,21000,31000,42,230,999,999,999,999,30000,30000,30000,30000,5,10,1337,1337,9999990,104040000,2);
+ (1,1,0,'Eric',0,0,20001,30000,38,110,100,200,300,400,986,999,999,999,5,13,1337,1337,9999990,104040000,17),
+ (2,1,0,'Erica',1,0,21000,31000,42,230,999,999,999,999,30000,30000,30000,30000,5,10,1337,1337,9999990,104040000,2),
+ (3,2,0,'Justin',0,0,20000,30030,10,0,5,6,6,8,50,5,50,5,0,0,0,0,0,0,0),
+ (4,4,0,'Brookie',1,0,21001,31057,10,0,8,6,5,6,50,5,50,5,0,0,0,0,0,0,0);
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 
 
@@ -87,7 +89,9 @@ CREATE TABLE `inventorysize` (
 /*!40000 ALTER TABLE `inventorysize` DISABLE KEYS */;
 INSERT INTO `inventorysize` (`CharacterID`,`EquipCount`,`ConsumeCount`,`InstallCount`,`EtcCount`) VALUES 
  (1,24,24,24,24),
- (2,24,24,24,24);
+ (2,24,24,24,24),
+ (3,24,24,24,24),
+ (4,24,24,24,24);
 /*!40000 ALTER TABLE `inventorysize` ENABLE KEYS */;
 
 
@@ -97,9 +101,9 @@ INSERT INTO `inventorysize` (`CharacterID`,`EquipCount`,`ConsumeCount`,`InstallC
 
 DROP TABLE IF EXISTS `iteminitsn`;
 CREATE TABLE `iteminitsn` (
-  `WorldID` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `ItemSN` bigint(20) unsigned NOT NULL DEFAULT 1,
-  `CashItemSN` bigint(20) unsigned NOT NULL DEFAULT 1,
+  `WorldID` int(11) NOT NULL AUTO_INCREMENT,
+  `ItemSN` bigint(20) NOT NULL DEFAULT 1,
+  `CashItemSN` bigint(20) NOT NULL DEFAULT 1,
   PRIMARY KEY (`WorldID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
@@ -109,9 +113,40 @@ CREATE TABLE `iteminitsn` (
 
 /*!40000 ALTER TABLE `iteminitsn` DISABLE KEYS */;
 INSERT INTO `iteminitsn` (`WorldID`,`ItemSN`,`CashItemSN`) VALUES 
- (0,4,4),
+ (-2,0,-14),
+ (-1,-9,0),
+ (0,26,22),
  (1,1,1);
 /*!40000 ALTER TABLE `iteminitsn` ENABLE KEYS */;
+
+
+--
+-- Definition of table `itemlocker`
+--
+
+DROP TABLE IF EXISTS `itemlocker`;
+CREATE TABLE `itemlocker` (
+  `SN` bigint(10) NOT NULL AUTO_INCREMENT,
+  `CashItemSN` bigint(20) NOT NULL,
+  `AccountID` int(11) DEFAULT NULL,
+  `CharacterID` int(11) DEFAULT NULL,
+  `ItemID` int(11) NOT NULL DEFAULT 0,
+  `CommodityID` int(11) NOT NULL DEFAULT 0,
+  `Number` int(11) NOT NULL DEFAULT 0,
+  `BuyCharacterID` varchar(13) NOT NULL,
+  `ExpiredDate` bigint(20) NOT NULL DEFAULT -1,
+  PRIMARY KEY (`SN`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `itemlocker`
+--
+
+/*!40000 ALTER TABLE `itemlocker` DISABLE KEYS */;
+INSERT INTO `itemlocker` (`SN`,`CashItemSN`,`AccountID`,`CharacterID`,`ItemID`,`CommodityID`,`Number`,`BuyCharacterID`,`ExpiredDate`) VALUES 
+ (1,-3,2,3,1000000,20000004,1,'Justin',1526358188165),
+ (2,-5,2,3,1002186,20000000,1,'Justin',1526360158528);
+/*!40000 ALTER TABLE `itemlocker` ENABLE KEYS */;
 
 
 --
@@ -121,7 +156,7 @@ INSERT INTO `iteminitsn` (`WorldID`,`ItemSN`,`CashItemSN`) VALUES
 DROP TABLE IF EXISTS `itemslotbundle`;
 CREATE TABLE `itemslotbundle` (
   `SN` bigint(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ItemSN` bigint(10) unsigned NOT NULL DEFAULT 0,
+  `ItemSN` bigint(20) NOT NULL DEFAULT 0,
   `CashItemSN` bigint(20) DEFAULT 0,
   `CharacterID` int(11) NOT NULL,
   `POS` int(11) NOT NULL DEFAULT 0,
@@ -148,7 +183,7 @@ CREATE TABLE `itemslotbundle` (
 DROP TABLE IF EXISTS `itemslotequip`;
 CREATE TABLE `itemslotequip` (
   `SN` bigint(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ItemSN` bigint(10) unsigned NOT NULL DEFAULT 0,
+  `ItemSN` bigint(20) NOT NULL DEFAULT 0,
   `CashItemSN` bigint(20) DEFAULT 0,
   `CharacterID` int(11) DEFAULT NULL,
   `POS` int(11) NOT NULL DEFAULT 0,
@@ -171,9 +206,8 @@ CREATE TABLE `itemslotequip` (
   `I_Speed` int(11) NOT NULL DEFAULT 0,
   `I_Jump` int(11) NOT NULL DEFAULT 0,
   `ExpireDate` bigint(20) NOT NULL DEFAULT -1,
-  PRIMARY KEY (`SN`),
-  UNIQUE KEY `ItemSN` (`ItemSN`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`SN`)
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `itemslotequip`
@@ -181,10 +215,28 @@ CREATE TABLE `itemslotequip` (
 
 /*!40000 ALTER TABLE `itemslotequip` DISABLE KEYS */;
 INSERT INTO `itemslotequip` (`SN`,`ItemSN`,`CashItemSN`,`CharacterID`,`POS`,`ItemID`,`RUC`,`CUC`,`I_STR`,`I_DEX`,`I_INT`,`I_LUK`,`I_MaxHP`,`I_MaxMP`,`I_PAD`,`I_MAD`,`I_PDD`,`I_MDD`,`I_ACC`,`I_EVA`,`I_Craft`,`I_Speed`,`I_Jump`,`ExpireDate`) VALUES 
- (1,1,0,1,-1,1002140,7,0,999,999,999,999,999,999,999,999,999,999,999,999,999,999,999,-1),
- (2,2,0,1,-5,1042003,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1),
- (3,3,0,1,-11,1302000,7,0,0,0,0,0,0,0,0,0,1337,1337,0,0,0,0,0,-1),
- (4,0,0,1,-11,1302000,7,0,0,0,0,0,0,0,0,0,1337,1337,0,0,0,0,0,-1);
+ (1,1,0,1,-5,1042003,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3439756800000),
+ (2,2,0,1,2,1060002,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3439756800000),
+ (7,3,0,1,1,1072001,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3439756800000),
+ (8,4,0,1,5,1302000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3439756800000),
+ (14,14,0,3,-5,1040002,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3439756800000),
+ (15,15,0,3,-6,1060002,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3439756800000),
+ (16,16,0,3,-7,1072001,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3439756800000),
+ (17,17,0,3,-11,1302000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3439756800000),
+ (25,0,17,3,-15,1000000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526366968780),
+ (26,0,18,3,-16,1012000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526366974560),
+ (28,19,0,1,4,1372000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3439756800000),
+ (29,20,0,1,-1,1002140,8,0,997,997,1002,997,0,0,0,0,199,199,201,200,0,31,49,3439756800000),
+ (30,21,0,1,-11,1322000,8,0,0,0,0,0,0,0,35,0,0,0,0,0,0,0,0,3439756800000),
+ (31,22,0,1,3,1332000,8,0,0,0,0,0,0,0,29,0,0,0,0,0,0,0,0,3439756800000),
+ (36,23,0,4,-5,1041011,7,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,3439756800000),
+ (37,24,0,4,-6,1061008,7,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,3439756800000),
+ (38,25,0,4,-7,1072038,5,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,3439756800000),
+ (39,26,0,4,1,1302000,7,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,3439756800000),
+ (44,0,19,4,-15,1001000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526411485798),
+ (45,0,20,4,-19,1041001,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526411520850),
+ (46,0,21,4,-20,1061001,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526411527711),
+ (47,0,22,4,-21,1071000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526411536850);
 /*!40000 ALTER TABLE `itemslotequip` ENABLE KEYS */;
 
 
@@ -224,7 +276,7 @@ CREATE TABLE `skillrecord` (
   `Info` int(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`SN`),
   UNIQUE KEY `SkillID` (`SkillID`,`CharacterID`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `skillrecord`
@@ -246,7 +298,26 @@ INSERT INTO `skillrecord` (`SN`,`CharacterID`,`SkillID`,`Info`) VALUES
  (12,1,1101004,10),
  (13,1,1101006,5),
  (14,1,1101007,5),
- (15,1,2301001,20);
+ (15,1,2301001,20),
+ (16,1,1101005,1),
+ (17,1,2001002,3),
+ (18,1,2001003,1),
+ (19,1,2001004,1),
+ (20,1,2300000,10),
+ (21,1,1301007,5),
+ (22,1,1301006,5),
+ (23,1,2301003,5),
+ (24,1,2301002,10),
+ (25,1,4201005,5),
+ (26,1,2301004,5),
+ (27,1,4000000,8),
+ (28,1,4001003,5),
+ (29,1,4001002,3),
+ (30,1,4000001,6),
+ (31,1,2100000,6),
+ (32,1,2101001,4),
+ (33,1,2101002,5),
+ (34,1,2101003,5);
 /*!40000 ALTER TABLE `skillrecord` ENABLE KEYS */;
 
 
@@ -282,16 +353,21 @@ CREATE TABLE `users` (
   `Gender` tinyint(2) unsigned NOT NULL DEFAULT 0,
   `GradeCode` tinyint(2) unsigned NOT NULL DEFAULT 0,
   `BlockReason` tinyint(4) unsigned DEFAULT NULL,
+  `NexonCash` int(11) NOT NULL DEFAULT 0,
+  `SSN1` varchar(7) NOT NULL DEFAULT '0',
   PRIMARY KEY (`AccountID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `users`
 --
 
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`AccountID`,`LoginID`,`Password`,`Gender`,`GradeCode`,`BlockReason`) VALUES 
- (1,'admin@maplestory.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL);
+INSERT INTO `users` (`AccountID`,`LoginID`,`Password`,`Gender`,`GradeCode`,`BlockReason`,`NexonCash`,`SSN1`) VALUES 
+ (1,'eric@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL,100000,''),
+ (2,'justin@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL,79100,''),
+ (3,'arnah@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL,100000,''),
+ (4,'brookie@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',1,0,NULL,1325337,'0');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 

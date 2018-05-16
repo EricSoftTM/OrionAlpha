@@ -31,7 +31,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
     private int accountID;
     private int characterID;
     private int commodityID;
-    private String buyCharacterID;
+    private String buyCharacterName;
     private FileTime dateExpire;
 
     public ItemSlotBase(int itemID) {
@@ -131,7 +131,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
      */
     public void rawEncode(OutPacket packet) {
         packet.encodeInt(itemID);
-        if (cashItemSN > 0) {
+        if (Math.abs(cashItemSN) > 0) {
             packet.encodeBool(true);
             packet.encodeLong(cashItemSN);
             packet.encodeFileTime(dateExpire);
@@ -164,12 +164,12 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
         this.commodityID = commodityID;
     }
 
-    public String getBuyCharacterID() {
-        return buyCharacterID;
+    public String getBuyCharacterName() {
+        return buyCharacterName;
     }
 
-    public void setBuyCharacterID(String buyCharacterID) {
-        this.buyCharacterID = buyCharacterID;
+    public void setBuyCharacterName(String buyCharacterName) {
+        this.buyCharacterName = buyCharacterName;
     }
 
     public void setItemID(int itemID) {

@@ -17,6 +17,7 @@
  */
 package network.database;
 
+import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.DBChar;
 import java.sql.Connection;
@@ -48,7 +49,7 @@ public class ShopDB {
                         cashItemInfo.setItemID(rs.getInt("ItemID"));
                         cashItemInfo.setCommodityID(rs.getInt("CommodityID"));
                         cashItemInfo.setNumber(rs.getShort("Number"));
-                        cashItemInfo.setBuyCharacterID(rs.getString("BuyCharacterID"));
+                        cashItemInfo.setBuyCharacterName(rs.getString("BuyCharacterName"));
                         cashItemInfo.setDateExpire(FileTime.longToFileTime(rs.getLong("ExpiredDate")));
                         user.getCashItemInfo().add(cashItemInfo);
                     }
@@ -56,6 +57,33 @@ public class ShopDB {
             }
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
+        }
+    }
+
+    public static void rawIncreaseItemSlotCount(int characterID, byte typeIndex, int slotCount) {
+        String inventory = null;
+        switch (typeIndex) {
+            case ItemType.Equip:
+                inventory = "EquipCount";
+                break;
+            case ItemType.Consume:
+                inventory = "ConsumeCount";
+                break;
+            case ItemType.Install:
+                inventory = "InstallCount";
+                break;
+            case ItemType.Etc:
+                inventory = "EtcCount";
+                break;
+        }
+        if (inventory != null && !inventory.isEmpty()) {
+            try (Connection con = Database.getDB().poolConnection()) {
+                try (PreparedStatement ps = con.prepareStatement("UPDATE `inventorysize` SET `" + inventory + "` = ? WHERE `CharacterID` = ?")) {
+                    Database.execute(con, ps, slotCount, characterID);
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace(System.err);
+            }
         }
     }
 
@@ -106,13 +134,13 @@ public class ShopDB {
     public static void rawUpdateItemLocker(int characterID, List<CashItemInfo> cashItemInfo) {
         try (Connection con = Database.getDB().poolConnection()) {
             String removeCashSN = "";
-            try (PreparedStatement ps = con.prepareStatement("UPDATE `itemlocker` SET `AccountID` = ?, `CharacterID` = ?, `ItemID` = ?, `CommodityID` = ?, `Number` = ?, `BuyCharacterID` = ?, `ExpiredDate` = ? WHERE `CashItemSN` = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `itemlocker` SET `AccountID` = ?, `CharacterID` = ?, `ItemID` = ?, `CommodityID` = ?, `Number` = ?, `BuyCharacterName` = ?, `ExpiredDate` = ? WHERE `CashItemSN` = ?")) {
                 for (CashItemInfo cashInfo : cashItemInfo) {
                     if (cashInfo != null) {
                         if (cashInfo.getCashItemSN() > 0) {
                             removeCashSN += cashInfo.getCashItemSN() + ", ";
                         }
-                        Database.execute(con, ps, cashInfo.getAccountID(), cashInfo.getCharacterID(), cashInfo.getItemID(), cashInfo.getCommodityID(), cashInfo.getNumber(), cashInfo.getBuyCharacterID(), cashInfo.getDateExpire().fileTimeToLong(), cashInfo.getCashItemSN());
+                        Database.execute(con, ps, cashInfo.getAccountID(), cashInfo.getCharacterID(), cashInfo.getItemID(), cashInfo.getCommodityID(), cashInfo.getNumber(), cashInfo.getBuyCharacterName(), cashInfo.getDateExpire().fileTimeToLong(), cashInfo.getCashItemSN());
                     }
                 }
             }

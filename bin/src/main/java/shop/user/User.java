@@ -43,6 +43,7 @@ import shop.Commodity;
 import shop.ShopApp;
 import shop.ShopPacket;
 import shop.field.Stage;
+import shop.user.inventory.Inventory;
 import util.FileTime;
 import util.Logger;
 import util.Rand32;
@@ -78,11 +79,11 @@ public class User {
 
     private final Lock lockSocket;
     private boolean migrateOutPosted;
-    /*
-     nMaplePoint   dd ?
-     nGiftToken    dd ?*/
+
     private int modFlag;
     private boolean msMessenger;
+    private int price;
+    private byte delta;
     private int nexonCash;
     private String nexonClubID;
 
@@ -93,7 +94,9 @@ public class User {
     private byte purchaseType;
 
     private FileTime registerDate;
+    private int slotCount;
     private ClientSocket socket;
+    private byte typeIndex;
     /*tDelayedLoopbackPacket dd ?
      nDelayedLoopbackPacket dd ?
      tLastCheckMalProc dd ?
@@ -156,6 +159,7 @@ public class User {
 
         if (this.nexonClubID != null && !this.nexonClubID.isEmpty()) {
             this.cashShopAuthorized = true;
+            Logger.logReport("User is cashShopAuthorized");
         }
         this.cashKey = Rand32.getInstance().random().intValue();
         this.lockGuardData = new ReentrantLock();
@@ -165,14 +169,10 @@ public class User {
 
     public User(ClientSocket socket) {
         this(socket.getCharacterID());
-
         this.socket = socket;
         this.localSocketSN = socket.getLocalSocketSN();
-
         this.characterID = character.getCharacterStat().getCharacterID();
         this.characterName = character.getCharacterStat().getName();
-
-        this.validateStat(true);
     }
 
     public static final void broadcast(OutPacket packet) {
@@ -305,17 +305,30 @@ public class User {
                 if (force || cur - lastCharacterDataFlush >= 300000) {
                     ShopApp.getInstance().updateItemInitSN();
                     if (this.modFlag != 0) {
-                        if ((modFlag & 0x1) != 0) {
-                            // update Cash
+                        if ((modFlag & ModFlag.NexonCash) != 0) {
+                            Logger.logReport("Updating NexonCash");
+                            if (this.nexonCash < 0) {
+                                this.nexonCash = 0;
+                            }
                             ShopDB.rawUpdateNexonCash(this.accountID, this.nexonCash);
                         }
-                        if ((modFlag & 0x2) != 0) {
-                            // broken and unsure how cash SN will be handled, so leave saving for the end!
+                        if ((modFlag & ModFlag.ItemLocker) != 0) {
+                            Logger.logReport("Updating ItemLocker");
+
                             ShopDB.rawUpdateItemLocker(this.characterID, this.cashItemInfo);
                         }
-                        if ((modFlag & 0x4) != 0) {
+                        if ((modFlag & ModFlag.ItemSlotEquip) != 0) {
+                            Logger.logReport("Updating SlotEquip");
+
                             CommonDB.rawUpdateItemEquip(this.characterID, null, null, this.character.getItemSlot(ItemType.Equip));
-                            // update inventory when items taken out of cash locker
+                        }
+                        if ((modFlag & ModFlag.ItemSlotBundle) != 0 || (modFlag & ModFlag.ItemSlotEtc) != 0) {
+                            Logger.logReport("Updating Bundle");
+                            //update bundles
+                        }
+                        if ((modFlag & ModFlag.InventorySize) != 0) {
+                            Logger.logReport("Updating SlotCount");
+                            ShopDB.rawIncreaseItemSlotCount(this.characterID, this.typeIndex, this.slotCount);
                         }
                         modFlag = 0;
                     }
@@ -375,17 +388,16 @@ public class User {
             cashItem.setItemID(comm.getItemID());
             cashItem.setCommodityID(commoditySN);
             cashItem.setNumber(comm.getCount());
-            cashItem.setBuyCharacterID(this.characterName);
+            cashItem.setBuyCharacterName(this.characterName);
             FileTime ftExpire = FileTime.systemTimeToFileTime();
             ftExpire.add(FileTime.FILETIME_DAY, comm.getPeriod());
             cashItem.setDateExpire(ftExpire);
             this.cashItemInfo.add(cashItem);
             this.nexonCash -= comm.getPrice();
-            // cash doesn't update WHY
-            this.modFlag |= 0x1 | 0x2;
-            this.sendRemainCashRequest();
+            this.modFlag |= ModFlag.NexonCash | ModFlag.ItemLocker;
             sendPacket(ShopPacket.onBuyDone(cashItem));
-            
+            this.sendRemainCashRequest();
+
             // Always keep the shop server's initSN up-to-date.
             ShopApp.getInstance().updateItemInitSN();
         }
@@ -396,26 +408,91 @@ public class User {
         Logger.logReport("onCashItemRequest triggered with type " + type);
 
         switch (type) {
-            case 1: // buy
+            case 1:
                 onBuyDone(packet);
                 break;
             case 2: // probably gift
                 break;
-            case 3: //inc slot
+            case 3:
+                onIncSlotCount(packet);
                 break;
-            case 6: // Locker to inv
+            case 6:
                 onMoveLToS(packet);
                 break;
-            case 7:// inv to Locker
+            case 7:
                 onMoveSToL(packet);
                 break;
         }
     }
 
     private void onChargeParamRequest(InPacket packet) {
-        packet.decodeByte();
-        packet.decodeInt();
         sendPacket(ShopPacket.onQueryCash(this)); // prevent getting stuck
+    }
+
+    private void onIncSlotCount(InPacket packet) {
+        if (!this.cashShopAuthorized) {
+            sendPacket(ShopPacket.onIncSlotCountFailed((byte) 30));
+            return;
+        }
+        byte ti = packet.decodeByte();
+        if (ti < ItemType.NotDefine || ti > ItemType.Etc) {
+            return;
+        }
+        this.price = 4800;
+        this.delta = 4;
+        this.typeIndex = ti;
+        if (this.price > this.getNexonCash()) {
+            sendPacket(ShopPacket.onIncSlotCountFailed((byte) 31));
+        } else {
+            int newSlotCount = this.delta + this.character.getItemSlotCount(ti);
+            if ((newSlotCount - this.delta) * getIncreasedSlotCount(ti, this.character.getCharacterStat().getJob()) > 80) {
+                //  packet error
+                return;
+            }
+            if (Inventory.incItemSlotCount(this, ti, this.delta)) {
+                this.slotCount = newSlotCount;
+                this.nexonCash -= this.price;
+                this.modFlag |= ModFlag.NexonCash | ModFlag.InventorySize;
+                this.sendRemainCashRequest();
+                sendPacket(ShopPacket.onIncSlotCountDone(ti, (short) newSlotCount));
+            }
+        }
+    }
+
+    public static int getIncreasedSlotCount(byte ti, short job) {
+        int count = 0;
+        switch (job / 100) {
+            case 1:
+                count = 1;
+                if (job / 10 % 10 != 0 && (ti == ItemType.Consume || ti == ItemType.Etc)) {
+                    ++count;
+                }
+                break;
+            case 2:
+                if (job / 10 % 10 != 0 && ti == ItemType.Etc) {
+                    count = 1;
+                }
+                break;
+            case 3:
+                if (ti == ItemType.Equip || ti == ItemType.Consume) {
+                    count = 1;
+                }
+                if (job / 10 % 10 != 0 && ti == ItemType.Etc) {
+                    ++count;
+                }
+                break;
+            case 4:
+                if (ti == ItemType.Equip || ti == ItemType.Etc) {
+                    count = 1;
+                }
+                if (job / 10 % 10 != 0 && ti == ItemType.Consume) {
+                    ++count;
+                }
+                break;
+            default:
+                return count;
+        }
+        return count;
     }
 
     public void onMigrateInSuccess() {
@@ -444,14 +521,13 @@ public class User {
                 Logger.logError("No valid slot remains for sn: %d", sn);
                 return;
             }
-
+            System.err.println("CashItemSN from onMoveLtoS " + sn);
             ItemSlotBase item = null;
             if (ti == ItemType.Equip) {
                 item = (ItemSlotEquip) ItemSlotBase.createItem(ItemSlotType.Equip);
-            } else if (ti == ItemType.Consume) {
+            } else if (ti == ItemType.Consume || ti == ItemType.Etc) {
                 item = (ItemSlotBundle) ItemSlotBase.createItem(ItemSlotType.Bundle);
             }
-            List<CashItemInfo> tempArray = new ArrayList<>();
             if (item != null) {
                 for (Iterator<CashItemInfo> it = this.cashItemInfo.iterator(); it.hasNext();) {
                     CashItemInfo cashItem = it.next();
@@ -463,17 +539,15 @@ public class User {
                         item.setItemID(cashItem.getItemID());
                         item.setCommodityID(cashItem.getCommodityID());
                         item.setItemNumber(cashItem.getNumber());
-                        item.setBuyCharacterID(cashItem.getBuyCharacterID());
+                        item.setBuyCharacterName(cashItem.getBuyCharacterName());
                         item.setDateExpire(cashItem.getDateExpire());
-                      //it.remove();
-                        tempArray.add(cashItem); // temp, old way was wacky with a bug
+                        it.remove();
                         break;// should only be 1 anyway
                     }
                 }
-                this.cashItemInfo.removeAll(tempArray); // temp
-                this.modFlag |= 0x4;
-                character.setItem(ti, pos, item);
+                this.character.setItem(ti, pos, item);
                 sendPacket(ShopPacket.onMoveLToS(pos, item, ti));
+                this.modFlag |= ModFlag.ItemLocker | (ti == ItemType.Equip ? ModFlag.ItemSlotEquip : (ti == ItemType.Consume ? ModFlag.ItemSlotBundle : ModFlag.ItemSlotEtc));
             }
         }
     }
@@ -482,7 +556,7 @@ public class User {
         if (this.cashShopAuthorized) {
             long sn = packet.decodeLong();
             byte ti = packet.decodeByte();
-            int pos = character.findCashItemSlotPosition(ti, sn);
+            int pos = character.findCashItemSlotPosition(ti, Math.abs(sn));
             if (pos <= 0) {
                 Logger.logError("Inexistent cash item(sn: %d, ti: %d) in locker for characterID %d ", sn, ti, this.characterID);
                 return;
@@ -496,10 +570,10 @@ public class User {
                 cashItem.setItemID(item.getItemID());
                 cashItem.setCommodityID(item.getCommodityID());
                 cashItem.setNumber(item.getItemNumber());
-                cashItem.setBuyCharacterID(item.getBuyCharacterID());
+                cashItem.setBuyCharacterName(item.getBuyCharacterName());
                 cashItem.setDateExpire(item.getDateExpire());
                 this.cashItemInfo.add(cashItem);
-                this.modFlag |= 0x4;
+                this.modFlag |= ModFlag.ItemLocker | (ti == ItemType.Equip ? ModFlag.ItemSlotEquip : (ti == ItemType.Consume ? ModFlag.ItemSlotBundle : ModFlag.ItemSlotEtc));
                 this.character.setItem(ti, pos, null);
                 sendPacket(ShopPacket.onMoveSToL(cashItem));
             }
@@ -583,12 +657,8 @@ public class User {
         if (isBlockedMachineID()) {
             closeSocket();
         }
-        checkCashItemExpire(cur);
+        // checkCashItemExpire(cur); for now
         return true;
-    }
-
-    private void validateStat(boolean calledByConstructor) {
-
     }
 
     public class CashItemRequest {
@@ -607,5 +677,15 @@ public class User {
         public static final byte MoveSToLFailed = 21;
         public static final byte DestroyDone = 22;
         public static final byte DestroyFailed = 23;
+    }
+
+    public class ModFlag {
+
+        private static final byte NexonCash = 0x1;
+        private static final byte ItemLocker = 0x2;
+        private static final byte ItemSlotEquip = 0x4;
+        private static final byte ItemSlotBundle = 0x8;
+        private static final byte ItemSlotEtc = 0x10;
+        private static final byte InventorySize = 0x20;
     }
 }

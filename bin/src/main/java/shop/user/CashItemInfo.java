@@ -31,7 +31,7 @@ public class CashItemInfo {
     private int itemID;
     private int commodityID;
     private short number;
-    private String buyCharacterID = "";
+    private String buyCharacterName = "";
     private FileTime dateExpire;
 
     public long getCashItemSN() {
@@ -82,12 +82,12 @@ public class CashItemInfo {
         this.number = number;
     }
 
-    public String getBuyCharacterID() {
-        return buyCharacterID;
+    public String getBuyCharacterName() {
+        return buyCharacterName;
     }
 
-    public void setBuyCharacterID(String buyCharacterID) {
-        this.buyCharacterID = buyCharacterID;
+    public void setBuyCharacterName(String buyCharacterName) {
+        this.buyCharacterName = buyCharacterName;
     }
 
     public FileTime getDateExpire() {

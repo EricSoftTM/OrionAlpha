@@ -50,6 +50,7 @@ import game.user.item.ItemVariationOption;
 import game.user.skill.SkillEntry;
 import game.user.skill.Skills.*;
 import game.user.skill.UserSkill;
+import game.user.stat.CharacterTemporaryStat;
 import game.user.stat.SecondaryStat;
 import java.awt.Point;
 import java.util.ArrayList;
@@ -1012,9 +1013,8 @@ public class User extends Creature {
         this.lastAttack = System.currentTimeMillis();
         int bulletItemID = 0;
         
-        boolean darkSight = false;//TODO: SecondaryStat checking
-        if (darkSight) {
-            //sendTemporaryStatReset(secondaryStat.resetByCTS(CharacterTemporaryStat.DarkSight));
+        if (secondaryStat.getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
+            sendTemporaryStatReset(secondaryStat.resetByCTS(CharacterTemporaryStat.DarkSight));
         }
         
         byte action = packet.decodeByte();//((_BYTE)bLeft << 7) | nAction & 0x7F
@@ -1053,7 +1053,7 @@ public class User extends Creature {
             for (int i = 0; i < mobCount; i++) {
                 AttackInfo info = new AttackInfo();
                 info.mobID = packet.decodeInt();
-                Mob mob = null;//TODO: getField().getLifePool().getMob(info.mobID);
+                Mob mob = getField().getLifePool().getMob(info.mobID);
                 if (mob != null) {
                     info.templateID = mob.getTemplateID();
                 }
@@ -1528,9 +1528,9 @@ public class User extends Creature {
         try {
             int reset;
             if (reasonID > 0)
-                reset = 0;//TODO: secondaryStat.resetByReasonID(reasonID);
+                reset = secondaryStat.resetByReasonID(reasonID);
             else
-                reset = 0;//TODO: secondaryStat.resetByTime(time);
+                reset = secondaryStat.resetByTime(time);
             if (reset != 0) {
                 validateStat(false);
                 sendTemporaryStatReset(reset);

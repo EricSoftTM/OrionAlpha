@@ -100,7 +100,7 @@ public class GameDB {
                 }
             }
             if (updateBundle) {
-                GameDB.rawUpdateItemBundle(characterID, cd.getItemSlot());
+                CommonDB.rawUpdateItemBundle(characterID, cd.getItemSlot());
             }
             return cd;
         } catch (SQLException ex) {
@@ -136,44 +136,6 @@ public class GameDB {
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE `inventorysize` SET `EquipCount` = ?, `ConsumeCount` = ?, `InstallCount` = ?, `EtcCount` = ? WHERE `CharacterID` = ?")) {
                 Database.execute(con, ps, inventorySize.get(0), inventorySize.get(1), inventorySize.get(2), inventorySize.get(3), characterID);
-            }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-        }
-    }
-    
-    public static void rawUpdateItemBundle(int characterID, List<List<ItemSlotBase>> itemSlot) {
-        try (Connection con = Database.getDB().poolConnection()) {
-            String removeSN = "";
-            String removeCashSN = "";
-            try (PreparedStatement ps = con.prepareStatement("UPDATE `itemslotbundle` SET `CharacterID` = ?, `POS` = ?, `ItemID` = ?, `Number` = ?, `TI` = ?, `ExpireDate` = ? WHERE `ItemSN` = ? AND `CashItemSN` = ?")) {
-                for (int ti = ItemType.Consume; ti <= ItemType.Etc; ti++) {
-                    for (int pos = 1; pos < itemSlot.get(ti).size(); pos++) {
-                        ItemSlotBundle item = (ItemSlotBundle) itemSlot.get(ti).get(pos);
-                        if (item != null) {
-                            if (item.getSN() > 0) {
-                                removeSN += item.getSN() + ", ";
-                            }
-                            if (item.getCashItemSN() > 0) {
-                                removeCashSN += item.getCashItemSN() + ", ";
-                            }
-                            Database.execute(con, ps, characterID, pos, item.getItemID(), item.getItemNumber(), ti, item.getDateExpire().fileTimeToLong(), item.getSN(), item.getCashItemSN());
-                        }
-                    }
-                }
-            }
-            if (removeSN.isEmpty() && removeCashSN.isEmpty()) {
-                return;//wouldn't want to kill their inventory ;)
-            }
-            String query = "DELETE FROM `itemslotbundle` WHERE `CharacterID` = ?";
-            if (!removeSN.isEmpty()) {
-                query += String.format(" AND `ItemSN` NOT IN (%s)", removeSN.substring(0, removeSN.length() - 2));
-            }
-            if (!removeCashSN.isEmpty()) {
-                query += String.format(" AND `CashItemSN` NOT IN (%s)", removeCashSN.substring(0, removeCashSN.length() - 2));
-            }
-            try (PreparedStatement ps = con.prepareStatement(query)) {
-                Database.execute(con, ps, characterID);
             }
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);

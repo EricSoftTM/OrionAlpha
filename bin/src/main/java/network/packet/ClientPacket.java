@@ -52,8 +52,8 @@ public class ClientPacket {
             UserScriptMessageAnswer = 24,
             Unknown25 = 25, // 004D4C34, 004D7CC5
             UserChangeSlotPositionRequest = 26, // 00593477
-            Unknown27 = 27, // 00593A97
-            UserShopRequest = 28, // 00594043
+            UserStatChangeItemUseRequest = 27, // 00593A97
+            UserConsumeCashItemUseRequest = 28, // 00594043
             Unknown29 = 29, // 00594187
             Unknown30 = 30, // 005938B6
             UserAbilityUpRequest = 31, // 00596679

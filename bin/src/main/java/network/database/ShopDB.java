@@ -61,29 +61,14 @@ public class ShopDB {
     }
 
     public static void rawIncreaseItemSlotCount(int characterID, byte typeIndex, int slotCount) {
-        String inventory = null;
-        switch (typeIndex) {
-            case ItemType.Equip:
-                inventory = "EquipCount";
-                break;
-            case ItemType.Consume:
-                inventory = "ConsumeCount";
-                break;
-            case ItemType.Install:
-                inventory = "InstallCount";
-                break;
-            case ItemType.Etc:
-                inventory = "EtcCount";
-                break;
-        }
-        if (inventory != null && !inventory.isEmpty()) {
-            try (Connection con = Database.getDB().poolConnection()) {
-                try (PreparedStatement ps = con.prepareStatement("UPDATE `inventorysize` SET `" + inventory + "` = ? WHERE `CharacterID` = ?")) {
-                    Database.execute(con, ps, slotCount, characterID);
-                }
-            } catch (SQLException ex) {
-                ex.printStackTrace(System.err);
+        String[] types = { "Equip", "Consume", "Install", "Etc" };
+        String inventory = String.format("%sCount", types[typeIndex]);
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `inventorysize` SET `" + inventory + "` = ? WHERE `CharacterID` = ?")) {
+                Database.execute(con, ps, slotCount, characterID);
             }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
         }
     }
 
@@ -137,7 +122,7 @@ public class ShopDB {
             try (PreparedStatement ps = con.prepareStatement("UPDATE `itemlocker` SET `AccountID` = ?, `CharacterID` = ?, `ItemID` = ?, `CommodityID` = ?, `Number` = ?, `BuyCharacterName` = ?, `ExpiredDate` = ? WHERE `CashItemSN` = ?")) {
                 for (CashItemInfo cashInfo : cashItemInfo) {
                     if (cashInfo != null) {
-                        if (cashInfo.getCashItemSN() > 0) {
+                        if (cashInfo.getCashItemSN() != 0) {
                             removeCashSN += cashInfo.getCashItemSN() + ", ";
                         }
                         Database.execute(con, ps, cashInfo.getAccountID(), cashInfo.getCharacterID(), cashInfo.getItemID(), cashInfo.getCommodityID(), cashInfo.getNumber(), cashInfo.getBuyCharacterName(), cashInfo.getDateExpire().fileTimeToLong(), cashInfo.getCashItemSN());

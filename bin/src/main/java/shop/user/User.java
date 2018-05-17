@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import network.database.CommonDB;
+import network.database.GameDB;
 import network.database.ShopDB;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
@@ -320,11 +321,12 @@ public class User {
                         if ((modFlag & ModFlag.ItemSlotEquip) != 0) {
                             Logger.logReport("Updating SlotEquip");
 
-                            CommonDB.rawUpdateItemEquip(this.characterID, null, null, this.character.getItemSlot(ItemType.Equip));
+                            CommonDB.rawUpdateItemEquip(this.characterID, this.character.getEquipped(), this.character.getEquipped2(), this.character.getItemSlot(ItemType.Equip));
                         }
                         if ((modFlag & ModFlag.ItemSlotBundle) != 0 || (modFlag & ModFlag.ItemSlotEtc) != 0) {
                             Logger.logReport("Updating Bundle");
-                            //update bundles
+                            
+                            CommonDB.rawUpdateItemBundle(this.characterID, this.character.getItemSlot());
                         }
                         if ((modFlag & ModFlag.InventorySize) != 0) {
                             Logger.logReport("Updating SlotCount");
@@ -509,7 +511,7 @@ public class User {
             byte ti = packet.decodeByte();
             short pos = packet.decodeShort();
 
-            if (ti < ItemType.NotDefine || ti > ItemType.Etc) {
+            if (ti <= ItemType.NotDefine || ti >= ItemType.NO) {
                 Logger.logError("Invalid item type index (sn: %d, pos: %d for ti %d)", sn, pos, ti);
                 return;
             }
@@ -517,7 +519,7 @@ public class User {
                 Logger.logError("Invalid item slot position (sn: %d) at pos: %d", sn, pos);
                 return;
             }
-            if (this.character.findEmptySlotPosition(ti) < 0) {
+            if (this.character.findEmptySlotPosition(ti) <= 0) {
                 Logger.logError("No valid slot remains for sn: %d", sn);
                 return;
             }
@@ -556,7 +558,7 @@ public class User {
         if (this.cashShopAuthorized) {
             long sn = packet.decodeLong();
             byte ti = packet.decodeByte();
-            int pos = character.findCashItemSlotPosition(ti, Math.abs(sn));
+            int pos = character.findCashItemSlotPosition(ti, sn);
             if (pos <= 0) {
                 Logger.logError("Inexistent cash item(sn: %d, ti: %d) in locker for characterID %d ", sn, ti, this.characterID);
                 return;

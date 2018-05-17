@@ -131,7 +131,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
      */
     public void rawEncode(OutPacket packet) {
         packet.encodeInt(itemID);
-        if (Math.abs(cashItemSN) > 0) {
+        if (cashItemSN != 0) {
             packet.encodeBool(true);
             packet.encodeLong(cashItemSN);
             packet.encodeFileTime(dateExpire);

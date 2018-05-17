@@ -1509,7 +1509,7 @@ public class User extends Creature {
                         }
                         if ((characterDataModFlag & DBChar.ItemSlotConsume) != 0 || (characterDataModFlag & DBChar.ItemSlotInstall) != 0 
                                 || (characterDataModFlag & DBChar.ItemSlotEtc) != 0) {
-                            GameDB.rawUpdateItemBundle(characterID, character.getItemSlot());
+                            CommonDB.rawUpdateItemBundle(characterID, character.getItemSlot());
                         }
                         characterDataModFlag = 0;
                     }

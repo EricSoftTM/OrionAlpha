@@ -31,6 +31,41 @@ import shop.user.User.CashItemRequest;
  */
 public class ShopPacket {
 
+    public static OutPacket onBuyDone(CashItemInfo cashItemInfo) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.BuyDone);
+        packet.encodeLong(cashItemInfo.getCashItemSN());
+        packet.encodeInt(cashItemInfo.getAccountID());
+        packet.encodeInt(cashItemInfo.getCharacterID());
+        packet.encodeInt(cashItemInfo.getItemID());
+        packet.encodeShort(cashItemInfo.getNumber());
+        packet.encodeString(cashItemInfo.getBuyCharacterName(), 13);
+        packet.encodeFileTime(cashItemInfo.getDateExpire());
+        return packet;
+    }
+
+    public static OutPacket onBuyFailed(byte type) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.BuyFailed);
+        packet.encodeByte(type);
+        return packet;
+    }
+
+    public static OutPacket onIncSlotCountDone(byte ti, short newSlotCount) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.IncSlotCountDone);
+        packet.encodeByte(ti);
+        packet.encodeShort(newSlotCount);
+        return packet;
+    }
+
+    public static OutPacket onIncSlotCountFailed(byte type) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.IncSlotCountFailed);
+        packet.encodeByte(type);
+        return packet;
+    }
+
     public static OutPacket onLoadLockerDone(List<CashItemInfo> cashItemInfo) {
         OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
         packet.encodeByte(CashItemRequest.LoadLockerDone);
@@ -41,29 +76,9 @@ public class ShopPacket {
             packet.encodeInt(cashItem.getCharacterID());
             packet.encodeInt(cashItem.getItemID());
             packet.encodeShort(cashItem.getNumber());
-            packet.encodeString(cashItem.getBuyCharacterID(), 13);
+            packet.encodeString(cashItem.getBuyCharacterName(), 13);
             packet.encodeFileTime(cashItem.getDateExpire());
         }
-        return packet;
-    }
-
-    public static OutPacket onBuyDone(CashItemInfo cashItemInfo) {
-        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
-        packet.encodeByte(CashItemRequest.BuyDone);
-        packet.encodeLong(cashItemInfo.getCashItemSN());
-        packet.encodeInt(cashItemInfo.getAccountID());
-        packet.encodeInt(cashItemInfo.getCharacterID());
-        packet.encodeInt(cashItemInfo.getItemID());
-        packet.encodeShort(cashItemInfo.getNumber());
-        packet.encodeString(cashItemInfo.getBuyCharacterID(), 13);
-        packet.encodeFileTime(cashItemInfo.getDateExpire());
-        return packet;
-    }
-
-    public static OutPacket onBuyFailed() {
-        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
-        packet.encodeByte(CashItemRequest.BuyFailed);
-        packet.encodeByte(0x22);
         return packet;
     }
 
@@ -76,6 +91,13 @@ public class ShopPacket {
         return packet;
     }
 
+    public static OutPacket onMoveLToSFailed(byte type) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.MoveLToSFailed);
+        packet.encodeByte(type);
+        return packet;
+    }
+
     public static OutPacket onMoveSToL(CashItemInfo cashItem) {
         OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
         packet.encodeByte(CashItemRequest.MoveSToLDone);
@@ -84,8 +106,15 @@ public class ShopPacket {
         packet.encodeInt(cashItem.getCharacterID());
         packet.encodeInt(cashItem.getItemID());
         packet.encodeShort(cashItem.getNumber());
-        packet.encodeString(cashItem.getBuyCharacterID(), 13);
+        packet.encodeString(cashItem.getBuyCharacterName(), 13);
         packet.encodeFileTime(cashItem.getDateExpire());
+        return packet;
+    }
+
+    public static OutPacket onMoveSToLFailed(byte type) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.MoveSToLFailed);
+        packet.encodeByte(type);
         return packet;
     }
 

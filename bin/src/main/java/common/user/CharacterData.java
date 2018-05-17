@@ -169,7 +169,7 @@ public class CharacterData {
     }
 
     public int findCashItemSlotPosition(int ti, long sn) {
-        if (ti >= ItemType.Equip && ti <= ItemType.Etc && sn > 0) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Etc && sn != 0) {
             int slotCount = getItemSlotCount(ti);
             for (int i = 1; i <= slotCount; i++) {
                 ItemSlotBase item = itemSlot.get(ti).get(i);

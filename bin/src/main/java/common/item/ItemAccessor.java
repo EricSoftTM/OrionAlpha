@@ -19,6 +19,7 @@ package common.item;
 
 import common.user.DBChar;
 import util.FileTime;
+import util.Pointer;
 
 /**
  *
@@ -77,5 +78,9 @@ public class ItemAccessor {
                 return 0;
             }
         }
+    }
+
+    public static void getBodyPartFromItem(int itemID, byte gender, Pointer<Integer> bodyPart, boolean b) {
+        // TODO
     }
 }

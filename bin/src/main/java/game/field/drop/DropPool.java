@@ -23,6 +23,7 @@ import game.field.StaticFoothold;
 import game.user.User;
 import game.user.WvsContext;
 import game.user.WvsContext.Request;
+import game.user.stat.CharacterTemporaryStat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -159,7 +160,10 @@ public class DropPool {
     }
     
     public void onPickUpRequest(User user, InPacket packet) {
-        // TODO: Check if in DarkSight
+        if (user.getSecondaryStat().getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
+            user.sendDropPickUpFailPacket(Request.Excl);
+            return;
+        }
         
         int dropID = packet.decodeInt();
         if (field.lock(1200)) {
@@ -202,7 +206,7 @@ public class DropPool {
         packet.encodeShort(drop.getPt2().x);
         packet.encodeShort(drop.getPt2().y);
         if (enterType == Drop.JustShowing || enterType == Drop.Create || enterType == Drop.FadingOut) {
-            packet.encodeInt(drop.getOwnType());//actually might be dwSourceID..
+            packet.encodeInt(drop.getSourceID());
             packet.encodeShort(drop.getPt1().x);
             packet.encodeShort(drop.getPt1().y);
             packet.encodeShort(delay);

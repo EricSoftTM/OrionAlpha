@@ -22,10 +22,6 @@ package game.user.stat;
  * @author Eric
  */
 public class CharacterTemporaryStat {
-    // TODO: Confirm and check these.
-    // These are simply the first stats from 0x1->0x20000 that are used in v90.
-    // That being said, they should follow the same from BMS too, so these may
-    // be correct. However, Stun is definitely wrong - MobSkills don't exist yet!!
     public static final int
             PAD         = 0x1,
             PDD         = 0x2,
@@ -44,6 +40,6 @@ public class CharacterTemporaryStat {
             MaxMP       = 0x4000,
             Invincible  = 0x8000,
             SoulArrow   = 0x10000,
-            Stun        = 0x20000
+            Stun        = 0x20000//TODO: Confirm, this is likely incorrect.
     ;
 }

@@ -20,8 +20,11 @@ package game.user.skill;
 import common.JobAccessor;
 import common.JobCategory;
 import common.user.CharacterData;
+import common.user.CharacterStat.CharacterStatType;
 import game.user.skill.Skills.*;
+import game.user.stat.BasicStat;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  *
@@ -38,9 +41,12 @@ public class SkillAccessor {
             INT_MAX             = 999,
             LUK_MAX             = 999,
             PAD_MAX             = 1999,
+            PDD_MAX             = 1999,
             MAD_MAX             = 1999,
+            MDD_MAX             = 1999,
             ACC_MAX             = 999,//Hmm
             EVA_MAX             = 999,//Hmm
+            CRAFT_MAX           = 999,//Hmm
             SPEED_MAX           = 140,
             JUMP_MAX            = 123,
             HP_MAX              = 30000,
@@ -64,7 +70,7 @@ public class SkillAccessor {
      * 
      * The numbers will always follow the same sequence for each job.
      */
-    static final int[][][] incHPMP = { // [5][2][24]
+    static final int[][][] INC_HP_MP = { // [5][2][24]
         { {12, 16, 0, 10, 12, 20}, {8, 12, 0, 6, 8, 15} },//Beginner
         { {24, 28, 0, 4, 6, 20}, {20, 24, 0, 2, 4, 15,} },//Warrior
         { {10, 14, 0, 22, 24, 20}, {6, 10, 0, 18, 20, 15} },//Magician
@@ -205,6 +211,76 @@ public class SkillAccessor {
         return val;
     }
     
+    public static boolean incMaxHPMP(CharacterData cd, BasicStat bs, int flag, boolean levelUp) {
+        int hpInc = 0;
+        int mpInc = 0;
+        short job = bs.getJob();
+        int jobCategory = job % 1000 / 100;
+        boolean inc = false;
+        boolean incHP = (flag & CharacterStatType.MHP) != 0;
+        boolean incMP = (flag & CharacterStatType.MMP) != 0;
+        if (jobCategory < 0 || jobCategory >= 10) {
+            return inc;
+        }
+        if (JobAccessor.findJob(job) != null) {
+            int minHP  = INC_HP_MP[jobCategory][!levelUp ? 1 : 0][0];
+            int maxHP  = INC_HP_MP[jobCategory][!levelUp ? 1 : 0][1];
+            int randHP = INC_HP_MP[jobCategory][!levelUp ? 1 : 0][2];//Useless, always 0 and Nexon only has a MP rand for INT.
+            int minMP  = INC_HP_MP[jobCategory][!levelUp ? 1 : 0][3];
+            int maxMP  = INC_HP_MP[jobCategory][!levelUp ? 1 : 0][4];
+            int randMP = INC_HP_MP[jobCategory][!levelUp ? 1 : 0][5];
+            if (incHP) {//Nexon uses the C++ engine RNG, we will use the JVM's RNG.
+                hpInc = minHP + ThreadLocalRandom.current().nextInt(Short.MAX_VALUE) % (maxHP - minHP + 1);
+            }
+            if (incMP) {
+                mpInc = ThreadLocalRandom.current().nextInt(Short.MAX_VALUE) % (maxMP - minMP + 1) + minMP + bs.getINT() * randMP / 200;
+            }
+            if (incHP) {
+                int skillID = Warrior.MHPInc;
+                SkillEntry hpIncSkill = SkillInfo.getInstance().getSkill(skillID);
+                if (cd.getSkillRecord().containsKey(skillID)) {
+                    int skillLevel;
+                    if ((skillLevel = cd.getSkillRecord().get(skillID)) > 0 && hpIncSkill != null) {
+                        if (skillLevel >= hpIncSkill.getLevelData().length)
+                            skillLevel = hpIncSkill.getLevelData().length;
+                        if (levelUp)
+                            hpInc += hpIncSkill.getLevelData(skillLevel).getX();
+                        else
+                            hpInc += hpIncSkill.getLevelData(skillLevel).getY();
+                    }
+                }
+            }
+            if (incMP) {
+                int skillID = Magician.MMPInc;
+                SkillEntry mpIncSkill = SkillInfo.getInstance().getSkill(skillID);
+                if (cd.getSkillRecord().containsKey(skillID)) {
+                    int skillLevel;
+                    if ((skillLevel = cd.getSkillRecord().get(skillID)) > 0 && mpIncSkill != null) {
+                        if (skillLevel >= mpIncSkill.getLevelData().length)
+                            skillLevel = mpIncSkill.getLevelData().length;
+                        if (levelUp)
+                            mpInc += mpIncSkill.getLevelData(skillLevel).getX();
+                        else
+                            mpInc += mpIncSkill.getLevelData(skillLevel).getY();
+                    }
+                }
+            }
+            if (incHP) {
+                if (cd.getCharacterStat().getMHP() < HP_MAX) {
+                    cd.getCharacterStat().setMHP((short) Math.min(Math.max(hpInc + cd.getCharacterStat().getMHP(), 50), HP_MAX));
+                    inc = true;
+                }
+            }
+            if (incMP) {
+                if (cd.getCharacterStat().getMMP() < MP_MAX) {
+                    cd.getCharacterStat().setMMP((short) Math.min(Math.max(mpInc + cd.getCharacterStat().getMMP(), 5), MP_MAX));
+                    inc = true;
+                }
+            }
+        }
+        return inc;
+    }
+    
     public static boolean isTeleportSkill(int skillID) {
         for (int teleport : TELEPORT) {
             if (skillID == teleport)
@@ -216,8 +292,9 @@ public class SkillAccessor {
     public static int getTeleportSkillLevel(CharacterData cd) {
         int slv = 0;
         for (int teleport : TELEPORT) {
-            if ((slv = SkillInfo.getInstance().getSkillLevel(cd, teleport, null)) > 0)
-                return slv;
+            int lev = SkillInfo.getInstance().getSkillLevel(cd, teleport, null);
+            if (lev > slv)
+                slv = lev;
         }
         return slv;
     }

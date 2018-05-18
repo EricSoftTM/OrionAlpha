@@ -271,7 +271,7 @@ public class ItemInfo {
             item.setSellPrice(WzUtil.getInt32(info.getNode("price"), 0));
             item.setUnitPrice(WzUtil.getDouble(info.getNode("unitPrice"), 0));
             item.setCash(WzUtil.getBoolean(info.getNode("cash"), false));
-            item.setSlotMax(WzUtil.getInt32(info.getNode("slotMax"), 0));
+            item.setSlotMax(WzUtil.getInt32(info.getNode("slotMax"), 200));
 
             // unitPrice, iconRaw, incMDD, icon, incACC, slotMax, incLUK, incDEX, incJump, price, success, incSpeed, name, incINT, incSTR, incPDD, incMAD, incEVA, incPAD, cash, incMHP, desc
         }

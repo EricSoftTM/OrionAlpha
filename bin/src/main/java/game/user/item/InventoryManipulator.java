@@ -140,7 +140,7 @@ public class InventoryManipulator {
                         } else {
                             insertChangeLog(changeLog, ChangeLog.NewItem, ti, (short) i, itemSlot, (short) 0, (short) inc);
                         }
-                        itemSlot.setItemNumber((short) (itemSlot.getItemNumber() + inc));
+                        itemSlot.setItemNumber(itemSlot.getItemNumber() + inc);
                         remain -= inc;
                         if (remain <= 0) {
                             if (incRet != null) {
@@ -155,7 +155,7 @@ public class InventoryManipulator {
             if (pos > 0) {
                 if (item.getSN() == 0)
                     Inventory.getNextSN(item, false);
-                item.setItemNumber((short) remain);
+                item.setItemNumber(remain);
                 cd.getItemSlot().get(ti).set(pos, item);
                 insertChangeLog(changeLog, ChangeLog.NewItem, ti, pos, item, (short) 0, (short) 0);
                 if (incRet != null) {

@@ -17,6 +17,8 @@
  */
 package game.user;
 
+import common.ExpAccessor;
+import common.JobAccessor;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
@@ -40,6 +42,7 @@ import game.field.life.AttackInfo;
 import game.field.life.mob.Mob;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
+import game.miniroom.MiniRoomBase;
 import game.user.WvsContext.BroadcastMsg;
 import game.user.WvsContext.Request;
 import game.user.item.ChangeLog;
@@ -47,15 +50,21 @@ import game.user.item.Inventory;
 import game.user.item.InventoryManipulator;
 import game.user.item.ItemInfo;
 import game.user.item.ItemVariationOption;
+import game.user.skill.SkillAccessor;
 import game.user.skill.SkillEntry;
+import game.user.skill.SkillInfo;
+import game.user.skill.SkillRecord;
+import game.user.skill.SkillRoot;
 import game.user.skill.Skills.*;
 import game.user.skill.UserSkill;
+import game.user.stat.BasicStat;
 import game.user.stat.CharacterTemporaryStat;
 import game.user.stat.SecondaryStat;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,14 +149,14 @@ public class User extends Creature {
     private final AvatarLook avatarLook;
     private int avatarModFlag;
     // Basic Stat
-    // private final BasicStat basicStat;
+    private final BasicStat basicStat;
     // Secondary Stat
     private final SecondaryStat secondaryStat;
     // User RNG's
     private final Rand32 rndActionMan;
     // Mini Rooms
     // private UserMiniRoom userMR;
-    // private MiniRoomBase miniRoom;
+    private MiniRoomBase miniRoom;
     private boolean miniRoomBalloon;
     // MSMessenger
     // private UserMessenger msm;
@@ -198,14 +207,18 @@ public class User extends Creature {
         this.community = "#TeamEric";
         
         this.curPos = new Point(0, 0);
-        this.lock = new ReentrantLock();
-        this.lockSocket = new ReentrantLock();
+        this.lock = new ReentrantLock(true);
+        this.lockSocket = new ReentrantLock(true);
+        this.basicStat = new BasicStat();
         this.secondaryStat = new SecondaryStat();
         this.avatarLook = new AvatarLook();
         this.rndActionMan = new Rand32();
         this.userSkill = new UserSkill(this);
         // TODO: Nexon-like user caching to avoid DB load upon each login/migrate.
         this.character = GameDB.rawLoadCharacter(characterID);
+        
+        this.basicStat.clear();
+        this.secondaryStat.clear();
     }
     
     public User(ClientSocket socket) {
@@ -214,16 +227,44 @@ public class User extends Creature {
         this.socket = socket;
         this.localSocketSN = socket.getLocalSocketSN();
         
+        // GradeCode
+        // AccountID
+        // NexonClubID
+        
         this.characterID = character.getCharacterStat().getCharacterID();
         this.characterName = character.getCharacterStat().getName();
         
         this.validateStat(true);
     }
     
+    /**
+     * This is a User::~User deleting destructor.
+     * 
+     * WARNING: This method should ONLY be used when you NULL the User object.
+     */
     public final void destructUser() {
+        /* Begin CUser::~CUser destructor */
         flushCharacterData(0, true);
         Logger.logReport("User logout");
-        
+        /* Begin CharacterData::~CharacterData destructor */
+        for (List<Integer> itemTrading : character.getItemTrading())
+            itemTrading.clear();
+        character.getItemTrading().clear();
+        //character.getQuestRecord().clear();
+        character.getSkillRecord().clear();
+        for (List<ItemSlotBase> itemSlot : character.getItemSlot())
+            itemSlot.clear();
+        character.getItemSlot().clear();
+        character.getEquipped2().clear();
+        character.getEquipped().clear();
+        /* End CharacterData::~CharacterData destructor */
+        if (miniRoom != null) {
+            miniRoom = null;
+        }
+        //if (runningVM != null) {
+        //    runningVM = null;
+        //}
+        /* End CUser::~CUser destructor */
     }
     
     public static final void broadcast(OutPacket packet) {
@@ -328,10 +369,10 @@ public class User extends Creature {
         lock.lock();
         try {
             int ap = character.getCharacterStat().getAP();
-            if (onlyFull && (ap + inc < 0 || ap + inc > 999)) {
+            if (onlyFull && (ap + inc < 0 || ap + inc > SkillAccessor.AP_MAX)) {
                 return false;
             }
-            int newSP = Math.max(Math.min(ap + inc, 999), 0);
+            int newSP = Math.max(Math.min(ap + inc, SkillAccessor.AP_MAX), 0);
             character.getCharacterStat().setAP((short) newSP);
             if (newSP == ap) {
                 return false;
@@ -349,10 +390,10 @@ public class User extends Creature {
         lock.lock();
         try {
             int DEX = character.getCharacterStat().getDEX();
-            if (onlyFull && (DEX + inc < 0 || DEX + inc > 999)) {
+            if (onlyFull && (DEX + inc < 0 || DEX + inc > SkillAccessor.DEX_MAX)) {
                 return false;
             }
-            int newDEX = Math.max(Math.min(DEX + inc, 999), 0);
+            int newDEX = Math.max(Math.min(DEX + inc, SkillAccessor.DEX_MAX), 0);
             character.getCharacterStat().setDEX((short) newDEX);
             if (newDEX == DEX) {
                 return false;
@@ -367,8 +408,42 @@ public class User extends Creature {
     }
     
     public int incEXP(int inc, boolean onlyFull) {
-        // TODO
-        
+        if (lock(1500)) {
+            try {
+                int flag = CharacterStatType.EXP;
+                if (getHP() > 0 && inc > 0 && (!onlyFull || inc + character.getCharacterStat().getEXP() >= 0)) {
+                    if (inc < 0) {
+                        if (character.getCharacterStat().getEXP() + inc < 0) {
+                            character.getCharacterStat().setEXP(0);
+                            addCharacterDataMod(DBChar.Character);
+                            return flag;
+                        }
+                    }
+                    if (inc <= 0) {
+                        addCharacterDataMod(DBChar.Character);
+                        return flag;
+                    }
+                    Pointer<Boolean> reachMaxLev = new Pointer<>(false);
+                    if (ExpAccessor.tryProcessLevelUp(character, basicStat, inc, reachMaxLev)) {
+                        if (character.getCharacterStat().getJob() != 0) {
+                            incSP(3, false);
+                            incAP(5, false);
+                        }
+                        flag |= CharacterStatType.LEV | CharacterStatType.AP | CharacterStatType.SP;
+                        flag |= CharacterStatType.HP | CharacterStatType.MP | CharacterStatType.MHP | CharacterStatType.MMP;
+                        validateStat(false);
+                        onLevelUp();
+                        if (reachMaxLev.get()) {
+                            setMaxLevelReach();
+                        }
+                    }
+                    addCharacterDataMod(DBChar.Character);
+                    return flag;
+                }
+            } finally {
+                unlock();
+            }
+        }
         return 0;
     }
     
@@ -403,10 +478,10 @@ public class User extends Creature {
         lock.lock();
         try {
             int INT = character.getCharacterStat().getINT();
-            if (onlyFull && (INT + inc < 0 || INT + inc > 999)) {
+            if (onlyFull && (INT + inc < 0 || INT + inc > SkillAccessor.INT_MAX)) {
                 return false;
             }
-            int newINT = Math.max(Math.min(INT + inc, 999), 0);
+            int newINT = Math.max(Math.min(INT + inc, SkillAccessor.INT_MAX), 0);
             character.getCharacterStat().setINT((short) newINT);
             if (newINT == INT) {
                 return false;
@@ -424,10 +499,10 @@ public class User extends Creature {
         lock.lock();
         try {
             int LUK = character.getCharacterStat().getLUK();
-            if (onlyFull && (LUK + inc < 0 || LUK + inc > 999)) {
+            if (onlyFull && (LUK + inc < 0 || LUK + inc > SkillAccessor.LUK_MAX)) {
                 return false;
             }
-            int newLUK = Math.max(Math.min(LUK + inc, 999), 0);
+            int newLUK = Math.max(Math.min(LUK + inc, SkillAccessor.LUK_MAX), 0);
             character.getCharacterStat().setLUK((short) newLUK);
             if (newLUK == LUK) {
                 return false;
@@ -445,10 +520,10 @@ public class User extends Creature {
         lock.lock();
         try {
             int mhp = character.getCharacterStat().getMHP();
-            if (onlyFull && (mhp + inc < 50 || mhp + inc > 30000)) {
+            if (onlyFull && (mhp + inc < 50 || mhp + inc > SkillAccessor.HP_MAX)) {
                 return false;
             }
-            int newMHP = Math.max(Math.min(mhp + inc, 30000), 50);
+            int newMHP = Math.max(Math.min(mhp + inc, SkillAccessor.HP_MAX), 50);
             character.getCharacterStat().setMHP((short) newMHP);
             if (newMHP == mhp) {
                 return false;
@@ -466,10 +541,10 @@ public class User extends Creature {
         lock.lock();
         try {
             int mmp = character.getCharacterStat().getMMP();
-            if (onlyFull && (mmp + inc < 5 || mmp + inc > 30000)) {
+            if (onlyFull && (mmp + inc < 5 || mmp + inc > SkillAccessor.MP_MAX)) {
                 return false;
             }
-            int newMMP = Math.max(Math.min(mmp + inc, 30000), 5);
+            int newMMP = Math.max(Math.min(mmp + inc, SkillAccessor.MP_MAX), 5);
             character.getCharacterStat().setMMP((short) newMMP);
             if (newMMP == mmp) {
                 return false;
@@ -527,10 +602,10 @@ public class User extends Creature {
         lock.lock();
         try {
             int pop = character.getCharacterStat().getPOP();
-            if (onlyFull && (pop + inc < -30000 || pop + inc > 30000)) {
+            if (onlyFull && (pop + inc < -SkillAccessor.POP_MAX || pop + inc > SkillAccessor.POP_MAX)) {
                 return false;
             }
-            int newPOP = Math.min(Math.max(pop + inc, -30000), 30000);
+            int newPOP = Math.min(Math.max(pop + inc, -SkillAccessor.POP_MAX), SkillAccessor.POP_MAX);
             character.getCharacterStat().setPOP((short) newPOP);
             if (newPOP == pop) {
                 return false;
@@ -548,10 +623,10 @@ public class User extends Creature {
         lock.lock();
         try {
             int sp = character.getCharacterStat().getSP();
-            if (onlyFull && (sp + inc < 0 || sp + inc > 999)) {
+            if (onlyFull && (sp + inc < 0 || sp + inc > SkillAccessor.SP_MAX)) {
                 return false;
             }
-            int newSP = Math.max(Math.min(sp + inc, 999), 0);
+            int newSP = Math.max(Math.min(sp + inc, SkillAccessor.SP_MAX), 0);
             character.getCharacterStat().setSP((short) newSP);
             if (newSP == sp) {
                 return false;
@@ -569,10 +644,10 @@ public class User extends Creature {
         lock.lock();
         try {
             int STR = character.getCharacterStat().getSTR();
-            if (onlyFull && (STR + inc < 0 || STR + inc > 999)) {
+            if (onlyFull && (STR + inc < 0 || STR + inc > SkillAccessor.STR_MAX)) {
                 return false;
             }
-            int newSTR = Math.max(Math.min(STR + inc, 999), 0);
+            int newSTR = Math.max(Math.min(STR + inc, SkillAccessor.STR_MAX), 0);
             character.getCharacterStat().setSTR((short) newSTR);
             if (newSTR == STR) {
                 return false;
@@ -589,7 +664,7 @@ public class User extends Creature {
     public int initEXP() {
         if (lock()) {
             try {
-                if (character.getCharacterStat().getLevel() >= 200 && character.getCharacterStat().getEXP() > 0) {
+                if (character.getCharacterStat().getLevel() >= ExpAccessor.MAX_LEVEL && character.getCharacterStat().getEXP() > 0) {
                     character.getCharacterStat().setEXP(0);
                     characterDataModFlag |= DBChar.Character;
                     return CharacterStatType.EXP;
@@ -640,7 +715,66 @@ public class User extends Creature {
     }
     
     public void setJob(int val) {
-        // TODO
+        if (JobAccessor.findJob(val) != null) {
+            lock.lock();
+            try {
+                List<Integer> curSkillRoot = new ArrayList<>();
+                List<Integer> newSkillRoot = new ArrayList<>();
+                SkillAccessor.getSkillRootFromJob(character.getCharacterStat().getJob(), curSkillRoot);
+                SkillAccessor.getSkillRootFromJob(val, newSkillRoot);
+                for (Iterator<Integer> it = curSkillRoot.iterator(); it.hasNext();) {
+                    int skillRoot = it.next();
+                    if (newSkillRoot.contains(skillRoot)) {
+                        it.remove();
+                    }
+                }
+                character.getCharacterStat().setJob((short) val);
+                if (val != 0 && character.getCharacterStat().getLevel() < 11) {
+                    // Do we still apply STR/DEX default stats in this ver?
+                }
+                if (!curSkillRoot.isEmpty()) {
+                    List<SkillRecord> changes = new ArrayList<>();
+                    for (int skillRoot : curSkillRoot) {
+                        SkillRoot root = SkillInfo.getInstance().getSkillRoot(skillRoot);
+                        if (root != null) {
+                            for (SkillEntry skill : root.getSkills()) {
+                                int skillID = skill.getSkillID();
+                                character.getSkillRecord().remove(skillID);
+                                SkillRecord change = new SkillRecord();
+                                change.setInfo(-1);
+                                change.setSkillID(skillID);
+                                changes.add(change);
+                            }
+                        }
+                    }
+                    //UserSkillRecord.sendCharacterSkillRecord(this, false, changes);
+                    addCharacterDataMod(DBChar.SkillRecord);
+                    changes.clear();
+                }
+                /*if (!newSkillRoot.isEmpty()) {
+                    List<SkillRecord> changes = new ArrayList<>();
+                    for (int skillRoot : newSkillRoot) {
+                        SkillRoot root = SkillInfo.getInstance().getSkillRoot(skillRoot);
+                        if (root != null) {
+                            for (SkillEntry skill : root.getSkills()) {
+                                int skillID = skill.getSkillID();
+                
+                                // Ignore - we don't have masteries yet.
+                            }
+                        }
+                    }
+                    //UserSkillRecord.sendCharacterSkillRecord(this, false, changes);
+                    addCharacterDataMod(DBChar.SkillRecord);
+                    changes.clear();
+                }*/
+                validateStat(true);
+                addCharacterDataMod(DBChar.Character);
+                sendCharacterStat(Request.None, CharacterStatType.Job);
+                //onUserEffect(false, true, UserEffect.JobChanged);
+            } finally {
+                unlock();
+            }
+        }
     }
     
     public void setSkin(int val) {
@@ -700,8 +834,9 @@ public class User extends Creature {
     }
     
     public boolean canAttachAdditionalProcess() {
-        if (socket != null && !onTransferField && getHP() > 0) {
-            
+        if (socket != null && !onTransferField && getHP() > 0 && miniRoom == null) {
+            //if (runningVM == null)
+                return true;
         }
         return false;
     }
@@ -745,6 +880,10 @@ public class User extends Creature {
     
     public AvatarLook getAvatarLook() {
         return avatarLook;
+    }
+    
+    public BasicStat getBasicStat() {
+        return basicStat;
     }
     
     public byte getChannelID() {
@@ -1464,12 +1603,35 @@ public class User extends Creature {
         return true;
     }
     
+    public boolean isItemExist(byte ti, int itemID) {
+        boolean exist = InventoryManipulator.isItemExist(character, ti, itemID);
+        if (!exist) {
+            if (ti == ItemType.Equip) {
+                Pointer<Integer> bodyPart = new Pointer<>(0);
+                ItemAccessor.getBodyPartFromItem(itemID, character.getCharacterStat().getGender(), bodyPart, false);
+                ItemSlotBase item = character.getItem(ti, -bodyPart.get());
+                if (item != null) {
+                    if (item.getItemID() == itemID)
+                        exist = true;
+                }
+            }
+        }
+        return exist;
+    }
+    
     private void onUserDead() {
-        
+        sendTemporaryStatReset(secondaryStat.reset());
     }
     
     public void onLevelUp() {
         onUserEffect(true, true, UserEffect.LevelUp);
+    }
+    
+    public void setMaxLevelReach() {
+        if (!isGM()) {
+            String notice = String.format("[Congrats] %s has reached Level 200! Congratulate %s on such an amazing achievement!", characterName, characterName);
+            User.broadcast(WvsContext.onBroadcastMsg(BroadcastMsg.Notice, notice));
+        }
     }
     
     public void update(long time) {
@@ -1513,8 +1675,9 @@ public class User extends Creature {
                         }
                         characterDataModFlag = 0;
                     }
-                    //if (miniRoom != null)
-                    //  miniRoom.save();
+                    if (miniRoom != null) {
+                        //miniRoom.save();
+                    }
                     lastCharacterDataFlush = time;
                 }
             } finally {
@@ -1580,14 +1743,54 @@ public class User extends Creature {
     public final void validateStat(boolean calledByConstructor) {
         lock.lock();
         try {
+            //AvatarLook avatarOld = avatarLook.makeClone();
+            //ItemAccessor.getRealEquip
             avatarLook.load(character.getCharacterStat(), character.getEquipped(), character.getEquipped2());
             
+            int maxHPIncRate = secondaryStat.getStatOption(CharacterTemporaryStat.MaxHP);
+            int maxMPIncRate = secondaryStat.getStatOption(CharacterTemporaryStat.MaxMP);
+            int speed = secondaryStat.speed;
+            int weaponID = 0;
+            if (character.getItem(ItemType.Equip, -BodyPart.Weapon) != null) {
+                weaponID = character.getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
+            }
+            
+            basicStat.setFrom(character, character.getEquipped(), character.getEquipped2(), maxHPIncRate, maxMPIncRate);
+            secondaryStat.setFrom(basicStat, character.getEquipped(), character.getEquipped2(), character);
+            
             int flag = 0;
+            if (character.getCharacterStat().getHP() > basicStat.getMHP()) {
+                incHP(0, false);
+                flag |= CharacterStatType.HP;
+            }
+            if (character.getCharacterStat().getMP() > basicStat.getMMP()) {
+                incMP(0, false);
+                flag |= CharacterStatType.MP;
+            }
             
             if (!calledByConstructor) {
                 if (flag != 0)
                     sendCharacterStat(Request.None, flag);
+                if (!avatarLook.getEquipped().get(BodyPart.Weapon).equals(weaponID)) {
+                    flag = 0;
+                    if (secondaryStat.getStatOption(CharacterTemporaryStat.Booster) != 0) {
+                        int reasonID = secondaryStat.getStatReason(CharacterTemporaryStat.Booster);
+                        flag |= secondaryStat.resetByReasonID(reasonID);
+                    }
+                    if (secondaryStat.getStatOption(CharacterTemporaryStat.SoulArrow) != 0) {
+                        int reasonID = secondaryStat.getStatReason(CharacterTemporaryStat.SoulArrow);
+                        flag |= secondaryStat.resetByReasonID(reasonID);
+                    }
+                    sendTemporaryStatReset(flag);
+                }
+                flag = 0;
+                // TODO: AvatarLook compare (current vs old)
+                if (speed != secondaryStat.speed) {
+                    flag |= AvatarLook.Unknown2;//idk, just a guess
+                }
+                // postAvatarModified(flag);
             }
+            
             if (isGM() && character.getSkillRecord().isEmpty()) {
                 // TODO: Max all skills
             }

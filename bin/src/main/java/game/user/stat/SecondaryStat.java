@@ -17,9 +17,13 @@
  */
 package game.user.stat;
 
+import common.JobAccessor;
+import common.JobCategory;
 import common.item.BodyPart;
 import common.item.ItemSlotBase;
+import common.item.ItemSlotEquip;
 import common.user.CharacterData;
+import game.user.skill.SkillAccessor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -222,23 +226,55 @@ public class SecondaryStat {
         return reset;
     }
     
-    public void setFrom(Object bs, List<ItemSlotBase> realEquip, List<ItemSlotBase> realEquip2, CharacterData cd) {
+    public void setFrom(BasicStat bs, List<ItemSlotBase> realEquip, List<ItemSlotBase> realEquip2, CharacterData cd) {
+        short job = bs.getJob();
+        int jc = JobAccessor.getJobCategory(job);
+        int slv;
         this.pad = 0;
         this.pdd = 0;
-        
-        // Calculate formulas with BasicStat
-        
+        this.mad = bs.getINT();
+        this.mdd = bs.getINT();
+        this.eva = (bs.getDEX() / 4 + bs.getLUK() / 2);
+        if (jc == JobCategory.Archer || jc == JobCategory.Thief) {
+            this.acc = (short) (bs.getDEX() * 0.6 + bs.getLUK() * 0.3);
+        } else {
+            this.acc = (short) (bs.getDEX() * 0.8 + bs.getLUK() * 0.5);
+        }
+        this.craft = bs.getLUK() + bs.getDEX() + bs.getINT();
         this.speed = 100;
         this.jump = 100;
         
         final int BodyPartCount = BodyPart.BP_Count;
         for (int pos = 1; pos <= BodyPartCount; pos++) {
-            // Calculate realEquip stat
+            ItemSlotEquip item = (ItemSlotEquip) realEquip.get(pos);
+            if (item != null) {
+                // TODO: Calculate realEquip stat
+            }
         }
         
         for (int pos = 1; pos <= BodyPartCount; pos++) {
-            // Calculate realEquip2 stat
+            ItemSlotEquip item = (ItemSlotEquip) realEquip.get(pos);
+            if (item != null) {
+                // TODO: Calculate realEquip2 stat
+            }
         }
+        
+        // TODO: Archer.AmazonBlessing (acc += x)
+        // TODO: Rogue.NimbleBody (acc += x, eva += y)
+        
+        // TODO: Weapon/Magic Mastery
+        
+        // TODO: this.speed += SkillAccessor.getIncreaseSpeed(cd);
+        
+        this.pad = Math.max(Math.min(this.pad, SkillAccessor.PAD_MAX), 0);
+        this.pdd = Math.max(Math.min(this.pdd, SkillAccessor.PDD_MAX), 0);
+        this.mad = Math.max(Math.min(this.mad, SkillAccessor.MAD_MAX), 0);
+        this.mdd = Math.max(Math.min(this.mdd, SkillAccessor.MDD_MAX), 0);
+        this.acc = Math.max(Math.min(this.acc, SkillAccessor.ACC_MAX), 0);
+        this.eva = Math.max(Math.min(this.eva, SkillAccessor.EVA_MAX), 0);
+        this.craft = Math.max(Math.min(this.craft, SkillAccessor.CRAFT_MAX), 0);
+        this.speed = Math.max(Math.min(this.speed, SkillAccessor.SPEED_MAX), 100);
+        this.jump = Math.max(Math.min(this.jump, SkillAccessor.JUMP_MAX), 100);
     }
     
     public int setStat(int cts, SecondaryStatOption opt) {

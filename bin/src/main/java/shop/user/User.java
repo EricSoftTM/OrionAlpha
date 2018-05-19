@@ -395,8 +395,7 @@ public class User {
         if (comm != null && ItemInfo.isCashItem(comm.getItemID()) && this.getNexonCash() >= comm.getPrice()) {
             this.rcvCharacterName = reciever;
             if (this.rcvCharacterName != null && rcvCharacterName.length() <= 12) {
-                RecievedGift recievedGift = null;
-                ShopDB.rawLoadAccountByNameForGift(rcvCharacterName, recievedGift);
+                ReceivedGift recievedGift = ShopDB.rawLoadAccountByNameForGift(rcvCharacterName);
                 if (recievedGift != null) {
                     if (this.getNexonCash() < comm.getPrice()) {
                         sendPacket(ShopPacket.onGiftFailed((byte) 31));

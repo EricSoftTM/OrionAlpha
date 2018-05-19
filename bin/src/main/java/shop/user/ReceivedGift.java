@@ -21,7 +21,7 @@ package shop.user;
  *
  * @author sunnyboy
  */
-public class RecievedGift {
+public class ReceivedGift {
 
     private int accountID;
     private int characterID;
@@ -44,7 +44,7 @@ public class RecievedGift {
         this.characterID = characterID;
     }
 
-    public int getBirthDay() {
+    public int getBirthDate() {
         return birthDate;
     }
 

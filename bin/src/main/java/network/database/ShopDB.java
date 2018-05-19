@@ -26,7 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import shop.user.CashItemInfo;
-import shop.user.RecievedGift;
+import shop.user.ReceivedGift;
 import shop.user.User;
 import util.FileTime;
 
@@ -104,13 +104,15 @@ public class ShopDB {
         }
     }
 
-    public static void rawLoadAccountByNameForGift(String rcvCharacterName, RecievedGift recievedGift) {
+    public static ReceivedGift rawLoadAccountByNameForGift(String rcvCharacterName) {
+        ReceivedGift recievedGift = null;
+        
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterName = ?")) {
                 ps.setString(1, rcvCharacterName);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        recievedGift = new RecievedGift();
+                        recievedGift = new ReceivedGift();
                         recievedGift.setAccountID(rs.getInt("AccountID"));
                         recievedGift.setCharacterID(rs.getInt("CharacterID"));
                         recievedGift.setBirthDate(rs.getInt("BirthDate"));
@@ -121,6 +123,8 @@ public class ShopDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
+        
+        return recievedGift;
     }
 
     public static CharacterData rawLoadCharacter(int characterID, User user) {

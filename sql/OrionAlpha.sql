@@ -61,10 +61,10 @@ CREATE TABLE `character` (
 
 /*!40000 ALTER TABLE `character` DISABLE KEYS */;
 INSERT INTO `character` (`CharacterID`,`AccountID`,`WorldID`,`CharacterName`,`Gender`,`Skin`,`Face`,`Hair`,`Level`,`Job`,`STR`,`DEX`,`INT`,`LUK`,`HP`,`MP`,`MaxHP`,`MaxMP`,`AP`,`SP`,`EXP`,`POP`,`Money`,`Map`,`Portal`) VALUES 
- (1,1,0,'Eric',0,0,20001,30000,38,110,100,200,300,400,986,999,999,999,5,13,1337,1337,9999990,104040000,17),
+ (1,1,0,'Eric',0,0,20001,30000,38,110,100,200,300,400,986,999,999,999,5,13,1337,1337,9999990,104040000,7),
  (2,1,0,'Erica',1,0,21000,31000,42,230,999,999,999,999,30000,30000,30000,30000,5,10,1337,1337,9999990,104040000,2),
  (3,2,0,'Justin',0,0,20000,30030,10,0,5,6,6,8,50,5,50,5,0,0,0,0,0,0,0),
- (4,4,0,'Brookie',1,0,21001,31057,10,0,8,6,5,6,50,5,50,5,0,0,0,0,0,0,0);
+ (4,4,0,'Brookie',1,0,21001,31057,10,0,8,6,5,6,50,5,50,5,0,0,0,0,0,10000,0);
 /*!40000 ALTER TABLE `character` ENABLE KEYS */;
 
 
@@ -113,9 +113,9 @@ CREATE TABLE `iteminitsn` (
 
 /*!40000 ALTER TABLE `iteminitsn` DISABLE KEYS */;
 INSERT INTO `iteminitsn` (`WorldID`,`ItemSN`,`CashItemSN`) VALUES 
- (-2,0,-14),
+ (-2,0,-34),
  (-1,-9,0),
- (0,26,22),
+ (0,32,31),
  (1,1,1);
 /*!40000 ALTER TABLE `iteminitsn` ENABLE KEYS */;
 
@@ -133,17 +133,17 @@ CREATE TABLE `itemlocker` (
   `ItemID` int(11) NOT NULL DEFAULT 0,
   `CommodityID` int(11) NOT NULL DEFAULT 0,
   `Number` int(11) NOT NULL DEFAULT 0,
-  `BuyCharacterID` varchar(13) NOT NULL,
+  `BuyCharacterName` varchar(13) NOT NULL,
   `ExpiredDate` bigint(20) NOT NULL DEFAULT -1,
   PRIMARY KEY (`SN`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `itemlocker`
 --
 
 /*!40000 ALTER TABLE `itemlocker` DISABLE KEYS */;
-INSERT INTO `itemlocker` (`SN`,`CashItemSN`,`AccountID`,`CharacterID`,`ItemID`,`CommodityID`,`Number`,`BuyCharacterID`,`ExpiredDate`) VALUES 
+INSERT INTO `itemlocker` (`SN`,`CashItemSN`,`AccountID`,`CharacterID`,`ItemID`,`CommodityID`,`Number`,`BuyCharacterName`,`ExpiredDate`) VALUES 
  (1,-3,2,3,1000000,20000004,1,'Justin',1526358188165),
  (2,-5,2,3,1002186,20000000,1,'Justin',1526360158528);
 /*!40000 ALTER TABLE `itemlocker` ENABLE KEYS */;
@@ -164,15 +164,18 @@ CREATE TABLE `itemslotbundle` (
   `Number` int(11) NOT NULL DEFAULT 0,
   `TI` int(11) NOT NULL DEFAULT 0,
   `ExpireDate` bigint(20) NOT NULL DEFAULT -1,
-  PRIMARY KEY (`SN`) USING BTREE,
-  UNIQUE KEY `ItemSN` (`ItemSN`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`SN`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `itemslotbundle`
 --
 
 /*!40000 ALTER TABLE `itemslotbundle` DISABLE KEYS */;
+INSERT INTO `itemslotbundle` (`SN`,`ItemSN`,`CashItemSN`,`CharacterID`,`POS`,`ItemID`,`Number`,`TI`,`ExpireDate`) VALUES 
+ (3,0,29,4,1,2090000,1,2,1526521585788),
+ (5,0,30,4,1,4040000,1,4,1534302467877),
+ (6,30,0,1,1,2000000,1,2,3439756800000);
 /*!40000 ALTER TABLE `itemslotbundle` ENABLE KEYS */;
 
 
@@ -207,7 +210,7 @@ CREATE TABLE `itemslotequip` (
   `I_Jump` int(11) NOT NULL DEFAULT 0,
   `ExpireDate` bigint(20) NOT NULL DEFAULT -1,
   PRIMARY KEY (`SN`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `itemslotequip`
@@ -229,14 +232,12 @@ INSERT INTO `itemslotequip` (`SN`,`ItemSN`,`CashItemSN`,`CharacterID`,`POS`,`Ite
  (29,20,0,1,-1,1002140,8,0,997,997,1002,997,0,0,0,0,199,199,201,200,0,31,49,3439756800000),
  (30,21,0,1,-11,1322000,8,0,0,0,0,0,0,0,35,0,0,0,0,0,0,0,0,3439756800000),
  (31,22,0,1,3,1332000,8,0,0,0,0,0,0,0,29,0,0,0,0,0,0,0,0,3439756800000),
- (36,23,0,4,-5,1041011,7,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,3439756800000),
- (37,24,0,4,-6,1061008,7,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,3439756800000),
- (38,25,0,4,-7,1072038,5,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,3439756800000),
- (39,26,0,4,1,1302000,7,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,3439756800000),
- (44,0,19,4,-15,1001000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526411485798),
- (45,0,20,4,-19,1041001,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526411520850),
- (46,0,21,4,-20,1061001,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526411527711),
- (47,0,22,4,-21,1071000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526411536850);
+ (69,0,-29,4,-19,1041001,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526521158928),
+ (70,0,-30,4,-20,1061001,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526521163467),
+ (71,0,-31,4,-21,1071000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526521168347),
+ (72,0,-22,4,-15,1001000,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526511358228),
+ (73,29,0,4,-11,1302000,7,0,0,0,0,0,0,0,17,0,0,0,0,0,0,0,0,3439756800000),
+ (74,0,-34,4,1,1041005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1526526773463);
 /*!40000 ALTER TABLE `itemslotequip` ENABLE KEYS */;
 
 
@@ -354,7 +355,8 @@ CREATE TABLE `users` (
   `GradeCode` tinyint(2) unsigned NOT NULL DEFAULT 0,
   `BlockReason` tinyint(4) unsigned DEFAULT NULL,
   `NexonCash` int(11) NOT NULL DEFAULT 0,
-  `SSN1` varchar(7) NOT NULL DEFAULT '0',
+  `SSN1` int(8) NOT NULL DEFAULT 0,
+  `BirthDate` int(8) NOT NULL DEFAULT 19700101 COMMENT 'YYYYMMDD',
   PRIMARY KEY (`AccountID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
@@ -363,11 +365,11 @@ CREATE TABLE `users` (
 --
 
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`AccountID`,`LoginID`,`Password`,`Gender`,`GradeCode`,`BlockReason`,`NexonCash`,`SSN1`) VALUES 
- (1,'eric@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL,100000,''),
- (2,'justin@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL,79100,''),
- (3,'arnah@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL,100000,''),
- (4,'brookie@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',1,0,NULL,1325337,'0');
+INSERT INTO `users` (`AccountID`,`LoginID`,`Password`,`Gender`,`GradeCode`,`BlockReason`,`NexonCash`,`SSN1`,`BirthDate`) VALUES 
+ (1,'eric@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL,100000,0,19700101),
+ (2,'justin@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL,79100,0,19700101),
+ (3,'arnah@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',0,0,NULL,100000,0,19700101),
+ (4,'brookie@wizet.com','$2a$10$mWwD9CGdJ9JQb3CzsnmhDOvIqvSMHMIBKABWyn1.41JJYCcVFSsE.',1,0,NULL,1283037,0,19700101);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 

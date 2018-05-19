@@ -51,6 +51,22 @@ public class ShopPacket {
         return packet;
     }
 
+    public static OutPacket onGiftDone(String rcvCharacterName, int itemID, short count) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.GiftDone);
+        packet.encodeString(rcvCharacterName);
+        packet.encodeInt(itemID);
+        packet.encodeShort(count);
+        return packet;
+    }
+
+    public static OutPacket onGiftFailed(byte type) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.GiftFailed);
+        packet.encodeByte(type);
+        return packet;
+    }
+
     public static OutPacket onIncSlotCountDone(byte ti, short newSlotCount) {
         OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
         packet.encodeByte(CashItemRequest.IncSlotCountDone);

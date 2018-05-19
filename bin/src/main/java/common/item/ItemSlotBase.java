@@ -31,7 +31,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
     private int accountID;
     private int characterID;
     private int commodityID;
-    private String buyCharacterName;
+    private String buyCharacterName = "";
     private FileTime dateExpire;
 
     public ItemSlotBase(int itemID) {

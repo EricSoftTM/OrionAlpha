@@ -26,6 +26,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import shop.user.CashItemInfo;
+import shop.user.RecievedGift;
 import shop.user.User;
 import util.FileTime;
 
@@ -61,11 +62,21 @@ public class ShopDB {
     }
 
     public static void rawIncreaseItemSlotCount(int characterID, byte typeIndex, int slotCount) {
-        String[] types = { "Equip", "Consume", "Install", "Etc" };
-        String inventory = String.format("%sCount", types[typeIndex]);
+        String[] types = {"Equip", "Consume", "Install", "Etc"};
+        String inventory = String.format("%sCount", types[typeIndex - 1]);
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE `inventorysize` SET `" + inventory + "` = ? WHERE `CharacterID` = ?")) {
                 Database.execute(con, ps, slotCount, characterID);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+
+    public static void rawInsertItemLocker(CashItemInfo cashItem) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO itemlocker (CashItemSN, AccountID, CharacterID, ItemID, CommodityID, Number, BuyCharacterName, ExpireDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ")) {
+                Database.execute(con, ps, cashItem.getCashItemSN(), cashItem.getAccountID(), cashItem.getCharacterID(), cashItem.getItemID(), cashItem.getNumber(), cashItem.getBuyCharacterName(), cashItem.getDateExpire().fileTimeToLong());
             }
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
@@ -80,8 +91,30 @@ public class ShopDB {
                     if (rs.next()) {
                         user.setNexonCash(rs.getInt("NexonCash"));
                         user.setAccountID(rs.getInt("AccountID"));
+                        user.setGender(rs.getInt("Gender"));
                         user.setNexonClubID(rs.getString("LoginID"));
+                        user.setKSSN(rs.getInt("SSN1"));
+                        user.setBirthDate(rs.getInt("BirthDate"));
                         // more will be added when I get there
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+
+    public static void rawLoadAccountByNameForGift(String rcvCharacterName, RecievedGift recievedGift) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterName = ?")) {
+                ps.setString(1, rcvCharacterName);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        recievedGift = new RecievedGift();
+                        recievedGift.setAccountID(rs.getInt("AccountID"));
+                        recievedGift.setCharacterID(rs.getInt("CharacterID"));
+                        recievedGift.setBirthDate(rs.getInt("BirthDate"));
+                        recievedGift.setGender(rs.getInt("Gender"));
                     }
                 }
             }

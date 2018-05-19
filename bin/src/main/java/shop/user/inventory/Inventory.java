@@ -72,7 +72,6 @@ public class Inventory {
                     user.getCharacter().getItemSlot(ti).add(null);
                     user.getCharacter().getItemTrading().get(ti).add(0);
                 }
-            //    user.sendPacket(WvsContext.onInventoryGrow(ti, slotInc));
                 return true;
             } finally {
                 user.unlock();

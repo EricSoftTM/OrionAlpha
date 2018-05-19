@@ -21,47 +21,43 @@ package shop.user;
  *
  * @author sunnyboy
  */
-public class GiftList {
+public class RecievedGift {
 
-    private long sn;
-    private int itemID;
-    private String buyCharacterName;//13
-    private String text;//73
-
-    public GiftList() {
-
+    private int accountID;
+    private int characterID;
+    private int birthDate;
+    private int gender;
+    
+    public int getAccountID() {
+        return accountID;
     }
 
-    public long getSN() {
-        return sn;
+    public void setAccountID(int accountID) {
+        this.accountID = accountID;
     }
 
-    public void setSN(long sn) {
-        this.sn = sn;
+    public int getCharacterID() {
+        return characterID;
     }
 
-    public int getItemID() {
-        return itemID;
+    public void setCharacterID(int characterID) {
+        this.characterID = characterID;
     }
 
-    public void setItemID(int itemID) {
-        this.itemID = itemID;
+    public int getBirthDay() {
+        return birthDate;
     }
 
-    public String getBuyCharacterName() {
-        return buyCharacterName;
+    public void setBirthDate(int birthDate) {
+        this.birthDate = birthDate;
     }
 
-    public void setBuyCharacterName(String buyCharacterName) {
-        this.buyCharacterName = buyCharacterName;
+    public int getGender() {
+        return gender;
     }
 
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 
 }

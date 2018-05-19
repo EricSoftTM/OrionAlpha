@@ -26,44 +26,48 @@ import util.Pointer;
  * @author Eric
  */
 public class ItemAccessor {
-    
+
+    public static int getGenderFromID(int itemID) {
+        return getItemTypeIndexFromID(itemID) == 1 ? itemID / 1000 % 10 : 2;
+    }
+
     public static int getWeaponType(int itemID) {
         if (getItemTypeIndexFromID(itemID) == ItemType.Equip) {
             return itemID / 10000 % 100;
         }
         return 0;
     }
-    
+
     public static boolean isTreatSingly(ItemSlotBase p) {
         byte ti = getItemTypeIndexFromID(p.getItemID());
         return !isBundleTypeIndex(ti) || isRechargeableItem(p.getItemID()) || FileTime.compareFileTime(p.getDateExpire(), FileTime.END) < 0;
     }
-    
+
     public static boolean isTreatSingly(int itemID) {
         byte ti = getItemTypeIndexFromID(itemID);
         return !isBundleTypeIndex(ti) || isRechargeableItem(itemID);
     }
-    
+
     public static boolean isBundleTypeIndex(byte ti) {
         return ti == ItemType.Consume || ti == ItemType.Install || ti == ItemType.Etc;
     }
-    
+
     public static boolean isJavelinItem(int itemID) {
         return itemID / 10000 == 207; // lol throwing stars xd
     }
-    
+
     public static boolean isLongCoat(int itemID) {
         return itemID / 10000 == 105;
     }
-    
+
     public static boolean isRechargeableItem(int itemID) {
         return isJavelinItem(itemID);
     }
-    
+
     public static byte getItemTypeIndexFromID(int itemID) {
         return (byte) (itemID / 1000000);
     }
-    
+
     public static int getItemTypeFromTypeIndex(int ti) {
         switch (ti) {
             case ItemType.Equip:

@@ -17,6 +17,7 @@
  */
 package shop.user;
 
+import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
 import common.item.ItemSlotEquip;
@@ -35,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import network.database.CommonDB;
-import network.database.GameDB;
 import network.database.ShopDB;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
@@ -57,29 +57,25 @@ import util.SystemTime;
 public class User {
 
     private int accountID;
-    private boolean alreadyAcceptedRequest;
     private byte authenCode;
-    private int birthDay;
+    private int birthDate;
     private List<CashItemInfo> cashItemInfo;
     private int cashKey;
     private boolean cashShopAuthorized;
     private final CharacterData character;
     private int characterID;
     private String characterName;
-    private int countCouponRedeemFailed;
     private boolean doCheckCashItemExpire;
-    private List<GiftList> giftList;
+    private int gender;
     private byte gradeCode;
 
     private List<Integer> itemCount;
+    private int kssn;
     private long lastCharacterDataFlush;
     private byte level;
     private int localSocketSN;
     private final Lock lock;
-    private final Lock lockGuardData;
-
     private final Lock lockSocket;
-    private boolean migrateOutPosted;
 
     private int modFlag;
     private boolean msMessenger;
@@ -89,55 +85,13 @@ public class User {
     private String nexonClubID;
 
     private long nextCheckCashItemExpire;
-    private int privateStatusID;
 
-    private int purchaseExp;
-    private byte purchaseType;
+    private String rcvCharacterName;
 
     private FileTime registerDate;
     private int slotCount;
     private ClientSocket socket;
     private byte typeIndex;
-    /*tDelayedLoopbackPacket dd ?
-     nDelayedLoopbackPacket dd ?
-     tLastCheckMalProc dd ?
-     tIntervalCheckMalProc dd ?
-     bWaitMalProcPacket dd ?
-     nPurchaseType dd ?
-     bByMaplePoint dd ?
-     nDBID         dd ?
-     i64ChargeNo   dq ?
-     sRcvCharacterName ZXString<char> ?
-     sText         ZXString<char> ?
-     sOldCharacterName ZXString<char> ?
-     sNewCharacterName ZXString<char> ?
-     nTransferWorldTargetWorldID dd ?
-     nItemID       dd ?
-     nNumber       dd ?
-     nActivePeriod dd ?
-     nCommodityID  dd ?
-     nCouponSN     dd ?
-     nPrice        dd ?
-     nPaybackRate  dd ?
-     nGiftPaybackRate dd ?
-     nDiscountRate dd ?
-     nTI           dd ?
-     nDelta        dd ?
-     nSlotCount    dd ?
-     nFailReason   dd ?
-     nItemGender   dd ?
-     aciNew        ZArray<GW_CashItemInfo> ?
-     nTrunkCount   dd ?
-     sCouponID     ZXString<char> ?
-     nMaplePointGiven dd ?
-     nMesoGiven    dd ?
-     aniNew        ZArray<_ULARGE_INTEGER> ?
-     aChangeLog    ZArray<CInventoryManipulator::CHANGELOG> ?
-     aaItemSlotBackUp ZArray<ZRef<GW_ItemSlotBase> > 6 dup(?)
-     nStockState   dd ?
-     nMaplePointInPackage dd ?*/
-    /*   private ClientSocket socket;
-     */
     private static final Lock lockUser = new ReentrantLock();
 
     private static final Map<String, User> userByName = new LinkedHashMap<>();
@@ -146,14 +100,11 @@ public class User {
     protected User(int characterID) {
         super();
         this.cashKey = 0;
-        this.migrateOutPosted = false;
-        this.alreadyAcceptedRequest = false;
 
-        this.giftList = new ArrayList<>();
         this.cashItemInfo = new ArrayList<>();
         this.itemCount = new ArrayList<>();
         this.nexonCash = 0;
-        this.purchaseType = -1;
+        this.gender = -1;
         this.modFlag = 0;
         ShopDB.rawLoadAccount(characterID, User.this);
         this.character = ShopDB.rawLoadCharacter(characterID, User.this);
@@ -163,7 +114,6 @@ public class User {
             Logger.logReport("User is cashShopAuthorized");
         }
         this.cashKey = Rand32.getInstance().random().intValue();
-        this.lockGuardData = new ReentrantLock();
         this.lock = new ReentrantLock();
         this.lockSocket = new ReentrantLock();
     }
@@ -315,17 +265,14 @@ public class User {
                         }
                         if ((modFlag & ModFlag.ItemLocker) != 0) {
                             Logger.logReport("Updating ItemLocker");
-
                             ShopDB.rawUpdateItemLocker(this.characterID, this.cashItemInfo);
                         }
                         if ((modFlag & ModFlag.ItemSlotEquip) != 0) {
                             Logger.logReport("Updating SlotEquip");
-
                             CommonDB.rawUpdateItemEquip(this.characterID, this.character.getEquipped(), this.character.getEquipped2(), this.character.getItemSlot(ItemType.Equip));
                         }
                         if ((modFlag & ModFlag.ItemSlotBundle) != 0 || (modFlag & ModFlag.ItemSlotEtc) != 0) {
                             Logger.logReport("Updating Bundle");
-                            
                             CommonDB.rawUpdateItemBundle(this.characterID, this.character.getItemSlot());
                         }
                         if ((modFlag & ModFlag.InventorySize) != 0) {
@@ -354,6 +301,10 @@ public class User {
         return characterID;
     }
 
+    public int getKSSN() {
+        return kssn;
+    }
+
     public int getNexonCash() {
         return nexonCash;
     }
@@ -379,10 +330,14 @@ public class User {
         return false;
     }
 
-    private void onBuyDone(InPacket packet) {
+    private void onBuy(InPacket packet) {
         int commoditySN = packet.decodeInt();
         Commodity comm = ShopApp.getInstance().findCommodity(commoditySN);
-        if (comm != null && ItemInfo.isCashItem(comm.getItemID()) && this.getNexonCash() >= comm.getPrice()) {
+        if (comm != null && ItemInfo.isCashItem(comm.getItemID())) {
+            if (this.getNexonCash() < comm.getPrice()) {
+                sendPacket(ShopPacket.onBuyFailed((byte) 31));
+                return;
+            }
             CashItemInfo cashItem = new CashItemInfo();
             cashItem.setCashItemSN(ShopApp.getInstance().getNextCashSN());
             cashItem.setAccountID(this.accountID);
@@ -407,13 +362,12 @@ public class User {
 
     private void onCashItemRequest(InPacket packet) {
         byte type = packet.decodeByte();
-        Logger.logReport("onCashItemRequest triggered with type " + type);
-
         switch (type) {
             case 1:
-                onBuyDone(packet);
+                onBuy(packet);
                 break;
-            case 2: // probably gift
+            case 2:
+                onGift(packet);
                 break;
             case 3:
                 onIncSlotCount(packet);
@@ -424,11 +378,67 @@ public class User {
             case 7:
                 onMoveSToL(packet);
                 break;
+            default:
+                Logger.logReport("Unhandled CashItemRequest Type %d", type);
+                break;
         }
     }
 
     private void onChargeParamRequest(InPacket packet) {
-        sendPacket(ShopPacket.onQueryCash(this)); // prevent getting stuck
+        sendPacket(ShopPacket.onQueryCash(this));
+    }
+
+    private void onGift(InPacket packet) {
+        int commoditySN = packet.decodeInt();
+        String reciever = packet.decodeString();
+        Commodity comm = ShopApp.getInstance().findCommodity(commoditySN);
+        if (comm != null && ItemInfo.isCashItem(comm.getItemID()) && this.getNexonCash() >= comm.getPrice()) {
+            this.rcvCharacterName = reciever;
+            if (this.rcvCharacterName != null && rcvCharacterName.length() <= 12) {
+                RecievedGift recievedGift = null;
+                ShopDB.rawLoadAccountByNameForGift(rcvCharacterName, recievedGift);
+                if (recievedGift != null) {
+                    if (this.getNexonCash() < comm.getPrice()) {
+                        sendPacket(ShopPacket.onGiftFailed((byte) 31));
+                        return;
+                    }
+                    SystemTime st = SystemTime.getLocalTime();
+                    if (st != null && (st.getYear() - Integer.parseInt(String.valueOf(this.birthDate).substring(0, 4))) < 14) { // can't gift if you're under 14
+                        // you're under 14 yrs old, cannot gift
+                        sendPacket(ShopPacket.onGiftFailed((byte) 32));
+                        return;
+                    }
+                    if (ItemAccessor.getGenderFromID(comm.getItemID()) != recievedGift.getGender()) {
+                        // item gender != recieved gift users gender
+                        sendPacket(ShopPacket.onGiftFailed((byte) 35));
+                        return;
+                    }
+                    CashItemInfo cashItem = new CashItemInfo();
+                    cashItem.setCashItemSN(ShopApp.getInstance().getNextCashSN());
+                    cashItem.setAccountID(recievedGift.getAccountID());
+                    cashItem.setCharacterID(recievedGift.getCharacterID());
+                    cashItem.setItemID(comm.getItemID());
+                    cashItem.setCommodityID(commoditySN);
+                    cashItem.setNumber(comm.getCount());
+                    cashItem.setBuyCharacterName(this.characterName);
+                    FileTime ftExpire = FileTime.systemTimeToFileTime();
+                    ftExpire.add(FileTime.FILETIME_DAY, comm.getPeriod());
+                    cashItem.setDateExpire(ftExpire);
+
+                    this.nexonCash -= comm.getPrice();
+                    this.modFlag |= ModFlag.NexonCash;
+                    this.sendRemainCashRequest();
+
+                    ShopDB.rawInsertItemLocker(cashItem);
+                    sendPacket(ShopPacket.onGiftDone(rcvCharacterName, comm.getItemID(), comm.getCount()));
+
+                    ShopApp.getInstance().updateItemInitSN();
+                } else {
+                    // name is probably invalid
+                    sendPacket(ShopPacket.onGiftFailed((byte) 35));
+                }
+            }
+        }
     }
 
     private void onIncSlotCount(InPacket packet) {
@@ -643,6 +653,18 @@ public class User {
         this.accountID = accountID;
     }
 
+    public void setBirthDate(int birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
+    }
+
+    public void setKSSN(int kssn) {
+        this.kssn = kssn;
+    }
+
     public void setNexonCash(int nexonCash) {
         this.nexonCash = nexonCash;
     }
@@ -689,5 +711,6 @@ public class User {
         private static final byte ItemSlotBundle = 0x8;
         private static final byte ItemSlotEtc = 0x10;
         private static final byte InventorySize = 0x20;
+        private static final byte GiftItem = 0x40;
     }
 }

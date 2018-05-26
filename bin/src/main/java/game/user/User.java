@@ -17,22 +17,23 @@
  */
 package game.user;
 
+import java.awt.Point;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import common.ExpAccessor;
 import common.JobAccessor;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
-import common.item.ItemSlotType;
 import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.DBChar;
 import game.GameApp;
-import game.field.Creature;
-import game.field.Field;
-import game.field.FieldMan;
-import game.field.GameObjectType;
-import game.field.Stage;
+import game.field.*;
 import game.field.drop.Drop;
 import game.field.drop.DropPickup;
 import game.field.drop.Reward;
@@ -45,43 +46,22 @@ import game.field.portal.PortalMap;
 import game.miniroom.MiniRoomBase;
 import game.user.WvsContext.BroadcastMsg;
 import game.user.WvsContext.Request;
+import game.user.command.CommandHandler;
 import game.user.item.ChangeLog;
 import game.user.item.Inventory;
 import game.user.item.InventoryManipulator;
-import game.user.item.ItemInfo;
-import game.user.item.ItemVariationOption;
-import game.user.skill.SkillAccessor;
-import game.user.skill.SkillEntry;
-import game.user.skill.SkillInfo;
-import game.user.skill.SkillRecord;
-import game.user.skill.SkillRoot;
+import game.user.skill.*;
 import game.user.skill.Skills.*;
-import game.user.skill.UserSkill;
 import game.user.stat.BasicStat;
 import game.user.stat.CharacterTemporaryStat;
 import game.user.stat.SecondaryStat;
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import network.database.CommonDB;
 import network.database.GameDB;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
-import util.Logger;
-import util.Pointer;
-import util.Rand32;
-import util.Rect;
-import util.Utilities;
+import util.*;
 
 /**
  *
@@ -1256,62 +1236,8 @@ public class User extends Creature {
         String text = packet.decodeString();
         
         if (text.startsWith("!")) {
-            // TODO: Command processing system
-            
-            String[] arg = text.split(" ");
-            if (arg[0].equals("!level")) {
-                if (arg.length > 1) {
-                    character.getCharacterStat().setLevel(Byte.parseByte(arg[1]));
-                } else {
-                    character.getCharacterStat().setLevel((byte) 99);
-                }
-                sendCharacterStat(Request.Excl, CharacterStatType.LEV);
-            }
-            if (arg[0].equals("!job")) {
-                if (arg.length > 1) {
-                    character.getCharacterStat().setJob(Short.parseShort(arg[1]));
-                    sendCharacterStat(Request.Excl, CharacterStatType.Job);
-                }
-            }
-            if (arg[0].equals("!fixme")) {
-                sendCharacterStat(Request.Excl, 0);
-            }
-            if (arg[0].equals("!packet")) {
-                sendPacket(WvsContext.onIncEXPMessage(1));
-            }
-            if (arg[0].equals("!drop") || arg[0].equals("!item")) {
-                if (arg.length > 1) {
-                    int itemID = Integer.parseInt(arg[1]);
-                    ItemSlotBase item = ItemInfo.getItemSlot(itemID, ItemVariationOption.Normal);
-                    String itemName = ItemInfo.getItemName(itemID);
-                    if (itemName.isEmpty())
-                        itemName = String.valueOf(itemID);
-                    if (item != null) {
-                        if (item.getType() == ItemSlotType.Bundle) {
-                            item.setItemNumber(ItemInfo.getBundleItem(itemID).getSlotMax());
-                        }
-                        if (arg[0].equals("!item")) {
-                            List<ChangeLog> changeLog = new ArrayList<>();
-                            InventoryManipulator.rawAddItem(character, ItemAccessor.getItemTypeIndexFromID(itemID), item, changeLog, null);
-                            sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
-                            characterDataModFlag |= ItemAccessor.getItemTypeFromTypeIndex(ItemAccessor.getItemTypeIndexFromID(itemID));
-                        } else {
-                            Reward reward = new Reward(RewardType.Item, item, 0, 0);
-                            getField().getDropPool().create(reward, characterID, 0, curPos.x, curPos.y, curPos.x, 0, 0, isGM(), 0);
-                        }
-                        sendSystemMessage("The item (" + itemName + ") has been successfully created.");
-                    } else {
-                        sendSystemMessage("The Item (" + itemName + ") does not exist.");
-                    }
-                }
-            }
-            if (arg[0].equals("!sp")) {
-                if (arg.length > 1) {
-                    short sp = Short.parseShort(arg[1]);
-                    character.getCharacterStat().setSP(sp);
-                    sendCharacterStat(Request.Excl, CharacterStatType.SP);
-                }
-            }
+            CommandHandler.handle(this, text);
+            return;
         }
         
         getField().splitSendPacket(getSplit(), UserCommon.onChat(characterID, text), null);

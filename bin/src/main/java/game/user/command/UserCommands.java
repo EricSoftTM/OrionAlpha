@@ -35,7 +35,7 @@ public class UserCommands {
         return "Level has been set to " + stat.getLevel() + ".";
     }
 
-    public static String fixme(User user) {
+    public static String fixme(User user, String[] args) {
         user.sendCharacterStat(Request.Excl, 0);
         return null;
     }
@@ -49,7 +49,7 @@ public class UserCommands {
         return "!job <jobid>";
     }
 
-    public static String packet(User user) {
+    public static String packet(User user, String[] args) {
         user.sendPacket(WvsContext.onIncEXPMessage(1));
         return null;
     }

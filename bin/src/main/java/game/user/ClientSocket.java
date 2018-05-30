@@ -28,7 +28,6 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.util.concurrent.ScheduledFuture;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -45,6 +44,7 @@ import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 import network.security.XORCrypter;
 import util.Logger;
+import util.Rand32;
 
 /**
  *
@@ -75,8 +75,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private int localSocketSN;
     private int seqSnd;
     private int seqRcv;
-    private AtomicBoolean closePosted;
-    private AtomicBoolean updatePosted;
+    private final AtomicBoolean closePosted;
+    private final AtomicBoolean updatePosted;
     private String addr;
     private long acceptTime;
     private long migrateOut;
@@ -202,8 +202,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     }
     
     public void initSequence() {
-        this.seqRcv = 42;
-        this.seqSnd = 69;
+        this.seqRcv = Rand32.genRandom().intValue();
+        this.seqSnd = Rand32.genRandom().intValue();
         this.cipher = new XORCrypter(this.seqSnd, this.seqRcv);
     }
     

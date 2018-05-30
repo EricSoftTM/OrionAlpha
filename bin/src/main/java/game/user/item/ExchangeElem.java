@@ -19,7 +19,6 @@ package game.user.item;
 
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
-import common.item.ItemType;
 
 /**
  *

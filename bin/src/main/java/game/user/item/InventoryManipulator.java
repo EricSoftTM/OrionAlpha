@@ -22,6 +22,7 @@ import common.item.ItemSlotBase;
 import common.item.ItemType;
 import common.user.CharacterData;
 import game.user.skill.SkillInfo;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import network.packet.LoopbackPacket;
@@ -172,7 +173,92 @@ public class InventoryManipulator {
         }
     }
     
-    // rawExchange
+    public static boolean rawExchange(CharacterData cd, int money, List<ExchangeElem> exchange, List<ChangeLog> logAdd, List<ChangeLog> logRemove, Pointer<Integer> modFlag, List<ChangeLog> logDef) {
+        if (cd.getCharacterStat().getHP() == 0)
+            return false;
+        if (logDef == null)
+            logDef = new ArrayList<>();
+        if (logAdd == null)
+            logAdd = logDef;
+        if (logRemove == null)
+            logRemove = logDef;
+        if (modFlag == null)
+            modFlag = new Pointer<>();
+        boolean success = false;
+        modFlag.set(0);
+        List<List<ItemSlotBase>> backupItem = new ArrayList<>();
+        cd.backupItemSlot(backupItem, null);
+        int i = 0;
+        for (ExchangeElem e : exchange) {
+            if (!e.add) {
+                int itemID = e.r.itemID;
+                if (itemID == 0) {
+                    byte ti = e.r.ti;
+                    short count = e.r.count;
+                    Pointer<Integer> decRet = new Pointer<>(0);
+                    if (ti <= ItemType.NotDefine || ti > ItemType.NO || !rawRemoveItem(cd, ti, e.r.pos, count, logRemove, decRet, null) || decRet.get() != count)
+                        break;
+                    modFlag.set(modFlag.get() | ItemAccessor.getItemTypeFromTypeIndex(ti));
+                } else {
+                    short count = e.r.count;
+                    byte ti;
+                    if (ItemAccessor.isRechargeableItem(itemID) || count <= 0 || (ti = ItemAccessor.getItemTypeIndexFromID(itemID)) <= ItemType.NotDefine || ti >= ItemType.NO)
+                        break;
+                    Pointer<Integer> decRet = new Pointer<>(0);
+                    for (int j = 1; j <= cd.getItemSlotCount(ti); j++) {
+                        ItemSlotBase item = cd.getItemSlot().get(ti).get(j);
+                        if (item != null) {
+                            if (item.getItemID() == itemID) {
+                                if (rawRemoveItem(cd, ti, (byte) j, count, logRemove, decRet, null)) {
+                                    count -= decRet.get();
+                                    if (count <= 0)
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    if (count > 0)
+                        break;
+                    int flag = modFlag.get();
+                    modFlag.set(flag | ItemAccessor.getItemTypeFromTypeIndex(ti));
+                }
+            } else {
+                int itemID = e.a.itemID;
+                ItemSlotBase item;
+                if (itemID != 0 && e.a.count <= 0 || ItemAccessor.isRechargeableItem(itemID))
+                    break;
+                if (itemID == 0)
+                    item = e.a.item;
+                else 
+                    item = ItemInfo.getItemSlot(itemID, ItemVariationOption.None);
+                if (item == null)
+                    break;
+                if (e.a.itemID != 0) {
+                    item.setItemNumber(e.a.count);
+                }
+                byte ti = ItemAccessor.getItemTypeIndexFromID(item.getItemID());
+                if (ti <= ItemType.NotDefine || ti >= ItemType.NO) {
+                    break;
+                }
+                short count;
+                if (ItemAccessor.isTreatSingly(item))
+                    count = 1;
+                else
+                    count = item.getItemNumber();
+                Pointer<Integer> incRet = new Pointer<>(0);
+                if (!rawAddItem(cd, ti, item, logAdd, incRet) || incRet.get() != count) {
+                    break;
+                }
+                modFlag.set(modFlag.get() | ItemAccessor.getItemTypeFromTypeIndex(ti));
+            }
+            i++;
+        }
+        if (!exchange.isEmpty() && i < exchange.size() || money != 0 && !rawIncMoney(cd, money, true))
+            cd.restoreItemSlot(backupItem, null);
+        else
+            success = true;
+        return success;
+    }
     
     public static boolean rawIncMoney(CharacterData cd, int inc, boolean onlyFull) {
         int money = inc + cd.getCharacterStat().getMoney();

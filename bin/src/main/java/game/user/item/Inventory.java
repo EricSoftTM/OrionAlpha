@@ -23,15 +23,22 @@ import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
 import common.item.ItemSlotEquip;
 import common.item.ItemType;
+import common.user.CharacterData;
+import common.user.CharacterStat.CharacterStatType;
+import common.user.DBChar;
 import game.GameApp;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.user.User;
+import game.user.WvsContext;
+import game.user.WvsContext.Request;
 import game.user.skill.SkillInfo;
+import game.user.stat.CharacterTemporaryStat;
 import java.util.ArrayList;
 import java.util.List;
 import util.Logger;
 import util.Pointer;
+import util.Rand32;
 
 /**
  *
@@ -175,9 +182,9 @@ public class Inventory {
         user.getCharacter().setItem(ItemType.Equip, pos2, item);
         InventoryManipulator.insertChangeLog(changeLog, ChangeLog.Position, ItemType.Equip, pos2, item, pos1, (short) 0);
         
-        //if (pUser.secondaryStat.GetStatOption(CharacterTemporaryStat.Booster) != 0 && ItemConstants.isWeapon(pItem.nItemID)) {
-        //    pUser.SendTemporaryStatReset(pUser.secondaryStat.ResetByCTS(CharacterTemporaryStat.Booster));
-        //}
+        if (user.getSecondaryStat().getStatOption(CharacterTemporaryStat.Booster) != 0 && ItemAccessor.isWeapon(item.getItemID())) {
+            user.sendTemporaryStatReset(user.getSecondaryStat().resetByCTS(CharacterTemporaryStat.Booster));
+        }
         user.validateStat(false);
     }
     
@@ -206,6 +213,61 @@ public class Inventory {
         user.validateStat(false);
     }
     
+    public static boolean exchange(User user, int money, List<ExchangeElem> exchange, List<ChangeLog> logAdd, List<ChangeLog> logRemove) {
+        if (user.lock()) {
+            try {
+                if (user.getHP() == 0) {
+                    return false;
+                }
+                List<ChangeLog> logDef = new ArrayList<>();
+                Pointer<Integer> modFlag = new Pointer<>(0);
+                boolean aExchangea = InventoryManipulator.rawExchange(user.getCharacter(), money, exchange, logAdd, logRemove, modFlag, logDef);
+                if (aExchangea) {
+                    if (money != 0) {
+                        user.addCharacterDataMod(DBChar.Character);
+                        user.sendCharacterStat(Request.None, CharacterStatType.Money);
+                    }
+                    //if (!logAdd.isEmpty() && !logRemove.isEmpty())
+                    if (logAdd == null && logRemove == null)
+                        sendInventoryOperation(user, Request.None, logDef);
+                    user.addCharacterDataMod(modFlag.get());
+                }
+                return aExchangea;
+            } finally {
+                user.unlock();
+            }
+        }
+        return false;
+    }
+    
+    public static int getItemCount(User user, int itemID) {
+        byte ti = ItemAccessor.getItemTypeIndexFromID(itemID);
+        if (ti <= ItemType.NotDefine || ti >= ItemType.NO) {
+            return 0;
+        } else {
+            if (user.lock()) {
+                try {
+                    short count = 0;
+                    int nSlotCount = user.getCharacter().getItemSlotCount(ti);
+                    for (int i = 1; i <= nSlotCount; i++) {
+                        ItemSlotBase item = user.getCharacter().getItemSlot().get(ti).get(i);
+                        if (item != null && item.getItemID() == itemID) {
+                            if (ti != ItemType.Consume && ti != ItemType.Install && ti != ItemType.Etc) {
+                                count += (user.getCharacter().getItemTrading().get(ti).get(i) == 0) ? 1 : 0;
+                            } else {
+                                count += Math.max(item.getItemNumber() - user.getCharacter().getItemTrading().get(ti).get(i), 0);
+                            }
+                        }
+                    }
+                    return count;
+                } finally {
+                    user.unlock();
+                }
+            }
+            return 0;
+        }
+    }
+    
     public static byte getRoomCountInSlot(User user, int ti) {
         if (user.lock()) {
             try {
@@ -225,14 +287,164 @@ public class Inventory {
         return 0;
     }
     
+    public static boolean incItemSlotCount(User user, byte ti, int inc) {
+        if (ti <= ItemType.NotDefine || ti >= ItemType.NO)
+            return false;
+        if (user.lock()) {
+            try {
+                int slotCount = user.getCharacter().getItemSlotCount(ti);
+                int slotInc = Math.min(slotCount + inc, 80);
+                if (slotCount >= slotInc) {
+                    return false;
+                }
+                for (int i = 0; i < inc; i++) {
+                    user.getCharacter().getItemSlot().get(ti).add(null);
+                    user.getCharacter().getItemTrading().get(ti).add(0);
+                }
+                user.addCharacterDataMod(ItemAccessor.getItemTypeFromTypeIndex(ti));
+                user.sendPacket(WvsContext.onInventoryGrow(ti, slotInc));
+                return true;
+            } finally {
+                user.unlock();
+            }
+        }
+        return false;
+    }
+    
+    public static boolean rawAddItem(User user, byte ti, ItemSlotBase item, List<ChangeLog> changeLog, Pointer<Integer> incRet) {
+        if (user.getHP() == 0) {
+            return false;
+        }
+        return InventoryManipulator.rawAddItem(user.getCharacter(), ti, item, changeLog, incRet);
+    }
+    
+    public static boolean rawRechargeItem(User user, short pos, List<ChangeLog> changeLog) {
+        if (user.getHP() == 0) {
+            return false;
+        }
+        return InventoryManipulator.rawRechargeItem(user.getCharacter(), pos, changeLog);
+    }
+    
     public static boolean rawRemoveItem(User user, byte ti, short pos, short count, List<ChangeLog> changeLog, Pointer<Integer> decRet, Pointer<ItemSlotBase> itemRemoved) {
         if (user.getHP() > 0)
             return InventoryManipulator.rawRemoveItem(user.getCharacter(), ti, pos, count, changeLog, decRet, itemRemoved);
         return false;
     }
     
+    public static boolean rawWasteItem(User user, short pos, short count, List<ChangeLog> changeLog) {
+        if (user.getHP() > 0)
+            return InventoryManipulator.rawWasteItem(user.getCharacter(), pos, count, changeLog);
+        return false;
+    }
+    
     public static void sendInventoryOperation(User user, byte onExclRequest, List<ChangeLog> changeLog) {
         user.sendPacket(InventoryManipulator.makeInventoryOperation(onExclRequest, changeLog));
+    }
+    
+    public static boolean upgradeEquip(User user, short upos, short epos) {
+        CharacterData cd = user.getCharacter();
+        List<ChangeLog> changeLog = new ArrayList<>();
+        boolean success = false;
+        boolean scrolled = false;
+        if (cd.getCharacterStat().getHP() > 0) {
+            ItemSlotBase useItem = cd.getItem(ChangeLog.Position, upos);
+            if (useItem == null) {
+                return false;
+            }
+            ItemSlotBase equipItem = cd.getItem(ChangeLog.ItemNumber, epos);
+            if (equipItem != null) {
+                if (ItemInfo.isReqUpgradeItem(useItem.getItemID(), equipItem.getItemID())) {
+                    if (((ItemSlotEquip) equipItem).ruc > 0) {
+                        UpgradeItem info = ItemInfo.getUpgradeItem(useItem.getItemID());
+                        if (info != null) {
+                            Pointer<Integer> decRet = new Pointer<>(0);
+                            if (InventoryManipulator.rawRemoveItem(cd, ItemType.Consume, upos, 1, changeLog, decRet, null) && decRet.get() == 1) {
+                                ItemSlotEquip item = (ItemSlotEquip) equipItem;
+                                --item.ruc;
+                                scrolled = true;
+                                if (Rand32.getInstance().random() % 101 <= info.getSuccess()) {
+                                    ++item.cuc;
+                                    item.iSTR = (short) Math.min(Math.max(item.iSTR + info.getIncSTR(), 0), 9999);
+                                    item.iDEX = (short) Math.min(Math.max(item.iDEX + info.getIncDEX(), 0), 9999);
+                                    item.iINT = (short) Math.min(Math.max(item.iINT + info.getIncINT(), 0), 9999);
+                                    item.iLUK = (short) Math.min(Math.max(item.iLUK + info.getIncLUK(), 0), 9999);
+                                    item.iMaxHP = (short) Math.min(Math.max(item.iMaxHP + info.getIncMaxHP(), 0), 9999);
+                                    //item.iMaxMP = Math.min(Math.max(item.iMaxMP + info.getIncMaxMP(), 0), 9999);
+                                    item.iPAD = (short) Math.min(Math.max(item.iPAD + info.getIncPAD(), 0), 255);
+                                    item.iMAD = (short) Math.min(Math.max(item.iMAD + info.getIncMAD(), 0), 255);
+                                    item.iPDD = (short) Math.min(Math.max(item.iPDD + info.getIncPDD(), 0), 255);
+                                    item.iMDD = (short) Math.min(Math.max(item.iMDD + info.getIncMDD(), 0), 255);
+                                    item.iACC = (short) Math.min(Math.max(item.iACC + info.getIncACC(), 0), 255);
+                                    item.iEVA = (short) Math.min(Math.max(item.iEVA + info.getIncEVA(), 0), 255);
+                                    //item.iCraft = (short) Math.min(Math.max(item.iCraft + info.getIncCraft(), 0), 255);
+                                    item.iSpeed = (short) Math.min(Math.max(item.iSpeed + info.getIncSpeed(), 0), 40);
+                                    item.iJump = (short) Math.min(Math.max(item.iJump + info.getIncJump(), 0), 23);
+                                }
+                                InventoryManipulator.insertChangeLog(changeLog, ChangeLog.DelItem, ItemType.Equip, epos, null, (short) 0, (short) 0);
+                                InventoryManipulator.insertChangeLog(changeLog, ChangeLog.NewItem, ItemType.Equip, epos, item, (short) 0, (short) 0);
+                                user.validateStat(false);
+                                success = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        user.addCharacterDataMod(DBChar.ItemSlotEquip | DBChar.ItemSlotConsume);
+        user.sendPacket(InventoryManipulator.makeInventoryOperation(Request.Excl, changeLog));
+        if (scrolled) {
+            /*OutPacket oPacket = UserCommon.ShowItemUpgradeEffect(user.dwCharacterID, bUpgrade, bCursed);
+            if (bScrolled) {
+                user.getField().splitSendPacket(user.getSplit(), oPacket, null);
+            } else {
+                user.sendPacket(oPacket);
+            }*/
+        }
+        changeLog.clear();
+        return success;
+    }
+    
+    public static boolean wasteItem(User user, int itemID, short count) {
+        byte ti;
+        if (!ItemAccessor.isRechargeableItem(itemID) || (ti = ItemAccessor.getItemTypeIndexFromID(itemID)) <= ItemType.NotDefine || ti >= ItemType.NO)
+            return false;
+        List<List<ItemSlotBase>> backup = new ArrayList<>();
+        List<List<Integer>> backupTrading = new ArrayList<>();
+        user.getCharacter().backupItemSlot(backup, backupTrading);
+        
+        if (user.lock()) {
+            try {
+                List<ChangeLog> changeLog = new ArrayList<>();
+                for (int pos = 1; pos <= user.getCharacter().getItemSlotCount(ti); pos++) {
+                    ItemSlotBase pItem = user.getCharacter().getItemSlot().get(ti).get(pos);
+                    if (pItem != null && pItem.getItemID() == itemID) {
+                        short counta = pItem.getItemNumber();
+                        if (counta >= count)
+                            counta = count;
+                        InventoryManipulator.rawWasteItem(user.getCharacter(), (short) pos, counta, changeLog);
+                        count -= counta;
+                    }
+                }
+                if (count > 0) {
+                    changeLog.clear();
+                    user.getCharacter().restoreItemSlot(backup, backupTrading);
+                    for (List<ItemSlotBase> backupItem : backup) {
+                        backupItem.clear();
+                    }
+                    for (List<Integer> backupTrade : backupTrading) {
+                        backupTrade.clear();
+                    }
+                    backup.clear();
+                    backupTrading.clear();
+                }
+                user.addCharacterDataMod(ItemAccessor.getItemTypeFromTypeIndex(ti));
+                user.sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
+                return true;
+            } finally {
+                user.unlock();
+            }
+        }
+        return false;
     }
     
     /**

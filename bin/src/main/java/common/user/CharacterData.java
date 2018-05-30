@@ -24,6 +24,7 @@ import common.item.ItemType;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,26 @@ public class CharacterData {
     }
 
     public void backupItemSlot(List<List<ItemSlotBase>> backupItem, List<List<Integer>> backupItemTrading) {
-
+        for (int i = 0; i < ItemType.NO; i++) {
+            backupItem.add(i, new ArrayList<>());
+            if (backupItemTrading != null) {
+                backupItemTrading.add(i, new ArrayList<>());
+            }
+        }
+        
+        for (int ti = ItemType.Equip; ti <= ItemType.NO; ti++) {
+            for (int i = 0; i < itemSlot.get(ti).size(); i++) {
+                backupItem.get(ti).add(i, null);
+                
+                ItemSlotBase item = itemSlot.get(ti).get(i);
+                if (item != null) {
+                    backupItem.get(ti).set(i, item.makeClone());
+                }
+            }
+            if (backupItemTrading != null) {
+                backupItemTrading.get(ti).addAll(itemTrading.get(ti));
+            }
+        }
     }
 
     public void clearTradingInfo() {
@@ -327,5 +347,26 @@ public class CharacterData {
             itemSlot.get(ti).set(pos, item);
         }
         return true;
+    }
+
+    public void restoreItemSlot(List<List<ItemSlotBase>> backup, List<List<Integer>> backupItemTrading) {
+        for (int ti = ItemType.Equip; ti <= ItemType.NO; ti++) {
+            itemSlot.get(ti).clear();
+            itemSlot.get(ti).addAll(backup.get(ti));
+            if (backupItemTrading != null) {
+                itemTrading.get(ti).clear();
+                itemTrading.get(ti).addAll(backupItemTrading.get(ti));
+            }
+        }
+    }
+    
+    public static boolean CheckAdult(int nSSN1, int nSSN2, int nCriticalYear) {
+        int nBirthYear; // [sp+0h] [bp-14h]@5
+        
+        if (nSSN2 / 1000000 != 1 && nSSN2 / 1000000 != 2 && nSSN2 / 1000000 != 5 && nSSN2 / 1000000 != 6)
+            nBirthYear = nSSN1 / 10000 + 2000;
+        else
+            nBirthYear = nSSN1 / 10000 + 1900;
+        return Calendar.getInstance().get(Calendar.YEAR) - nBirthYear >= nCriticalYear;
     }
 }

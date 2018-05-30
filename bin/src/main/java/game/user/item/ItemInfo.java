@@ -17,6 +17,7 @@
  */
 package game.user.item;
 
+import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
@@ -24,6 +25,7 @@ import common.item.ItemSlotEquip;
 import common.item.ItemType;
 import game.field.Field;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -106,6 +108,51 @@ public class ItemInfo {
         }
     }
     
+    public static double getUnitSellPrice(int itemID) {
+        BundleItem item;
+        if ((item = getBundleItem(itemID)) != null) {
+            return item.getUnitPrice();
+        }
+        return 1.0;
+    }
+    
+    public static int getExclusiveClothesBodyPart(List<ItemSlotBase> a, int itemID) {
+        ItemSlotBase excl1 = a.get(BodyPart.Clothes);
+        ItemSlotBase excl2 = a.get(BodyPart.Pants);
+        if (itemID != 0) {
+            if (ItemAccessor.isLongCoat(itemID) && excl2 != null)
+                return BodyPart.Pants;
+            if (itemID / 10000 == 106 && excl1 != null && ItemAccessor.isLongCoat(excl1.getItemID()))
+                return BodyPart.Clothes;
+        } else {
+            if (excl1 != null && excl2 != null)
+                return ItemAccessor.isLongCoat(excl1.getItemID()) ? BodyPart.Clothes : 0;
+        }
+        return 0;
+    }
+    
+    public static int getExclusiveEquipItemBodyPart(List<ItemSlotBase> a, int itemID) {
+        int exclBodyPart = getExclusiveWeaponShieldBodyPart(a, itemID);
+        if (exclBodyPart == 0)
+            exclBodyPart = getExclusiveClothesBodyPart(a, itemID);
+        return exclBodyPart;
+    }
+    
+    public static int getExclusiveWeaponShieldBodyPart(List<ItemSlotBase> a, int itemID) {
+        ItemSlotBase excl1 = a.get(BodyPart.Weapon);
+        ItemSlotBase excl2 = a.get(BodyPart.Shield);
+        if (itemID != 0) {
+            if (itemID / 100000 == 14 && excl2 != null)
+                return BodyPart.Shield;
+            if (itemID / 10000 == 109 && excl1 != null && excl1.getItemID() / 100000 == 14)
+                return BodyPart.Weapon;
+        } else {
+            if (excl2 != null && excl1 != null)
+                return excl1.getItemID() / 100000 == 14 ? BodyPart.Weapon : 0;
+        }
+        return 0;
+    }
+    
     public static ItemSlotBase getItemSlot(int itemID, int option) {
         byte ti = ItemAccessor.getItemTypeIndexFromID(itemID);
         if (ti == ItemType.Equip) {
@@ -149,6 +196,24 @@ public class ItemInfo {
         // Cash Items don't exist yet..
         return null;
     }
+    
+    public static boolean IsAbleToEquip(int gender, int level, int job, int STR, int DEX, int INT, int LUK, int pop, int itemID, List<ItemSlotBase> realEquip) {
+        EquipItem info = getEquipItem(itemID);
+        if (info != null) {
+            if (level != 0) {
+                int jobBit = 1 << ((job / 100) - 1);
+                return ItemAccessor.isMatchedItemIDGender(itemID, gender)
+                        && level >= info.getReqLevel()
+                        && STR >= info.getReqSTR()
+                        && DEX >= info.getReqDEX()
+                        && INT >= info.getReqINT()
+                        && LUK >= info.getReqLUK()
+                        && (info.getReqPOP() == 0 || pop >= info.getReqPOP())
+                        && (info.getReqJob() == 0 || info.getReqJob() == -1 && jobBit == 0 || info.getReqJob() > 0 && (info.getReqJob() & jobBit) > 0);
+            }
+        }
+        return false;
+    }
 
     public static boolean isCashItem(int itemID) {
         if (ItemAccessor.getItemTypeIndexFromID(itemID) == ItemType.Equip) {
@@ -161,6 +226,24 @@ public class ItemInfo {
             if (item != null) {
                 return item.isCash();
             }
+        }
+        return false;
+    }
+    
+    public static boolean isReqUpgradeItem(int uItemID, int eItemID) {
+        boolean canUpgrade;
+        if (uItemID / 10000 != 204 || eItemID / 1000000 != ItemType.Equip)
+            canUpgrade = false;
+        else
+            canUpgrade = uItemID % 10000 / 100 == eItemID / 10000 % 100;
+        
+        UpgradeItem ui;
+        if (canUpgrade && (ui = upgradeItem.get(uItemID)) != null) {
+            /*if (ui.lnReqItemID.size() > 0) {
+                return ui.lnReqItemID.contains(eItemID);
+            } else {
+                return true;
+            }*/
         }
         return false;
     }
@@ -222,7 +305,7 @@ public class ItemInfo {
             item.setIncINT(WzUtil.getShort(info.getNode("incINT"), 0));
             item.setIncLUK(WzUtil.getShort(info.getNode("incLUK"), 0));
             item.setIncMaxHP(WzUtil.getShort(info.getNode("incMHP"), 0));
-            item.setIncMaxMP(WzUtil.getShort(info.getNode("incMMP"), 0));
+            item.setIncMaxMP(WzUtil.getShort(info.getNode("incMMP"), WzUtil.getShort(info.getNode("incMMD"), 0)));
 
             item.setIncPAD(WzUtil.getShort(info.getNode("incPAD"), 0));
             item.setIncMAD(WzUtil.getShort(info.getNode("incMAD"), 0));

@@ -27,6 +27,10 @@ import util.Pointer;
  */
 public class ItemAccessor {
 
+    public static boolean isWeapon(int nItemID) {
+        return nItemID >= 1302000 && nItemID <= 1472013;
+    }
+    
     public static int getGenderFromID(int itemID) {
         return getItemTypeIndexFromID(itemID) == 1 ? itemID / 1000 % 10 : 2;
     }
@@ -86,5 +90,10 @@ public class ItemAccessor {
 
     public static void getBodyPartFromItem(int itemID, byte gender, Pointer<Integer> bodyPart, boolean b) {
         // TODO
+    }
+    
+    public static boolean isMatchedItemIDGender(int itemID, int characterGender) {
+        int gender = getGenderFromID(itemID);
+        return characterGender == 2 || gender == 2 || gender == characterGender;
     }
 }

@@ -101,7 +101,6 @@ public class User extends Creature {
     private int attackSpeedErr;
     // Hide
     private boolean hide;
-    private boolean adminHide;
     // User Emotions
     private int emotion;
     // User-specific rates
@@ -161,7 +160,6 @@ public class User extends Creature {
         this.channelID = 0;
         
         this.hide = false;
-        this.adminHide = false;
         this.onTransferField = false;
         this.closeSocketNextTime = false;
         
@@ -914,10 +912,6 @@ public class User extends Creature {
         return gradeCode >= 3;//TODO: Proper GradeCode
     }
     
-    public boolean isAdminHide() {
-        return adminHide;
-    }
-    
     public boolean isHide() {
         return hide;
     }
@@ -937,8 +931,6 @@ public class User extends Creature {
     public boolean isShowTo(User user) {
         if (hide && user.gradeCode >= gradeCode) {
             return true;
-        } else if ((hide && adminHide) && user.isGM()) {
-            return false;
         }
         return !hide || hide && user.isGM();
     }
@@ -1005,13 +997,13 @@ public class User extends Creature {
             character.getCharacterStat().setHP((short) 50);
         }
         if (getField() == null) {
-            field = FieldMan.getInstance().getField(104000000, false);
+            field = FieldMan.getInstance().getField(Field.Basic, false);
             setField(field);
             setPosMap(field.getFieldID());
             setPortal(field.getPortal().getRandStartPoint().getPortalIdx());
         }
         characterDataModFlag |= DBChar.Character;
-        if (character.getCharacterStat().getLevel() >= 200 && character.getCharacterStat().getEXP() > 0) {
+        if (character.getCharacterStat().getLevel() >= ExpAccessor.MAX_LEVEL && character.getCharacterStat().getEXP() > 0) {
             initEXP();
         }
         PortalMap portal = getField().getPortal();
@@ -1035,11 +1027,6 @@ public class User extends Creature {
         footholdSN = 0;
         sendSetFieldPacket(true);
         // TODO: Load anything else i'm missing
-        if (getField() != null && isGM()) {
-            if (!hide) {
-                //setHide(true, isCreator());
-            }
-        }
         if (getField().onEnter(this)) {
             // TODO: Load messenger and other stuff
         } else {
@@ -1401,10 +1388,6 @@ public class User extends Creature {
         }
     }
     
-    public void sendCharacterHidePacket() {
-        // Actually, AdminResult probably doesn't exist yet..
-    }
-    
     public void sendCharacterStat(byte request, int flag) {
         lock.lock();
         try {
@@ -1486,9 +1469,6 @@ public class User extends Creature {
             sendPacket(Stage.onSetField(this, true, s1, s2, s3));
         } else {
             sendPacket(Stage.onSetField(this, false, -1, -1, -1));
-        }
-        if (hide) {
-            sendCharacterHidePacket();
         }
     }
     

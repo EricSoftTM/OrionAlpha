@@ -169,9 +169,6 @@ public class LifePool {
         }
         MobTemplate template = MobTemplate.getMobTemplate(templateID);
         if (template != null && owner != null) {
-            if (owner.getUser().isHide()) {
-                return false;
-            }
             Mob mob = new Mob(field, template, noDropPriority);
             mob.init(pmg, fh);
             byte moveAction;
@@ -447,10 +444,8 @@ public class LifePool {
         if (field.lock()) {
             try {
                 Controller t = new Controller(user);
-                if (!user.isHide()) {
-                    t.setPosMinHeap(ctrlMin.insert(t));
-                    t.setPosMaxHeap(ctrlMax.insert(t));
-                }
+                t.setPosMinHeap(ctrlMin.insert(t));
+                t.setPosMaxHeap(ctrlMax.insert(t));
                 controllers.put(user.getCharacterID(), t);
                 redistributeLife();
             } finally {

@@ -17,6 +17,7 @@
  */
 package game.user;
 
+import game.user.stat.SecondaryStat;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 
@@ -33,7 +34,7 @@ public class UserPool {
         packet.encodeString(user.getCharacterName());
         packet.encodeByte(user.getCharacter().getCharacterStat().getGender());
         
-        user.getSecondaryStat().encodeForRemote(packet, 0);
+        user.getSecondaryStat().encodeForRemote(packet, SecondaryStat.FilterForRemote);
         
         packet.encodeInt(user.getCharacter().getCharacterStat().getFace());
         packet.encodeInt(0);

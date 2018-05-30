@@ -1100,6 +1100,9 @@ public class User extends Creature {
             case ClientPacket.UserChangeSlotPositionRequest:
                 onChangeSlotPositionRequest(packet);
                 break;
+            case ClientPacket.UserUpgradeItemUseRequest:
+                onUpgradeItemRequest(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -1250,6 +1253,10 @@ public class User extends Creature {
         short newPos = packet.decodeShort();
         short count = packet.decodeShort();
         Inventory.changeSlotPosition(this, Request.Excl, type, oldPos, newPos, count);
+    }
+    
+    public void onUpgradeItemRequest(InPacket packet) {
+        Inventory.upgradeEquip(this, packet.decodeShort(), packet.decodeShort());
     }
     
     public void onEmotion(InPacket packet) {

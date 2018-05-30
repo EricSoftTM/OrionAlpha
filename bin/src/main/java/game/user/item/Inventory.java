@@ -189,6 +189,7 @@ public class Inventory {
     }
     
     private static void unequip(User user, int pos1, int pos2, List<ChangeLog> changeLog) {
+        Logger.logReport("Unequipping from slot %d into slot %d", pos1, pos2);
         ItemSlotEquip source = (ItemSlotEquip) user.getCharacter().getItem(ItemType.Equip, pos1);
         ItemSlotEquip target = (ItemSlotEquip) user.getCharacter().getItem(ItemType.Equip, pos2);
         if (pos2 < 0) {
@@ -347,11 +348,11 @@ public class Inventory {
         boolean success = false;
         boolean scrolled = false;
         if (cd.getCharacterStat().getHP() > 0) {
-            ItemSlotBase useItem = cd.getItem(ChangeLog.Position, upos);
+            ItemSlotBase useItem = cd.getItem(ItemType.Consume, upos);
             if (useItem == null) {
                 return false;
             }
-            ItemSlotBase equipItem = cd.getItem(ChangeLog.ItemNumber, epos);
+            ItemSlotBase equipItem = cd.getItem(ItemType.Equip, epos);
             if (equipItem != null) {
                 if (ItemInfo.isReqUpgradeItem(useItem.getItemID(), equipItem.getItemID())) {
                     if (((ItemSlotEquip) equipItem).ruc > 0) {

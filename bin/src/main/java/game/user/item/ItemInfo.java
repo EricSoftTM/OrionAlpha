@@ -232,18 +232,17 @@ public class ItemInfo {
     
     public static boolean isReqUpgradeItem(int uItemID, int eItemID) {
         boolean canUpgrade;
-        if (uItemID / 10000 != 204 || eItemID / 1000000 != ItemType.Equip)
+        if (uItemID / 10000 != 204 || ItemAccessor.getItemTypeIndexFromID(eItemID) != ItemType.Equip)
             canUpgrade = false;
         else
             canUpgrade = uItemID % 10000 / 100 == eItemID / 10000 % 100;
         
-        UpgradeItem ui;
-        if (canUpgrade && (ui = upgradeItem.get(uItemID)) != null) {
-            /*if (ui.lnReqItemID.size() > 0) {
-                return ui.lnReqItemID.contains(eItemID);
-            } else {
-                return true;
-            }*/
+        UpgradeItem ui = getUpgradeItem(uItemID);
+        if (canUpgrade && ui != null) {
+            //if (ui.lnReqItemID.size() > 0) {
+            //    return ui.lnReqItemID.contains(eItemID);
+            //}
+            return true;
         }
         return false;
     }

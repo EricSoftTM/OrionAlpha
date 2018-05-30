@@ -53,6 +53,7 @@ import game.user.item.InventoryManipulator;
 import game.user.skill.*;
 import game.user.skill.Skills.*;
 import game.user.stat.BasicStat;
+import game.user.stat.CalcDamage;
 import game.user.stat.CharacterTemporaryStat;
 import game.user.stat.SecondaryStat;
 import network.database.CommonDB;
@@ -114,6 +115,7 @@ public class User extends Creature {
     private int tempTradeMoney;
     // Cheat Inspector
     // private CheatInspector cheatInspector;
+    private final CalcDamage calcDamage;
     private int invalidTryRepeatCount;
     private int invalidUserActionCount;
     private int invalidMobMoveCount;
@@ -191,6 +193,7 @@ public class User extends Creature {
         this.secondaryStat = new SecondaryStat();
         this.avatarLook = new AvatarLook();
         this.rndActionMan = new Rand32();
+        this.calcDamage = new CalcDamage();
         this.userSkill = new UserSkill(this);
         // TODO: Nexon-like user caching to avoid DB load upon each login/migrate.
         this.character = GameDB.rawLoadCharacter(characterID);
@@ -864,6 +867,10 @@ public class User extends Creature {
         return basicStat;
     }
     
+    public CalcDamage getCalcDamage() {
+        return calcDamage;
+    }
+    
     public byte getChannelID() {
         return channelID;
     }
@@ -1472,7 +1479,7 @@ public class User extends Creature {
             int s1 = Rand32.getInstance().random().intValue();
             int s2 = Rand32.getInstance().random().intValue();
             int s3 = Rand32.getInstance().random().intValue();
-            
+            calcDamage.setSeed(s1, s2, s3);
             sendPacket(Stage.onSetField(this, true, s1, s2, s3));
         } else {
             sendPacket(Stage.onSetField(this, false, -1, -1, -1));

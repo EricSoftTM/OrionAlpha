@@ -78,7 +78,23 @@ public class MobStat {
         }
     }
     
+    public short getACC() {
+        return 0;//TODO
+    }
+    
+    public short getEVA() {
+        return 0;//TODO
+    }
+    
+    public int getLevel() {
+        return 0;//TODO
+    }
+    
+    public int getStatOption(int cts) {
+        return 0;//TODO
+    }
+    
     public void setFrom(MobTemplate template) {
-        
+        //TODO
     }
 }

@@ -24,12 +24,18 @@ import common.item.ItemSlotBase;
 import common.item.ItemSlotEquip;
 import common.user.CharacterData;
 import game.user.skill.SkillAccessor;
+import game.user.skill.SkillEntry;
+import game.user.skill.SkillInfo;
+import game.user.skill.Skills;
+import game.user.skill.Skills.Archer;
+import game.user.skill.Skills.Rogue;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import network.packet.OutPacket;
+import util.Pointer;
 
 /**
  *
@@ -248,23 +254,59 @@ public class SecondaryStat {
         for (int pos = 1; pos <= BodyPartCount; pos++) {
             ItemSlotEquip item = (ItemSlotEquip) realEquip.get(pos);
             if (item != null) {
-                // TODO: Calculate realEquip stat
+                this.pad += item.iPAD;
+                this.pdd += item.iPDD;
+                this.mad += item.iMAD;
+                this.mdd += item.iMDD;
+                this.acc += item.iACC;
+                this.eva += item.iEVA;
+                this.craft += item.iCraft;
+                this.speed += item.iSpeed;
+                this.jump += item.iJump;
             }
         }
         
         for (int pos = 1; pos <= BodyPartCount; pos++) {
             ItemSlotEquip item = (ItemSlotEquip) realEquip.get(pos);
             if (item != null) {
-                // TODO: Calculate realEquip2 stat
+                this.pad += item.iPAD;
+                this.pdd += item.iPDD;
+                this.mad += item.iMAD;
+                this.mdd += item.iMDD;
+                this.acc += item.iACC;
+                this.eva += item.iEVA;
+                this.craft += item.iCraft;
+                this.speed += item.iSpeed;
+                this.jump += item.iJump;
             }
         }
         
-        // TODO: Archer.AmazonBlessing (acc += x)
-        // TODO: Rogue.NimbleBody (acc += x, eva += y)
+        SkillEntry archerAmazonBlessing = SkillInfo.getInstance().getSkill(Archer.AmazonBlessing);
+        slv = SkillInfo.getInstance().getSkillLevel(cd, Archer.AmazonBlessing, new Pointer<>(archerAmazonBlessing));
+        if (slv != 0) {
+            this.acc += archerAmazonBlessing.getLevelData(slv).getX();
+        }
+        SkillEntry thiefNimbleBody = SkillInfo.getInstance().getSkill(Rogue.NimbleBody);
+        slv = SkillInfo.getInstance().getSkillLevel(cd, Rogue.NimbleBody, new Pointer<>(thiefNimbleBody));
+        if (slv != 0) {
+            this.acc += thiefNimbleBody.getLevelData(slv).getX();
+            this.eva += thiefNimbleBody.getLevelData(slv).getY();
+        }
         
-        // TODO: Weapon/Magic Mastery
+        int attackType = 1;//MELEE
+        if (jc == JobCategory.Archer || job / 10 == 41)
+            attackType = 2;//SHOOT
+        int weaponItemID = 0;
+        ItemSlotBase item = realEquip.get(BodyPart.Weapon);
+        if (item != null)
+            weaponItemID = item.getItemID();
         
-        // TODO: this.speed += SkillAccessor.getIncreaseSpeed(cd);
+        Pointer<Integer> padInc = new Pointer<>(0);
+        Pointer<Integer> accInc = new Pointer<>(0);
+        if (SkillAccessor.getWeaponMastery(cd, weaponItemID, attackType, accInc, padInc) != 0) {
+            this.acc += accInc.get();
+            this.pad += padInc.get();
+        }
         
         this.pad = Math.max(Math.min(this.pad, SkillAccessor.PAD_MAX), 0);
         this.pdd = Math.max(Math.min(this.pdd, SkillAccessor.PDD_MAX), 0);

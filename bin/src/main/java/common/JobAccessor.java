@@ -66,7 +66,7 @@ public enum JobAccessor {
     }
     
     public static int getJobCategory(int jobCode) {
-        return jobCode % 1000 / 100;
+        return jobCode / 100;
     }
     
     public static int getJobChangeLevel(int job, int step) {

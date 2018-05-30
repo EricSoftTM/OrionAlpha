@@ -19,12 +19,14 @@ package game.user.skill;
 
 import common.JobAccessor;
 import common.JobCategory;
+import common.item.ItemAccessor;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
 import game.user.skill.Skills.*;
 import game.user.stat.BasicStat;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import util.Pointer;
 
 /**
  *
@@ -33,27 +35,27 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SkillAccessor {
     public static final int
             // The maximum damage that can be hit upon a monster from our client
-            MAX_CLIENT_DAMAGE   = 9999,
+            MAX_CLIENT_DAMAGE   = 9999,//Confirmed
             
             // The maximum per stat that a player can obtain and/or use.
             STR_MAX             = 999,
             DEX_MAX             = 999,
             INT_MAX             = 999,
             LUK_MAX             = 999,
-            PAD_MAX             = 1999,
-            PDD_MAX             = 1999,
-            MAD_MAX             = 1999,
+            PAD_MAX             = 1999,//Confirmed
+            PDD_MAX             = 999,//Confirmed
+            MAD_MAX             = 1999,//Confirmed
             MDD_MAX             = 1999,
             ACC_MAX             = 999,//Hmm
             EVA_MAX             = 999,//Hmm
             CRAFT_MAX           = 999,//Hmm
             SPEED_MAX           = 140,
             JUMP_MAX            = 123,
-            HP_MAX              = 30000,
-            MP_MAX              = 30000,
+            HP_MAX              = 30000,//Confirmed
+            MP_MAX              = 10000,//Confirmed
             POP_MAX             = 30000,
-            AP_MAX              = 200,
-            SP_MAX              = 200
+            AP_MAX              = 255,
+            SP_MAX              = 255
     ;
     // All available Teleport skills
     static final int[] TELEPORT = {
@@ -297,6 +299,78 @@ public class SkillAccessor {
                 slv = lev;
         }
         return slv;
+    }
+    
+    public static int getMasteryFromSkill(CharacterData cd, int skillID, Pointer<Integer> inc) {
+        int mastery = 0;
+        
+        SkillEntry skill = SkillInfo.getInstance().getSkill(skillID);
+        if (skill != null) {
+            int slv = SkillInfo.getInstance().getSkillLevel(cd, skillID, null);
+            if (slv != 0) {
+                if (inc != null) {
+                    inc.set(skill.getLevelData(slv).getX());
+                }
+                mastery = skill.getLevelData(slv).getMastery();
+            }
+        }
+        
+        return mastery;
+    }
+
+    
+    public static int getWeaponMastery(CharacterData cd, int weaponItemID, int attackType, Pointer<Integer> accInc, Pointer<Integer> padInc) {
+        final int MELEE = 1, SHOOT = 2;
+        
+        int wt = ItemAccessor.getWeaponType(weaponItemID);
+        int mastery = 0;
+        switch (wt) {
+            case 30: //OneHand_Sword
+            case 40: //TowHand_Sword
+                if (attackType == MELEE) {
+                    mastery = SkillAccessor.getMasteryFromSkill(cd, Fighter.WeaponMastery, accInc);
+                    if (mastery == 0)
+                        mastery = SkillAccessor.getMasteryFromSkill(cd, Page.WeaponMastery, accInc);
+                }
+                break;
+            case 31: //OneHand_Axe
+            case 41: //TowHand_Axe
+                if (attackType == MELEE) {
+                    mastery = SkillAccessor.getMasteryFromSkill(cd, Fighter.WeaponMasteryEx, accInc);
+                    if (mastery == 0)
+                        mastery = SkillAccessor.getMasteryFromSkill(cd, Page.WeaponMasteryEx, accInc);
+                }
+                break;
+            case 32: //OneHand_Mace
+            case 42: //TowHand_Mace
+                if (attackType == MELEE) {
+                    mastery = SkillAccessor.getMasteryFromSkill(cd, Page.WeaponMasteryEx, accInc);
+                    if (mastery == 0)
+                        mastery = SkillAccessor.getMasteryFromSkill(cd, Fighter.WeaponMasteryEx, accInc);
+                }
+                break;
+            case 45: //Bow
+                if (attackType == SHOOT) {
+                    mastery = SkillAccessor.getMasteryFromSkill(cd, Hunter.BowMastery, accInc);
+                }
+                break;
+            case 46: //CrossBow
+                if (attackType == SHOOT) {
+                    mastery = SkillAccessor.getMasteryFromSkill(cd, Crossbowman.CrossbowMastery, accInc);
+                }
+                break;
+            case 47: //ThrowingGloves
+                if (attackType == SHOOT) {
+                    mastery = SkillAccessor.getMasteryFromSkill(cd, Assassin.JavelinMastery, accInc);
+                }
+                break;
+            case 33: //Dagger
+                if (attackType == MELEE) {
+                    mastery = SkillAccessor.getMasteryFromSkill(cd, Thief.DaggerMastery, accInc);
+                }
+                break;
+        }
+        return mastery;
     }
     
     public static boolean isSelfStatChange(int skillID) {

@@ -73,11 +73,11 @@ public class SkillAccessor {
      * The numbers will always follow the same sequence for each job.
      */
     static final int[][][] INC_HP_MP = { // [5][2][24]
-        { {12, 16, 0, 10, 12, 20}, {8, 12, 0, 6, 8, 15} },//Beginner
-        { {24, 28, 0, 4, 6, 20}, {20, 24, 0, 2, 4, 15,} },//Warrior
-        { {10, 14, 0, 22, 24, 20}, {6, 10, 0, 18, 20, 15} },//Magician
-        { {20, 24, 0, 14, 16, 20}, {16, 20, 0, 10, 12, 15} },//Bowman
-        { {20, 24, 0, 14, 16, 20}, {16, 20, 0, 10, 12, 15} },//Thief
+        { {15, 20, 0, 10, 12, 20}, {10, 15, 0, 6, 8, 15} },//Beginner
+        { {27, 35, 0, 4, 6, 20}, {20, 25, 0, 2, 4, 15} },//Warrior
+        { {10, 15, 0, 22, 24, 20}, {5, 10, 0, 18, 20, 15} },//Magician
+        { {22, 27, 0, 14, 16, 20}, {15, 20, 0, 10, 12, 15} },//Bowman
+        { {22, 27, 0, 14, 16, 20}, {15, 20, 0, 10, 12, 15} },//Thief
     };
     
     public static List<Integer> getSkillRootFromJob(int job, List<Integer> a) {
@@ -217,11 +217,11 @@ public class SkillAccessor {
         int hpInc = 0;
         int mpInc = 0;
         short job = bs.getJob();
-        int jobCategory = job % 1000 / 100;
+        int jobCategory = job / 100;
         boolean inc = false;
         boolean incHP = (flag & CharacterStatType.MHP) != 0;
         boolean incMP = (flag & CharacterStatType.MMP) != 0;
-        if (jobCategory < 0 || jobCategory >= 10) {
+        if (jobCategory < 0 || jobCategory > 4) {
             return inc;
         }
         if (JobAccessor.findJob(job) != null) {

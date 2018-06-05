@@ -36,11 +36,59 @@ public class ExchangeElem {
         this.r = new Remove();
     }
 
+    public boolean isAdd() {
+        return add;
+    }
+
+    public void setAdd(boolean add) {
+        this.add = add;
+    }
+
+    public Add getA() {
+        return a;
+    }
+
+    public void setA(Add a) {
+        this.a = a;
+    }
+
+    public Remove getR() {
+        return r;
+    }
+
+    public void setR(Remove r) {
+        this.r = r;
+    }
+
     public class Add {
 
         public int itemID;
         public short count;
         public ItemSlotBase item;
+
+        public int getItemID() {
+            return itemID;
+        }
+
+        public void setItemID(int itemID) {
+            this.itemID = itemID;
+        }
+
+        public short getCount() {
+            return count;
+        }
+
+        public void setCount(short count) {
+            this.count = count;
+        }
+
+        public ItemSlotBase getItem() {
+            return item;
+        }
+
+        public void setItem(ItemSlotBase item) {
+            this.item = item;
+        }
     }
 
     public class Remove {
@@ -49,6 +97,38 @@ public class ExchangeElem {
         public short count;
         public byte ti;
         public short pos;
+
+        public int getItemID() {
+            return itemID;
+        }
+
+        public void setItemID(int itemID) {
+            this.itemID = itemID;
+        }
+
+        public short getCount() {
+            return count;
+        }
+
+        public void setCount(short count) {
+            this.count = count;
+        }
+
+        public byte getTi() {
+            return ti;
+        }
+
+        public void setTi(byte ti) {
+            this.ti = ti;
+        }
+
+        public short getPos() {
+            return pos;
+        }
+
+        public void setPos(short pos) {
+            this.pos = pos;
+        }
     }
 
     public boolean initAdd(int itemID, short count, ItemSlotBase item) {

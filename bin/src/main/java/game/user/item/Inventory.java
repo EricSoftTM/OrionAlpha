@@ -187,6 +187,29 @@ public class Inventory {
         }
         user.validateStat(false);
     }
+
+    public static void moveItemToTemp(User user, byte ti, short slot, short number) {
+        // idk how eric has his, mine is different
+    }
+
+    public static int moveMoneyToTemp(User user, int amount) {
+        if (user.lock()) {
+            try {
+                int moneytrading = user.getCharacter().getMoneyTrading();
+                if (amount <= 0 || user.getCharacter().getCharacterStat().getMoney() - moneytrading < amount) {
+                    Logger.logReport("Invalid amount of money when move temporary space [%s] (%d)", user.getCharacterName(), amount);
+                    return 0;
+                } else {
+                    user.getCharacter().setMoneyTrading(amount + moneytrading);
+                    user.sendCharacterStat(Request.Excl, CharacterStatType.Money);
+                    return user.getCharacter().getMoneyTrading();
+                }
+            } finally {
+                user.unlock();
+            }
+        }
+        return 0;
+    }
     
     private static void unequip(User user, int pos1, int pos2, List<ChangeLog> changeLog) {
         Logger.logReport("Unequipping from slot %d into slot %d", pos1, pos2);

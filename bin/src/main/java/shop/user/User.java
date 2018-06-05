@@ -395,8 +395,8 @@ public class User {
         if (comm != null && ItemInfo.isCashItem(comm.getItemID()) && this.getNexonCash() >= comm.getPrice()) {
             this.rcvCharacterName = reciever;
             if (this.rcvCharacterName != null && rcvCharacterName.length() <= 12) {
-                ReceivedGift recievedGift = ShopDB.rawLoadAccountByNameForGift(rcvCharacterName);
-                if (recievedGift != null) {
+                ReceivedGift receivedGift = ShopDB.rawLoadAccountByNameForGift(rcvCharacterName);
+                if (receivedGift != null) {
                     if (this.getNexonCash() < comm.getPrice()) {
                         sendPacket(ShopPacket.onGiftFailed((byte) 31));
                         return;
@@ -407,15 +407,15 @@ public class User {
                         sendPacket(ShopPacket.onGiftFailed((byte) 32));
                         return;
                     }
-                    if (ItemAccessor.getGenderFromID(comm.getItemID()) != recievedGift.getGender()) {
+                    if (ItemAccessor.getGenderFromID(comm.getItemID()) != receivedGift.getGender()) {
                         // item gender != recieved gift users gender
                         sendPacket(ShopPacket.onGiftFailed((byte) 35));
                         return;
                     }
                     CashItemInfo cashItem = new CashItemInfo();
                     cashItem.setCashItemSN(ShopApp.getInstance().getNextCashSN());
-                    cashItem.setAccountID(recievedGift.getAccountID());
-                    cashItem.setCharacterID(recievedGift.getCharacterID());
+                    cashItem.setAccountID(receivedGift.getAccountID());
+                    cashItem.setCharacterID(receivedGift.getCharacterID());
                     cashItem.setItemID(comm.getItemID());
                     cashItem.setCommodityID(commoditySN);
                     cashItem.setNumber(comm.getCount());

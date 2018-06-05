@@ -43,6 +43,7 @@ import game.field.life.AttackInfo;
 import game.field.life.mob.Mob;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
+import game.miniroom.MiniRoom;
 import game.miniroom.MiniRoomBase;
 import game.user.WvsContext.BroadcastMsg;
 import game.user.WvsContext.Request;
@@ -344,6 +345,10 @@ public class User extends Creature {
     
     public byte getLevel() {
         return character.getCharacterStat().getLevel();
+    }
+
+    public MiniRoomBase getMiniRoom() {
+        return miniRoom;
     }
     
     public boolean incAP(int inc, boolean onlyFull) {
@@ -757,6 +762,10 @@ public class User extends Creature {
             }
         }
     }
+
+    public void setMiniRoom(MiniRoomBase miniRoom) {
+        this.miniRoom = miniRoom;
+    }
     
     public void setSkin(int val) {
         lock.lock();
@@ -1109,6 +1118,9 @@ public class User extends Creature {
                 break;
             case ClientPacket.UserUpgradeItemUseRequest:
                 onUpgradeItemRequest(packet);
+                break;
+            case ClientPacket.MiniRoom:
+                MiniRoom.onMiniRoom(this, packet);
                 break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
@@ -1717,6 +1729,22 @@ public class User extends Creature {
         } finally {
             unlock();
         }
+    }
+    
+    public int getTradeMoneyLimit() {
+        return tradeMoneyLimit;
+    }
+
+    public void setTradeMoneyLimit(int tradeMoneyLimit) {
+        this.tradeMoneyLimit += tradeMoneyLimit;
+    }
+
+    public int getTempTradeMoney() {
+        return tempTradeMoney;
+    }
+
+    public void setTempTradeMoney(int tempTradeMoney) {
+        this.tempTradeMoney = tempTradeMoney;
     }
     
     public class UserEffect {

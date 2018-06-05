@@ -49,7 +49,8 @@ public class CharacterData {
     private final Map<Integer, Integer> skillRecord;
     private final Map<String, String> questRecord;
     private int moneyTrading;
-
+    private boolean onTrading;
+        
     public CharacterData() {
         this.characterStat = new CharacterStat();
         this.equipped = new ArrayList<>(BodyPartCount + 1);
@@ -58,7 +59,8 @@ public class CharacterData {
         this.itemTrading = new ArrayList<>(ItemType.NO);
         this.skillRecord = new HashMap<>();
         this.questRecord = new HashMap<>();
-
+        this.onTrading = false;
+       
         for (int i = 0; i <= BodyPartCount; i++) {
             equipped.add(i, null);
             equipped2.add(i, null);
@@ -368,5 +370,19 @@ public class CharacterData {
         else
             nBirthYear = nSSN1 / 10000 + 1900;
         return Calendar.getInstance().get(Calendar.YEAR) - nBirthYear >= nCriticalYear;
+    }
+
+    public void setMoneyTrading(int amount) {
+        this.moneyTrading = amount;
+    }
+
+    public boolean setTrading(boolean trade) {
+        if (this.onTrading == trade) {
+            return false;
+        } else {
+            this.onTrading = trade;
+            clearTradingInfo();
+            return true;
+        }
     }
 }

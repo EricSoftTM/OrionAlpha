@@ -105,18 +105,18 @@ public class ShopDB {
     }
 
     public static ReceivedGift rawLoadAccountByNameForGift(String rcvCharacterName) {
-        ReceivedGift recievedGift = null;
+        ReceivedGift receivedGift = null;
         
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterName = ?")) {
                 ps.setString(1, rcvCharacterName);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        recievedGift = new ReceivedGift();
-                        recievedGift.setAccountID(rs.getInt("AccountID"));
-                        recievedGift.setCharacterID(rs.getInt("CharacterID"));
-                        recievedGift.setBirthDate(rs.getInt("BirthDate"));
-                        recievedGift.setGender(rs.getInt("Gender"));
+                        receivedGift = new ReceivedGift();
+                        receivedGift.setAccountID(rs.getInt("AccountID"));
+                        receivedGift.setCharacterID(rs.getInt("CharacterID"));
+                        receivedGift.setBirthDate(rs.getInt("BirthDate"));
+                        receivedGift.setGender(rs.getInt("Gender"));
                     }
                 }
             }
@@ -124,7 +124,7 @@ public class ShopDB {
             ex.printStackTrace(System.err);
         }
         
-        return recievedGift;
+        return receivedGift;
     }
 
     public static CharacterData rawLoadCharacter(int characterID, User user) {

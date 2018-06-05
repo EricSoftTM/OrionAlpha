@@ -50,7 +50,7 @@ public class Inventory {
         if (user.getHP() == 0)
             return false;
         if (ti <= ItemType.NotDefine || ti >= ItemType.NO) {
-            Logger.logError("Invalid Item Type Index");
+            Logger.logError("Invalid Item Type Index %d from user %s", ti, user.getCharacterName());
             return false;
         }
         List<ChangeLog> changeLog = new ArrayList<>();
@@ -312,11 +312,80 @@ public class Inventory {
         return false;
     }
     
+    public static ItemSlotBase moveItemToTemp(User user, byte ti, short pos, short number) {
+        List<ChangeLog> changeLog = new ArrayList<>();
+        Pointer<ItemSlotBase> itemCopyed = new Pointer<>();
+        rawMoveItemToTemp(user, ti, pos, number, itemCopyed, changeLog);
+        sendInventoryOperation(user, Request.Excl, changeLog);
+        changeLog.clear();
+        return itemCopyed.get();
+    }
+    
+    public static int moveMoneyToTemp(User user, int amount) {
+        if (user.lock()) {
+            try {
+                int moneyTrading = user.getCharacter().getMoneyTrading();
+                if (amount <= 0 || user.getCharacter().getCharacterStat().getMoney() - moneyTrading < amount) {
+                    Logger.logError("Invalid amount of money when move temporary space [%s] (%d)", user.getCharacterName(), amount);
+                    return 0;
+                } else {
+                    user.getCharacter().setMoneyTrading(amount + moneyTrading);
+                    user.sendCharacterStat(Request.Excl, CharacterStatType.Money);
+                    return user.getCharacter().getMoneyTrading();
+                }
+            } finally {
+                user.unlock();
+            }
+        }
+        return 0;
+    }
+    
     public static boolean rawAddItem(User user, byte ti, ItemSlotBase item, List<ChangeLog> changeLog, Pointer<Integer> incRet) {
         if (user.getHP() == 0) {
             return false;
         }
         return InventoryManipulator.rawAddItem(user.getCharacter(), ti, item, changeLog, incRet);
+    }
+    
+    public static boolean rawMoveItemToTemp(User user, byte ti, short pos, short number, Pointer<ItemSlotBase> itemCopyed, List<ChangeLog> changeLog) {
+        if (user.lock()) {
+            try {
+                CharacterData cd = user.getCharacter();
+                ItemSlotBase item = cd.getItem(ti, pos);
+                if (item == null || ti != ItemType.Consume && ti != ItemType.Install && ti != ItemType.Etc && pos < 1) {
+                    Logger.logError("Invalid Item Position when move temporary space [%s] (%d, %d)", cd.getCharacterStat().getName(), ti, pos);
+                    return false;
+                }
+                if (ItemInfo.isCashItem(item.getItemID()) || item.getCashItemSN() > 0) {
+                    Logger.logError("Invalid Item when move temporary space [%s] (%d,%d:%d)", cd.getCharacterStat().getName(), ti, pos, item.getItemID());
+                    return false;
+                }
+                if (ItemAccessor.isTreatSingly(item)) {
+                    if (number != 1 || cd.getItemTrading().get(ti).get(pos) > 0) {//only 1 here
+                        Logger.logError("Invalid Item Count when move temporary space [%s] (%d,%d) Total:%d, Packet:%d");
+                        return false;
+                    }
+                    cd.getItemTrading().get(ti).set(pos, 1);
+                    itemCopyed.set(item.makeClone());
+                    InventoryManipulator.insertChangeLog(changeLog, ChangeLog.DelItem, ti, pos, null, (short) 0, (short) 0);
+                } else {
+                    int trading = cd.getItemTrading().get(ti).get(pos);
+                    int remain = item.getItemNumber() - trading;
+                    if (remain < number || number < 1) {
+                        Logger.logError("Invalid Item Count when move temporary space [%s] (%d,%d) Total:%d, Packet:%d");
+                        return false;
+                    }
+                    cd.getItemTrading().get(ti).set(pos, trading + number);
+                    itemCopyed.set(item.makeClone());
+                    itemCopyed.get().setItemNumber(number);
+                    InventoryManipulator.insertChangeLog(changeLog, (remain - number) != 0 ? ChangeLog.ItemNumber : ChangeLog.DelItem, ti, pos, null, (short) 0, (short) (remain - number));
+                }
+                return true;
+            } finally {
+                user.unlock();
+            }
+        }
+        return false;
     }
     
     public static boolean rawRechargeItem(User user, short pos, List<ChangeLog> changeLog) {
@@ -335,6 +404,93 @@ public class Inventory {
     public static boolean rawWasteItem(User user, short pos, short count, List<ChangeLog> changeLog) {
         if (user.getHP() > 0)
             return InventoryManipulator.rawWasteItem(user.getCharacter(), pos, count, changeLog);
+        return false;
+    }
+    
+    public static void restoreFromTemp(User user) {
+        if (user.lock()) {
+            try {
+                if (user.getCharacter().getMoneyTrading() > 0) {
+                    user.getCharacter().setMoneyTrading(0);
+                    user.sendCharacterStat(Request.None, CharacterStatType.Money);
+                }
+                List<ChangeLog> changeLog = new ArrayList<>();
+                for (int ti = ItemType.Equip; ti <= ItemType.Etc; ti++) {
+                    for (int i = 1; i <= user.getCharacter().getItemSlotCount(ti); i++) {
+                        int number = user.getCharacter().getItemTrading().get(ti).get(i);
+                        if (number > 0) {
+                            ItemSlotBase item = user.getCharacter().getItem((byte) ti, i);
+                            if (item != null) {
+                                if (ItemAccessor.isRechargeableItem(item.getItemID())) {
+                                    number = item.getItemNumber();
+                                }
+                                InventoryManipulator.insertChangeLog(changeLog, number != item.getItemNumber() ? ChangeLog.ItemNumber : ChangeLog.NewItem, (byte) ti, (short) i, item, (short) 0, item.getItemNumber());
+                            }
+                        }
+                    }
+                }
+                Inventory.sendInventoryOperation(user, Request.None, changeLog);
+                changeLog.clear();
+            } finally {
+                user.unlock();
+            }
+        }
+    }
+    
+    public static boolean restoreItemFromTemp(User user, byte onExclRequest, byte ti, short pos, short number) {
+        if (user.lock()) {
+            try {
+                List<ChangeLog> changeLog = new ArrayList<>();
+                boolean success = false;
+                if (ti >= ItemType.Equip && ti <= ItemType.Etc && pos > 0) {
+                    if (pos <= user.getCharacter().getItemSlotCount(ti)) {
+                        ItemSlotBase item = user.getCharacter().getItem(ti, pos);
+                        if (item != null) {
+                            short trading = user.getCharacter().getItemTrading().get(ti).get(pos).shortValue();
+                            short remain = item.getItemNumber();
+                            if (ItemAccessor.isTreatSingly(item)) {
+                                if (number == 1) {
+                                    user.getCharacter().getItemTrading().get(ti).set(pos, 0);
+                                    InventoryManipulator.insertChangeLog(changeLog, ChangeLog.NewItem, ti, pos, item.makeClone(), (short) 0, remain);
+                                    success = true;
+                                }
+                            } else {
+                                if (trading >= number) {
+                                    user.getCharacter().getItemTrading().get(ti).set(pos, trading - number);
+                                    remain -= trading;
+                                    InventoryManipulator.insertChangeLog(changeLog, item.getItemNumber() <= trading ? ChangeLog.NewItem : ChangeLog.ItemNumber, ti, pos, item.makeClone(), (short) 0, remain);
+                                    success = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                sendInventoryOperation(user, onExclRequest, changeLog);
+                changeLog.clear();
+                return success;
+            } finally {
+                user.unlock();
+            }
+        }
+        return false;
+    }
+    
+    public static boolean restoreMoneyFromTemp(User user, byte onExclRequest, int amount) {
+        if (user.lock()) {
+            try {
+                int moneyTrading = user.getCharacter().getMoneyTrading();
+                if (moneyTrading <= 0 || amount <= 0 || moneyTrading < amount) {
+                    Logger.logError("Cannot restore money from temp (%d/%d)", amount, moneyTrading);
+                    user.closeSocket();
+                    return false;
+                }
+                user.getCharacter().setMoneyTrading(moneyTrading - amount);
+                user.sendCharacterStat(onExclRequest, CharacterStatType.Money);
+                return true;
+            } finally {
+                user.unlock();
+            }
+        }
         return false;
     }
     

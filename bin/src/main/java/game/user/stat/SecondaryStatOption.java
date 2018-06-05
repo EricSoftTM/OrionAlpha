@@ -24,17 +24,25 @@ package game.user.stat;
 public class SecondaryStatOption {
     private short skillOption;
     private int skillReason;
+    private int skillModOption;
     private long skillDuration;
     
     public SecondaryStatOption() {
         this.skillOption = 0;
         this.skillReason = 0;
         this.skillDuration = 0;
+        this.skillModOption = 0;
     }
     
-    public SecondaryStatOption(int option, int reason) {
+    public SecondaryStatOption(int option, int reason, long duration) {
         this.skillOption = (short) option;
         this.skillReason = reason;
+        this.skillDuration = duration;
+        this.skillModOption = 0;
+    }
+    
+    public int getModOption() {
+        return skillModOption;
     }
     
     public short getOption() {
@@ -47,6 +55,10 @@ public class SecondaryStatOption {
     
     public long getDuration() {
         return skillDuration;
+    }
+    
+    public void setModOption(int mod) {
+        this.skillModOption = mod;
     }
     
     public void setOption(int option) {

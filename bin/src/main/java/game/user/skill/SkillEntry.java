@@ -30,10 +30,15 @@ public class SkillEntry {
     private int skillID;
     private String name;
     private int skillType;
-    private List<SkillRecord> skillRequirements = new ArrayList<>();
+    private final List<SkillRecord> skillRequirements;
     private int weapon;
     private int elemAttr;
     private SkillLevelData[] levelData;
+    
+    public SkillEntry() {
+        this.skillRequirements = new ArrayList<>();
+        this.levelData = null;
+    }
 
     public int getSkillID() {
         return skillID;

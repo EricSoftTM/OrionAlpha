@@ -71,23 +71,23 @@ public class UserSkill {
                         }
                         SkillEntry skill = skillEntry.get();
                         if (SkillAccessor.isMobStatChange(skillID)) {
-                            DoActiveSkill_MobStatChange(skill, slv, packet, true);
+                            doActiveSkill_MobStatChange(skill, slv, packet, true);
                             return;
                         } else if (SkillAccessor.isPartyStatChange(skillID)) {
-                            DoActiveSkill_PartyStatChange(skill, slv, packet);
+                            doActiveSkill_PartyStatChange(skill, slv, packet);
                             return;
                         } else if (SkillAccessor.isSelfStatChange(skillID)) {
-                            DoActiveSkill_SelfStatChange(skill, slv, packet);
+                            doActiveSkill_SelfStatChange(skill, slv, packet);
                             return;
                         } else if (SkillAccessor.isWeaponBooster(skillID)) {
-                            DoActiveSkill_WeaponBooster(skill, slv, 1, 1);
+                            doActiveSkill_WeaponBooster(skill, slv, 1, 1);
                             return;
                         }
                         switch (skillID) {
                             case Wizard2.Teleport:
                             case Wizard1.Teleport:
                             case Cleric.Teleport:
-                                DoActiveSkill_Teleport(skill, slv);
+                                doActiveSkill_Teleport(skill, slv);
                                 break;
                             default: {
                                 Logger.logReport("Found new skill: %d", skillID);
@@ -112,7 +112,7 @@ public class UserSkill {
                     user.validateStat(false);
                     user.sendCharacterStat(Request.None, CharacterStatType.SP);
                 }
-                user.sendPacket(WvsContext.onChangeSkillRecordResult(Request.Excl, change));
+                UserSkillRecord.sendCharacterSkillRecord(user, Request.Excl, change);
                 change.clear();
             } finally {
                 user.unlock();
@@ -120,36 +120,35 @@ public class UserSkill {
         }
     }
     
-    public void DoActiveSkill_PartyStatChange(SkillEntry skill, byte slv, InPacket packet) {
+    public void doActiveSkill_PartyStatChange(SkillEntry skill, byte slv, InPacket packet) {
         int affectedMemberBitmap = packet.decodeByte(true);
+        long duration = System.currentTimeMillis() + 1000 * skill.getLevelData(slv).getTime();
         
         int hpRate = 0;
         int partyCount = 1;
         if (skill.getLevelData(slv).getHP() != 0) {
-            /* TODO: Implement BasicStat so we can calculate Cleric's Heal formula.
-                int baseInt = user.basicStat.nINT;
-                double v17 = baseInt * 0.8d;
-                hpRate = (int) (baseInt - v17);
-                int v62 = (int) v17;
-                int v18 = 0;
-                if (hpRate > 0) {
-                    v18 = v62 + (int) (Rand32.getInstance().random() % hpRate);
-                }
-                v62 = user.getSecondaryStat().mad + user.getSecondaryStat().getStatOption(CharacterTemporaryStat.MAD);
-                v62 = (int) (((double)v18 * 1.5d + (double) user.basicStat.nLUK) * (double)v62 * 0.01d);
-                hpRate = (int) ((double) v62 * ((double) partyCount * 0.3d + 1.0d) * (double) skill.getLevelData(slv).getHP() * 0.01d);
-            */
+            int baseInt = user.getBasicStat().getINT();
+            int rand = 0;
+            if ((baseInt - (baseInt * 0.8d)) > 0) {
+                rand = (int) (Rand32.getInstance().random() % (baseInt - (baseInt * 0.8d)));
+                rand += (int) (baseInt - (baseInt * 0.8d));
+            }
+            int rate = user.getSecondaryStat().mad + user.getSecondaryStat().getStatOption(CharacterTemporaryStat.MAD);
+            rate = (int) (((double) rand * 1.5d + (double) user.getBasicStat().getLUK()) * (double) rate * 0.01d);
+            hpRate = (int) ((double) rate * ((double) partyCount * 0.3d + 1.0d) * (double) skill.getLevelData(slv).getHP() * 0.01d);
         }
         
-        int skillFlag = processSkill(skill, slv);
+        int skillFlag = processSkill(skill, slv, duration);
         int statFlag = 0;
         if (skill.getLevelData(slv).getHP() != 0) {
-            int hp = user.getCharacter().getCharacterStat().getHP();
             double inc = Math.ceil((double) ((int) hpRate / partyCount));
             if (user.incHP((int) (long) inc, false)) {
                 statFlag |= CharacterStatType.HP;
                 if (skill.getSkillID() == Cleric.Heal) {
-                    
+                    if (affectedMemberBitmap != 0) {
+                        // Ignore because this only ever adjusts from other party members.
+                        // statFlag |= user.incEXP(affectedMemberBitmap, false);
+                    }
                 }
             }
         }
@@ -161,16 +160,21 @@ public class UserSkill {
         }
     }
     
-    public void DoActiveSkill_SelfStatChange(SkillEntry skill, byte slv, InPacket packet) {
+    public void doActiveSkill_SelfStatChange(SkillEntry skill, byte slv, InPacket packet) {
         int time = 1000 * skill.getLevelData(slv).getTime();
         long cur = System.currentTimeMillis();
         long duration = Math.max(cur + time, 1);
         
-        int skillFlag = processSkill(skill, slv);
+        int skillFlag = processSkill(skill, slv, duration);
         if (skill.getSkillID() == Rogue.DarkSight) {
             SecondaryStatOption opt = user.getSecondaryStat().getStat(CharacterTemporaryStat.DarkSight);
             if (opt != null) {
-                
+                // tCur = HIDWORD(tCur);
+                // Convert the time into timeGetTime() seconds
+                cur /= 1000;
+                cur = Math.max(1, cur - 3000);
+                opt.setModOption((int) cur);
+                user.getSecondaryStat().setStat(CharacterTemporaryStat.DarkSight, opt);
             }
         }
         
@@ -194,11 +198,11 @@ public class UserSkill {
         }
     }
     
-    public void DoActiveSkill_Teleport(SkillEntry skill, byte slv) {
+    public void doActiveSkill_Teleport(SkillEntry skill, byte slv) {
         user.sendCharacterStat(Request.Excl, 0);
     }
     
-    public void DoActiveSkill_MobStatChange(SkillEntry skill, byte slv, InPacket packet, boolean sendResult) {
+    public void doActiveSkill_MobStatChange(SkillEntry skill, byte slv, InPacket packet, boolean sendResult) {
         int count = packet.decodeByte();
         for (int i = 0; i < count; i++) {
             int mobID = packet.decodeInt();
@@ -211,16 +215,12 @@ public class UserSkill {
         user.sendCharacterStat(Request.Excl, 0);
     }
     
-    public void DoActiveSkill_WeaponBooster(SkillEntry skill, byte slv, int wt1, int wt2) {
+    public void doActiveSkill_WeaponBooster(SkillEntry skill, byte slv, int wt1, int wt2) {
         SkillLevelData levelData = skill.getLevelData(slv);
         int wt = ItemAccessor.getWeaponType(user.getCharacter().getItem(ItemType.Equip, -BodyPart.Weapon).getItemID());
         if (wt > 0 && SkillAccessor.isCorrectItemForBooster(wt, user.getCharacter().getCharacterStat().getJob()) && levelData.getTime() > 0) {
             long duration = System.currentTimeMillis() + 1000 * levelData.getTime();
-            SecondaryStatOption opt = new SecondaryStatOption();
-            opt.setOption(levelData.getX());
-            opt.setReason(skill.getSkillID());
-            opt.setDuration(duration);
-            user.getSecondaryStat().setStat(CharacterTemporaryStat.Booster, opt);
+            user.getSecondaryStat().setStat(CharacterTemporaryStat.Booster, new SecondaryStatOption(levelData.getX(), skill.getSkillID(), duration));
             user.sendCharacterStat(Request.Excl, 0);
             user.sendTemporaryStatSet(CharacterTemporaryStat.Booster);
             if (user.getField() != null) {
@@ -262,59 +262,60 @@ public class UserSkill {
         user.sendPacket(WvsContext.onSkillUseResult(Request.None));
     }
     
-    private int processSkill(SkillEntry skill, byte slv) {
+    private int processSkill(SkillEntry skill, byte slv, long duration) {
         int flag = 0;
         
         SkillLevelData level = skill.getLevelData(slv);
         if (level.getPAD() != 0) {
-            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.PAD, new SecondaryStatOption(level.getPAD(), skill.getSkillID()));
+            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.PAD, new SecondaryStatOption(level.getPAD(), skill.getSkillID(), duration));
         }
         if (level.getPDD() != 0) {
-            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.PDD, new SecondaryStatOption(level.getPDD(), skill.getSkillID()));
+            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.PDD, new SecondaryStatOption(level.getPDD(), skill.getSkillID(), duration));
         }
         if (level.getMAD() != 0) {
-            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MAD, new SecondaryStatOption(level.getMAD(), skill.getSkillID()));
+            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MAD, new SecondaryStatOption(level.getMAD(), skill.getSkillID(), duration));
         }
         if (level.getMDD() != 0) {
-            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MDD, new SecondaryStatOption(level.getMDD(), skill.getSkillID()));
+            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MDD, new SecondaryStatOption(level.getMDD(), skill.getSkillID(), duration));
         }
         if (level.getACC() != 0) {
-            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.ACC, new SecondaryStatOption(level.getACC(), skill.getSkillID()));
+            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.ACC, new SecondaryStatOption(level.getACC(), skill.getSkillID(), duration));
         }
         if (level.getEVA() != 0) {
-            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.EVA, new SecondaryStatOption(level.getEVA(), skill.getSkillID()));
+            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.EVA, new SecondaryStatOption(level.getEVA(), skill.getSkillID(), duration));
         }
         if (level.getSpeed() != 0) {
-            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.Speed, new SecondaryStatOption(level.getSpeed(), skill.getSkillID()));
+            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.Speed, new SecondaryStatOption(level.getSpeed(), skill.getSkillID(), duration));
         }
         if (level.getJump() != 0) {
-            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.Jump, new SecondaryStatOption(level.getJump(), skill.getSkillID()));
+            flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.Jump, new SecondaryStatOption(level.getJump(), skill.getSkillID(), duration));
         }
+        
         switch (skill.getSkillID()) {
             // WARRIOR
             case Fighter.PowerGuard:
             case Page.PowerGuard:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.PowerGuard, new SecondaryStatOption(level.getX(), skill.getSkillID()));
+                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.PowerGuard, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
                 break;
             case Spearman.HyperBody:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MaxHP, new SecondaryStatOption(level.getX(), skill.getSkillID()));
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MaxMP, new SecondaryStatOption(level.getY(), skill.getSkillID()));
+                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MaxHP, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
+                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MaxMP, new SecondaryStatOption(level.getY(), skill.getSkillID(), duration));
                 break;
             // MAGICIAN
             case Magician.MagicGuard:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MagicGuard, new SecondaryStatOption(level.getX(), skill.getSkillID()));
+                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MagicGuard, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
                 break;
             case Cleric.Invincible:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.Invincible, new SecondaryStatOption(level.getX(), skill.getSkillID()));
+                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.Invincible, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
                 break;
             // BOWMAN
             case Hunter.SoulArrow_Bow:
             case Crossbowman.SoulArrow_Crossbow:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.SoulArrow, new SecondaryStatOption(level.getX(), skill.getSkillID()));
+                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.SoulArrow, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
                 break;
             // THIEF
             case Rogue.DarkSight:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.DarkSight, new SecondaryStatOption(level.getX(), skill.getSkillID()));
+                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.DarkSight, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
                 break;
         }
         

@@ -161,6 +161,10 @@ public class Mob extends Creature {
         return mobGen;
     }
     
+    public MobStat getMobStat() {
+        return stat;
+    }
+    
     public void getMobStat(MobStat mobStat) {
         
     }
@@ -296,6 +300,17 @@ public class Mob extends Creature {
             }
         }
         return false;
+    }
+    
+    public int onMobMPSteal(int prop, int percent) {
+        int decMP = 0;
+        if (template.isBoss()) {
+            decMP = Math.min(percent * getMaxMP() / 100, getMP());
+            if (Rand32.genRandom() % 100 >= prop || decMP < 0)
+                decMP = 0;
+            this.mp -= decMP;
+        }
+        return decMP;
     }
     
     public boolean onMobMove(boolean nextAttackPossible, byte action, int data) {

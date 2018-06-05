@@ -19,6 +19,7 @@ package game.user.skill;
 
 import common.user.DBChar;
 import game.user.User;
+import game.user.WvsContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,16 @@ import java.util.List;
  * @author Eric
  */
 public class UserSkillRecord {
+    
+    public static void sendCharacterSkillRecord(User user, byte onExclRequest, List<SkillRecord> change) {
+        if (user.lock()) {
+            try {
+                user.sendPacket(WvsContext.onChangeSkillRecordResult(onExclRequest, change));
+            } finally {
+                user.unlock();
+            }
+        }
+    }
     
     public static boolean skillUp(User user, int skillID, boolean decSP, List<SkillRecord> change) {
         if (user.lock()) {
@@ -38,19 +49,19 @@ public class UserSkillRecord {
                 if (user.getCharacter().getCharacterStat().getSP() <= 0) {
                     return false;
                 }
-                List<Integer> a = new ArrayList<>();
-                SkillAccessor.getSkillRootFromJob(user.getCharacter().getCharacterStat().getJob(), a);
+                List<Integer> curSkillRoot = new ArrayList<>();
+                SkillAccessor.getSkillRootFromJob(user.getCharacter().getCharacterStat().getJob(), curSkillRoot);
                 int i = 0;
                 for (;;) {
-                    if (a.isEmpty())
+                    if (curSkillRoot.isEmpty())
                         break;
-                    if (i >= a.size() || a.get(i) == skillRoot)
+                    if (i >= curSkillRoot.size() || curSkillRoot.get(i) == skillRoot)
                         break;
                     ++i;
                 }
-                if (a.isEmpty() || i >= a.size())
+                if (curSkillRoot.isEmpty() || i >= curSkillRoot.size())
                     return false;
-                a.clear();
+                curSkillRoot.clear();
                 SkillEntry skillEntry = SkillInfo.getInstance().getSkill(skillID);
                 if (skillEntry == null) {
                     return false;

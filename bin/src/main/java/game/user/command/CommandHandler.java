@@ -14,9 +14,6 @@ import game.user.User;
  */
 public class CommandHandler {
 
-    // Replaced grades with an enum eric creates.
-    private static final String[] grades = { "User", "GM" };
-
     public static void handle(User user, String input) {
         String[] args = new String[input.split(" ").length];
         String val = "";
@@ -43,15 +40,17 @@ public class CommandHandler {
             args[index++] = val;
         String command = args[0].replace("!", "").replace("@", "");
         args = Arrays.copyOfRange(args, 1, index);// Cuts off the nulls created if quotes were used.
-        for(String role : grades) {
-            //check gradecode
+        for (UserGradeCode role : UserGradeCode.values()) {
+            if (user.getGradeCode() < role.getGrade()) {
+                break;
+            }
             Class<?> clazz = null;
             try {
                 // Since in java we aren't able to grab a list of classes under a package
                 // I just do a list of 'grades' to check for specific class commands.
-                clazz = Class.forName("game.user.command." + role + "Commands");
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+                clazz = Class.forName("game.user.command." + role.name() + "Commands");
+            } catch (ClassNotFoundException ex) {
+                ex.printStackTrace(System.err);
                 continue;
             }
 
@@ -68,8 +67,8 @@ public class CommandHandler {
                         // We automatically fill in any User or String[] paremeters with the sender &
                         // args.
 
-                        for(Class<?> c : method.getParameterTypes()) {
-                            if(!c.equals(User.class) && !c.equals(String[].class)) {
+                        for (Class<?> c : method.getParameterTypes()) {
+                            if (!c.equals(User.class) && !c.equals(String[].class)) {
                                 unknownParameters = true;
                                 break;
                             }
@@ -101,14 +100,13 @@ public class CommandHandler {
                                 checked.clear();
                             }
                         }
-
                     }
                 }
-            } catch (SecurityException e) {
-                e.printStackTrace();
+            } catch (SecurityException ex) {
+                ex.printStackTrace(System.err);
                 continue;
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ex) {
+                ex.printStackTrace(System.err);
                 continue;
             }
             if (commandMethod != null) {
@@ -137,7 +135,7 @@ public class CommandHandler {
                     return;
                 } catch (Exception ex) {
                     user.sendSystemMessage("Failed to execute the command.");
-                    ex.printStackTrace();
+                    ex.printStackTrace(System.err);
                 }
                 break;
             }

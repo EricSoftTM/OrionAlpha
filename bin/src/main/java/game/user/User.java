@@ -48,6 +48,7 @@ import game.miniroom.MiniRoomBase;
 import game.user.WvsContext.BroadcastMsg;
 import game.user.WvsContext.Request;
 import game.user.command.CommandHandler;
+import game.user.command.UserGradeCode;
 import game.user.item.ChangeLog;
 import game.user.item.Inventory;
 import game.user.item.InventoryManipulator;
@@ -896,6 +897,10 @@ public class User extends Creature {
         return characterName;
     }
     
+    public int getGradeCode() {
+        return gradeCode;
+    }
+    
     public short getHP() {
         return character.getCharacterStat().getHP();
     }
@@ -925,7 +930,7 @@ public class User extends Creature {
     }
     
     public boolean isGM() {
-        return gradeCode >= 3;//TODO: Proper GradeCode
+        return gradeCode >= UserGradeCode.GM.getGrade();
     }
     
     public boolean isHide() {
@@ -1140,6 +1145,7 @@ public class User extends Creature {
         
         this.lastAttack = System.currentTimeMillis();
         int bulletItemID = 0;
+        int mobTemplateID = 0;
         
         if (secondaryStat.getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
             sendTemporaryStatReset(secondaryStat.resetByCTS(CharacterTemporaryStat.DarkSight));
@@ -1174,7 +1180,7 @@ public class User extends Creature {
             byte slv = 0;
             
             if (type == ClientPacket.UserShootAttack) {
-                
+                Logger.logReport("[UserShootAttack] %s", packet.dumpString());
             }
             
             List<AttackInfo> attack = new ArrayList<>(mobCount);
@@ -1183,7 +1189,7 @@ public class User extends Creature {
                 info.mobID = packet.decodeInt();
                 Mob mob = getField().getLifePool().getMob(info.mobID);
                 if (mob != null) {
-                    info.templateID = mob.getTemplateID();
+                    mobTemplateID = mob.getTemplateID();
                 }
                 info.hitAction = packet.decodeByte();
                 info.hit.x = packet.decodeShort();
@@ -1201,10 +1207,6 @@ public class User extends Creature {
                 // ptStart? TODO Check ShootAttack decodes
             }
             
-            if (bulletItemPos > 0) {
-                
-            }
-            
             byte attackType;
             if (type == ClientPacket.UserMagicAttack) {
                 attackType = LoopbackPacket.UserMagicAttack;
@@ -1220,16 +1222,59 @@ public class User extends Creature {
             SkillEntry skill = null;
             int maxCount = 1;
             if (skillID > 0) {
-                slv = 0;
-                skill = null;
-                if (skill != null) {
-                    //maxCount = skillData.mobCount
+                if (lock()) {
+                    try {
+                        slv = (byte) SkillInfo.getInstance().getSkillLevel(character, skillID, null);
+                        if (slv > 0) {
+                            skill = SkillInfo.getInstance().getSkill(skillID);
+                            if (skillID != Cleric.Heal && !SkillInfo.getInstance().adjustConsumeForActiveSkill(this, skillID, slv)) {
+                                Logger.logReport("Failed to adjust consume for active skill!!! (SkillID:%d,SLV:%d)", skillID, slv);
+                                getCalcDamage().skip();
+                                return;
+                            }
+                            if (skill != null) {
+                                SkillLevelData levelData = skill.getLevelData(slv);
+                                if (levelData != null) {
+                                    if (bulletItemPos > 0) {
+                                        List<ChangeLog> changeLog = new ArrayList<>();
+                                        int count = Math.max(1, levelData.getBulletCount());
+                                        ItemSlotBase item = character.getItem(ItemType.Consume, bulletItemPos);
+                                        if (item != null) {
+                                            if (character.getItemTrading().get(ItemType.Consume).get(bulletItemPos) != 0 || item.getItemNumber() < count) {
+                                                getCalcDamage().skip();
+                                                return;
+                                            }
+                                            if (ItemAccessor.isJavelinItem(item.getItemID())) {//Stars
+                                                if (Inventory.rawWasteItem(this, bulletItemPos, (short) count, changeLog)) {
+                                                    addCharacterDataMod(DBChar.ItemSlotConsume);
+                                                    bulletItemID = item.getItemID();
+                                                    Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                                                }
+                                            } else {//Arrows
+                                                Pointer<Integer> decRet = new Pointer<>(0);
+                                                if (Inventory.rawRemoveItem(this, ItemType.Consume, bulletItemPos, (short) count, changeLog, decRet, null) && decRet.get() == count) {
+                                                    addCharacterDataMod(DBChar.ItemSlotConsume);
+                                                    bulletItemID = item.getItemID();
+                                                    Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                                                } else {
+                                                    Logger.logError("Invalid skill info in attack packet (nItemPos: %d, nCount: %d, nDecRet: %d)", bulletItemPos, count, decRet.get());
+                                                }
+                                            }
+                                            changeLog.clear();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } finally {
+                        unlock();
+                    }
                 }
             }
             if (maxCount <= 1)
                 maxCount = 1;
             if (maxCount < mobCount) {
-                Logger.logError("Invalid mob count (Skill:%d,Lv:%d,Mob:%d)", skillID, slv, -1);
+                Logger.logError("Invalid mob count (Skill:%d,Lv:%d,Mob:%d)", skillID, slv, mobTemplateID);
             } else {
                 if (getField().getLifePool().onUserAttack(this, attackType, mobCount, damagePerMob, skill, slv, action, left, bulletItemID, attack, ballStart)) {
                     

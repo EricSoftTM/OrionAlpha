@@ -26,6 +26,7 @@ import game.user.skill.Skills.*;
 import game.user.stat.BasicStat;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import network.packet.ClientPacket;
 import util.Pointer;
 
 /**
@@ -57,10 +58,6 @@ public class SkillAccessor {
             AP_MAX              = 255,
             SP_MAX              = 255
     ;
-    // All available Teleport skills
-    static final int[] TELEPORT = {
-        Wizard1.Teleport, Wizard2.Teleport, Cleric.Teleport
-    };
     /**
      * The formula that controls the randomized ranges between a HP/MP increase.
      * 
@@ -96,24 +93,24 @@ public class SkillAccessor {
     }
     
     public static boolean isCorrectItemForBooster(int weaponType, int job) {
-        switch (job) {
-            case 110: // Fighter
+        switch (JobAccessor.findJob(job)) {
+            case Fighter:
                 return weaponType == 30 || weaponType == 31 || weaponType == 40 || weaponType == 41;
-            case 120: // Page
+            case Page:
                 return weaponType == 30 || weaponType == 32 || weaponType == 40 || weaponType == 42;
-            case 130: // Spearman
+            case Spearman:
                 return weaponType == 43 || weaponType == 44;
-            case 210: // Wizard, Ice Lightning
-            case 220: // Wizard, Fire Poison
-            case 230: // Cleric
+            case Wizard_Fire_Poison:
+            case Wizard_Thunder_Cold:
+            case Cleric:
                 return weaponType == 37 || weaponType == 38;
-            case 310: // Bowman
+            case Hunter:
                 return weaponType == 45;
-            case 320: // Crossbowman
+            case Crossbowman:
                 return weaponType == 46;
-            case 410: // Rogue
+            case Assassin:
                 return weaponType == 47;
-            case 420: // Bandit
+            case Thief:
                 return weaponType == 33;
             default: {
                 return false;
@@ -284,21 +281,64 @@ public class SkillAccessor {
     }
     
     public static boolean isTeleportSkill(int skillID) {
-        for (int teleport : TELEPORT) {
-            if (skillID == teleport)
+        final int[] skills = { Wizard1.Teleport, Wizard2.Teleport, Cleric.Teleport };
+        
+        for (int skill : skills) {
+            if (skillID == skill)
                 return true;
         }
         return false;
     }
     
     public static int getTeleportSkillLevel(CharacterData cd) {
-        int slv = 0;
-        for (int teleport : TELEPORT) {
-            int lev = SkillInfo.getInstance().getSkillLevel(cd, teleport, null);
-            if (lev > slv)
-                slv = lev;
+        int skill = 0;
+        switch (JobAccessor.findJob(cd.getCharacterStat().getJob())) {
+            case Wizard_Fire_Poison:
+                skill = Wizard1.Teleport;
+                break;
+            case Wizard_Thunder_Cold:
+                skill = Wizard2.Teleport;
+                break;
+            case Cleric:
+                skill = Cleric.Teleport;
+                break;
         }
-        return slv;
+        
+        return SkillInfo.getInstance().getSkillLevel(cd, skill, null);
+    }
+    
+    public static int getMPStealSkillData(CharacterData cd, int attackType, Pointer<Integer> prop, Pointer<Integer> percent) {
+        prop.set(0);
+        percent.set(0);
+        if (attackType != ClientPacket.UserMagicAttack)
+            return 0;
+        
+        int skill = 0;
+        switch (JobAccessor.findJob(cd.getCharacterStat().getJob())) {
+            case Wizard_Fire_Poison:
+                skill = Wizard1.MPEater;
+                break;
+            case Wizard_Thunder_Cold:
+                skill = Wizard2.MPEater;
+                break;
+            case Cleric:
+                skill = Cleric.MPEater;
+                break;
+        }
+        
+        if (skill != 0) {
+            Pointer<SkillEntry> skillEntry = new Pointer<>(null);
+            int slv = SkillInfo.getInstance().getSkillLevel(cd, skill, skillEntry);
+            if (slv > 0) {
+                if (skillEntry.get() != null) {
+                    prop.set(skillEntry.get().getLevelData(slv).getProp());
+                    percent.set(skillEntry.get().getLevelData(slv).getX());
+                }
+                return skill;
+            }
+        }
+        
+        return 0;
     }
     
     public static int getMasteryFromSkill(CharacterData cd, int skillID, Pointer<Integer> inc) {

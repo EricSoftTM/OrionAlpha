@@ -17,6 +17,8 @@
  */
 package game.field.life;
 
+import common.item.BodyPart;
+import common.item.ItemType;
 import common.user.CharacterStat.CharacterStatType;
 import game.field.Field;
 import game.field.FieldOpt;
@@ -30,9 +32,13 @@ import game.field.life.mob.MobTemplate;
 import game.field.life.npc.Npc;
 import game.field.life.npc.NpcTemplate;
 import game.user.User;
+import game.user.User.UserEffect;
+import game.user.UserLocal;
 import game.user.WvsContext;
 import game.user.WvsContext.Request;
+import game.user.skill.SkillAccessor;
 import game.user.skill.SkillEntry;
+import game.user.skill.SkillLevelData;
 import game.user.skill.Skills;
 import game.user.skill.Skills.Assassin;
 import game.user.skill.Skills.Thief;
@@ -873,11 +879,28 @@ public class LifePool {
                     try {
                         int skillID = 0;
                         if (skill != null) {
-                            //skillID = skill.skillID
+                            skillID = skill.getSkillID();
                         }
                         
                         if (mobCount > 0) {
-                            // Handle CalcDamage, if it exists..
+                            for (Iterator<AttackInfo> it = attack.iterator(); it.hasNext();) {
+                                AttackInfo info = it.next();
+                                if (!mobs.containsKey(info.mobID)) {
+                                    it.remove();
+                                    continue;
+                                }
+                                Mob mob = mobs.get(info.mobID);
+                                if (mob != null) {
+                                    int weaponItemID = user.getCharacter().getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
+                                    if (attackType == ClientPacket.UserMagicAttack) {
+                                        user.getCalcDamage().MDamage(user.getCharacter(), user.getBasicStat(), user.getSecondaryStat(), mob.getMobStat(), damagePerMob, weaponItemID, action, skill, slv, info.damageCli, mobCount);
+                                    } else {
+                                        user.getCalcDamage().PDamage(user.getCharacter(), user.getBasicStat(), user.getSecondaryStat(), mob.getMobStat(), damagePerMob, weaponItemID, bulletItemID, attackType, action, skill, slv, info.damageCli);
+                                    }
+                                } else {
+                                    user.getCalcDamage().skip();
+                                }
+                            }
                         }
                         
                         OutPacket packet = new OutPacket(attackType);
@@ -900,6 +923,10 @@ public class LifePool {
                         }
                         getField().splitSendPacket(user.getSplit(), packet, user);
                         
+                        Pointer<Integer> prop = new Pointer<>(0);
+                        Pointer<Integer> percent = new Pointer<>(0);
+                        int mpSteal = 0;
+                        int mpStealSkill = SkillAccessor.getMPStealSkillData(user.getCharacter(), attackType, prop, percent);
                         if (mobCount > 0) {
                             for (Iterator<AttackInfo> it = attack.iterator(); it.hasNext();) {
                                 AttackInfo info = it.next();
@@ -915,6 +942,10 @@ public class LifePool {
                                     info.hit = mob.getCurrentPos();
                                 }
                                 
+                                if (percent.get() != 0) {
+                                    mpSteal += mob.onMobMPSteal(prop.get(), (int) Math.ceil((double) percent.get() / (double) mobCount));
+                                }
+                                
                                 int damageSum = 0;
                                 if (damagePerMob > 0) {
                                     for (int damage : info.damageCli) {
@@ -928,17 +959,29 @@ public class LifePool {
                                 }
                                 
                                 if (skill != null && slv > 0) {
+                                    SkillLevelData level = skill.getLevelData(slv);
                                     if (skillID == Thief.Steal) {
-                                        //if (!mob.getTemplate().isBoss() && Rand32.genRandom() % 100 < level.prop) {
-                                            //mob.giveReward(user.getCharacterID(), info.hit, info.delay, true);
-                                        //}
+                                        if (!mob.getTemplate().isBoss() && Rand32.genRandom() % 100 < level.getProp()) {
+                                            mob.giveReward(user.getCharacterID(), info.hit, info.delay, true);
+                                        }
                                     } else if (skillID == Assassin.Drain) {
-                                        //int hp = Math.min(Math.min(damageSum * level.nX / 100, user.getCharacter().getCharacterStat().getMHP() / 2), mob.getMaxHP());
-                                        //if (user.incHP(hp, false))
-                                        //    user.sendCharacterStat(Request.None, CharacterStatType.HP);
+                                        int hp = Math.min(Math.min(damageSum * level.getX() / 100, user.getCharacter().getCharacterStat().getMHP() / 2), mob.getMaxHP());
+                                        if (user.incHP(hp, false)) {
+                                            user.sendCharacterStat(Request.None, CharacterStatType.HP);
+                                        }
+                                    } else {
+                                        if (mob.getHP() > 0 && damageSum > 0) {
+                                            mob.onMobStatChangeSkill(user, skill, slv, damageSum);
+                                        }
                                     }
                                 }
                             }
+                        }
+                        
+                        if (mpSteal != 0) {
+                            user.sendPacket(UserLocal.onEffect(UserEffect.SkillUse, mpStealSkill, 1));
+                            user.incMP(mpSteal, false);
+                            user.sendCharacterStat(Request.None, CharacterStatType.MP);
                         }
                         
                         return mobCount != 0;

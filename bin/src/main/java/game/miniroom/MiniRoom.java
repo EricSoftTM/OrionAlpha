@@ -18,7 +18,6 @@
 package game.miniroom;
 
 import game.user.User;
-import game.user.WvsContext;
 import game.user.WvsContext.Request;
 import network.packet.InPacket;
 
@@ -28,7 +27,7 @@ import network.packet.InPacket;
  */
 public class MiniRoom {
 
-    private static void onInviteResult(InPacket packet) {
+    private static void onMRInviteResult(InPacket packet) {
         int sn = packet.decodeInt();
         if (sn > 0) {
             MiniRoomBase.inviteResult(sn, packet.decodeString(), packet.decodeByte());
@@ -49,25 +48,25 @@ public class MiniRoom {
         }
     }
 
-    private static void onMRForward(User user, MiniRoomPacket type, InPacket packet) {
-        MiniRoomBase pMiniRoom = user.getMiniRoom();
-        if (pMiniRoom != null) {
-            pMiniRoom.onPacketBase(type, user, packet);
-        } else if (type.getType() >= MiniRoomPacket.PutMoney.getType() && type.getType() <= MiniRoomPacket.PutMoney.getType()) {
+    private static void onMRForward(User user, int type, InPacket packet) {
+        MiniRoomBase miniRoom = user.getMiniRoom();
+        if (miniRoom != null) {
+            miniRoom.onPacketBase(type, user, packet);
+        } else {
             user.sendCharacterStat(Request.Excl, 0);
         }
     }
 
     public static void onMiniRoom(User user, InPacket packet) {
-        MiniRoomPacket type = MiniRoomPacket.get(packet.decodeByte());
+        byte type = packet.decodeByte();
         switch (type) {
-            case Create:
+            case MiniRoomPacket.Create:
                 onMRCreate(user, packet);
                 break;
-            case EnterFailed:
-                onInviteResult(packet);
+            case MiniRoomPacket.EnterFailed:
+                onMRInviteResult(packet);
                 break;
-            case Enter:
+            case MiniRoomPacket.Enter:
                 onMREnter(user, packet);
                 break;
             default:

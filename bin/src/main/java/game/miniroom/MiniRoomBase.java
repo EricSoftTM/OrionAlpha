@@ -38,38 +38,38 @@ import util.Logger;
  */
 public abstract class MiniRoomBase {
 
-    public static final Map<Integer, MiniRoomEntry> miniRoomEntry = new HashMap<>();
-    public static final AtomicInteger miniRoomSNCounter = new AtomicInteger(30000);
+    private static final Map<Integer, MiniRoomEntry> miniRoomEntry = new HashMap<>();
+    private static final AtomicInteger miniRoomSNCounter = new AtomicInteger(30000);
 
-    public int balloonSN;
-    public boolean closeRequest = false;
-    public int curUsers = 0;
-    public final List<Integer> reserved;
-    public final List<Long> reservedTime;
+    private int balloonSN;
+    private boolean closeRequest = false;
+    private int curUsers = 0;
+    private final List<Integer> reserved;
+    private final List<Long> reservedTime;
 
-    public List<Integer> leaveRequest;
+    private final List<Integer> leaveRequest;
     private final ReentrantLock lockMiniRoom;
-    public final Lock lock;
-    public int maxUsers = 0;
-    public List<MiniRoomBase> miniEntry;
-    public int miniRoomSN;
-    public int miniRoomSpec;
-    public Point pointHost;
-    public int round;
-    public List<User> users;
+    private final Lock lock;
+    private int maxUsers = 0;
+    private final List<MiniRoomBase> miniEntry;
+    private int miniRoomSN;
+    private int miniRoomSpec;
+    private Point pointHost;
+    private int round;
+    private final List<User> users;
 
-    public MiniRoomBase(int nMaxUsers) {
+    public MiniRoomBase(int maxUsers) {
         this.lockMiniRoom = new ReentrantLock();
         this.miniEntry = new LinkedList<>();
         this.miniRoomSN = miniRoomSNCounter.incrementAndGet();
-        this.maxUsers = nMaxUsers;
-        this.users = new ArrayList<>(nMaxUsers);
-        this.leaveRequest = new ArrayList<>(nMaxUsers);
-        this.reservedTime = new ArrayList<>(nMaxUsers);
-        this.reserved = new ArrayList<>(nMaxUsers);
+        this.maxUsers = maxUsers;
+        this.users = new ArrayList<>(maxUsers);
+        this.leaveRequest = new ArrayList<>(maxUsers);
+        this.reservedTime = new ArrayList<>(maxUsers);
+        this.reserved = new ArrayList<>(maxUsers);
         this.lock = new ReentrantLock();
         this.pointHost = new Point();
-        for (int i = 0; i < nMaxUsers; i++) {
+        for (int i = 0; i < maxUsers; i++) {
             this.users.add(i, null);
             this.leaveRequest.add(i, -1);
             this.reservedTime.add(i, 0L);
@@ -101,13 +101,13 @@ public abstract class MiniRoomBase {
     private static MiniRoomBase miniRoomFactory(byte type) {
         MiniRoomBase miniRoom = null;
         if (type == MiniRoomType.TradingRoom) {
-            miniRoom = new TradingRoom(2);
+            miniRoom = new TradingRoom();
         }
         return miniRoom;
     }
 
-    public static int create(User userZero, byte type, InPacket inpacket, boolean tournament, int round) {
-        int characterID = inpacket.decodeInt();
+    public static int create(User userZero, byte type, InPacket packet, boolean tournament, int round) {
+        int characterID = packet.decodeInt();
         User userOne = User.findUser(characterID);
         MiniRoomBase miniroom = miniRoomFactory(type);
         if (miniroom == null) {
@@ -154,9 +154,9 @@ public abstract class MiniRoomBase {
     public void broadCast(OutPacket packet, User except) {
         lock.lock();
         try {
-            for (User pUser : users) {
-                if (pUser != null && pUser != except) {
-                    pUser.sendPacket(packet);
+            for (User user : users) {
+                if (user != null && user != except) {
+                    user.sendPacket(packet);
                 }
             }
         } finally {
@@ -165,11 +165,11 @@ public abstract class MiniRoomBase {
     }
 
     private void doLeave(int idx, int leaveType, boolean broadCast) {
-        lockMiniRoom.lock();
+        lock.lock();
         try {
             User user = this.users.get(idx);
-            Field pField;
-            if (user != null && (pField = user.getField()) != null && pField.lock()) {
+            Field field;
+            if (user != null && (field = user.getField()) != null && field.lock()) {
                 try {
                     Logger.logReport("DoLeave nLeaveType " + leaveType);
                     onLeave(user, leaveType);
@@ -188,29 +188,23 @@ public abstract class MiniRoomBase {
                         removeMiniRoom();
                     }
                 } finally {
-                    pField.unlock();
+                    field.unlock();
                 }
             }
         } finally {
-            lockMiniRoom.unlock();
+            lock.unlock();
         }
     }
 
     public void closeRequest(User user, int leaveType, int leaveType2) {
-        lockMiniRoom.lock();
+        lock.lock();
         try {
             this.closeRequest = true;
-            if (maxUsers > 0) {
-                for (int i = 0; i < this.maxUsers; i++) {
-                    int leaveTypeFinal = leaveType2;
-                    if (this.users.get(i) != user) {
-                        leaveTypeFinal = leaveType;
-                    }
-                    this.leaveRequest.set(i, leaveTypeFinal);
-                }
+            for (int i = 0; i < this.maxUsers; i++) {
+                this.leaveRequest.set(i, users.get(i) != user ? leaveType : leaveType2);
             }
         } finally {
-            lockMiniRoom.unlock();
+            lock.unlock();
         }
     }
 
@@ -228,19 +222,20 @@ public abstract class MiniRoomBase {
     }
 
     public void encodeEnterResult(User user, OutPacket packet) {
+        
     }
 
-    public void encodeLeave(User pUser, OutPacket packet) {
+    public void encodeLeave(User user, OutPacket packet) {
 
     }
 
-    public User findUser(int idx) {
+    public User findUser(int playerIdx) {
         lock.lock();
         try {
             if (maxUsers <= 0) {
                 return null;
             }
-            return users.get(idx);
+            return users.get(playerIdx);
         } finally {
             lock.unlock();
         }
@@ -257,19 +252,19 @@ public abstract class MiniRoomBase {
                     }
                 }
             }
-            int nIdx = 1;
+            int idx = 1;
             if (maxUsers <= 1) {
-                nIdx = -1;
+                idx = -1;
             } else {
-                while (users.get(nIdx) != null || reserved.get(nIdx) > 0 && characterID > 0 && reserved.get(nIdx) != characterID) {
-                    ++nIdx;
-                    if (nIdx >= maxUsers) {
-                        nIdx = -1;
+                while (users.get(idx) != null || reserved.get(idx) > 0 && characterID > 0 && reserved.get(idx) != characterID) {
+                    ++idx;
+                    if (idx >= maxUsers) {
+                        idx = -1;
                         break;
                     }
                 }
             }
-            return nIdx;
+            return idx;
         } finally {
             lock.unlock();
         }
@@ -282,21 +277,32 @@ public abstract class MiniRoomBase {
         }
         lock.lock();
         try {
-            byte nSlot = 0;
+            byte slot = 0;
             if (maxUsers <= 0) {
                 return -1;
             }
-            while (users.get(nSlot) != user) {
-                ++nSlot;
-                if (nSlot >= maxUsers) {
+            while (users.get(slot) != user) {
+                ++slot;
+                if (slot >= maxUsers) {
                     break;
                 }
             }
-            return nSlot;
+            return slot;
         } finally {
             lock.unlock();
         }
-
+    }
+    
+    public int getCurUsers() {
+        return curUsers;
+    }
+    
+    public int getMaxUsers() {
+        return maxUsers;
+    }
+    
+    public List<User> getUsers() {
+        return users;
     }
 
     public abstract int getCloseType();
@@ -305,9 +311,9 @@ public abstract class MiniRoomBase {
 
     public int isAdmitted(User user, boolean onCreate) {
         if (user.getCharacter().getCharacterStat().getHP() <= 0) {
-            return 4;
+            return 4;//MiniRoomEnter.Dead
         }
-        return 0;
+        return MiniRoomEnter.Success;
     }
 
     private boolean isEntrusted() {
@@ -317,11 +323,11 @@ public abstract class MiniRoomBase {
     private void onChat(User user, InPacket packet) {
         lock.lock();
         try {
-            int nSlot = findUserSlot(user);
-            if (this.curUsers > 0 && nSlot >= 0) {
-                String sChatMsg = packet.decodeString();
-                if (sChatMsg != null) {
-                    broadCast(MiniRoomBaseDlg.onChat(user.getCharacterName(), sChatMsg), null);
+            int slot = findUserSlot(user);
+            if (this.curUsers > 0 && slot >= 0) {
+                String chatMsg = packet.decodeString();
+                if (chatMsg != null) {
+                    broadCast(MiniRoomBaseDlg.onChat(slot, user.getCharacterName(), chatMsg), null);
                 }
             }
         } finally {
@@ -355,7 +361,7 @@ public abstract class MiniRoomBase {
                         roomEntry.miniRoom = this;
                         miniRoomEntry.put(this.miniRoomSN, roomEntry);
                     }
-                    return 0;
+                    return MiniRoomEnter.Success;
                 } else {
                     return 1;
                 }
@@ -410,11 +416,11 @@ public abstract class MiniRoomBase {
             return MiniRoomEnter.Busy;
         }
         user.setMiniRoom(this);
-        int nResult = isAdmitted(user, false);
-        if (nResult > 0) {
+        int result = isAdmitted(user, false);
+        if (result > 0) {
             Logger.logReport("onEnterBase Stop %d", 5);
             user.setMiniRoom(null);
-            return nResult;
+            return result;
         } else {
             Logger.logReport("onEnterBase Stop %d", 6);
             users.set(slot, user);
@@ -433,7 +439,7 @@ public abstract class MiniRoomBase {
     private void onInviteResult(MiniRoomBase miniRoom, String character, int result) {
         User user;
         if ((user = users.get(0)) != null) {
-            user.sendPacket(MiniRoomBaseDlg.onEnterDecline(miniRoom));
+            user.sendPacket(MiniRoomBaseDlg.onEnterDecline(miniRoom, character, result));
             // do i send another packet with char name and result? idunno lmao
             //   user.sendPacket(MiniRoomBaseDlg.onInviteResultStatic(result, character));
         }
@@ -455,41 +461,39 @@ public abstract class MiniRoomBase {
         }
     }
 
-    public abstract void onPacket(MiniRoomPacket type, User user, InPacket packet);
+    public abstract void onPacket(int type, User user, InPacket packet);
 
-    public void onPacketBase(MiniRoomPacket type, User user, InPacket packet) {
+    public void onPacketBase(int type, User user, InPacket packet) {
         switch (type) {
-            case Chat:
+            case MiniRoomPacket.Chat:
                 onChat(user, packet);
                 break;
-            case Leave:
+            case MiniRoomPacket.Leave:
                 onLeaveBase(user, packet);
                 break;
             default:
                 onPacket(type, user, packet);
-                break;
         }
         processLeaveRequest();
     }
 
     public void processLeaveRequest() {
-        lockMiniRoom.lock();
+        lock.lock();
         try {
             for (int i = 0; i < this.maxUsers; ++i) {
                 if (this.users.get(i) != null && this.leaveRequest.get(i) >= 0) {
-                    boolean bBroadCast = !closeRequest;
-                    this.doLeave(i, this.leaveRequest.get(i), bBroadCast);
+                    boolean broadCast = !this.closeRequest;
+                    doLeave(i, this.leaveRequest.get(i), broadCast);
                 }
             }
         } finally {
-            lockMiniRoom.unlock();
+            lock.unlock();
         }
     }
 
     private void removeMiniRoom() {
         miniRoomEntry.remove(this.miniRoomSN);
         this.curUsers = 0;
-
     }
 
     public class MiniRoomEntry {

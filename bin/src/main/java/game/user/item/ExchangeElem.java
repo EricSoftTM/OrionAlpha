@@ -44,19 +44,19 @@ public class ExchangeElem {
         this.add = add;
     }
 
-    public Add getA() {
+    public Add getAdd() {
         return a;
     }
 
-    public void setA(Add a) {
+    public void setAdd(Add a) {
         this.a = a;
     }
 
-    public Remove getR() {
+    public Remove getRemove() {
         return r;
     }
 
-    public void setR(Remove r) {
+    public void setRemove(Remove r) {
         this.r = r;
     }
 
@@ -114,19 +114,19 @@ public class ExchangeElem {
             this.count = count;
         }
 
-        public byte getTi() {
+        public byte getTI() {
             return ti;
         }
 
-        public void setTi(byte ti) {
+        public void setTI(byte ti) {
             this.ti = ti;
         }
 
-        public short getPos() {
+        public short getPOS() {
             return pos;
         }
 
-        public void setPos(short pos) {
+        public void setPOS(short pos) {
             this.pos = pos;
         }
     }

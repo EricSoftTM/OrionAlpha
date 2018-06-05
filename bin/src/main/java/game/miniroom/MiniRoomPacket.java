@@ -17,49 +17,29 @@
  */
 package game.miniroom;
 
-import util.Logger;
-
 /**
  *
  * @author sunnyboy
  */
-public enum MiniRoomPacket {
-
-    Create(0x0),
-    //   CreateResult(0x1),
-    InviteUser(0x1),//??
-    InviteResult(0x2), // correct
-    Enter(0x3), // yes
-    EnterFailed(0x4), // correct
-    EnterResult(0x5), // yes
-    Chat(0x6), // yes
-    Avatar(0x7), // yes (?)
-    Leave(0x8),// yes
-    UserChat(0x9), // ??
-    PutItem_TR(0x0C),
-    PutMoney(0x0D),
-    Trade(0x0E), // 
-    // MoveItemToInventory_TR(0xFF),
-    // ItemCRC(0xFF),
-    //LimitFail(0xFF),
+public class MiniRoomPacket {
+    public static final byte
+            Create          = 0,
+            Invite          = 1,//0049CB90
+            InviteResult    = 2,//0049CEE0
+            Enter           = 3,//0049D1C0
+            EnterFailed     = 4,//004F8730
+            EnterResult     = 5,//0049CA90
+            Chat            = 6,//004F8BC0
+            Avatar          = 7,//0049D270
+            Leave           = 8,//0049C730
+            GameMessage     = 9,//004F8D60
+            Unknown10       = 10,//Can't find in client.
+            Unknown11       = 11,//Can't find in client.
+            PutItem         = 12,//004F8940
+            PutMoney        = 13,//004F8B20
+            Trade           = 14//004F8940
+            // MoveItemToInventory
+            // ItemCRC
+            // LimitFail
     ;
-    private final int packet;
-
-    private MiniRoomPacket(int packet) {
-        this.packet = packet;
-    }
-
-    public static MiniRoomPacket get(int packet) {
-        Logger.logError("MiniRoomPacket Type %d", packet);
-        for (MiniRoomPacket mrp : MiniRoomPacket.values()) {
-            if (mrp.packet == packet) {
-                return mrp;
-            }
-        }
-        return null;
-    }
-
-    public int getType() {
-        return packet;
-    }
 }

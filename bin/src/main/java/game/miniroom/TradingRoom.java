@@ -40,11 +40,11 @@ import util.Logger;
  */
 public class TradingRoom extends MiniRoomBase {
 
-    public final boolean[] lock;
-    public final List<List<Item>> item;
+    private final boolean[] lock;
+    private final List<List<Item>> item;
 
-    public TradingRoom(int maxUsers) {
-        super(maxUsers);
+    public TradingRoom() {
+        super(2);
         this.lock = new boolean[2];
         this.item = new ArrayList<>(2);
 
@@ -53,9 +53,9 @@ public class TradingRoom extends MiniRoomBase {
             this.item.add(new ArrayList<>());
             for (int j = 0; j < 9; j++) {// 8 slots
                 itemTrade = new Item();
-                itemTrade.setNumber((short)-1);
-                itemTrade.setTi((byte)0);
-                itemTrade.setPos((short)0);
+                itemTrade.setNumber((short) -1);
+                itemTrade.setTI((byte) 0);
+                itemTrade.setPOS((short) 0);
                 item.get(i).add(j, itemTrade);
             }
         }
@@ -64,81 +64,75 @@ public class TradingRoom extends MiniRoomBase {
     }
 
     public int doTrade() {
-        User pOwner = users.get(0);
-        User pUser = users.get(1);
-        if (pOwner == null || pUser == null) {
-            Logger.logError("Cannot get a user information on trade with %s", pOwner != null ? pOwner.getCharacterName() : pUser != null ? pUser.getCharacterName() : "null");
+        User owner = getUsers().get(0);
+        User user = getUsers().get(1);
+        if (owner == null || user == null) {
+            Logger.logError("Cannot get a user information on trade with %s", owner != null ? owner.getCharacterName() : user != null ? user.getCharacterName() : "null");
             return MiniRoomLeave.TradeFail.getType();
         }
-        final int[] anMesoTrading = new int[2];
+        final int[] mesoTrading = new int[2];
         final List<List<ItemSlotBase>> backup = new ArrayList<>();
         final List<List<ItemSlotBase>> backupItem = new ArrayList<>();
         final List<List<Integer>> backupItemTrading = new ArrayList<>();
         final List<List<Integer>> backupTrading = new ArrayList<>();
        
-        anMesoTrading[0] = pOwner.getCharacter().getMoneyTrading();
-        pOwner.getCharacter().backupItemSlot(backupItem, backupItemTrading);
-        pOwner.getCharacter().clearTradingInfo();
+        mesoTrading[0] = owner.getCharacter().getMoneyTrading();
+        owner.getCharacter().backupItemSlot(backupItem, backupItemTrading);
+        owner.getCharacter().clearTradingInfo();
         
-        anMesoTrading[1] = pUser.getCharacter().getMoneyTrading();
-        pUser.getCharacter().backupItemSlot(backup, backupTrading);
-        pUser.getCharacter().clearTradingInfo();
+        mesoTrading[1] = user.getCharacter().getMoneyTrading();
+        user.getCharacter().backupItemSlot(backup, backupTrading);
+        user.getCharacter().clearTradingInfo();
         
         List<ExchangeElem> exchange = new ArrayList<>();
         List<ExchangeElem> exchange2 = new ArrayList<>();
-        List<ChangeLog> paLogAdd = new ArrayList<>();
+        List<ChangeLog> logAdd = new ArrayList<>();
         List<ChangeLog> changeLog = new ArrayList<>();
         MiniRoomLeave result = MiniRoomLeave.TradeDone;
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < 9; j++) {
                 Item tradeItem = item.get(i).get(j);
-                if (tradeItem.getTi() == 0) {
+                if (tradeItem.getTI() == ItemType.NotDefine) {
                     continue;
                 }
-                ItemSlotBase itemBase = users.get(i).getCharacter().getItemSlot(tradeItem.getTi()).get(tradeItem.getPos());
+                ItemSlotBase itemBase = getUsers().get(i).getCharacter().getItemSlot(tradeItem.getTI()).get(tradeItem.getPOS());
                 if (itemBase == null) {
                     result = MiniRoomLeave.TradeFail;
                     break;
                 }
-                byte ti = (byte) (itemBase.getItemID() / 1000000);
-                if (!users.get(i).isItemExist(ti, itemBase.getItemID())) {
-                    int itemID;
-                    short count;
-                    ItemSlotBase itemSlot;
-                    if (ItemAccessor.isTreatSingly(itemBase)) {
-                        itemSlot = itemBase;
-                        count = 0;
-                        itemID = 0;
-                    } else {
-                        itemSlot = null;
-                        count = (short) tradeItem.getNumber();
-                        itemID = itemBase.getItemID();
-                    }
-                    ExchangeElem exchangeElem = new ExchangeElem();
-                    exchangeElem.initAdd(itemID, count, itemSlot);
-                    if (i == 0) {
-                        exchange2.add(exchangeElem);
-                    } else {
-                        exchange.add(exchangeElem);
-                    }
-                    exchangeElem = new ExchangeElem();
-                    exchangeElem.setAdd(false);
-                    exchangeElem.getR().setItemID(0);
-                    exchangeElem.getR().setCount(tradeItem.getNumber());
-                    exchangeElem.getR().setTi(tradeItem.getTi());
-                    exchangeElem.getR().setPos(tradeItem.getPos());
-                    if (i == 0) {
-                        exchange.add(exchangeElem);
-                    } else {
-                        exchange2.add(exchangeElem);
-                    }
+                int itemID;
+                short count;
+                ItemSlotBase itemSlot;
+                if (ItemAccessor.isTreatSingly(itemBase)) {
+                    itemSlot = itemBase;
+                    count = 0;
+                    itemID = 0;
                 } else {
-                    result = MiniRoomLeave.TradeFail_OnlyItem;
-                    break;
+                    itemSlot = null;
+                    count = (short) tradeItem.getNumber();
+                    itemID = itemBase.getItemID();
+                }
+                ExchangeElem exchangeElem = new ExchangeElem();
+                exchangeElem.initAdd(itemID, count, itemSlot);
+                if (i == 0) {
+                    exchange2.add(exchangeElem);
+                } else {
+                    exchange.add(exchangeElem);
+                }
+                exchangeElem = new ExchangeElem();
+                exchangeElem.setAdd(false);
+                exchangeElem.getRemove().setItemID(0);
+                exchangeElem.getRemove().setCount(tradeItem.getNumber());
+                exchangeElem.getRemove().setTI(tradeItem.getTI());
+                exchangeElem.getRemove().setPOS(tradeItem.getPOS());
+                if (i == 0) {
+                    exchange.add(exchangeElem);
+                } else {
+                    exchange2.add(exchangeElem);
                 }
             }
             int idx = (i > 0) ? 0 : 1;
-            long meso = users.get(i).getCharacter().getCharacterStat().getMoney() - users.get(i).getCharacter().getMoneyTrading() + (anMesoTrading[idx] - anMesoTrading[i]);
+            long meso = getUsers().get(i).getCharacter().getCharacterStat().getMoney() - getUsers().get(i).getCharacter().getMoneyTrading() + (mesoTrading[idx] - mesoTrading[i]);
             if ((meso >> 32) != 0 || (int) meso < 0) {
                 result = MiniRoomLeave.TradeFail;
             }
@@ -147,31 +141,31 @@ public class TradingRoom extends MiniRoomBase {
             }
         }
         if (result == MiniRoomLeave.TradeDone) {
-            if (!Inventory.exchange(pOwner, 0, exchange, paLogAdd, null) || !Inventory.exchange(pUser, 0, exchange2, changeLog, null)) {
+            if (!Inventory.exchange(owner, 0, exchange, logAdd, null) || !Inventory.exchange(user, 0, exchange2, changeLog, null)) {
                 result = MiniRoomLeave.TradeFail;
             }
         }
         if (result != MiniRoomLeave.TradeDone) {
-            users.get(0).getCharacter().setMoneyTrading(anMesoTrading[0]);
-            users.get(1).getCharacter().setMoneyTrading(anMesoTrading[1]);
-            users.get(0).getCharacter().restoreItemSlot(backupItem, backupItemTrading);
-            users.get(1).getCharacter().restoreItemSlot(backup, backupTrading);
+            getUsers().get(0).getCharacter().setMoneyTrading(mesoTrading[0]);
+            getUsers().get(1).getCharacter().setMoneyTrading(mesoTrading[1]);
+            getUsers().get(0).getCharacter().restoreItemSlot(backupItem, backupItemTrading);
+            getUsers().get(1).getCharacter().restoreItemSlot(backup, backupTrading);
         } else {
             for (int i = 0; i < 2; i++) {
                 int idx = (i == 0) ? 1 : 0;
-                int from = getTax(anMesoTrading[idx]);
-                int meso = (anMesoTrading[idx] + -anMesoTrading[i] - from);
-                users.get(i).incMoney(meso, true, false);
+                int from = getTax(mesoTrading[idx]);
+                int meso = (mesoTrading[idx] + -mesoTrading[i] - from);
+                getUsers().get(i).incMoney(meso, true, false);
                 //addTotalTax
-                Inventory.sendInventoryOperation(users.get(i), Request.None, i == 0 ? paLogAdd : changeLog);
-                users.get(i).sendCharacterStat(Request.None, CharacterStatType.Money);
-                users.get(i).flushCharacterData(0, true);
+                Inventory.sendInventoryOperation(getUsers().get(i), Request.None, i == 0 ? logAdd : changeLog);
+                getUsers().get(i).sendCharacterStat(Request.None, CharacterStatType.Money);
+                getUsers().get(i).flushCharacterData(0, true);
             }
-            if (pOwner.getCharacter().getCharacterStat().getLevel() <= 15) {
-                pOwner.setTradeMoneyLimit(pOwner.getTempTradeMoney());
+            if (owner.getCharacter().getCharacterStat().getLevel() <= 15) {
+                owner.setTradeMoneyLimit(owner.getTempTradeMoney());
             }
-            if (pUser.getCharacter().getCharacterStat().getLevel() <= 15) {
-                pUser.setTradeMoneyLimit(pUser.getTempTradeMoney());
+            if (user.getCharacter().getCharacterStat().getLevel() <= 15) {
+                user.setTradeMoneyLimit(user.getTempTradeMoney());
             }
         }
         for (List<Integer> backupItemTradingList : backupItemTrading) {
@@ -184,7 +178,7 @@ public class TradingRoom extends MiniRoomBase {
         backupTrading.clear();
         exchange.clear();
         exchange2.clear();
-        paLogAdd.clear();
+        logAdd.clear();
         changeLog.clear();
         return result.getType();
     }
@@ -230,25 +224,25 @@ public class TradingRoom extends MiniRoomBase {
 
     @Override
     public int getTypeNumber() {
-        return 1;
+        return MiniRoomType.TradingRoom;
     }
 
     @Override
     public int isAdmitted(User user, boolean onCreate) {
         int admitted = super.isAdmitted(user, onCreate);
-        if (admitted == 0) {
+        if (admitted == MiniRoomEnter.Success) {
             if (!onCreate) {
-                if (user.getField() == null || this.users.get(0).getField() == null) {
-                    return 8;
+                if (user.getField() == null || this.getUsers().get(0).getField() == null) {
+                    return 8;//MiniRoomEnter.Etc
                 }
-                if (user.getField() != this.users.get(0).getField()) {
-                    closeRequest(null, 9, 0);
+                if (user.getField() != this.getUsers().get(0).getField()) {
+                    closeRequest(null, 9, 0);//MiniRoomEnter.OnlyInSameField
                     processLeaveRequest();
-                    return 9;
+                    return 9;//MiniRoomEnter.OnlyInSameField
                 }
             }
             if (!user.getCharacter().setTrading(true)) {
-                return 7;
+                return 7;//MiniRoomEnter.NoTrading, but this stuff doesn't exist
             }
         }
         return admitted;
@@ -256,21 +250,24 @@ public class TradingRoom extends MiniRoomBase {
 
     @Override
     public void onLeave(User user, int leaveType) {
-        // restorefromtemp
+        if (leaveType != MiniRoomLeave.TradeDone.getType()) {
+            Inventory.restoreFromTemp(user);
+        }
         user.getCharacter().setTrading(false);
     }
 
     @Override
-    public void onPacket(MiniRoomPacket type, User user, InPacket packet) {
+    public void onPacket(int type, User user, InPacket packet) {
         switch (type) {
-            case PutItem_TR:
+            case MiniRoomPacket.PutItem:
                 System.err.println("Putting item triggered");
                 onPutItem(user, packet);
                 break;
-            case PutMoney:
+            case MiniRoomPacket.PutMoney:
                 onPutMoney(user, packet);
                 break;
-            case Trade:
+            case MiniRoomPacket.Trade:
+                onTrade(user, packet);
                 break;
         }
     }
@@ -283,8 +280,8 @@ public class TradingRoom extends MiniRoomBase {
             number = packet.decodeShort();
         }
         byte pos = packet.decodeByte();
-        int nIdx;
-        if (curUsers == 0 || lock[(nIdx = findUserSlot(user))] || users.get(nIdx > 0 ? 0 : 1) == null) {
+        int idx;
+        if (getCurUsers() == 0 || lock[(idx = findUserSlot(user))] || getUsers().get(idx > 0 ? 0 : 1) == null) {
             user.sendCharacterStat(Request.Excl, 0);
             return;
         }
@@ -293,7 +290,7 @@ public class TradingRoom extends MiniRoomBase {
             user.sendCharacterStat(Request.Excl, 0);
             return;
         }
-        if (pos < 1 || pos > 8 || item.get(nIdx).get(pos).ti > 0) {
+        if (pos < 1 || pos > 8 || item.get(idx).get(pos).ti > 0) {
             user.sendCharacterStat(Request.Excl, 0);
             return;
         }
@@ -304,24 +301,61 @@ public class TradingRoom extends MiniRoomBase {
         tradeItem.ti = ti;
         tradeItem.number = number;
         tradeItem.pos = slot;
-        item.get(nIdx).set(pos, tradeItem);
+        item.get(idx).set(pos, tradeItem);
         for (int i = 0; i < 2; i++) {
-            users.get(i).sendPacket(MiniRoomBaseDlg.onPutItem(i != nIdx ? 1 : 0, pos, itemBase));
-            users.get(i).sendCharacterStat(Request.Excl, 0);
+            getUsers().get(i).sendPacket(MiniRoomBaseDlg.onPutItem(i != idx ? 1 : 0, pos, itemBase));
+            getUsers().get(i).sendCharacterStat(Request.Excl, 0);
         }
     }
 
     private void onPutMoney(User user, InPacket packet) {
         int idx;
-        if (this.curUsers > 0 && (!lock[idx = findUserSlot(user)] && users.get(idx > 0 ? 0 : 1) != null)) {
+        if (getCurUsers() > 0 && (!lock[idx = findUserSlot(user)] && getUsers().get(idx > 0 ? 0 : 1) != null)) {
             int money = packet.decodeInt();
             int amount = Inventory.moveMoneyToTemp(user, money);
             for (int i = 0; i < 2; i++) {
-                users.get(i).sendPacket(MiniRoomBaseDlg.onPutMoney(i != idx ? 1 : 0, amount));
-                users.get(i).sendCharacterStat(Request.Excl, 0);
+                getUsers().get(i).sendPacket(MiniRoomBaseDlg.onPutMoney(i != idx ? 1 : 0, amount));
+                getUsers().get(i).sendCharacterStat(Request.Excl, 0);
             }
         } else {
             user.sendCharacterStat(Request.Excl, 0);
+        }
+    }
+    
+    private void onTrade(User user, InPacket packet) {
+        if (getCurUsers() > 0) {
+            int idx = findUserSlot(user);
+            if (!lock[idx]) {
+                if (getUsers().get(idx > 0 ? 0 : 1) != null) {
+                    if (user.getCharacter().getCharacterStat().getLevel() <= 15) {
+                        //user.checkTradeLimitTime();
+                        int moneyTrading = user.getCharacter().getMoneyTrading();
+                        if (moneyTrading + user.getTradeMoneyLimit() > 1000000) {
+                            //user.sendPacket(MiniRoomBaseDlg.onExceedLimit());
+                            return;
+                        }
+                        user.setTempTradeMoney(moneyTrading);
+                    }
+                    lock[idx] = true;
+                    getUsers().get(idx > 0 ? 0 : 1).sendPacket(MiniRoomBaseDlg.onTrade());
+                    if (lock[0] && lock[1]) {
+                        User partner = getUsers().get(idx > 0 ? 0 : 1);
+                        if (user.lock()) {
+                            try {
+                                if (partner.lock()) {
+                                    try {
+                                        closeRequest(null, doTrade(), 0);
+                                    } finally {
+                                        partner.unlock();
+                                    }
+                                }
+                            } finally {
+                                user.unlock();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -337,19 +371,19 @@ public class TradingRoom extends MiniRoomBase {
             this.number = -1;
         }
 
-        public byte getTi() {
+        public byte getTI() {
             return ti;
         }
 
-        public void setTi(byte ti) {
+        public void setTI(byte ti) {
             this.ti = ti;
         }
 
-        public short getPos() {
+        public short getPOS() {
             return pos;
         }
 
-        public void setPos(short pos) {
+        public void setPOS(short pos) {
             this.pos = pos;
         }
 

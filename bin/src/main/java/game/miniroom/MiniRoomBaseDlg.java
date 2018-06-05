@@ -28,44 +28,52 @@ import network.packet.OutPacket;
  */
 public class MiniRoomBaseDlg {
 
-    public static OutPacket onChat(String speakerName, String text) {
-        OutPacket oPacket = new OutPacket(LoopbackPacket.MiniRoom);
-        oPacket.encodeByte(MiniRoomPacket.Chat.getType());
-        oPacket.encodeByte(MiniRoomPacket.UserChat.getType());
-        oPacket.encodeString(speakerName + " : " + text);
-        return oPacket;
-    }
-
-    public static OutPacket onEnterBase(User pUser, MiniRoomBase miniroom) {
+    public static OutPacket onChat(int slot, String speakerName, String text) {
         OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.Enter.getType());
-        miniroom.encodeAvatar(miniroom.findUserSlot(pUser), packet);
+        packet.encodeByte(MiniRoomPacket.Chat);
+        packet.encodeByte(slot);
+        packet.encodeString(speakerName + " : " + text);
         return packet;
     }
 
-    public static OutPacket onEnterDecline(MiniRoomBase miniroom) {
+    public static OutPacket onEnterBase(User user, MiniRoomBase miniroom) {
         OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.EnterFailed.getType());
-        miniroom.encodeAvatar(0, packet);
+        packet.encodeByte(MiniRoomPacket.Enter);
+        miniroom.encodeAvatar(miniroom.findUserSlot(user), packet);
+        return packet;
+    }
+
+    public static OutPacket onEnterDecline(MiniRoomBase miniroom, String characterName, int result) {
+        OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
+        packet.encodeByte(MiniRoomPacket.EnterFailed);
+        packet.encodeString(characterName);
+        packet.encodeByte(result);
         return packet;
     }
 
     public static void onEnterResultBase(User user, MiniRoomBase miniroom, OutPacket packet) {
-        packet.encodeByte(miniroom.maxUsers);
+        packet.encodeByte(miniroom.getMaxUsers());
         packet.encodeByte(miniroom.findUserSlot(user));
-        for (int i = 0; i < miniroom.maxUsers; i++) {
+        for (int i = 0; i < miniroom.getMaxUsers(); i++) {
             miniroom.encodeAvatar(i, packet);
         }
         packet.encodeByte(-1);
         miniroom.encodeEnterResult(user, packet);
     }
-
-    public static OutPacket onEnterResultStatic(User pUser, MiniRoomBase miniroom) {
+    
+    public static OutPacket onAvatar(int slot, MiniRoomBase miniroom) {
         OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.EnterResult.getType());
+        packet.encodeByte(MiniRoomPacket.Avatar);
+        miniroom.encodeAvatar(slot, packet);
+        return packet;
+    }
+
+    public static OutPacket onEnterResultStatic(User user, MiniRoomBase miniroom) {
+        OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
+        packet.encodeByte(MiniRoomPacket.EnterResult);
         if (miniroom != null) {
             packet.encodeByte(miniroom.getTypeNumber());
-            onEnterResultBase(pUser, miniroom, packet);
+            onEnterResultBase(user, miniroom, packet);
         } else {
             packet.encodeByte(0); // You cannot enter the room.
         }
@@ -74,50 +82,40 @@ public class MiniRoomBaseDlg {
 
     public static OutPacket onTrade() {
         OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.Trade.getType());
+        packet.encodeByte(MiniRoomPacket.Trade);
         return packet;
     }
-//    public static OutPacket onExceedLimit() {
-//        OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-//        packet.encodeByte(MiniRoomPacket.LimitFail.getType());
-//        return packet;
-//    }
 
-    public static OutPacket onInviteResultStatic(int invite, String characterName) {
+    public static OutPacket onInviteResultStatic(int invite, String targetName) {
         OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.InviteResult.getType());
+        packet.encodeByte(MiniRoomPacket.InviteResult);
         packet.encodeByte(invite);
         if (invite > MiniRoomInvite.NoCharacter) {
-            packet.encodeString(characterName);
+            packet.encodeString(targetName);
         }
         return packet;
     }
 
     public static OutPacket onInviteStatic(String inviter, int miniRoomSN) {
         OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.InviteUser.getType());
+        packet.encodeByte(MiniRoomPacket.Invite);
         packet.encodeString(inviter);
         packet.encodeInt(miniRoomSN);
         return packet;
     }
 
-    public static OutPacket onLeave(int slot, User pUser, MiniRoomBase miniRoom) {
+    // Nexon's OnLeave packet simply calls EncodeLeave from TradingRoomDlg.
+    // Sadly, the EncodeLeave is a nullsub, so it's not implemented yet..
+    public static OutPacket onLeave(int slot, User user, MiniRoomBase miniRoom) {
         OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.Leave.getType());
-        miniRoom.encodeLeave(pUser, packet);
-        return packet;
-    }
-
-    public static OutPacket onLeaveBase(int slot, int leaveType) {
-        OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.Leave.getType());
-        packet.encodeByte(leaveType);
+        packet.encodeByte(MiniRoomPacket.Leave);
+        miniRoom.encodeLeave(user, packet);
         return packet;
     }
 
     public static OutPacket onPutItem(int slot, int pos, ItemSlotBase item) {
         OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.PutItem_TR.getType());
+        packet.encodeByte(MiniRoomPacket.PutItem);
         packet.encodeByte(slot);
         packet.encodeByte(pos);
         packet.encodeByte(item.getType());
@@ -127,7 +125,7 @@ public class MiniRoomBaseDlg {
 
     public static OutPacket onPutMoney(int slot, int money) {
         OutPacket packet = new OutPacket(LoopbackPacket.MiniRoom);
-        packet.encodeByte(MiniRoomPacket.PutMoney.getType());
+        packet.encodeByte(MiniRoomPacket.PutMoney);
         packet.encodeByte(slot);
         packet.encodeInt(money);
         return packet;

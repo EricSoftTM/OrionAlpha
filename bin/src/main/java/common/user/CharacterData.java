@@ -79,7 +79,7 @@ public class CharacterData {
             }
         }
         
-        for (int ti = ItemType.Equip; ti <= ItemType.NO; ti++) {
+        for (int ti = ItemType.Equip; ti <= ItemType.Etc; ti++) {
             for (int i = 0; i < itemSlot.get(ti).size(); i++) {
                 backupItem.get(ti).add(i, null);
                 
@@ -352,7 +352,7 @@ public class CharacterData {
     }
 
     public void restoreItemSlot(List<List<ItemSlotBase>> backup, List<List<Integer>> backupItemTrading) {
-        for (int ti = ItemType.Equip; ti <= ItemType.NO; ti++) {
+        for (int ti = ItemType.Equip; ti <= ItemType.Etc; ti++) {
             itemSlot.get(ti).clear();
             itemSlot.get(ti).addAll(backup.get(ti));
             if (backupItemTrading != null) {

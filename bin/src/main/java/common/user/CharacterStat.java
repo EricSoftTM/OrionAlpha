@@ -326,8 +326,8 @@ public class CharacterStat {
         this.mmp = mmp;
     }
 
-    public void setAP(short ap) {
-        this.ap = ap;
+    public void setAP(int ap) {
+        this.ap = (short) ap;
     }
 
     public void setSP(short sp) {

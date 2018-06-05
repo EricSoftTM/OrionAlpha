@@ -1127,12 +1127,60 @@ public class User extends Creature {
             case ClientPacket.MiniRoom:
                 MiniRoom.onMiniRoom(this, packet);
                 break;
+            case ClientPacket.UserAbilityUpRequest:
+                onAbilityUpRequest(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
                 } else {
                     Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
                 }
+            }
+        }
+    }
+    
+    public void onAbilityUpRequest(InPacket packet) {
+        if (lock()) {
+            try {
+                if (character.getCharacterStat().getAP() <= 0) {
+                    Logger.logError("No ability point left");
+                    closeSocket();
+                    return;
+                }
+                int flag = packet.decodeInt();
+                boolean up;
+                switch (flag) {
+                    case CharacterStatType.STR:
+                        up = incSTR(1, true);
+                        break;
+                    case CharacterStatType.DEX:
+                        up = incDEX(1, true);
+                        break;
+                    case CharacterStatType.INT:
+                        up = incINT(1, true);
+                        break;
+                    case CharacterStatType.LUK:
+                        up = incLUK(1, true);
+                        break;
+                    case CharacterStatType.MHP:
+                    case CharacterStatType.MMP:
+                        up = SkillAccessor.incMaxHPMP(character, basicStat, flag, false);
+                        break;
+                    default: {
+                        Logger.logError("Incorrect AP-Up stat");
+                        return;
+                    }
+                }
+                if (up) {
+                    flag |= CharacterStatType.AP;
+                    character.getCharacterStat().setAP(character.getCharacterStat().getAP() - 1);
+                    validateStat(false);
+                }
+                addCharacterDataMod(DBChar.Character);
+                sendCharacterStat(Request.Excl, flag);
+            } finally {
+                unlock();
             }
         }
     }

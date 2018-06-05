@@ -56,10 +56,10 @@ public class ClientPacket {
             UserConsumeCashItemUseRequest = 28, // 00594043
             Unknown29 = 29, // 00594187
             UserUpgradeItemUseRequest = 30, 
-            UserAbilityUpRequest = 31, // 00596679
+            UserAbilityUpRequest = 31,
             UserChangeStatRequest = 32, // 00594530
-            UserSkillUpRequest = 33, // 00596859
-            UserSkillUseRequest = 34, // 00548191
+            UserSkillUpRequest = 33,
+            UserSkillUseRequest = 34,
             UserDropMoneyRequest = 35,
             UserGivePopularityRequest = 36, // 00596C14
             UserPartyRequest = 37, 

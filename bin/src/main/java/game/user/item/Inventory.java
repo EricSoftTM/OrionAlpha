@@ -50,7 +50,7 @@ public class Inventory {
         if (user.getHP() == 0)
             return false;
         if (ti <= ItemType.NotDefine || ti >= ItemType.NO) {
-            Logger.logError("Invalid Item Type Index");
+            Logger.logError("Invalid Item Type Index %d from user %s", ti, user.getCharacterName());
             return false;
         }
         List<ChangeLog> changeLog = new ArrayList<>();

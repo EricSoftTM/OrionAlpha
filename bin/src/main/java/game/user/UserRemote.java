@@ -32,7 +32,7 @@ import network.packet.OutPacket;
 public class UserRemote {
     
     public static OutPacket onEffect(int characterID, int userEffect, int skillID, int slv) {
-        OutPacket packet = new OutPacket(LoopbackPacket.UserEffectLocal);
+        OutPacket packet = new OutPacket(LoopbackPacket.UserEffectRemote);
         packet.encodeInt(characterID);
         packet.encodeByte(userEffect);
         switch (userEffect) {

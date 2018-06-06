@@ -17,12 +17,18 @@
  */
 package game.field.life.npc;
 
+import common.item.ItemAccessor;
+import game.user.User;
+import game.user.item.BundleItem;
+import game.user.item.ItemInfo;
+import game.user.skill.SkillInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import network.packet.OutPacket;
 import util.Logger;
 import util.wz.WzFileSystem;
 import util.wz.WzPackage;
@@ -72,7 +78,7 @@ public class NpcTemplate {
         NpcTemplate template = new NpcTemplate();
         template.templateID = templateID;
         template.name = WzUtil.getString(info.getNode("name"), "NULL");
-        template.quest = WzUtil.getString(info.getNode("quest"), "NULL");
+        template.quest = WzUtil.getString(info.getNode("quest"), null);
         template.move = prop.getNode("move") != null;
         
         WzProperty shop = info.getNode("shop");
@@ -84,7 +90,7 @@ public class NpcTemplate {
                 int period = WzUtil.getInt32(items.getNode("period"), 24);
                 double unitPrice = WzUtil.getDouble(items.getNode("unitPrice"), 0.0d);
                 
-                if (itemID / 10000 != 207 && price == 0) {
+                if (!ItemAccessor.isRechargeableItem(itemID) && price == 0) {
                     Logger.logError("No Price Information in Shop List (NPC ID : %d, Item ID : %d)", templateID, itemID);
                     continue;
                 }
@@ -98,6 +104,28 @@ public class NpcTemplate {
     
     public static void unload() {
         templates.clear();
+    }
+    
+    public void encodeShop(User user, OutPacket packet) {
+        packet.encodeInt(templateID);
+        packet.encodeShort(shopItem.size());
+        for (ShopItem item : shopItem) {
+            packet.encodeInt(item.itemID);
+            packet.encodeInt(item.price);
+            int maxPerSlot;
+            if (ItemAccessor.isRechargeableItem(item.itemID)) {
+                packet.encodeDouble(item.unitPrice);
+                maxPerSlot = SkillInfo.getInstance().getBundleItemMaxPerSlot(item.itemID, user.getCharacter());
+            } else {
+                BundleItem info = ItemInfo.getBundleItem(item.itemID);
+                if (info == null) {
+                    maxPerSlot = 1;
+                } else {
+                    maxPerSlot = info.getSlotMax();
+                }
+            }
+            packet.encodeShort(maxPerSlot);
+        }
     }
     
     public int getTemplateID() {

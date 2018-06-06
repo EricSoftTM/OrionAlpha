@@ -54,10 +54,10 @@ public class LoopbackPacket {
             SetCashShop = 26,
             END_STAGE = 27,
             BEGIN_FIELD = 28,
-            // Unknown = 29
+            TransferFieldReqIgnored = 29,
             Whisper = 30,
-            // Unknown = 31
-            // Unknown = 32
+            BlowWeather = 31,
+            GroupMessage = 32,
             // Unknown = 33
             BEGIN_USERPOOL = 34,
             UserEnterField = 35,

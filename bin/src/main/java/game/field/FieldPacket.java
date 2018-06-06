@@ -15,33 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.field.life.npc;
+package game.field;
+
+import network.packet.LoopbackPacket;
+import network.packet.OutPacket;
 
 /**
  *
  * @author Eric
  */
-public class ShopItem {
-    public int itemID;
-    public int price;
-    public int stock;
-    public int stockMax;
-    public long lastFullStock;
-    public int period;
-    public int quantity;
-    public double unitPrice;
+public class FieldPacket {
     
-    public ShopItem(int itemID, int price, int stock, int period, double unitPrice) {
-        this.itemID = itemID;
-        this.price = price;
-        this.stockMax = stock;
-        this.period = period;
-        this.unitPrice = unitPrice;
-        this.stock = 0;
-        this.lastFullStock = 0;
+    public static OutPacket onTransferFieldReqIgnored() {
+        OutPacket packet = new OutPacket(LoopbackPacket.TransferFieldReqIgnored);
+        return packet;
     }
     
-    public ShopItem copy() {
-        return new ShopItem(itemID, price, stockMax, period, unitPrice);
+    public static OutPacket onBlowWeather(int itemID, String message) {
+        OutPacket packet = new OutPacket(LoopbackPacket.BlowWeather);
+        packet.encodeInt(itemID);
+        packet.encodeString(message);
+        return packet;
+    }
+    
+    public static OutPacket onGroupMessage(String characterName, String message) {
+        OutPacket packet = new OutPacket(LoopbackPacket.GroupMessage);
+        packet.encodeString(characterName);
+        packet.encodeString(message);
+        return packet;
     }
 }

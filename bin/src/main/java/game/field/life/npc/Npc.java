@@ -17,11 +17,14 @@
  */
 package game.field.life.npc;
 
+import common.item.ItemAccessor;
 import game.field.Creature;
 import game.field.GameObjectType;
 import game.field.life.Controller;
 import game.user.User;
 import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import network.packet.OutPacket;
@@ -39,8 +42,11 @@ public class Npc extends Creature {
     private Range horz;
     private Controller controller;
     private final Lock lock;
+    private final Lock lockShop;
+    private final Map<Integer, ShopItem> shopItem;
     private byte moveAction;
     private short footholdSN;
+    private long lastShopCheck;
     
     public Npc(NpcTemplate npcTemplate, int x, int y) {
         super();
@@ -52,8 +58,18 @@ public class Npc extends Creature {
         this.controller = null;
         this.lock = new ReentrantLock();
         this.footholdSN = 0;
+        this.lockShop = new ReentrantLock();
+        this.shopItem = new HashMap<>();
+        this.lastShopCheck = System.currentTimeMillis();
         
-        // TODO: Shop items
+        if (!npcTemplate.getShopItem().isEmpty()) {
+            for (ShopItem item : npcTemplate.getShopItem()) {
+                ShopItem stockItem = item.copy();
+                stockItem.stock = stockItem.quantity + 1;
+                stockItem.lastFullStock = lastShopCheck;
+                shopItem.put(item.itemID, stockItem);
+            }
+        }
         
         this.originalPos.x = x;
         this.originalPos.y = y;
@@ -61,6 +77,27 @@ public class Npc extends Creature {
     
     public static Npc createNpc(NpcTemplate template, int x, int y) {
         return new Npc(template, x, y);
+    }
+    
+    public boolean decShopItemCount(int itemID, int count) {
+        lockShop.lock();
+        try {
+            if (!shopItem.containsKey(itemID)) {
+                return false;
+            }
+            ShopItem item = shopItem.get(itemID);
+            if (item == null) {
+                return false;
+            }
+            if (item.stockMax > 0) {
+                if (item.stock < count)
+                    return false;
+                item.stock -= count;
+            }
+            return true;
+        } finally {
+            lockShop.unlock();
+        }
     }
     
     public void encodeInitData(OutPacket packet) {
@@ -100,9 +137,38 @@ public class Npc extends Creature {
         return originalPos;
     }
     
+    public double getShopRechargePrice(int itemID) {
+        lockShop.lock();
+        try {
+            if (shopItem.containsKey(itemID) && ItemAccessor.isRechargeableItem(itemID)) {
+                ShopItem item = shopItem.get(itemID);
+                if (item != null) {
+                    return item.unitPrice;
+                }
+            }
+            return 0.0d;
+        } finally {
+            lockShop.unlock();
+        }
+    }
+    
     @Override
     public int getTemplateID() {
         return npcTemplate.getTemplateID();
+    }
+    
+    public void incShopItemCount(int itemID, int count) {
+        lockShop.lock();
+        try {
+            if (shopItem.containsKey(itemID)) {
+                ShopItem item = shopItem.get(itemID);
+                if (item.stockMax > 0) {
+                    item.stock = Math.min(count + item.stock, item.stockMax);
+                }
+            }
+        } finally {
+            lockShop.unlock();
+        }
     }
     
     @Override
@@ -138,6 +204,28 @@ public class Npc extends Creature {
             this.footholdSN = fh;
         } finally {
             lock.unlock();
+        }
+    }
+    
+    public void update(long time) {
+        if (time - lastShopCheck > 600000) {
+            lastShopCheck = time;
+            
+            lockShop.lock();
+            try {
+                for (ShopItem item : shopItem.values()) {
+                    if (item != null) {
+                        //-> base offset = [ecx-10h]
+                        
+                        if ((time - item.lastFullStock) / 3600000 > item.period) {
+                            item.stock = item.stockMax;
+                            item.lastFullStock = System.currentTimeMillis();
+                        }
+                    }
+                }
+            } finally {
+                lockShop.unlock();
+            }
         }
     }
 }

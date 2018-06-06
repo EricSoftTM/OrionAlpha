@@ -50,7 +50,7 @@ public class ClientPacket {
             UserEmotion = 22,
             UserSelectNpc = 23,
             UserScriptMessageAnswer = 24,
-            Unknown25 = 25, // 004D4C34, 004D7CC5
+            UserShopRequest = 25, // 004D4C34, 004D7CC5
             UserChangeSlotPositionRequest = 26,
             UserStatChangeItemUseRequest = 27, // 00593A97
             UserConsumeCashItemUseRequest = 28, // 00594043

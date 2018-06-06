@@ -9,6 +9,8 @@ import common.item.ItemSlotType;
 import common.user.CharacterData;
 import common.user.CharacterStat;
 import common.user.CharacterStat.CharacterStatType;
+import game.field.Field;
+import game.field.FieldPacket;
 import game.field.drop.DropPool;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
@@ -25,9 +27,9 @@ import game.user.item.ItemVariationOption;
 */
 public class UserCommands {
 
-    public static String level(User user, CharacterStat stat, String[] input) {
-        if (input.length > 0) {
-            stat.setLevel(Byte.parseByte(input[0]));
+    public static String level(User user, CharacterStat stat, String[] args) {
+        if (args.length > 0) {
+            stat.setLevel(Byte.parseByte(args[0]));
         } else {
             stat.setLevel((byte) 99);
         }
@@ -38,6 +40,16 @@ public class UserCommands {
     public static String fixme(User user, String[] args) {
         user.sendCharacterStat(Request.Excl, 0);
         return null;
+    }
+    
+    public static String say(User user, Field field, String[] args) {
+        if (args.length > 0) {
+            String text = args[0];
+            
+            // TODO: Multi-channel broadcasting support.
+            field.splitSendPacket(user.getSplit(), FieldPacket.onGroupMessage(user.getCharacterName(), text), null);
+        }
+        return "!say <message>";
     }
 
     public static String job(User user, CharacterStat stat, String[] args) {
@@ -50,8 +62,18 @@ public class UserCommands {
     }
 
     public static String packet(User user, String[] args) {
-        user.sendPacket(WvsContext.onIncEXPMessage(1));
+        //user.sendPacket(WvsContext.onIncEXPMessage(1));
+        user.sendPacket(FieldPacket.onTransferFieldReqIgnored());
         return null;
+    }
+    
+    public static String weather(User user, Field field, String[] args) {
+        if (args.length > 0) {
+            String text = args[0];
+            
+            field.splitSendPacket(user.getSplit(), FieldPacket.onBlowWeather(2090000, text), null);
+        }
+        return "!weather <message>";
     }
 
     public static String sp(User user, CharacterStat stat, String[] args) {

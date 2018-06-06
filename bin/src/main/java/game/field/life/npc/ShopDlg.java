@@ -17,31 +17,25 @@
  */
 package game.field.life.npc;
 
+import game.user.User;
+import network.packet.LoopbackPacket;
+import network.packet.OutPacket;
+
 /**
  *
  * @author Eric
  */
-public class ShopItem {
-    public int itemID;
-    public int price;
-    public int stock;
-    public int stockMax;
-    public long lastFullStock;
-    public int period;
-    public int quantity;
-    public double unitPrice;
+public class ShopDlg {
     
-    public ShopItem(int itemID, int price, int stock, int period, double unitPrice) {
-        this.itemID = itemID;
-        this.price = price;
-        this.stockMax = stock;
-        this.period = period;
-        this.unitPrice = unitPrice;
-        this.stock = 0;
-        this.lastFullStock = 0;
+    public static OutPacket onOpenShopDlg(User user, NpcTemplate npcTemplate) {
+        OutPacket packet = new OutPacket(LoopbackPacket.OpenShopDlg);
+        npcTemplate.encodeShop(user, packet);
+        return packet;
     }
     
-    public ShopItem copy() {
-        return new ShopItem(itemID, price, stockMax, period, unitPrice);
+    public static OutPacket onShopResult(int resCode) {
+        OutPacket packet = new OutPacket(LoopbackPacket.ShopResult);
+        packet.encodeByte(resCode);
+        return packet;
     }
 }

@@ -17,6 +17,11 @@
  */
 package game.user.item;
 
+import common.user.CharacterData;
+import game.user.User;
+import game.user.stat.BasicStat;
+import game.user.stat.SecondaryStat;
+
 /**
  * @author Arnah
 */
@@ -28,6 +33,14 @@ public class StateChangeItem {
     private int acc, eva, mad, pdd, pad;
     private int speed;
     private int time;
+    
+    public int apply(User user, int itemID, CharacterData cd, BasicStat bs, SecondaryStat ss, long time, boolean applyBetterOnly) {
+        int tempSet = 0;
+        
+        // TODO
+        
+        return tempSet;
+    }
 
     public int getItemID() {
         return itemID;

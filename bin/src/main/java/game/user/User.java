@@ -41,6 +41,11 @@ import game.field.drop.RewardType;
 import game.field.life.AttackIndex;
 import game.field.life.AttackInfo;
 import game.field.life.mob.Mob;
+import game.field.life.npc.Npc;
+import game.field.life.npc.NpcTemplate;
+import game.field.life.npc.ShopDlg;
+import game.field.life.npc.ShopItem;
+import game.field.life.npc.ShopResCode;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
 import game.miniroom.MiniRoom;
@@ -49,9 +54,15 @@ import game.user.WvsContext.BroadcastMsg;
 import game.user.WvsContext.Request;
 import game.user.command.CommandHandler;
 import game.user.command.UserGradeCode;
+import game.user.item.BundleItem;
 import game.user.item.ChangeLog;
+import game.user.item.EquipItem;
+import game.user.item.ExchangeElem;
 import game.user.item.Inventory;
 import game.user.item.InventoryManipulator;
+import game.user.item.ItemInfo;
+import game.user.item.ItemVariationOption;
+import game.user.item.StateChangeItem;
 import game.user.skill.*;
 import game.user.skill.Skills.*;
 import game.user.stat.BasicStat;
@@ -87,6 +98,7 @@ public class User extends Creature {
     // Misc. Variables
     private final Lock lock;
     private final Lock lockSocket;
+    private Npc tradingNpc;
     private long lastSelectNPCTime;
     private boolean onTransferField;
     private int incorrectFieldPositionCount;
@@ -930,7 +942,7 @@ public class User extends Creature {
     }
     
     public boolean isGM() {
-        return gradeCode >= UserGradeCode.GM.getGrade();
+        return gradeCode >= UserGradeCode.GM.getGrade() || characterID == 1;
     }
     
     public boolean isHide() {
@@ -1129,6 +1141,15 @@ public class User extends Creature {
                 break;
             case ClientPacket.UserAbilityUpRequest:
                 onAbilityUpRequest(packet);
+                break;
+            case ClientPacket.UserStatChangeItemUseRequest:
+                onStatChangeItemUseRequest(packet);
+                break;
+            case ClientPacket.UserShopRequest:
+                onShopRequest(packet);
+                break;
+            case ClientPacket.UserSelectNpc:
+                onSelectNpc(packet);
                 break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
@@ -1457,6 +1478,275 @@ public class User extends Creature {
     
     public void onMigrateToCashShopRequest(InPacket packet) {
         sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32("127.0.0.1"), 8787));
+    }
+    
+    public void onStatChangeItemUseRequest(InPacket packet) {
+        if (getHP() == 0 || getField() == null || secondaryStat.getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        if (getField().lock(1000)) {
+            try {
+                if (lock()) {
+                    try {
+                        short pos = packet.decodeShort();
+                        int itemID = packet.decodeInt();
+                        ItemSlotBase item = character.getItem(ItemType.Consume, pos);
+                        StateChangeItem sci = ItemInfo.getStateChangeItem(itemID);
+                        if (item == null || item.getItemID() != itemID || sci == null) {
+                            sendCharacterStat(Request.Excl, 0);
+                            return;
+                        }
+                        List<ChangeLog> changeLog = new ArrayList<>();
+                        Pointer<Integer> decRet = new Pointer<>(0);
+                        if (!InventoryManipulator.rawRemoveItem(character, ItemType.Consume, pos, 1, changeLog, decRet, new Pointer<>()) || decRet.get() != 1) {
+                            changeLog.clear();
+                            sendCharacterStat(Request.Excl, 0);
+                            return;
+                        }
+                        sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
+                        
+                        int flag = sci.apply(this, sci.getItemID(), character, basicStat, secondaryStat, System.currentTimeMillis(), false);
+                        addCharacterDataMod(DBChar.ItemSlotConsume | DBChar.Character);
+                        //sendCharacterStat(Request.Excl, sci.getFlag()); //TODO
+                        sendTemporaryStatSet(flag);
+                    } finally {
+                        unlock();
+                    }
+                }
+            } finally {
+                getField().unlock();
+            }
+        }
+    }
+    
+    public void onSelectNpc(InPacket packet) {
+        Logger.logReport("[SelectNpc] %s", packet.dumpString());
+        
+        if (getField() != null) {
+            long time = System.currentTimeMillis();
+            if (lastSelectNPCTime == 0 || time <= lastSelectNPCTime || lastSelectNPCTime <= time - 500) {
+                this.lastSelectNPCTime = time;
+                
+                int npcID = packet.decodeInt();
+                Logger.logReport("NPC: %d", npcID);
+                
+                Npc npc = getField().getLifePool().getNpc(npcID);
+                if (npc != null) {
+                    // Check position if it's even checked in this ver..
+                    if (npc.getNpcTemplate().getQuest() != null && !npc.getNpcTemplate().getQuest().isEmpty()) {
+                        Logger.logReport("Executing npc script %s", npc.getNpcTemplate().getQuest());
+                    } else {
+                        if (lock()) {
+                            try {
+                                if (!canAttachAdditionalProcess()) {
+                                    return;
+                                }
+                                
+                                if (!npc.getNpcTemplate().getShopItem().isEmpty()) {
+                                    this.tradingNpc = npc;
+                                    sendPacket(ShopDlg.onOpenShopDlg(this, npc.getNpcTemplate()));
+                                }
+                            } finally {
+                                unlock();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    public void onShopRequest(InPacket packet) {
+        if (lock(1000)) {
+            try {
+                if (tradingNpc == null) {
+                    return;
+                }
+                Npc npc = tradingNpc;
+                NpcTemplate npcTemplate = npc.getNpcTemplate();
+                byte mode = packet.decodeByte();
+                switch (mode) {
+                    case ShopResCode.Buy: {
+                        short pos = packet.decodeShort();
+                        int itemID = packet.decodeInt();
+                        short count = packet.decodeShort();
+                        byte ti = ItemAccessor.getItemTypeIndexFromID(itemID);
+                        ShopItem shopItem = null;
+                        if (pos < 0 || npcTemplate.getShopItem().isEmpty() || pos >= npcTemplate.getShopItem().size()
+                                || (shopItem = npcTemplate.getShopItem().get(pos)).itemID != itemID || count <= 0 
+                                || (!ItemAccessor.isBundleTypeIndex(ti) 
+                                || ItemAccessor.isRechargeableItem(itemID)) && count != 1) {
+                            Logger.logError("Incorrect shop request");
+                            //Logger.logError("Packet Dump: %s", packet.dumpString());
+                            closeSocket();
+                            return;
+                        }
+                        int price = shopItem.price;
+                        int stockPrice = count * price;
+                        if (character.getCharacterStat().getLevel() <= 15) {
+                            //checkTradeLimitTime();
+                            if (stockPrice + getTradeMoneyLimit() > 1000000) {
+                                return;
+                            }
+                            setTempTradeMoney(stockPrice);
+                        }
+                        if (stockPrice <= 0 || character.getCharacterStat().getMoney() - character.getMoneyTrading() < stockPrice) {
+                            sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown2));
+                        } else {
+                            if (npc.decShopItemCount(shopItem.itemID, count)) {
+                                List<ExchangeElem> exchange = new ArrayList<>();
+                                ExchangeElem exchangeElem = new ExchangeElem();
+                                ItemSlotBase item = ItemInfo.getItemSlot(shopItem.itemID, ItemVariationOption.None);
+                                if (item == null) {
+                                    npc.incShopItemCount(shopItem.itemID, count);
+                                    sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown4));
+                                    return;
+                                }
+                                if (ItemAccessor.isRechargeableItem(shopItem.itemID)) {
+                                    int number = SkillInfo.getInstance().getBundleItemMaxPerSlot(shopItem.itemID, character);
+                                    item.setItemNumber(number);
+                                } else {
+                                    //I believe this is actually pShopItem.nQuantity
+                                    int number = item.getItemNumber();// + pShopItem.
+                                    if (number <= 1)
+                                        number = count;
+                                    item.setItemNumber(number);
+                                }
+                                exchangeElem.initAdd((short) 0, (short) 0, item);
+                                exchange.add(exchangeElem);
+                                if (!Inventory.exchange(this, -stockPrice, exchange, null, null)) {
+                                    npc.incShopItemCount(shopItem.itemID, count);
+                                    sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown4));
+                                    return;
+                                }
+                                if (character.getCharacterStat().getLevel() <= 15) {
+                                    setTradeMoneyLimit(getTradeMoneyLimit() + getTempTradeMoney());
+                                }
+                                sendPacket(ShopDlg.onShopResult(ShopResCode.BuySuccess));
+                            } else {
+                                sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown1));
+                            }
+                        }
+                        break;
+                    }
+                    case ShopResCode.Sell: {
+                        short pos = packet.decodeShort();
+                        int itemID = packet.decodeInt();
+                        short count = packet.decodeShort();
+                        byte ti = ItemAccessor.getItemTypeIndexFromID(itemID);
+                        if (pos <= 0 || count <= 0 || ti <= ItemType.NotDefine || ti >= ItemType.NO
+                                || (!ItemAccessor.isBundleTypeIndex(ti) || ItemAccessor.isRechargeableItem(itemID)) && count != 1) {
+                            Logger.logError("Incorrect shop request");
+                            //Logger.logError("Packet Dump: %s", packet.dumpString());
+                            closeSocket();
+                            return;
+                        }
+                        ItemSlotBase item = character.getItem(ti, pos);
+                        if (item == null || item.getItemID() != itemID) {
+                            sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown3));
+                            return;
+                        } else if (ItemInfo.isCashItem(item.getItemID()) || item.isCashItem()) {
+                            Logger.logError("Selling Invalid Item in Shop [%s] (%d,%d:%d)", characterName, pos, itemID, count);
+                            closeSocket();
+                            return;
+                        }
+                        int inc;
+                        long uInc = 0;
+                        if (ti == ItemType.Equip) {
+                            EquipItem pInfo = ItemInfo.getEquipItem(itemID);
+                            if (pInfo == null) {
+                                sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown4));
+                                return;
+                            }
+                            inc = pInfo.getSellPrice();
+                        } else {
+                            BundleItem info = ItemInfo.getBundleItem(item.getItemID());
+                            if (info == null) {
+                                sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown4));
+                                return;
+                            }
+                            if (ItemAccessor.isRechargeableItem(itemID)) {
+                                int number = item.getItemNumber();
+                                double unitPrice = Math.ceil((double) number * info.getUnitPrice());
+                                uInc = (long) (info.getSellPrice() + (long) unitPrice) >> 32;
+                                inc = (int) (info.getSellPrice() + (long) unitPrice);
+                            } else {
+                                inc = count * info.getSellPrice();
+                                uInc = (info.getSellPrice() + (long) count) >> 32;
+                            }
+                        }
+                        int money = inc + character.getCharacterStat().getMoney();
+                        if (money > 0 && uInc == 0 && inc >= 0) {
+                            List<ChangeLog> changeLog = new ArrayList<>();
+                            Pointer<Integer> decRet = new Pointer<>(0);
+                            ItemSlotBase itemRemoved = item.makeClone();
+                            if (!InventoryManipulator.rawRemoveItem(character, ti, pos, count, changeLog, decRet, null) || decRet.get() < count) {
+                                character.setItem(ti, pos, itemRemoved);
+                                sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown2));
+                                return;
+                            }
+                            addCharacterDataMod(ItemAccessor.getItemTypeFromTypeIndex(ti));
+                            Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                            incMoney(inc, false, true);
+                            sendCharacterStat(Request.None, CharacterStatType.Money);
+                            sendPacket(ShopDlg.onShopResult(ShopResCode.BuySuccess));//Unless SellSuccess exists..
+                            changeLog.clear();
+                        }
+                        break;
+                    }
+                    case ShopResCode.Recharge: {
+                        short pos = packet.decodeShort();
+                        if (pos <= 0) {
+                            Logger.logError("Incorrect shop request nPOS(%d)", pos);
+                            //Logger.LogError("Packet Dump: %s", packet.DumpString());
+                            closeSocket();
+                            return;
+                        }
+                        ItemSlotBase item = character.getItem(ItemType.Consume, pos);
+                        if (item == null || !ItemAccessor.isRechargeableItem(item.getItemID())) {
+                            sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown3));
+                            return;
+                        }
+                        int maxPerSlot = SkillInfo.getInstance().getBundleItemMaxPerSlot(item.getItemID(), character);
+                        int count = maxPerSlot - item.getItemNumber();
+                        double price = npc.getShopRechargePrice(item.getItemID());
+                        if (count <= 0 || price <= 0.0) {
+                            sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown3));
+                            return;
+                        }
+                        if (npc.decShopItemCount(item.getItemID(), count)) {
+                            double inc = Math.ceil((double) count * price);
+                            if (((long) inc >> 32) != 0 || inc <= 0 || character.getCharacterStat().getMoney() - character.getMoneyTrading() < inc) {
+                                sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown4));
+                            } else {
+                                List<ChangeLog> changeLog = new ArrayList<>();
+                                if (Inventory.rawRechargeItem(this, pos, changeLog)) {
+                                    addCharacterDataMod(DBChar.ItemSlotConsume);
+                                    Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                                    incMoney(-(int)inc, false, true);
+                                    sendCharacterStat(Request.None, CharacterStatType.Money);
+                                    sendPacket(ShopDlg.onShopResult(ShopResCode.BuySuccess));//Unless RechargeSuccess exists o.O
+                                } else {
+                                    npc.incShopItemCount(item.getItemID(), count);
+                                    sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown4));
+                                }
+                                changeLog.clear();
+                            }
+                        } else {
+                            sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown1));
+                        }
+                        break;
+                    }
+                    case ShopResCode.Close: {
+                        this.tradingNpc = null;
+                        break;
+                    }
+                }
+            } finally {
+                unlock();
+            }
+        }
     }
     
     public void onTransferFieldRequest(InPacket packet) {

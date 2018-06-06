@@ -29,8 +29,8 @@ public class ShopResCode {
             Recharge    = 2,
             Close       = 3,
             // SHOP_RES
-            BuySuccess  = 0,
-            Unknown1    = 1,//BuyNoStock?
+            Success     = 0,
+            NoStock     = 1,
             Unknown2    = 2,//BuyNoMoney?
             Unknown3    = 3,
             Unknown4    = 4

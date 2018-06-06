@@ -65,7 +65,7 @@ public class Npc extends Creature {
         if (!npcTemplate.getShopItem().isEmpty()) {
             for (ShopItem item : npcTemplate.getShopItem()) {
                 ShopItem stockItem = item.copy();
-                stockItem.stock = stockItem.quantity + 1;
+                stockItem.stock = stockItem.stockMax + 1;
                 stockItem.lastFullStock = lastShopCheck;
                 shopItem.put(item.itemID, stockItem);
             }

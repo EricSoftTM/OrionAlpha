@@ -837,7 +837,7 @@ public class User extends Creature {
     }
     
     public boolean canAttachAdditionalProcess() {
-        if (socket != null && !onTransferField && getHP() > 0 && miniRoom == null) {
+        if (socket != null && !onTransferField && getHP() > 0 && miniRoom == null && tradingNpc == null) {
             //if (runningVM == null)
                 return true;
         }
@@ -1207,6 +1207,7 @@ public class User extends Creature {
     }
     
     public void onAttack(byte type, InPacket packet) {
+        //[01] 00 78 00 00 00 07 D1 02 CB FD 4C 02 D3 06 65 03
         byte attackInfo = packet.decodeByte();//nDamagePerMob | 16 * nMobCount
         byte damagePerMob = (byte) (attackInfo & 0xF);
         byte mobCount = (byte) ((attackInfo >>> 4) & 0xF);
@@ -1245,11 +1246,11 @@ public class User extends Creature {
             lastAttackTime = attackTime;
             lastAttackDelay = 0;
             finalAttackDelay = 0;
-            byte bulletItemPos = 0;
+            short bulletItemPos = 0;
             byte slv = 0;
             
             if (type == ClientPacket.UserShootAttack) {
-                Logger.logReport("[UserShootAttack] %s", packet.dumpString());
+                bulletItemPos = packet.decodeShort();
             }
             
             List<AttackInfo> attack = new ArrayList<>(mobCount);
@@ -1290,6 +1291,7 @@ public class User extends Creature {
             
             SkillEntry skill = null;
             int maxCount = 1;
+            int bulletCount = 1;
             if (skillID > 0) {
                 if (lock()) {
                     try {
@@ -1304,34 +1306,7 @@ public class User extends Creature {
                             if (skill != null) {
                                 SkillLevelData levelData = skill.getLevelData(slv);
                                 if (levelData != null) {
-                                    if (bulletItemPos > 0) {
-                                        List<ChangeLog> changeLog = new ArrayList<>();
-                                        int count = Math.max(1, levelData.getBulletCount());
-                                        ItemSlotBase item = character.getItem(ItemType.Consume, bulletItemPos);
-                                        if (item != null) {
-                                            if (character.getItemTrading().get(ItemType.Consume).get(bulletItemPos) != 0 || item.getItemNumber() < count) {
-                                                getCalcDamage().skip();
-                                                return;
-                                            }
-                                            if (ItemAccessor.isJavelinItem(item.getItemID())) {//Stars
-                                                if (Inventory.rawWasteItem(this, bulletItemPos, (short) count, changeLog)) {
-                                                    addCharacterDataMod(DBChar.ItemSlotConsume);
-                                                    bulletItemID = item.getItemID();
-                                                    Inventory.sendInventoryOperation(this, Request.None, changeLog);
-                                                }
-                                            } else {//Arrows
-                                                Pointer<Integer> decRet = new Pointer<>(0);
-                                                if (Inventory.rawRemoveItem(this, ItemType.Consume, bulletItemPos, (short) count, changeLog, decRet, null) && decRet.get() == count) {
-                                                    addCharacterDataMod(DBChar.ItemSlotConsume);
-                                                    bulletItemID = item.getItemID();
-                                                    Inventory.sendInventoryOperation(this, Request.None, changeLog);
-                                                } else {
-                                                    Logger.logError("Invalid skill info in attack packet (nItemPos: %d, nCount: %d, nDecRet: %d)", bulletItemPos, count, decRet.get());
-                                                }
-                                            }
-                                            changeLog.clear();
-                                        }
-                                    }
+                                    bulletCount = Math.max(1, levelData.getBulletCount());
                                 }
                             }
                         }
@@ -1345,6 +1320,33 @@ public class User extends Creature {
             if (maxCount < mobCount) {
                 Logger.logError("Invalid mob count (Skill:%d,Lv:%d,Mob:%d)", skillID, slv, mobTemplateID);
             } else {
+                if (bulletItemPos > 0) {
+                    List<ChangeLog> changeLog = new ArrayList<>();
+                    ItemSlotBase item = character.getItem(ItemType.Consume, bulletItemPos);
+                    if (item != null) {
+                        if (character.getItemTrading().get(ItemType.Consume).get(bulletItemPos) != 0 || item.getItemNumber() < bulletCount) {
+                            getCalcDamage().skip();
+                            return;
+                        }
+                        if (ItemAccessor.isJavelinItem(item.getItemID())) {//Stars
+                            if (Inventory.rawWasteItem(this, bulletItemPos, (short) bulletCount, changeLog)) {
+                                addCharacterDataMod(DBChar.ItemSlotConsume);
+                                bulletItemID = item.getItemID();
+                                Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                            }
+                        } else {//Arrows
+                            Pointer<Integer> decRet = new Pointer<>(0);
+                            if (Inventory.rawRemoveItem(this, ItemType.Consume, bulletItemPos, (short) bulletCount, changeLog, decRet, null) && decRet.get() == bulletCount) {
+                                addCharacterDataMod(DBChar.ItemSlotConsume);
+                                bulletItemID = item.getItemID();
+                                Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                            } else {
+                                Logger.logError("Invalid skill info in attack packet (nItemPos: %d, nCount: %d, nDecRet: %d)", bulletItemPos, bulletCount, decRet.get());
+                            }
+                        }
+                        changeLog.clear();
+                    }
+                }
                 if (getField().getLifePool().onUserAttack(this, attackType, mobCount, damagePerMob, skill, slv, action, left, bulletItemID, attack, ballStart)) {
                     
                 }
@@ -1521,20 +1523,15 @@ public class User extends Creature {
     }
     
     public void onSelectNpc(InPacket packet) {
-        Logger.logReport("[SelectNpc] %s", packet.dumpString());
-        
         if (getField() != null) {
             long time = System.currentTimeMillis();
             if (lastSelectNPCTime == 0 || time <= lastSelectNPCTime || lastSelectNPCTime <= time - 500) {
                 this.lastSelectNPCTime = time;
                 
-                int npcID = packet.decodeInt();
-                Logger.logReport("NPC: %d", npcID);
-                
-                Npc npc = getField().getLifePool().getNpc(npcID);
+                Npc npc = getField().getLifePool().getNpc(packet.decodeInt());
                 if (npc != null) {
-                    // Check position if it's even checked in this ver..
                     if (npc.getNpcTemplate().getQuest() != null && !npc.getNpcTemplate().getQuest().isEmpty()) {
+                        // TODO: User ScriptVM Handling
                         Logger.logReport("Executing npc script %s", npc.getNpcTemplate().getQuest());
                     } else {
                         if (lock()) {
@@ -1623,9 +1620,9 @@ public class User extends Creature {
                                 if (character.getCharacterStat().getLevel() <= 15) {
                                     setTradeMoneyLimit(getTradeMoneyLimit() + getTempTradeMoney());
                                 }
-                                sendPacket(ShopDlg.onShopResult(ShopResCode.BuySuccess));
+                                sendPacket(ShopDlg.onShopResult(ShopResCode.Success));//BuySuccess
                             } else {
-                                sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown1));
+                                sendPacket(ShopDlg.onShopResult(ShopResCode.NoStock));//BuyNoStock
                             }
                         }
                         break;
@@ -1690,7 +1687,7 @@ public class User extends Creature {
                             Inventory.sendInventoryOperation(this, Request.None, changeLog);
                             incMoney(inc, false, true);
                             sendCharacterStat(Request.None, CharacterStatType.Money);
-                            sendPacket(ShopDlg.onShopResult(ShopResCode.BuySuccess));//Unless SellSuccess exists..
+                            sendPacket(ShopDlg.onShopResult(ShopResCode.Success));//BuySuccess
                             changeLog.clear();
                         }
                         break;
@@ -1726,7 +1723,7 @@ public class User extends Creature {
                                     Inventory.sendInventoryOperation(this, Request.None, changeLog);
                                     incMoney(-(int)inc, false, true);
                                     sendCharacterStat(Request.None, CharacterStatType.Money);
-                                    sendPacket(ShopDlg.onShopResult(ShopResCode.BuySuccess));//Unless RechargeSuccess exists o.O
+                                    sendPacket(ShopDlg.onShopResult(ShopResCode.Success));//RechargeSuccess
                                 } else {
                                     npc.incShopItemCount(item.getItemID(), count);
                                     sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown4));
@@ -1734,7 +1731,7 @@ public class User extends Creature {
                                 changeLog.clear();
                             }
                         } else {
-                            sendPacket(ShopDlg.onShopResult(ShopResCode.Unknown1));
+                            sendPacket(ShopDlg.onShopResult(ShopResCode.NoStock));//RechargeNoStock
                         }
                         break;
                     }

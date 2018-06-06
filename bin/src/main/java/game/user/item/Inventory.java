@@ -189,7 +189,6 @@ public class Inventory {
     }
     
     private static void unequip(User user, int pos1, int pos2, List<ChangeLog> changeLog) {
-        Logger.logReport("Unequipping from slot %d into slot %d", pos1, pos2);
         ItemSlotEquip source = (ItemSlotEquip) user.getCharacter().getItem(ItemType.Equip, pos1);
         ItemSlotEquip target = (ItemSlotEquip) user.getCharacter().getItem(ItemType.Equip, pos2);
         if (pos2 < 0) {

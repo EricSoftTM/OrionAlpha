@@ -41,6 +41,8 @@ import game.field.drop.RewardType;
 import game.field.life.AttackIndex;
 import game.field.life.AttackInfo;
 import game.field.life.mob.Mob;
+import game.field.life.mob.MobAttackInfo;
+import game.field.life.mob.MobTemplate;
 import game.field.life.npc.Npc;
 import game.field.life.npc.NpcTemplate;
 import game.field.life.npc.ShopDlg;
@@ -137,6 +139,7 @@ public class User extends Creature {
     private int skipWarpCount;
     private int warpCheckedCount;
     private int invalidDamageCount;
+    private int invalidDamageMissCount;
     // Character Data
     private final CharacterData character;
     private int characterDataModFlag;
@@ -185,6 +188,7 @@ public class User extends Creature {
         this.skipWarpCount = 0;
         this.warpCheckedCount = 0;
         this.invalidDamageCount = 0;
+        this.invalidDamageMissCount = 0;
         this.tradeMoneyLimit = 0;
         this.tempTradeMoney = 0;
         this.accountID = -1;
@@ -1207,6 +1211,12 @@ public class User extends Creature {
     }
     
     public void onAttack(byte type, InPacket packet) {
+        if (secondaryStat.getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
+            int reset = secondaryStat.resetByCTS(CharacterTemporaryStat.DarkSight);
+            sendTemporaryStatReset(reset);
+            return;
+        }
+        
         //[01] 00 78 00 00 00 07 D1 02 CB FD 4C 02 D3 06 65 03
         byte attackInfo = packet.decodeByte();//nDamagePerMob | 16 * nMobCount
         byte damagePerMob = (byte) (attackInfo & 0xF);
@@ -1217,13 +1227,9 @@ public class User extends Creature {
         int bulletItemID = 0;
         int mobTemplateID = 0;
         
-        if (secondaryStat.getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
-            sendTemporaryStatReset(secondaryStat.resetByCTS(CharacterTemporaryStat.DarkSight));
-        }
-        
         byte action = packet.decodeByte();//((_BYTE)bLeft << 7) | nAction & 0x7F
         byte left = (byte) ((action >> 7) & 1);
-        byte attackActionType = packet.decodeByte();
+        byte speedDegree = packet.decodeByte();
         
         if (getHP() > 0 && getField() != null) {
             if (skillID == Fighter.FinalAttack || skillID == Fighter.FinalAttackEx || skillID == Page.FinalAttack || skillID == Page.FinalAttackEx 
@@ -1279,11 +1285,11 @@ public class User extends Creature {
             
             byte attackType;
             if (type == ClientPacket.UserMagicAttack) {
-                attackType = LoopbackPacket.UserMagicAttack;
+                attackType = 3;
             } else if (type == ClientPacket.UserShootAttack) {
-                attackType = LoopbackPacket.UserShootAttack;
+                attackType = 2;
             } else if (type == ClientPacket.UserMeleeAttack) {
-                attackType = LoopbackPacket.UserMeleeAttack;
+                attackType = 1;
             } else {
                 Logger.logError("Attack Type Error %d", type);
                 return;
@@ -1307,6 +1313,12 @@ public class User extends Creature {
                                 SkillLevelData levelData = skill.getLevelData(slv);
                                 if (levelData != null) {
                                     bulletCount = Math.max(1, levelData.getBulletCount());
+                                    if (skillID == Hunter.ArrowBomb) {
+                                        maxCount = 16;
+                                    } else {
+                                        // TODO: Check for all skills that can hit multiple mobs.
+                                        maxCount = 16;
+                                    }
                                 }
                             }
                         }
@@ -1328,13 +1340,13 @@ public class User extends Creature {
                             getCalcDamage().skip();
                             return;
                         }
-                        if (ItemAccessor.isJavelinItem(item.getItemID())) {//Stars
+                        if (ItemAccessor.isJavelinItem(item.getItemID())) {
                             if (Inventory.rawWasteItem(this, bulletItemPos, (short) bulletCount, changeLog)) {
                                 addCharacterDataMod(DBChar.ItemSlotConsume);
                                 bulletItemID = item.getItemID();
                                 Inventory.sendInventoryOperation(this, Request.None, changeLog);
                             }
-                        } else {//Arrows
+                        } else if (secondaryStat.getStatOption(CharacterTemporaryStat.SoulArrow) == 0) {
                             Pointer<Integer> decRet = new Pointer<>(0);
                             if (Inventory.rawRemoveItem(this, ItemType.Consume, bulletItemPos, (short) bulletCount, changeLog, decRet, null) && decRet.get() == bulletCount) {
                                 addCharacterDataMod(DBChar.ItemSlotConsume);
@@ -1347,7 +1359,7 @@ public class User extends Creature {
                         changeLog.clear();
                     }
                 }
-                if (getField().getLifePool().onUserAttack(this, attackType, mobCount, damagePerMob, skill, slv, action, left, bulletItemID, attack, ballStart)) {
+                if (getField().getLifePool().onUserAttack(this, type, attackType, mobCount, damagePerMob, skill, slv, action, left, speedDegree, bulletItemID, attack, ballStart)) {
                     
                 }
             }
@@ -1441,6 +1453,7 @@ public class User extends Creature {
         byte reflect = 0;
         int mobID = 0;
         byte hitAction = 0;
+        int damage = 0;
         Point hit = new Point(0, 0);
         if (mobAttackIdx <= AttackIndex.Counter) {
             obstacleData = packet.decodeInt();
@@ -1462,20 +1475,87 @@ public class User extends Creature {
         if (lock()) {
             try {
                 if (getHP() > 0) {
-                    // TODO: Implement all the checks here..
-                    // For now, we'll just simply deduct whatever damage was received.
-                    
-                    int flag = 0;
-                    if (incHP(-clientDamage, false)) {
-                        flag |= CharacterStatType.HP;
+                    if (clientDamage > 0) {
+                        if (mobAttackIdx > AttackIndex.Counter) {
+                            this.invalidDamageMissCount = 0;
+                        }
+                        int mp = 0;
+                        int magicGuard = secondaryStat.getStatOption(CharacterTemporaryStat.MagicGuard);
+                        if (magicGuard > 0) {
+                            int inc = (int) (clientDamage * (double) magicGuard / 100.0d);
+                            if (character.getCharacterStat().getMP() < inc) {
+                                inc = character.getCharacterStat().getMP();
+                            }
+                            clientDamage -= inc;
+                            mp = inc;
+                        }
+                        MobTemplate template = MobTemplate.getMobTemplate(mobTemplateID);
+                        if (template != null) {
+                            MobAttackInfo info = null;
+                            if (mobAttackIdx >= AttackIndex.Mob_Physical && !template.getAttackInfo().isEmpty() && mobAttackIdx < template.getAttackInfo().size()) {
+                                info = template.getAttackInfo().get(mobAttackIdx);
+                            }
+                            if (info != null) {
+                                // deadlyAttack
+                                // mpBurn
+                            }
+                            int powerGuard = secondaryStat.getStatOption(CharacterTemporaryStat.PowerGuard);
+                            if (reflect != 0 && powerGuard != 0) {
+                                if (powerGuard < reflect) {
+                                    reflect = (byte) powerGuard;
+                                }
+                                int hpDealt = clientDamage;
+                                if (hpDealt >= getHP()) {
+                                    hpDealt = getHP();
+                                }
+                                damage = Math.min(reflect * hpDealt / 100, (int) (template.getMaxHP() / 10.0d));
+                                if (template.isBoss()) {
+                                    damage /= 2;
+                                }
+                                if (damage > 0) {
+                                    // if fixedDamage > 0
+                                    //  damage = fixedDamage
+                                    // if invincible
+                                    //  damage = 0
+                                }
+                                clientDamage -= damage;
+                            }
+                        }
+                        incHP(-clientDamage, false);
+                        int flag = CharacterStatType.HP;
+                        if (mp != 0) {
+                            incMP(-mp, false);
+                            flag |= CharacterStatType.MP;
+                        }
+                        if (flag != 0) {
+                            sendCharacterStat(Request.None, flag);
+                        }
                     }
-                    sendCharacterStat(Request.Excl, flag);
+                    if (getHP() == 0) {
+                        // This is where Nexon handles onUserDead, we call it in incHP.
+                    } else {
+                        // TODO: Look into this. ObstacleData might be ObstacleDamage.
+                        if (clientDamage > 0) {
+                            if (obstacleData > 0) {
+                                int slv = obstacleData & 0xFF;
+                                int skillID = (obstacleData >> 8) & 0xFF;
+                                
+                                // Can't continue because MobSkills don't exist yet?
+                                // Unless they do, but aren't in Skill.wz? o.O
+                            } else if (mobTemplateID != 0) {
+                                //onStatChangedByMobAttack(mobTemplateID, mobAttackIdx);
+                            }
+                        }
+                    }
                 }
             } finally {
                 unlock();
             }
         }
         getField().splitSendPacket(getSplit(), UserRemote.onHit(this.characterID, mobAttackIdx, clientDamage, mobTemplateID, left, reflect, mobID, hitAction, hit), this);
+        if (damage != 0) {
+            getField().getLifePool().onUserAttack(this, mobID, damage, hit, (short) 100);
+        }
     }
     
     public void onMigrateToCashShopRequest(InPacket packet) {

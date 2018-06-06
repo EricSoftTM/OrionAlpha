@@ -872,7 +872,7 @@ public class LifePool {
         }
     }
     
-    public boolean onUserAttack(User user, byte attackType, byte mobCount, byte damagePerMob, SkillEntry skill, byte slv, byte action, byte left, int bulletItemID, List<AttackInfo> attack, Point ballStart) {
+    public boolean onUserAttack(User user, byte type, byte attackType, byte mobCount, byte damagePerMob, SkillEntry skill, byte slv, byte action, byte left, byte speedDegree, int bulletItemID, List<AttackInfo> attack, Point ballStart) {
         if (field.lock(1200)) {
             try {
                 if (user.lock()) {
@@ -881,6 +881,7 @@ public class LifePool {
                         if (skill != null) {
                             skillID = skill.getSkillID();
                         }
+                        int weaponItemID = user.getCharacter().getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
                         
                         if (mobCount > 0) {
                             for (Iterator<AttackInfo> it = attack.iterator(); it.hasNext();) {
@@ -891,8 +892,7 @@ public class LifePool {
                                 }
                                 Mob mob = mobs.get(info.mobID);
                                 if (mob != null) {
-                                    int weaponItemID = user.getCharacter().getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
-                                    if (attackType == ClientPacket.UserMagicAttack) {
+                                    if (type == ClientPacket.UserMagicAttack) {
                                         user.getCalcDamage().MDamage(user.getCharacter(), user.getBasicStat(), user.getSecondaryStat(), mob.getMobStat(), damagePerMob, weaponItemID, action, skill, slv, info.damageCli, mobCount);
                                     } else {
                                         user.getCalcDamage().PDamage(user.getCharacter(), user.getBasicStat(), user.getSecondaryStat(), mob.getMobStat(), damagePerMob, weaponItemID, bulletItemID, attackType, action, skill, slv, info.damageCli);
@@ -903,7 +903,7 @@ public class LifePool {
                             }
                         }
                         
-                        OutPacket packet = new OutPacket(attackType);
+                        OutPacket packet = new OutPacket(type);
                         packet.encodeInt(user.getCharacterID());
                         packet.encodeByte(damagePerMob | 16 * mobCount);
                         packet.encodeByte(slv);
@@ -911,8 +911,8 @@ public class LifePool {
                             packet.encodeInt(skillID);
                         }
                         packet.encodeByte(action);
-                        packet.encodeByte(0);// Unknown
-                        packet.encodeByte(0);// Unknown
+                        packet.encodeByte(speedDegree);
+                        packet.encodeByte(SkillAccessor.getWeaponMastery(user.getCharacter(), weaponItemID, attackType, null, null));
                         packet.encodeInt(bulletItemID);
                         for (AttackInfo info : attack) {
                             packet.encodeInt(info.mobID);
@@ -994,5 +994,21 @@ public class LifePool {
             }
         }
         return false;
+    }
+
+    public void onUserAttack(User user, int mobID, int damage, Point hit, short delay) {
+        if (field.lock()) {
+            try {
+                if (mobID != 0 && mobs.containsKey(mobID)) {
+                    Mob mob = mobs.get(mobID);
+                    if (mob.onMobHit(user, damage, (byte) 0)) {
+                        removeMob(mob);
+                        mob.onMobDead(hit, delay);
+                    }
+                }
+            } finally {
+                field.unlock();
+            }
+        }
     }
 }

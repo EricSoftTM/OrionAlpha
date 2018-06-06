@@ -220,7 +220,7 @@ public class UserSkill {
         int wt = ItemAccessor.getWeaponType(user.getCharacter().getItem(ItemType.Equip, -BodyPart.Weapon).getItemID());
         if (wt > 0 && SkillAccessor.isCorrectItemForBooster(wt, user.getCharacter().getCharacterStat().getJob()) && levelData.getTime() > 0) {
             long duration = System.currentTimeMillis() + 1000 * levelData.getTime();
-            user.getSecondaryStat().setStat(CharacterTemporaryStat.Booster, new SecondaryStatOption(levelData.getX(), skill.getSkillID(), duration));
+            user.getSecondaryStat().setStat(CharacterTemporaryStat.Booster, new SecondaryStatOption(1, skill.getSkillID(), duration));
             user.sendCharacterStat(Request.Excl, 0);
             user.sendTemporaryStatSet(CharacterTemporaryStat.Booster);
             if (user.getField() != null) {

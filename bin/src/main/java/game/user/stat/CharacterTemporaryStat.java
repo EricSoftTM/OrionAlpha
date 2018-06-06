@@ -35,11 +35,11 @@ public class CharacterTemporaryStat {
             MagicGuard  = 0x200,
             DarkSight   = 0x400,
             Booster     = 0x800,
-            PowerGuard  = 0x1000,
-            MaxHP       = 0x2000,
-            MaxMP       = 0x4000,
-            Invincible  = 0x8000,
-            SoulArrow   = 0x10000,
-            Stun        = 0x20000//TODO: Confirm, this is likely incorrect.
+            Unknown     = 0x1000, // Unknown Stat
+            PowerGuard  = 0x2000,
+            MaxHP       = 0x4000,
+            MaxMP       = 0x8000,
+            Invincible  = 0x10000,
+            SoulArrow   = 0x20000
     ;
 }

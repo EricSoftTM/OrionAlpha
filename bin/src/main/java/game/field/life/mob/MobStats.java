@@ -30,7 +30,6 @@ public class MobStats {
             ACC     = 0x10,
             EVA     = 0x20,
             Speed   = 0x40,
-            // Stun may not exist, 0x80 might be Freeze and 0x100 might be Poison.
             Stun    = 0x80,
             Freeze  = 0x100
     ;

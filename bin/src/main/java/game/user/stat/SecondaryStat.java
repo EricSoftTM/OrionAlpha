@@ -129,6 +129,9 @@ public class SecondaryStat {
         if ((flag & CharacterTemporaryStat.Booster) != 0  && getStatOption(CharacterTemporaryStat.Booster) != 0) {
             data.add(getStatReason(CharacterTemporaryStat.Booster));
         }
+        if ((flag & CharacterTemporaryStat.Unknown) != 0  && getStatOption(CharacterTemporaryStat.Unknown) != 0) {
+            data.add(getStatReason(CharacterTemporaryStat.Unknown));
+        }
         if ((flag & CharacterTemporaryStat.PowerGuard) != 0  && getStatOption(CharacterTemporaryStat.PowerGuard) != 0) {
             data.add(getStatReason(CharacterTemporaryStat.PowerGuard));
         }
@@ -143,9 +146,6 @@ public class SecondaryStat {
         }
         if ((flag & CharacterTemporaryStat.SoulArrow) != 0  && getStatOption(CharacterTemporaryStat.SoulArrow) != 0) {
             data.add(getStatReason(CharacterTemporaryStat.SoulArrow));
-        }
-        if ((flag & CharacterTemporaryStat.Stun) != 0  && getStatOption(CharacterTemporaryStat.Stun) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.Stun));
         }
         
         packet.encodeInt(toSend);

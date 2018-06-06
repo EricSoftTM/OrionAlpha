@@ -67,6 +67,13 @@ public class UserCommands {
         return null;
     }
     
+    public static String heal(User user, CharacterStat stat, String[] args) {
+        stat.setHP(stat.getMHP());
+        stat.setMP(stat.getMMP());
+        user.sendCharacterStat(Request.Excl, CharacterStatType.HP | CharacterStatType.MP);
+        return null;
+    }
+    
     public static String weather(User user, Field field, String[] args) {
         if (args.length > 0) {
             String text = args[0];

@@ -310,7 +310,7 @@ public class SkillAccessor {
     public static int getMPStealSkillData(CharacterData cd, int attackType, Pointer<Integer> prop, Pointer<Integer> percent) {
         prop.set(0);
         percent.set(0);
-        if (attackType != ClientPacket.UserMagicAttack)
+        if (attackType != 3)
             return 0;
         
         int skill = 0;

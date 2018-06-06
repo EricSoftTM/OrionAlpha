@@ -22,8 +22,10 @@ import java.util.Map;
 
 import common.item.ItemAccessor;
 import common.user.CharacterData;
+import common.user.CharacterStat.CharacterStatType;
 import game.field.life.mob.AttackElem;
 import game.user.User;
+import game.user.WvsContext.Request;
 import game.user.item.BundleItem;
 import game.user.item.ItemInfo;
 import game.user.skill.Skills.Assassin;
@@ -56,13 +58,49 @@ public class SkillInfo {
     }
 
     public boolean adjustConsumeForActiveSkill(User user, int skillID, byte slv) {
-        if (slv <= 0)
+        if (slv <= 0) {
             return false;
+        }
         if ((skillID / 1000 % 10) == 0) {
             return true;
         }
-
-        return true;
+        Pointer<SkillEntry> curSkillEntry = new Pointer<>();
+        if (getSkillLevel(user.getCharacter(), skillID, curSkillEntry) < slv) {
+            return false;
+        }
+        SkillEntry skillEntry = curSkillEntry.get();
+        SkillLevelData level = skillEntry.getLevelData(slv);
+        int hp = level.getHPCon();
+        int mp = level.getMPCon();
+        if (user.lock()) {
+            try {
+                int flag = 0;
+                if (hp > 0) {
+                    flag = CharacterStatType.HP;
+                }
+                if (mp > 0) {
+                    flag |= CharacterStatType.MP;
+                }
+                if (user.getHP() == 0 || hp > 0 && hp >= user.getHP() || mp > 0 && mp > user.getCharacter().getCharacterStat().getMP()) {
+                    if (flag != 0)
+                        user.sendCharacterStat(Request.None, flag);
+                    return false;
+                }
+                if (hp > 0) {
+                    user.incHP(-hp, true);
+                }
+                if (mp > 0) {
+                    user.incMP(-mp, true);
+                }
+                if (flag != 0) {
+                    user.sendCharacterStat(Request.None, flag);
+                }
+                return true;
+            } finally {
+                user.unlock();
+            }
+        }
+        return false;
     }
 
     public int getBundleItemMaxPerSlot(int itemID, CharacterData cd) {

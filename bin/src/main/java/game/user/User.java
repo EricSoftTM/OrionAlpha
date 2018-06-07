@@ -50,6 +50,7 @@ import game.field.life.npc.ShopItem;
 import game.field.life.npc.ShopResCode;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
+import game.messenger.Messenger;
 import game.miniroom.MiniRoom;
 import game.miniroom.MiniRoomBase;
 import game.user.WvsContext.BroadcastMsg;
@@ -75,7 +76,6 @@ import network.database.CommonDB;
 import network.database.GameDB;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
-import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 import util.*;
 
@@ -157,7 +157,7 @@ public class User extends Creature {
     private MiniRoomBase miniRoom;
     private boolean miniRoomBalloon;
     // MSMessenger
-    // private UserMessenger msm;
+    private Messenger msm;
     private boolean msMessenger;
     // ScriptVM
     // private ScriptVM runningVM;
@@ -213,6 +213,7 @@ public class User extends Creature {
         this.rndActionMan = new Rand32();
         this.calcDamage = new CalcDamage();
         this.userSkill = new UserSkill(this);
+        this.msm = new Messenger(this);
         // TODO: Nexon-like user caching to avoid DB load upon each login/migrate.
         this.character = GameDB.rawLoadCharacter(characterID);
         
@@ -925,6 +926,10 @@ public class User extends Creature {
         return localSocketSN;
     }
     
+    public Messenger getMessenger() {
+        return msm;
+    }
+    
     public int getPosMap() {
         return character.getCharacterStat().getPosMap();
     }
@@ -1154,6 +1159,9 @@ public class User extends Creature {
                 break;
             case ClientPacket.UserSelectNpc:
                 onSelectNpc(packet);
+                break;
+            case ClientPacket.Messenger:
+                getMessenger().onMessenger(packet);
                 break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {

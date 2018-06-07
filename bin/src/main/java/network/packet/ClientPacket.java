@@ -50,9 +50,9 @@ public class ClientPacket {
             UserEmotion = 22,
             UserSelectNpc = 23,
             UserScriptMessageAnswer = 24,
-            UserShopRequest = 25, // 004D4C34, 004D7CC5
+            UserShopRequest = 25, 
             UserChangeSlotPositionRequest = 26,
-            UserStatChangeItemUseRequest = 27, // 00593A97
+            UserStatChangeItemUseRequest = 27,
             UserConsumeCashItemUseRequest = 28, // 00594043
             Unknown29 = 29, // 00594187
             UserUpgradeItemUseRequest = 30, 
@@ -67,9 +67,9 @@ public class ClientPacket {
             Unknown39 = 39, // 00486F0C, command-related?
             Whisper = 40, // 004879AA
             Messenger = 41, // 00503603
-            MiniRoom = 42, // 00487C97, 0049CBFD, 0049CD63, 0049D4E2, 004F8005, 004FACDA, 004FB011, 004FB1A8, 
+            MiniRoom = 42,
             Unknown43 = 43, // 00487F0F, 00595858
-            Unknown44 = 44, // 00595755, 005958CA
+            Unknown44 = 44, // 00595755, 005958CA -> used from the Unknown17 Loopback in CWvsContext (00595690), can it be Party?
             Unknown45 = 45, // 00486B38, command-related?
             END_USER = 46,
             BEGIN_FIELD = 47,
@@ -86,9 +86,9 @@ public class ClientPacket {
             END_DROPPOOL = 58,
             END_FIELD = 59,
             BEGIN_CASHSHOP = 60,
-            CashShopChargeParamRequest = 61, // 0042E454
-            CashShopQueryCashRequest = 62, // 0042F4ED
-            CashShopCashItemRequest = 63, // 0042F160, 0042F38C, 0042DEBF
+            CashShopChargeParamRequest = 61,
+            CashShopQueryCashRequest = 62,
+            CashShopCashItemRequest = 63,
             END_CASHSHOP = 64,
             NO = 65
     ;

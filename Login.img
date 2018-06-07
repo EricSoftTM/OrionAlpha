@@ -1,9 +1,6 @@
 {
 	"port": 8484,
 	"centerPort": 8383,
-	"dbGameWorld": "orionalpha",
-	"dbGameWorldSource": "127.0.0.1,3306",
-	"dbGameWorldInfo": "root,",
 	
 	"PublicIP": "127.0.0.1",
 	"PrivateIP": "127.0.0.1"

@@ -1596,9 +1596,9 @@ public class User extends Creature {
                         }
                         sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
                         
-                        int flag = sci.apply(this, sci.getItemID(), character, basicStat, secondaryStat, System.currentTimeMillis(), false);
+                        int flag = sci.getInfo().apply(this, sci.getItemID(), character, basicStat, secondaryStat, System.currentTimeMillis(), false);
                         addCharacterDataMod(DBChar.ItemSlotConsume | DBChar.Character);
-                        //sendCharacterStat(Request.Excl, sci.getFlag()); //TODO
+                        sendCharacterStat(Request.Excl, sci.getInfo().getFlag());
                         sendTemporaryStatSet(flag);
                     } finally {
                         unlock();

@@ -17,29 +17,20 @@
  */
 package game.user.item;
 
-import common.user.CharacterData;
-import game.user.User;
-import game.user.stat.BasicStat;
-import game.user.stat.SecondaryStat;
-
 /**
  * @author Arnah
 */
 public class StateChangeItem {
 
     private int itemID;
-    private int hp, mp;
-    private int hpR, mpR;
-    private int acc, eva, mad, pdd, pad;
-    private int speed;
-    private int time;
+    private final StateChangeInfo sciInfo;
     
-    public int apply(User user, int itemID, CharacterData cd, BasicStat bs, SecondaryStat ss, long time, boolean applyBetterOnly) {
-        int tempSet = 0;
-        
-        // TODO
-        
-        return tempSet;
+    public StateChangeItem() {
+        this.sciInfo = new StateChangeInfo();
+    }
+    
+    public StateChangeInfo getInfo() {
+        return sciInfo;
     }
 
     public int getItemID() {
@@ -48,93 +39,5 @@ public class StateChangeItem {
 
     public void setItemID(int itemID) {
         this.itemID = itemID;
-    }
-
-    public int getHp() {
-        return hp;
-    }
-
-    public void setHp(int hp) {
-        this.hp = hp;
-    }
-
-    public int getMp() {
-        return mp;
-    }
-
-    public void setMp(int mp) {
-        this.mp = mp;
-    }
-
-    public int getHpR() {
-        return hpR;
-    }
-
-    public void setHpR(int hpR) {
-        this.hpR = hpR;
-    }
-
-    public int getMpR() {
-        return mpR;
-    }
-
-    public void setMpR(int mpR) {
-        this.mpR = mpR;
-    }
-
-    public int getAcc() {
-        return acc;
-    }
-
-    public void setAcc(int acc) {
-        this.acc = acc;
-    }
-
-    public int getEva() {
-        return eva;
-    }
-
-    public void setEva(int eva) {
-        this.eva = eva;
-    }
-
-    public int getMad() {
-        return mad;
-    }
-
-    public void setMad(int mad) {
-        this.mad = mad;
-    }
-
-    public int getPdd() {
-        return pdd;
-    }
-
-    public void setPdd(int pdd) {
-        this.pdd = pdd;
-    }
-
-    public int getPad() {
-        return pad;
-    }
-
-    public void setPad(int pad) {
-        this.pad = pad;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
-
-    public int getTime() {
-        return time;
-    }
-
-    public void setTime(int time) {
-        this.time = time;
     }
 }

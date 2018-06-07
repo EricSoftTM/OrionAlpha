@@ -23,7 +23,9 @@ import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
 import common.item.ItemSlotEquip;
 import common.item.ItemType;
+import common.user.CharacterStat.CharacterStatType;
 import game.field.Field;
+import game.user.stat.CharacterTemporaryStat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -197,7 +199,7 @@ public class ItemInfo {
         return null;
     }
     
-    public static boolean IsAbleToEquip(int gender, int level, int job, int STR, int DEX, int INT, int LUK, int pop, int itemID, List<ItemSlotBase> realEquip) {
+    public static boolean isAbleToEquip(int gender, int level, int job, int STR, int DEX, int INT, int LUK, int pop, int itemID, List<ItemSlotBase> realEquip) {
         EquipItem info = getEquipItem(itemID);
         if (info != null) {
             if (level != 0) {
@@ -394,29 +396,66 @@ public class ItemInfo {
         item.setItemID(itemID);
         WzProperty specEx = itemData.getNode("specEx");
         if (specEx == null) {
-            loadStateChangeInfo(item, itemData);
+            loadStateChangeInfo(item.getInfo(), itemData);
         } else {
             // Nice joke
         }
         statChangeItem.put(item.getItemID(), item);
     }
 
-    private static void loadStateChangeInfo(StateChangeItem sci, WzProperty itemData) {
+    private static void loadStateChangeInfo(StateChangeInfo sci, WzProperty itemData) {
         WzProperty spec = itemData.getNode("spec");
         if (spec != null) {
+            sci.setFlagRate(0);
+            sci.setFlag(0);
+            
             //acc, eva, mad, pdd, pad, mp, hp, hpR, time, pda, mpR, speed
-            sci.setHp(WzUtil.getInt32(spec.getNode("hp"), 0));
-            sci.setMp(WzUtil.getInt32(spec.getNode("mp"), 0));
-            sci.setHpR(WzUtil.getInt32(spec.getNode("hpR"), 0));
-            sci.setMpR(WzUtil.getInt32(spec.getNode("mpR"), 0));
-
-            sci.setAcc(WzUtil.getInt32(spec.getNode("acc"), 0));
-            sci.setEva(WzUtil.getInt32(spec.getNode("eva"), 0));
-            sci.setMad(WzUtil.getInt32(spec.getNode("mad"), 0));
-            sci.setPdd(WzUtil.getInt32(spec.getNode("pdd"), 0));
-            sci.setPad(WzUtil.getInt32(spec.getNode("pad"), 0));
-
+            int hpR = WzUtil.getInt32(spec.getNode("hpR"), 0);
+            int hp = WzUtil.getInt32(spec.getNode("hp"), 0);
+            if (hpR != 0) {
+                hp = hpR;
+                sci.addFlagRate(CharacterStatType.HP);
+            }
+            sci.setHP(hp);
+            if (sci.getHP() != 0) {
+                sci.addFlag(CharacterStatType.HP);
+            }
+            
+            int mpR = WzUtil.getInt32(spec.getNode("mpR"), 0);
+            int mp = WzUtil.getInt32(spec.getNode("mp"), 0);
+            if (mpR != 0) {
+                mp = mpR;
+                sci.addFlagRate(CharacterStatType.MP);
+            }
+            sci.setMP(mp);
+            if (sci.getMP() != 0) {
+                sci.addFlag(CharacterStatType.MP);
+            }
+            
+            sci.setACC(WzUtil.getInt32(spec.getNode("acc"), 0));
+            if (sci.getACC() != 0) {
+                sci.addFlagTemp(CharacterTemporaryStat.ACC);
+            }
+            sci.setEVA(WzUtil.getInt32(spec.getNode("eva"), 0));
+            if (sci.getEVA() != 0) {
+                sci.addFlagTemp(CharacterTemporaryStat.EVA);
+            }
+            sci.setMAD(WzUtil.getInt32(spec.getNode("mad"), 0));
+            if (sci.getMAD() != 0) {
+                sci.addFlagTemp(CharacterTemporaryStat.MAD);
+            }
+            sci.setPDD(WzUtil.getInt32(spec.getNode("pdd"), 0));
+            if (sci.getPDD() != 0) {
+                sci.addFlagTemp(CharacterTemporaryStat.PDD);
+            }
+            sci.setPAD(WzUtil.getInt32(spec.getNode("pad"), 0));
+            if (sci.getPAD() != 0) {
+                sci.addFlagTemp(CharacterTemporaryStat.PAD);
+            }
             sci.setSpeed(WzUtil.getInt32(spec.getNode("speed"), 0));
+            if (sci.getSpeed() != 0) {
+                sci.addFlagTemp(CharacterTemporaryStat.Speed);
+            }
 
             sci.setTime(WzUtil.getInt32(spec.getNode("time"), 0));
         }

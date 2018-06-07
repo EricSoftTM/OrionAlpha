@@ -310,16 +310,16 @@ public class CharacterStat {
         this.LUK = LUK;
     }
 
-    public void setHP(short hp) {
-        this.hp = hp;
+    public void setHP(int hp) {
+        this.hp = (short) hp;
     }
 
     public void setMHP(short mhp) {
         this.mhp = mhp;
     }
 
-    public void setMP(short mp) {
-        this.mp = mp;
+    public void setMP(int mp) {
+        this.mp = (short) mp;
     }
 
     public void setMMP(short mmp) {

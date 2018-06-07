@@ -24,6 +24,7 @@ package game.user.command;
 public enum UserGradeCode {
     User(0),
     GM(1),
+    Developer(2),
     ;
     private final int grade;
     

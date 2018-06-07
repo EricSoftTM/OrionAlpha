@@ -99,6 +99,10 @@ public class DropPool {
         return null;
     }
     
+    public Map<Integer, Drop> getDrops() {
+        return drops;
+    }
+    
     public boolean onEnter(User user) {
         return true;
     }

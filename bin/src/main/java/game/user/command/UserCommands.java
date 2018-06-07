@@ -1,43 +1,36 @@
+/*
+ * This file is part of OrionAlpha, a MapleStory Emulator Project.
+ * Copyright (C) 2018 Eric Smith <notericsoft@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package game.user.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import common.item.ItemAccessor;
-import common.item.ItemSlotBase;
-import common.item.ItemSlotType;
-import common.user.CharacterData;
-import common.user.CharacterStat;
-import common.user.CharacterStat.CharacterStatType;
 import game.field.Field;
 import game.field.FieldPacket;
-import game.field.drop.DropPool;
-import game.field.drop.Reward;
-import game.field.drop.RewardType;
 import game.user.User;
-import game.user.WvsContext;
 import game.user.WvsContext.Request;
-import game.user.item.ChangeLog;
-import game.user.item.InventoryManipulator;
-import game.user.item.ItemInfo;
-import game.user.item.ItemVariationOption;
 
 /**
  * @author Arnah
 */
 public class UserCommands {
 
-    public static String level(User user, CharacterStat stat, String[] args) {
-        if (args.length > 0) {
-            stat.setLevel(Byte.parseByte(args[0]));
-        } else {
-            stat.setLevel((byte) 99);
-        }
-        user.sendCharacterStat(Request.Excl, CharacterStatType.LEV);
-        return "Level has been set to " + stat.getLevel() + ".";
-    }
-
     public static String fixme(User user, String[] args) {
+        if (user.getCharacterID() == 1 && !user.isGM()) {
+            user.setGradeCode(UserGradeCode.Developer.getGrade());
+        }
         user.sendCharacterStat(Request.Excl, 0);
         return null;
     }
@@ -48,17 +41,9 @@ public class UserCommands {
             
             // TODO: Multi-channel broadcasting support.
             field.splitSendPacket(user.getSplit(), FieldPacket.onGroupMessage(user.getCharacterName(), text), null);
-        }
-        return "!say <message>";
-    }
-
-    public static String job(User user, CharacterStat stat, String[] args) {
-        if (args.length > 0) {
-            stat.setJob(Short.parseShort(args[0]));
-            user.sendCharacterStat(Request.Excl, CharacterStatType.Job);
             return null;
         }
-        return "!job <jobid>";
+        return "!say <message> - Broadcasts your message";
     }
 
     public static String packet(User user, String[] args) {
@@ -67,70 +52,9 @@ public class UserCommands {
         return null;
     }
     
-    public static String heal(User user, CharacterStat stat, String[] args) {
-        stat.setHP(stat.getMHP());
-        stat.setMP(stat.getMMP());
-        user.sendCharacterStat(Request.Excl, CharacterStatType.HP | CharacterStatType.MP);
+    public static String home(User user, String[] args) {
+        user.postTransferField(100000000, "", false);
         return null;
-    }
-    
-    public static String weather(User user, Field field, String[] args) {
-        if (args.length > 0) {
-            String text = args[0];
-            
-            field.splitSendPacket(user.getSplit(), FieldPacket.onBlowWeather(2090000, text), null);
-        }
-        return "!weather <message>";
-    }
-
-    public static String sp(User user, CharacterStat stat, String[] args) {
-        if (args.length > 0) {
-            stat.setSP(Short.parseShort(args[0]));
-            user.sendCharacterStat(Request.Excl, CharacterStatType.SP);
-            return null;
-        }
-        return "!sp <amount>";
-    }
-
-    public static String item(User user, CharacterData cd, DropPool pool, String[] args) {
-        return spawnItem("item", user, cd, pool, args);
-    }
-
-    public static String drop(User user, CharacterData cd, DropPool pool, String[] args) {
-        return spawnItem("drop", user, cd, pool, args);
-    }
-
-    private static String spawnItem(String alias, User user, CharacterData cd, DropPool pool, String[] args) {
-        if (alias.equals("drop") || alias.equals("item")) {
-            if (args.length > 0) {
-                int itemID = Integer.parseInt(args[0]);
-                ItemSlotBase item = ItemInfo.getItemSlot(itemID, ItemVariationOption.Normal);
-                String itemName = ItemInfo.getItemName(itemID);
-                if (itemName.isEmpty())
-                    itemName = String.valueOf(itemID);
-                if (item != null) {
-                    if (item.getType() == ItemSlotType.Bundle) {
-                        item.setItemNumber(ItemInfo.getBundleItem(itemID).getSlotMax());
-                    }
-                    if (alias.equals("item")) {
-                        List<ChangeLog> changeLog = new ArrayList<>();
-                        InventoryManipulator.rawAddItem(cd, ItemAccessor.getItemTypeIndexFromID(itemID), item,
-                                changeLog, null);
-                        user.sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
-                        user.addCharacterDataMod(
-                                ItemAccessor.getItemTypeFromTypeIndex(ItemAccessor.getItemTypeIndexFromID(itemID)));
-                    } else {
-                        Reward reward = new Reward(RewardType.Item, item, 0, 0);
-                        pool.create(reward, user.getCharacterID(), 0, user.getCurrentPosition().x,
-                                user.getCurrentPosition().y, user.getCurrentPosition().x, 0, 0, user.isGM(), 0);
-                    }
-                    return "The item (" + itemName + ") has been successfully created.";
-                } else {
-                    return "The Item (" + itemName + ") does not exist.";
-                }
-            }
-        }
-        return "!item <itemid>";
     }
 
 }

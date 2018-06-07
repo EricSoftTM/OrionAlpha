@@ -74,6 +74,11 @@ public class FieldMan {
         }
     }
     
+    public boolean isBlockedMap(int fieldID) {
+        // Probably nothing even worth blocking in this version.
+        return false;
+    }
+    
     private Field registerField(int fieldID, WzProperty mapData) {
         final Field field = new Field(fieldID);
         

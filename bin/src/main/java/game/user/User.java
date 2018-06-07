@@ -227,9 +227,14 @@ public class User extends Creature {
         this.socket = socket;
         this.localSocketSN = socket.getLocalSocketSN();
         
-        // GradeCode
-        // AccountID
-        // NexonClubID
+        Pointer<Integer> grade = new Pointer<>(0);
+        Pointer<Integer> id = new Pointer<>(0);
+        Pointer<String> nexonID = new Pointer<>("");
+        GameDB.rawLoadAccount(socket.getCharacterID(), id, nexonID, grade);
+        
+        this.accountID = id.get();
+        this.nexonClubID = nexonID.get();
+        this.gradeCode = grade.get();
         
         this.characterID = character.getCharacterStat().getCharacterID();
         this.characterName = character.getCharacterStat().getName();
@@ -780,10 +785,6 @@ public class User extends Creature {
             }
         }
     }
-
-    public void setMiniRoom(MiniRoomBase miniRoom) {
-        this.miniRoom = miniRoom;
-    }
     
     public void setSkin(int val) {
         lock.lock();
@@ -951,7 +952,7 @@ public class User extends Creature {
     }
     
     public boolean isGM() {
-        return gradeCode >= UserGradeCode.GM.getGrade() || characterID == 1;
+        return gradeCode >= UserGradeCode.GM.getGrade();
     }
     
     public boolean isHide() {
@@ -1162,6 +1163,9 @@ public class User extends Creature {
                 break;
             case ClientPacket.Messenger:
                 getMessenger().onMessenger(packet);
+                break;
+            case ClientPacket.UserConsumeCashItemUseRequest:
+                onConsumeCashItemUseRequest(packet);
                 break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
@@ -1408,6 +1412,15 @@ public class User extends Creature {
         short newPos = packet.decodeShort();
         short count = packet.decodeShort();
         Inventory.changeSlotPosition(this, Request.Excl, type, oldPos, newPos, count);
+    }
+    
+    public void onConsumeCashItemUseRequest(InPacket packet) {
+        short pos = packet.decodeShort();
+        int itemID = packet.decodeInt();
+        String message = packet.decodeString();
+        
+        // Weather: 2090000
+        // Megaphone: 2080000
     }
     
     public void onUpgradeItemRequest(InPacket packet) {
@@ -1835,50 +1848,161 @@ public class User extends Creature {
     }
     
     public void onTransferFieldRequest(InPacket packet) {
-        int fieldID = packet.decodeInt();
-        String portal = packet.decodeString();
-        
-        if (fieldID == -1) {
-            Portal pt = getField().getPortal().findPortal(portal);
-            if (pt == null || pt.tmap == Field.Invalid) {
-                return;
-            }
-            fieldID = pt.tmap;
-            portal = pt.tname;
+        if (getField() == null || socket == null) {
+            closeSocket();
+            return;
         }
-        
-        Field field = FieldMan.getInstance().getField(fieldID, false);
-        if (field != null) {
-            Portal pt = field.getPortal().findPortal(portal);
-            if (portal.isEmpty() || pt == null) {
-                pt = field.getPortal().getRandStartPoint();
-            }
-            getField().onLeave(this);
-            lock.lock();
-            try {
-                setField(field);
-                setPosMap(field.getFieldID());
-                setPortal(pt.getPortalIdx());
-                setMovePosition(pt.getPortalPos().x, pt.getPortalPos().y, (byte) 0, (short) 0);
-                characterDataModFlag |= DBChar.Character;
-                avatarModFlag = 0;
-            } finally {
-                unlock();
-            }
-            sendSetFieldPacket(false);
-            if (getField().onEnter(this)) {
-                
-            } else {
-                Logger.logError("Failed in entering field");
-                closeSocket();
-            }
-        }
+        postTransferField(null, null, false, null, false, packet);
     }
     
     public void onMove(InPacket packet) {
         if (getField() != null) {
             Rect move = new Rect();
             getField().onUserMove(this, packet, move);
+        }
+    }
+    
+    public void onTransferField(Field field, int x, int y, byte portal) {
+        getField().onLeave(this);
+        if (lock()) {
+            try {
+                setField(field);
+                setPosMap(field.getFieldID());
+                setPortal((byte) (portal & 0x7F));
+                setMovePosition(x, y, (byte) 0, (short) 0);
+                addCharacterDataMod(DBChar.Character);
+                avatarModFlag = 0;
+            } finally {
+                unlock();
+            }
+        }
+        sendSetFieldPacket(false);
+        if (getField().onEnter(this)) {
+            this.attackCheckIgnoreCnt = 3;
+            this.onTransferField = false;
+            //this.attackTimeCheckAlert = 0;
+        } else {
+            Logger.logError("Failed in entering field");
+            closeSocket();
+        }
+    }
+    
+    public void onTransferField(Field field, Portal portal) {
+        if (lock()) {
+            try {
+                if (field != null) {
+                    if (!field.getPortal().getPortal().contains(portal)) {
+                        portal = field.getPortal().getPortal(0);
+                    }
+                    onTransferField(field, portal.getPortalPos().x, portal.getPortalPos().y, portal.getPortalIdx());
+                }
+            } finally {
+                unlock();
+            }
+        }
+    }
+    
+    public void postTransferField(int fieldID, String portal, boolean force) {
+        postTransferField(fieldID, portal, force, new Point(0, 0), true, null);
+    }
+    
+    public void postTransferField(Integer fieldID, String portal, boolean force, Point pos, boolean loopback, InPacket packet) {
+        if (lock()) {
+            try {
+                if (!onTransferField || force) {
+                    if (fieldID != null && FieldMan.getInstance().isBlockedMap(fieldID)) {
+                        Logger.logError("User tried to enter the Blocked Map #3 (From:%d,To:%d)", getField().getFieldID(), fieldID);
+                        sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                    } else {
+                        if (getField() == null || socket == null) {
+                            closeSocket();
+                            return;
+                        }
+                        if (pos == null) {
+                            pos = new Point(0, 0);
+                        }
+                        if (!loopback) {
+                            fieldID = packet.decodeInt();
+                            portal = packet.decodeString();
+                        }
+                        boolean isDead = false;
+                        Portal pt = getField().getPortal().findPortal(portal);
+                        if (getHP() == 0) {
+                            if (getField().getForcedReturnFieldID() != Field.Invalid) {
+                                fieldID = getField().getReturnFieldID();
+                            } else {
+                                fieldID = getField().getFieldID();
+                            }
+                            portal = "";
+                            character.getCharacterStat().setHP(50);
+                            basicStat.setFrom(character, character.getEquipped(), character.getEquipped2(), 0, 0);
+                            secondaryStat.clear();
+                            secondaryStat.setFrom(basicStat, character.getEquipped(), character.getEquipped2(), character);
+                            validateStat(false);
+                            addCharacterDataMod(DBChar.Character);
+                            isDead = true;
+                        }
+                        if (fieldID != -1 && !loopback && !isDead && !isGM()) {
+                            sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                            return;
+                        }
+                        if (!isDead && !loopback && !canAttachAdditionalProcess()) {
+                            sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                            return;
+                        }
+                        if (fieldID == -1 && (portal == null || portal.isEmpty())) {
+                            if (!loopback) {
+                                sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                            }
+                            return;
+                        }
+                        this.onTransferField = true;
+                        if (fieldID == -1) {
+                            pt = getField().getPortal().findPortal(portal);
+                            if (pt == null || pt.tmap == Field.Invalid) {
+                                Logger.logError("Incorrect portal");
+                                closeSocket();
+                                return;
+                            }
+                            if (!pt.enable) {
+                                sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                                this.onTransferField = false;
+                                return;
+                            }
+                            fieldID = pt.tmap;
+                            portal = pt.tname;
+                            if (fieldID == getField().getFieldID()) {
+                                this.onTransferField = false;
+                                return;
+                            }
+                        }
+                        Field field = FieldMan.getInstance().getField(fieldID, false);
+                        if (field == null) {
+                            Logger.logError("Invalid Field ID *1* : %d (Old: %d, IsDead: %b)", fieldID, getField().getFieldID(), isDead);
+                            closeSocket();
+                            return;
+                        }
+                        if (FieldMan.getInstance().isBlockedMap(fieldID)) {
+                            Logger.logError("User tried to enter the Blocked Map #1 (From:%d,To:%d)", getField().getFieldID(), fieldID);
+                            sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                            this.onTransferField = false;
+                            return;
+                        }
+                        if (portal == null || portal.isEmpty() || (pt = field.getPortal().findPortal(portal)) == null) {
+                            if (pos.x == 0 && pos.y == 0) {
+                                pt = field.getPortal().getRandStartPoint();
+                            } else {
+                                pt = field.getPortal().findCloseStartPoint(pos.x, pos.y);
+                            }
+                            pos.x = pt.getPortalPos().x;
+                            pos.y = pt.getPortalPos().y;
+                        }
+                        onTransferField(field, pos.x, pos.y, pt.getPortalIdx());
+                    }
+                }
+            } finally {
+                unlock();
+            }
         }
     }
     
@@ -1983,6 +2107,14 @@ public class User extends Creature {
     
     public void setCommunity(String name) {
         this.community = name;
+    }
+    
+    public void setGradeCode(int grade) {
+        this.gradeCode = grade;
+    }
+    
+    public void setMiniRoom(MiniRoomBase miniRoom) {
+        this.miniRoom = miniRoom;
     }
     
     public void setPosMap(int map) {

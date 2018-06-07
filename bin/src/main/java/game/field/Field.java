@@ -79,6 +79,10 @@ public class Field {
     private boolean town;
     private boolean clock;
     private boolean swim;
+    private String weatherMsg;
+    private int weatherItemID;
+    private int weatherDuration;
+    private long weatherBegin;
     private int splitRowCount;
     private int splitColCount;
     private double incRateEXP;
@@ -98,10 +102,51 @@ public class Field {
         this.field = fieldID;
         this.space2D = new WvsPhysicalSpace2D();
         this.portal = new PortalMap();
+        this.weatherItemID = 0;
+        this.incRateEXP = 1.0d;
+        this.incRateDrop = 2.0d;
         this.lifePool = new LifePool(this);
         this.dropPool = new DropPool(this);
         this.lock = new ReentrantLock();
         this.users = new HashMap<>();
+    }
+    
+    public void broadcastPacket(OutPacket packet, List<Integer> characters) {
+        if (lock(1200)) {
+            try {
+                for (int characterID : characters) {
+                    User user = users.get(characterID);
+                    if (user != null) {
+                        user.sendPacket(packet);
+                    }
+                }
+            } finally {
+                unlock();
+            }
+        }
+    }
+    
+    public void broadcastPacket(OutPacket packet, boolean exceptAdmin) {
+        if (lock(1200)) {
+            try {
+                List<User> characters = new ArrayList<>(users.values());
+                for (User user : characters) {
+                    if (user!= null && (!exceptAdmin || !user.isGM()))//!((pUser.nGradeCode & 1) > 0)
+                        user.sendPacket(packet);
+                }
+                characters.clear();
+            } finally {
+                unlock();
+            }
+        }
+    }
+    
+    public void expireDrops(User user) {
+        int count = dropPool.getDrops().size();
+        dropPool.tryExpire(true);
+        if (user != null) {
+            user.sendSystemMessage("Items Destroyed: " + count);
+        }
     }
     
     public DropPool getDropPool() {
@@ -282,7 +327,9 @@ public class Field {
                 user.setPosMap(this.field);
                 users.put(user.getCharacterID(), user);
                 lifePool.insertController(user);
-                // Weather
+                if (weatherItemID != 0) {
+                    user.sendPacket(FieldPacket.onBlowWeather(weatherItemID, weatherMsg));
+                }
                 // Jukebox
                 if (clock) {
                     
@@ -298,6 +345,8 @@ public class Field {
     public void onLeave(User user) {
         if (lock(1100)) {
             try {
+                lifePool.removeController(user);
+                dropPool.onLeave(user);
                 users.remove(user.getCharacterID());
                 splitRegisterUser(user.getSplit(), null, user);
                 splitUnregisterFieldObj(0, user);
@@ -437,8 +486,8 @@ public class Field {
         if (tail.getX() < x || tail.getX() > (x + WvsScreenWidth) || tail.getY() < y || tail.getY() > (y + WvsScreenHeight)) {
             FieldSplit splitNew = splitFromPoint(xPos, yPos);
             if (splitNew == null) {
-                /*pUser.postTransferField(pUser.getField().getFieldID(), "", true);
-                long tCur = System.currentTimeMillis();
+                user.postTransferField(user.getField().getFieldID(), "", true);
+                /*long tCur = System.currentTimeMillis();
                 if ((tCur - pUser.tLastIncorrectFieldPositionTime) <= 60000) {
                     ++pUser.nIncorrectFieldPositionCount;
                     if (pUser.nIncorrectFieldPositionCount >= 5) {
@@ -459,6 +508,27 @@ public class Field {
         }
         splitSendPacket(user.getSplit(), UserRemote.onMove(user.getCharacterID(), mp), user);
         mp.getElem().clear();
+    }
+    
+    public boolean onWeather(int itemID, String param, int duration) {
+        if (itemID / 10000 != 209 || weatherItemID != 0) {
+            return false;
+        }
+        if (lock()) {
+            try {
+                this.weatherItemID = itemID;
+                this.weatherMsg = param;
+                this.weatherBegin = System.currentTimeMillis();
+                if (duration != 0) {
+                    this.weatherDuration = duration;
+                }
+                broadcastPacket(FieldPacket.onBlowWeather(itemID, param), false);
+                return true;
+            } finally {
+                unlock();
+            }
+        }
+        return false;
     }
     
     public void setLeftTop(Point pt) {

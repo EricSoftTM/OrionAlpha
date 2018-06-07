@@ -30,6 +30,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import util.Pointer;
 
 /**
  * For DB queries only used in the Game JVM.
@@ -37,6 +38,23 @@ import java.util.Map;
  * @author Eric
  */
 public class GameDB {
+    
+    public static void rawLoadAccount(int characterID, Pointer<Integer> accountID, Pointer<String> nexonClubID, Pointer<Integer> gradeCode) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterID = ?")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        accountID.set(rs.getInt("AccountID"));
+                        nexonClubID.set(rs.getString("NexonClubID"));
+                        gradeCode.set(rs.getInt("GradeCode"));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
     
     public static CharacterData rawLoadCharacter(int characterID) {
         CharacterData cd = null;

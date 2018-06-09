@@ -53,6 +53,7 @@ import game.field.portal.PortalMap;
 import game.messenger.Messenger;
 import game.miniroom.MiniRoom;
 import game.miniroom.MiniRoomBase;
+import game.script.ScriptVM;
 import game.user.WvsContext.BroadcastMsg;
 import game.user.WvsContext.Request;
 import game.user.command.CommandHandler;
@@ -160,7 +161,7 @@ public class User extends Creature {
     private Messenger msm;
     private boolean msMessenger;
     // ScriptVM
-    // private ScriptVM runningVM;
+    private ScriptVM runningVM;
     // Client
     private ClientSocket socket;
     private long loginTime;
@@ -939,6 +940,10 @@ public class User extends Creature {
         return character.getCharacterStat().getPortal();
     }
     
+    public ScriptVM getScriptVM() {
+        return runningVM;
+    }
+    
     public SecondaryStat getSecondaryStat() {
         return secondaryStat;
     }
@@ -1001,6 +1006,10 @@ public class User extends Creature {
             }
         }
         return false;
+    }
+    
+    public void setScriptVM(ScriptVM vm) {
+        this.runningVM = vm;
     }
     
     public String getCommunity() {
@@ -1632,8 +1641,10 @@ public class User extends Creature {
                 Npc npc = getField().getLifePool().getNpc(packet.decodeInt());
                 if (npc != null) {
                     if (npc.getNpcTemplate().getQuest() != null && !npc.getNpcTemplate().getQuest().isEmpty()) {
-                        // TODO: User ScriptVM Handling
-                        Logger.logReport("Executing npc script %s", npc.getNpcTemplate().getQuest());
+                        ScriptVM script = new ScriptVM();
+                        if (script.setScript(this, npc.getNpcTemplate().getQuest(), npc)) {
+                            script.run(this);
+                        }
                     } else {
                         if (lock()) {
                             try {

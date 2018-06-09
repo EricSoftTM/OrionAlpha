@@ -31,6 +31,9 @@ public class UserCommands {
         if (user.getCharacterID() == 1 && !user.isGM()) {
             user.setGradeCode(UserGradeCode.Developer.getGrade());
         }
+        if (user.getScriptVM() != null) {
+            user.setScriptVM(null);
+        }
         user.sendCharacterStat(Request.Excl, 0);
         return null;
     }

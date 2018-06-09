@@ -120,6 +120,10 @@ public class Npc extends Creature {
         return controller;
     }
     
+    public Point getCurrentPos() {
+        return curPos;
+    }
+    
     public int getFieldID() {
         return getField().getFieldID();
     }

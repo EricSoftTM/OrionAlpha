@@ -46,7 +46,7 @@ public class GameDB {
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
                         accountID.set(rs.getInt("AccountID"));
-                        nexonClubID.set(rs.getString("NexonClubID"));
+                        nexonClubID.set(rs.getString("LoginID"));
                         gradeCode.set(rs.getInt("GradeCode"));
                     }
                 }

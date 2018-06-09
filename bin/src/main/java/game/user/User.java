@@ -1176,6 +1176,9 @@ public class User extends Creature {
             case ClientPacket.UserConsumeCashItemUseRequest:
                 onConsumeCashItemUseRequest(packet);
                 break;
+            case ClientPacket.UserScriptMessageAnswer:
+                onScriptMessageAnswer(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -1628,6 +1631,18 @@ public class User extends Creature {
                 }
             } finally {
                 getField().unlock();
+            }
+        }
+    }
+    
+    public void onScriptMessageAnswer(InPacket packet) {
+        if (lock()) {
+            try {
+                if (runningVM != null) {
+                    runningVM.getScriptSys().onScriptMessageAnswer(this, packet);
+                }
+            } finally {
+                unlock();
             }
         }
     }

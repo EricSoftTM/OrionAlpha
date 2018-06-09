@@ -24,14 +24,17 @@ import game.field.portal.Portal;
 import game.user.User;
 import java.awt.Point;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.script.SimpleScriptContext;
+import javax.script.ScriptException;
 import util.Logger;
 
 /**
@@ -39,12 +42,22 @@ import util.Logger;
  * @author Eric
  */
 public class ScriptVM {
-    private static final ScriptEngine PYTHON_ENGINE = (new ScriptEngineManager()).getEngineByName("python");
+    // VM Decoder Status
+    public static final int 
+            Ready       = 0,
+            Decoding    = 1,
+            Message     = 2,
+            Pending     = 3,
+            Finishing   = 4
+    ;
+    private static final ScriptEngine PYTHON_ENGINE = new ScriptEngineManager().getEngineByName("python");
+    private static final ExecutorService POOL = Executors.newCachedThreadPool();
     private static final String PATH = "data/Script/";
     
     private final Lock lock;
-    private final ScriptSysFunc scriptSys;
     private final LinkedList<MsgHistory> msgHistory;
+    private final AtomicInteger status;
+    private ScriptSysFunc scriptSys;
     private int posMsgHistory;
     private User target;
     private GameObject self;
@@ -55,6 +68,7 @@ public class ScriptVM {
         this.lock = new ReentrantLock();
         this.scriptSys = new ScriptSysFunc(this);
         this.msgHistory = new LinkedList<>();
+        this.status = new AtomicInteger(Ready);
         this.posMsgHistory = 0;
         this.curPos = new Point();
     }
@@ -67,6 +81,12 @@ public class ScriptVM {
                     try {
                         this.target.setScriptVM(null);
                         
+                        if (this.script != null) {
+                            this.script = null;
+                        }
+                        if (this.scriptSys != null) {
+                            this.scriptSys = null;
+                        }
                         if (this.target != null) {
                             this.target = null;
                         }
@@ -80,6 +100,10 @@ public class ScriptVM {
         }
     }
     
+    public Point getCurrentPos() {
+        return curPos;
+    }
+    
     public int getHistoryPos() {
         return posMsgHistory - 1;
     }
@@ -88,8 +112,16 @@ public class ScriptVM {
         return msgHistory;
     }
     
+    public ScriptSysFunc getScriptSys() {
+        return scriptSys;
+    }
+    
     public GameObject getSelf() {
         return self;
+    }
+    
+    public AtomicInteger getStatus() {
+        return status;
     }
     
     public User getTarget() {
@@ -157,20 +189,28 @@ public class ScriptVM {
                 return;
             }
             target.setScriptVM(this);
-            
-            ScriptContext context = new SimpleScriptContext();
-            getEngine().put("target", target);
-            getEngine().put("self", scriptSys);
-            getEngine().eval(new FileReader(script), context);
-        } catch (Exception ex) {
-            ex.printStackTrace(System.err);
-            destroy(target);
         } finally {
             lock.unlock();
         }
+        
+        getPool().submit(() -> {
+            try {
+                getEngine().put("target", getTarget());
+                getEngine().put("self", getScriptSys());
+                getEngine().eval(new FileReader(script));
+            } catch (FileNotFoundException | ScriptException ex) {
+                ex.printStackTrace(System.err);
+            } finally {
+                destroy(getTarget());
+            }
+        });
     }
     
     static ScriptEngine getEngine() {
         return PYTHON_ENGINE;
+    }
+    
+    static ExecutorService getPool() {
+        return POOL;
     }
 }

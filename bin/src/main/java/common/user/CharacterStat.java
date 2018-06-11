@@ -282,8 +282,8 @@ public class CharacterStat {
         this.hair = hair;
     }
 
-    public void setSkin(byte skin) {
-        this.skin = skin;
+    public void setSkin(int skin) {
+        this.skin = (byte) skin;
     }
 
     public void setLevel(byte level) {

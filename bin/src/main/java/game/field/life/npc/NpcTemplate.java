@@ -31,15 +31,18 @@ import java.util.concurrent.locks.ReentrantLock;
 import network.packet.OutPacket;
 import util.Logger;
 import util.wz.WzFileSystem;
+import util.wz.WzNodeType;
 import util.wz.WzPackage;
 import util.wz.WzProperty;
+import util.wz.WzSAXProperty;
 import util.wz.WzUtil;
+import util.wz.WzXML;
 
 /**
  *
  * @author Eric
  */
-public class NpcTemplate {
+public class NpcTemplate implements WzXML {
     private static final WzPackage npcDir = new WzFileSystem().init("Npc").getPackage();
     private static final Map<Integer, NpcTemplate> templates = new HashMap<>();
     private static final Lock lockNpc = new ReentrantLock();
@@ -47,6 +50,7 @@ public class NpcTemplate {
     private String name;
     private String quest;
     private boolean move;
+    private boolean isShop;
     private final List<ShopItem> shopItem;
     
     public NpcTemplate() {
@@ -102,6 +106,16 @@ public class NpcTemplate {
         templates.put(templateID, template);
     }
     
+    private static void registerNpc(int templateID, WzSAXProperty prop) {
+        NpcTemplate template = new NpcTemplate();
+        template.templateID = templateID;
+        
+        prop.addEntity(template);
+        prop.parse();
+        
+        templates.put(templateID, template);
+    }
+    
     public static void unload() {
         templates.clear();
     }
@@ -146,5 +160,59 @@ public class NpcTemplate {
     
     public boolean isMove() {
         return move;
+    }
+    
+    @Override
+    public void parse(String root, String name, String value, WzNodeType type) {
+        if (type.equals(WzNodeType.STRING)) {
+            switch (name) {
+                case "name":
+                    this.name = value;
+                    if (this.name == null) {
+                        this.name = "NULL";
+                    }
+                    break;
+                case "quest":
+                    this.quest = value;
+                    break;
+            }
+        } else if (type.equals(WzNodeType.IMGDIR)) {
+            switch (name) {
+                case "move":
+                    this.move = true;
+                    break;
+                case "shop":
+                    this.isShop = true;
+                    break;
+                default: {
+                    if (this.isShop) {
+                        if (name.matches("[0-9]+") && name.length() >= 7) {
+                            this.shopItem.add(new ShopItem(Integer.parseInt(name)));
+                        }
+                    }
+                }
+            }
+        } else if (type.equals(WzNodeType.INT)) {
+            if (!this.shopItem.isEmpty()) {
+                ShopItem item = this.shopItem.get(this.shopItem.size() - 1);
+                switch (name) {
+                    case "price":
+                        item.price = WzUtil.getInt32(value, 0);
+                        if (!ItemAccessor.isRechargeableItem(item.itemID) && item.price == 0) {
+                            Logger.logError("No Price Information in Shop List (NPC ID : %d, Item ID : %d)", this.templateID, item.itemID);
+                        }
+                        break;
+                    case "stock":
+                        item.stock = WzUtil.getInt32(value, 0);
+                        break;
+                    case "period":
+                        item.period = WzUtil.getInt32(value, 24);
+                        break;
+                    case "unitPrice":
+                        item.unitPrice = WzUtil.getDouble(value, 0.0d);
+                        break;
+                }
+            }
+        }
     }
 }

@@ -22,9 +22,13 @@ package game.field.life.mob;
  * @author Eric
  */
 public class MobAttackInfo {
-    public final byte type;
-    public final short conMP;
-    public final boolean magicAttack;
+    public byte type;
+    public short conMP;
+    public boolean magicAttack;
+    
+    public MobAttackInfo() {
+        
+    }
     
     public MobAttackInfo(byte type, short conMP, boolean magic) {
         this.type = type;

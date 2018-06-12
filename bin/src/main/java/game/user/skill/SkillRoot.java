@@ -19,15 +19,29 @@ package game.user.skill;
 
 import java.util.ArrayList;
 import java.util.List;
+import util.wz.WzNodeType;
+import util.wz.WzXML;
 
 /**
  * @author Arnah
  */
-public class SkillRoot {
+public class SkillRoot implements WzXML {
 
     private int skillRootID;
     private String bookName;
-    private final List<SkillEntry> skills = new ArrayList<>();
+    private final List<SkillEntry> skills;
+    
+    public SkillRoot() {
+        this.skills = new ArrayList<>();
+    }
+    
+    @Override
+    public void parse(String root, String name, String value, WzNodeType type) {
+        if (name.equals("bookName")) {
+            this.bookName = value;
+        }
+        
+    }
 
     public int getSkillRootID() {
         return skillRootID;

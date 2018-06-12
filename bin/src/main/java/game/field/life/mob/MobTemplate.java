@@ -28,15 +28,18 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import util.Logger;
 import util.wz.WzFileSystem;
+import util.wz.WzNodeType;
 import util.wz.WzPackage;
 import util.wz.WzProperty;
+import util.wz.WzSAXProperty;
 import util.wz.WzUtil;
+import util.wz.WzXML;
 
 /**
  *
  * @author Eric
  */
-public class MobTemplate {
+public class MobTemplate implements WzXML {
     private static final WzPackage mobDir = new WzFileSystem().init("Mob").getPackage();
     private static final Map<Integer, MobTemplate> templates = new HashMap<>();
     private static final Lock lockMob = new ReentrantLock();
@@ -89,7 +92,7 @@ public class MobTemplate {
             registerMob(Integer.parseInt(mobData.getNodeName().replaceAll(".img", "")), mobData);
         }
     }
-    
+
     private static void registerMob(int templateID, WzProperty prop) {
         WzProperty info = prop.getNode("info");
         if (info == null) {
@@ -162,8 +165,125 @@ public class MobTemplate {
         templates.put(templateID, template);
     }
     
+    private static void registerMob(int templateID, WzSAXProperty prop) {
+        MobTemplate template = new MobTemplate();
+        template.templateID = templateID;
+        
+        prop.addEntity(template);
+        prop.parse();
+        
+        Reward.loadReward(templateID, template.rewardInfo);
+        templates.put(templateID, template);
+    }
+    
     public static void unload() {
         templates.clear();
+    }
+    
+    @Override
+    public void parse(String root, String name, String value, WzNodeType type) {
+        if (type.equals(WzNodeType.IMGDIR)) {
+            switch (name) {
+                case "fly":
+                    this.moveAbility = MoveAbility.Fly;
+                    break;
+                case "jump":
+                    this.moveAbility = MoveAbility.Jump;
+                    break;
+                case "move":
+                    this.moveAbility = MoveAbility.Walk;
+                    break;
+                default: {
+                    if (name.startsWith("attack") && !name.equals("attackF")) {
+                        this.attackInfo.add(new MobAttackInfo());
+                    }
+                }
+            }
+        } else if (type.equals(WzNodeType.INT)) {
+            if (!this.attackInfo.isEmpty()) {
+                MobAttackInfo attack = this.attackInfo.get(this.attackInfo.size() - 1);
+                switch (name) {
+                    case "type":
+                        attack.type = WzUtil.getByte(value, 0);
+                        break;
+                    case "conMP":
+                        attack.conMP = WzUtil.getShort(value, 0);
+                        break;
+                    case "magic":
+                        attack.magicAttack = WzUtil.getBoolean(value, false);
+                        break;
+                }
+            }
+        }
+        switch (name) {
+            case "name":
+                this.name = value;
+                if (this.name == null) {
+                    this.name = "NULL";
+                }
+                break;
+            case "bodyAttack":
+                this.bodyAttack = WzUtil.getBoolean(value, false);
+                break;
+            case "boss":
+                this.boss = WzUtil.getBoolean(value, false);
+                break;
+            case "level":
+                this.level = WzUtil.getByte(value, 1);
+                break;
+            case "maxHP":
+                this.maxHP = WzUtil.getShort(value, 0);
+                break;
+            case "maxMP":
+                this.maxMP = WzUtil.getShort(value, 0);
+                break;
+            case "speed":
+                this.speed = (byte) Math.min(140, Math.max(0, WzUtil.getByte(value, 0)));
+                break;
+            case "PADamage":
+                this.pad = (short) Math.min(1999, Math.max(0, WzUtil.getShort(value, 0)));
+                break;
+            case "PDDamage":
+                this.pdd = (short) Math.min(1999, Math.max(0, WzUtil.getShort(value, 0)));
+                break;
+            case "MADamage":
+                this.mad = (short) Math.min(1999, Math.max(0, WzUtil.getShort(value, 0)));
+                break;
+            case "MDDamage":
+                this.mdd = (short) Math.min(1999, Math.max(0, WzUtil.getShort(value, 0)));
+                break;
+            case "acc":
+                this.acc = WzUtil.getByte(value, 0);
+                break;
+            case "eva":
+                this.eva = WzUtil.getByte(value, 0);
+                break;
+            case "exp":
+                this.exp = WzUtil.getInt32(value, 0);
+                break;
+            case "pushed":
+                this.pushedDamage = WzUtil.getInt32(value, 1);
+                break;
+            case "elemAttr": {
+                String elemAttr = value;
+                for (int i = 0; i < elemAttr.length(); i += 2) {
+                    int elem = AttackElem.getElementAttribute(elemAttr.charAt(i));
+                    int attr = elemAttr.charAt(i + 1) - '0';
+
+                    this.damagedElemAttr.set(elem, attr);
+                }
+                break;
+            }
+            case "hpRecovery":
+                this.hpRecovery = WzUtil.getShort(value, 0);
+                break;
+            case "mpRecovery":
+                this.mpRecovery = WzUtil.getShort(value, 0);
+                break;
+            case "undead":
+                this.undead = WzUtil.getBoolean(value, false);
+                break;
+        }
     }
     
     public int getTemplateID() {

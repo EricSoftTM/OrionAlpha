@@ -25,6 +25,39 @@ import java.awt.Point;
  */
 public class WzUtil {
     
+    public static boolean getBoolean(String value, boolean def) {
+        return getInt32(value, def ? 1 : 0) != 0;
+    }
+    
+    public static byte getByte(String value, int def) {
+        return (byte) getInt32(value, def);
+    }
+    
+    public static double getDouble(String value, double def) {
+        if (value != null) {
+            return Double.parseDouble(value);
+        }
+        return def;
+    }
+    
+    public static float getFloat(String value, float def) {
+        if (value != null) {
+            return Float.parseFloat(value);
+        }
+        return def;
+    }
+    
+    public static int getInt32(String value, int def) {
+        if (value != null) {
+            return Integer.parseInt(value);
+        }
+        return def;
+    }
+    
+    public static short getShort(String value, int def) {
+        return (short) getInt32(value, def);
+    }
+    
     public static boolean getBoolean(WzProperty p, boolean def) {
         return getInt32(p, def ? 1 : 0) != 0;
     }

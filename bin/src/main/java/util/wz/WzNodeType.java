@@ -22,6 +22,7 @@ package util.wz;
  * @author Eric
  */
 public enum WzNodeType {
+    // DOM Node
     WzProperty,
     WzCanvas,
     WzConvex2D,
@@ -32,5 +33,15 @@ public enum WzNodeType {
     Int,
     Float,
     Double,
-    String
+    String,
+    // SAX Node
+    IMGDIR,
+    CANVAS,
+    VECTOR,
+    UOL,
+    SHORT,
+    INT,
+    FLOAT,
+    DOUBLE,
+    STRING
 }

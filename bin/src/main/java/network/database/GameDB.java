@@ -18,11 +18,11 @@
 package network.database;
 
 import common.item.ItemSlotBase;
-import common.item.ItemSlotBundle;
 import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.CharacterStat;
 import common.user.DBChar;
+import game.user.WvsContext.GivePopularityRes;
 import game.user.item.Inventory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,6 +38,40 @@ import util.Pointer;
  * @author Eric
  */
 public class GameDB {
+    
+    public static byte checkGivePopularity(int characterID, int targetID) {
+        byte retCode = GivePopularityRes.Success;
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `TargetID`, `LastGivePopularity` FROM `givepopularity` WHERE `CharacterID` = ? AND DATEDIFF(NOW(), `LastGivePopularity`) < 30")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        // If their last fame was today
+                        long time = rs.getTimestamp("LastGivePopularity").getTime() / 1000;
+                        long cur = System.currentTimeMillis() / 1000;
+                        if ((cur - time) < 86400) {
+                            retCode = GivePopularityRes.AlreadyDoneToday;
+                            break;
+                        }
+                        // If they famed the target within the past month
+                        if (rs.getInt("TargetID") == targetID) {
+                            retCode = GivePopularityRes.AlreadyDoneTarget;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (retCode == GivePopularityRes.Success) {
+                try (PreparedStatement ps = con.prepareStatement("INSERT INTO `givepopularity` (`CharacterID`, `TargetID`) VALUES (?, ?)")) {
+                    Database.execute(con, ps, characterID, targetID);
+                }
+            }
+        } catch (SQLException ex) {
+            retCode = GivePopularityRes.UnknownError;
+            ex.printStackTrace(System.err);
+        }
+        return retCode;
+    }
     
     public static void rawLoadAccount(int characterID, Pointer<Integer> accountID, Pointer<String> nexonClubID, Pointer<Integer> gradeCode) {
         try (Connection con = Database.getDB().poolConnection()) {

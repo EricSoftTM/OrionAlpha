@@ -55,6 +55,7 @@ import game.miniroom.MiniRoom;
 import game.miniroom.MiniRoomBase;
 import game.script.ScriptVM;
 import game.user.WvsContext.BroadcastMsg;
+import game.user.WvsContext.GivePopularityRes;
 import game.user.WvsContext.Request;
 import game.user.command.CommandHandler;
 import game.user.command.UserGradeCode;
@@ -1431,8 +1432,16 @@ public class User extends Creature {
         int itemID = packet.decodeInt();
         String message = packet.decodeString();
         
-        // Weather: 2090000
-        // Megaphone: 2080000
+        List<ChangeLog> changeLog = new ArrayList<>();
+        Pointer<Integer> decRet = new Pointer<>(0);
+        if (Inventory.rawRemoveItem(this, ItemType.Consume, pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
+            if (ItemAccessor.isWeatherItem(itemID)) {
+                getField().onWeather(itemID, message, 8000);
+            } else {
+                // idk if this is evan a megaphone packet or not, yolo it works
+                getField().broadcastPacket(FieldPacket.onGroupMessage(characterName, message), false);
+            }
+        }
     }
     
     public void onUpgradeItemRequest(InPacket packet) {
@@ -1472,6 +1481,31 @@ public class User extends Creature {
                     int x = getCurrentPosition().x;
                     int y1 = getCurrentPosition().y;
                     getField().getDropPool().create(reward, this.characterID, 0, x, y1, x, y2.get(), 0, false, 0);
+                }
+            }
+        }
+    }
+    
+    public void onGivePopularityRequest(InPacket packet) {
+        int targetID = packet.decodeInt();
+        User target = User.findUser(targetID);
+        if (target == null || target == this) {
+            sendPacket(WvsContext.onGivePopularityResult(GivePopularityRes.InvalidCharacterID, null, false));
+        } else {
+            if (character.getCharacterStat().getLevel() < 15) {
+                sendPacket(WvsContext.onGivePopularityResult(GivePopularityRes.LevelLow, null, false));
+            } else {
+                boolean incFame = packet.decodeBool();
+            
+                byte ret = GameDB.checkGivePopularity(characterID, targetID);
+                if (ret == GivePopularityRes.Success) {
+                    target.incPOP(incFame ? 1 : -1, true);
+                    target.sendCharacterStat(Request.None, CharacterStatType.POP);
+                    target.sendPacket(WvsContext.onGivePopularityResult(GivePopularityRes.Notify, getCharacterName(), incFame));
+                    
+                    sendPacket(WvsContext.onGivePopularityResult(GivePopularityRes.Success, target.getCharacterName(), incFame));
+                } else {
+                    sendPacket(WvsContext.onGivePopularityResult(ret, null, false));
                 }
             }
         }

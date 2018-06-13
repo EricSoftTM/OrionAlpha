@@ -45,6 +45,17 @@ public class WvsContext {
                 Excl    = 1
         ;
     }
+    public class GivePopularityRes {
+        public static final byte
+                Success             = 0,
+                InvalidCharacterID  = 1,
+                LevelLow            = 2,
+                AlreadyDoneToday    = 3,
+                AlreadyDoneTarget   = 4,
+                Notify              = 5,
+                UnknownError        = -1
+        ;
+    }
     
     public static OutPacket onInventoryOperation(List<ChangeLog> changeLog, byte onExclResult) {
         return InventoryManipulator.makeInventoryOperation(onExclResult, changeLog);
@@ -101,6 +112,19 @@ public class WvsContext {
     public static OutPacket onIncEXPMessage(int inc) {
         OutPacket packet = new OutPacket(LoopbackPacket.IncEXPMessage);
         packet.encodeInt(inc);
+        return packet;
+    }
+    
+    public static OutPacket onGivePopularityResult(byte type, String characterName, boolean raise) {
+        OutPacket packet = new OutPacket(LoopbackPacket.GivePopularityResult);
+        packet.encodeByte(type);
+        switch (type) {
+            case GivePopularityRes.Success:
+            case GivePopularityRes.Notify:
+                packet.encodeString(characterName);
+                packet.encodeBool(raise);
+                break;
+        }
         return packet;
     }
     

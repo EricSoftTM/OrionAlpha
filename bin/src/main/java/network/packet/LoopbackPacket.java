@@ -44,8 +44,8 @@ public class LoopbackPacket {
             SkillUseResult = 16,
             // Unknown = 17
             DropPickUpMessage = 18,
-            IncEXPMessage = 19,
-            // Unknown = 20
+            IncEXPMessage = 19, // No clue, this is incorrect though I think.
+            GivePopularityResult = 20,
             BroadcastMsg = 21,
             CharacterInfo = 22,
             END_CHARACTERDATA = 23,

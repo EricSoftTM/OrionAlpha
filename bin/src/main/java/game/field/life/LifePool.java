@@ -850,9 +850,9 @@ public class LifePool {
     public void update(long time) {
         if (field.lock(1200)) {
             try {
-                //for (Npc npc : npcs.values()) {
-                //    npc.update(time);
-                //}
+                for (Npc npc : npcs.values()) {
+                    npc.update(time);
+                }
                 List<Mob> mob = new ArrayList<>(mobs.values());
                 for (Mob m : mob) {
                     m.update(time);

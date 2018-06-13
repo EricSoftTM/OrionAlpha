@@ -846,7 +846,7 @@ public class User extends Creature {
     
     public boolean canAttachAdditionalProcess() {
         if (socket != null && !onTransferField && getHP() > 0 && miniRoom == null && tradingNpc == null) {
-            //if (runningVM == null)
+            if (runningVM == null)
                 return true;
         }
         return false;
@@ -1441,7 +1441,11 @@ public class User extends Creature {
                 // idk if this is evan a megaphone packet or not, yolo it works
                 getField().broadcastPacket(FieldPacket.onGroupMessage(characterName, message), false);
             }
+            Inventory.sendInventoryOperation(this, Request.None, changeLog);
+        } else {
+            sendCharacterStat(Request.Excl, 0);
         }
+        changeLog.clear();
     }
     
     public void onUpgradeItemRequest(InPacket packet) {
@@ -1497,7 +1501,7 @@ public class User extends Creature {
             } else {
                 boolean incFame = packet.decodeBool();
             
-                byte ret = GameDB.checkGivePopularity(characterID, targetID);
+                byte ret = GameDB.rawCheckGivePopularity(characterID, targetID);
                 if (ret == GivePopularityRes.Success) {
                     target.incPOP(incFame ? 1 : -1, true);
                     target.sendCharacterStat(Request.None, CharacterStatType.POP);

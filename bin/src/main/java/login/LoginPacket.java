@@ -52,11 +52,11 @@ public class LoginPacket {
         return packet;
     }
     
-    public static OutPacket onSelectWorldResult(int msg, List<CharacterData> characters) {
+    public static OutPacket onSelectWorldResult(int msg, int ssn, List<CharacterData> characters) {
         OutPacket packet = new OutPacket(LoopbackPacket.SelectWorldResult);
         packet.encodeByte(msg);
         if (msg == 1) {
-            packet.encodeInt(1); // Unknown
+            packet.encodeInt(ssn);
             
             packet.encodeByte(characters.size());
             for (CharacterData character : characters) {

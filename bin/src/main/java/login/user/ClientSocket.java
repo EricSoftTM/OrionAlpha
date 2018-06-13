@@ -83,6 +83,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private final Map<Integer, String> characters;
     
     private int localSocketSN;
+    private int ssn;
     private int seqSnd;
     private int seqRcv;
     private int ipBlockType;
@@ -104,6 +105,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         this.gradeCode = 0;
         this.nexonClubID = "";
         this.localSocketSN = 0;
+        this.ssn = 0;
         this.aliveReqSent = 0;
         //this.ipBlockType = IPFilter.Permit;
         this.lastAliveAck = 0;
@@ -203,6 +205,10 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     
     public int getLocalSocketSN() {
         return localSocketSN;
+    }
+    
+    public int getSSN() {
+        return ssn;
     }
     
     public final String getSocketRemoteIP() {
@@ -362,7 +368,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         boolean ret = true;//does only the client validate this? o.O
         
         if (ret) {
-            int result = 0;//TODO: LoginDB.rawDeleteCharacter
+            int result = LoginDB.rawDeleteCharacter(characterId);
             
             sendPacket(LoginPacket.onDeleteCharacterResult(characterId, result), false);
         }
@@ -405,7 +411,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             }
             
             this.loginState = 8;
-            sendPacket(LoginPacket.onSelectWorldResult(1, avatars), false);
+            sendPacket(LoginPacket.onSelectWorldResult(1, this.ssn, avatars), false);
         } else {
             Logger.logError("User %s attempting to connect to offline world %d", this.nexonClubID, this.worldID);
         }
@@ -545,6 +551,10 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     
     public void setNexonClubID(String id) {
         this.nexonClubID = id;
+    }
+    
+    public void setSSN(int ssn) {
+        this.ssn = ssn;
     }
     
     /**

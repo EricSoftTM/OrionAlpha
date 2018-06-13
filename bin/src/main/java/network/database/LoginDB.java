@@ -34,7 +34,6 @@ import java.util.List;
 import login.user.ClientSocket;
 import login.user.item.Inventory;
 import network.security.BCrypt;
-import util.Logger;
 import util.Pointer;
 
 /**
@@ -43,6 +42,16 @@ import util.Pointer;
  * @author Eric
  */
 public class LoginDB {
+    static final String[] DELETE_CHARACTER = {
+        "character",
+        "givepopularity",
+        "inventorysize",
+        "itemlocker",
+        "itemslotbundle",
+        "itemslotequip",
+        "questperform",
+        "skillrecord"
+    };
     
     public static boolean rawCheckDuplicateID(String id, int accountID) {
         boolean nameUsed = true;
@@ -81,6 +90,7 @@ public class LoginDB {
                                 socket.setAccountID(rs.getInt("AccountID"));
                                 socket.setGender(rs.getByte("Gender"));
                                 socket.setGradeCode(rs.getByte("GradeCode"));
+                                socket.setSSN(rs.getInt("SSN1"));
                                 
                                 retCode = 1; //Success
                             }
@@ -173,6 +183,27 @@ public class LoginDB {
                 }
             }
         } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        
+        return retCode;
+    }
+    
+    public static int rawDeleteCharacter(int characterID) {
+        int retCode = 0; //Success
+        
+        try (Connection con = Database.getDB().poolConnection()) {
+            for (String deleteCharacter : DELETE_CHARACTER) {
+                String query = String.format("DELETE FROM `%s` WHERE `CharacterID` = ?", deleteCharacter);
+                if (query.contains("givepopularity")) {
+                    query += " OR `TargetID` = ?";
+                }
+                try (PreparedStatement ps = con.prepareStatement(query)) {
+                    Database.execute(con, ps, characterID, characterID);
+                }
+            }
+        } catch (SQLException ex) {
+            retCode = 2; //DBFail?
             ex.printStackTrace(System.err);
         }
         

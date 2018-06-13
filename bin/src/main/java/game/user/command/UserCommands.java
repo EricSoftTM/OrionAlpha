@@ -20,6 +20,7 @@ package game.user.command;
 import game.field.Field;
 import game.field.FieldPacket;
 import game.user.User;
+import game.user.WvsContext;
 import game.user.WvsContext.Request;
 
 /**
@@ -50,7 +51,7 @@ public class UserCommands {
     }
 
     public static String packet(User user, String[] args) {
-        //user.sendPacket(WvsContext.onIncEXPMessage(1));
+        user.sendPacket(WvsContext.onIncEXPMessage(90));
         user.sendPacket(FieldPacket.onTransferFieldReqIgnored());
         return null;
     }

@@ -39,7 +39,7 @@ import util.Pointer;
  */
 public class GameDB {
     
-    public static byte checkGivePopularity(int characterID, int targetID) {
+    public static byte rawCheckGivePopularity(int characterID, int targetID) {
         byte retCode = GivePopularityRes.Success;
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT `TargetID`, `LastGivePopularity` FROM `givepopularity` WHERE `CharacterID` = ? AND DATEDIFF(NOW(), `LastGivePopularity`) < 30")) {

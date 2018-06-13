@@ -225,7 +225,11 @@ public class Field {
     }
     
     public int getOption() {
-        return option;
+        return this.option;
+    }
+    
+    public double getRecoveryRate() {
+        return this.recoveryRate;
     }
     
     public int getReturnFieldID() {

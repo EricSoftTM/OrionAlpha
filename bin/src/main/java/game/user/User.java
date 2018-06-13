@@ -25,6 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import common.ExpAccessor;
 import common.JobAccessor;
+import common.JobCategory;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
@@ -109,6 +110,12 @@ public class User extends Creature {
     private long lastCharacterDataFlush;
     private long nextGeneralItemCheck;
     private long nextCheckCashItemExpire;
+    private long lastCharacterHPInc;
+    private long lastCharacterMPInc;
+    private int illegalHPIncTime;
+    private int illegalHPIncSize;
+    private int illegalMPIncTime;
+    private int illegalMPIncSize;
     private String community;
     // Skills
     private final UserSkill userSkill;
@@ -200,8 +207,11 @@ public class User extends Creature {
         this.lastSelectNPCTime = 0;
         
         long time = System.currentTimeMillis();
+        this.lastCharacterHPInc = time;
+        this.lastCharacterMPInc = time;
         this.lastCharacterDataFlush = time;
         this.nextCheckCashItemExpire = time;
+        this.lastAttack = time;
         this.nexonClubID = "";
         this.characterName = "";
         this.community = "#TeamEric";
@@ -1180,6 +1190,9 @@ public class User extends Creature {
             case ClientPacket.UserScriptMessageAnswer:
                 onScriptMessageAnswer(packet);
                 break;
+            case ClientPacket.UserChangeStatRequest:
+                onChangeStatRequest(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -1425,6 +1438,80 @@ public class User extends Creature {
         short newPos = packet.decodeShort();
         short count = packet.decodeShort();
         Inventory.changeSlotPosition(this, Request.Excl, type, oldPos, newPos, count);
+    }
+    
+    public void onChangeStatRequest(InPacket packet) {
+        if (getField() == null) {
+            return;
+        }
+        short hp = 0;
+        short mp = 0;
+        int flag = packet.decodeInt();
+        if ((flag & CharacterStatType.HP) != 0) {
+            hp = packet.decodeShort();
+        }
+        if ((flag & CharacterStatType.MP) != 0) {
+            mp = packet.decodeShort();
+        }
+        byte option = packet.decodeByte();
+        double recoveryRate = getField().getRecoveryRate();
+        if (lock()) {
+            try {
+                if (getHP() == 0) {
+                    return;
+                }
+                long time = System.currentTimeMillis();
+                if (hp > 0) {
+                    int restForHPDuration = 10000;
+                    if (JobAccessor.getJobCategory(character.getCharacterStat().getJob()) == JobCategory.Fighter
+                            && SkillInfo.getInstance().getSkillLevel(character, Warrior.ImproveBasic) > 0) {
+                        restForHPDuration = 5000;
+                    }
+                    if ((option & 1) != 0) {
+                        restForHPDuration = SkillAccessor.getEndureDuration(character);
+                    }
+                    if ((time - this.lastCharacterHPInc) < restForHPDuration - 2000) {
+                        ++illegalHPIncTime;
+                    }
+                    if (illegalHPIncTime > 9) {
+                        Logger.logError("Illegal HP recovery time : %d", characterID);
+                        return;
+                    }
+                    int recoveryHP = (int) ((double) (SkillAccessor.getHPRecoveryUpgrade(character) + 10.0d) * recoveryRate);
+                    if (recoveryHP < hp) {
+                        ++illegalHPIncSize;
+                    }
+                    if (illegalHPIncSize > 9) {
+                        Logger.logError("Illegal HP recovery size : %d", characterID);
+                        return;
+                    }
+                    incHP(recoveryHP, false);
+                    lastCharacterHPInc = time;
+                }
+                if (mp > 0) {
+                    if ((time - lastCharacterMPInc) < 8000) {
+                        ++illegalMPIncTime;
+                    }
+                    if (illegalMPIncTime > 7) {
+                        Logger.logError("Illegal MP recovery time : %d", characterID);
+                        return;
+                    }
+                    int recoveryMP = (int) ((double) (SkillAccessor.getMPRecoveryUpgrade(character) + 3.0d) * recoveryRate);
+                    if (recoveryMP < mp) {
+                        ++illegalMPIncSize;
+                    }
+                    if (illegalMPIncSize > 7) {
+                        Logger.logError("Illegal MP recovery size : %d (nMP : %d)", recoveryMP, mp);
+                        return;
+                    }
+                    incMP(recoveryMP, false);
+                    lastCharacterMPInc = time;
+                }
+                sendCharacterStat(Request.None, flag);
+            } finally {
+                unlock();
+            }
+        }
     }
     
     public void onConsumeCashItemUseRequest(InPacket packet) {

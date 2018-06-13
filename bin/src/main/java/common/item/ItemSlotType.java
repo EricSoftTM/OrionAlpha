@@ -23,7 +23,7 @@ package common.item;
  * @author Eric
  */
 public class ItemSlotType {
-    public static final int
+    public static final byte
             Equip   = 1,
             Bundle  = 2,
             Pet     = 3

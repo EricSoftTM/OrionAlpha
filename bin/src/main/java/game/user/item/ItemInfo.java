@@ -359,35 +359,17 @@ public class ItemInfo {
 
             // unitPrice, iconRaw, incMDD, icon, incACC, slotMax, incLUK, incDEX, incJump, price, success, incSpeed, name, incINT, incSTR, incPDD, incMAD, incEVA, incPAD, cash, incMHP, desc
         }
-        int type = item.getItemID() / 10000;
 
-        switch (type) {
-            case 200:
-            case 201:
-            case 202:
-            case 205:
-                registerStateChangeItem(item.getItemID(), itemData);
-                break;
-            case 203:
-                registerPortalScrollItem(item.getItemID(), itemData);
-                break;
-            case 204:
-                registerUpgradeItem(item.getItemID(), itemData);
-                break;
-            // All this shit is useless.
-            case 206:// arrows
-            case 207:// throwing star
-            case 208:// mega phones
-            case 209:// weather effect? idk
-                break;
-            case 400:
-            case 401:
-            case 402:
-            case 403:
-            case 404:
-            case 405:
-                break;
+        if (ItemAccessor.isStateChangeItem(item.getItemID())) {
+            registerStateChangeItem(item.getItemID(), itemData);
+        } else if (ItemAccessor.isUpgradeItem(item.getItemID())) {
+            registerUpgradeItem(item.getItemID(), itemData);
+        } else if (ItemAccessor.isPortalScrollItem(item.getItemID())) {
+            registerPortalScrollItem(item.getItemID(), itemData);
+        } else if (ItemAccessor.isWeatherItem(item.getItemID())) {
+            // wonder if 'CashItem' should add this and megaphone (208)..
         }
+        
         bundleItem.put(item.getItemID(), item);
     }
 

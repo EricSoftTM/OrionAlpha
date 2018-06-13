@@ -17,6 +17,7 @@
  */
 package game.field;
 
+import common.item.ItemAccessor;
 import game.field.MovePath.Elem;
 import game.field.drop.DropPool;
 import game.field.life.LifePool;
@@ -511,7 +512,7 @@ public class Field {
     }
     
     public boolean onWeather(int itemID, String param, int duration) {
-        if (itemID / 10000 != 209 || weatherItemID != 0) {
+        if (!ItemAccessor.isWeatherItem(itemID) || weatherItemID != 0) {
             return false;
         }
         if (lock()) {

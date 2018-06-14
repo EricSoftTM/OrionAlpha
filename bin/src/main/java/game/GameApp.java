@@ -195,12 +195,12 @@ public class GameApp implements Runnable {
         
         // Load Mobs
         time = System.currentTimeMillis();
-        MobTemplate.load();
+        MobTemplate.load(true);
         Logger.logReport("Loaded Mob Attributes in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
         
         // Load Npcs
         time = System.currentTimeMillis();
-        NpcTemplate.load();
+        NpcTemplate.load(true);
         Logger.logReport("Loaded Npc Attributes in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
         
         // Load Maps

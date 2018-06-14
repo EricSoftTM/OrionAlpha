@@ -86,10 +86,16 @@ public class MobTemplate implements WzXML {
         }
     }
     
-    public static void load() {
+    public static void load(boolean useSAX) {
         Logger.logReport("Loading Mob Attributes");
-        for (WzProperty mobData : mobDir.getEntries().values()) {
-            registerMob(Integer.parseInt(mobData.getNodeName().replaceAll(".img", "")), mobData);
+        if (useSAX) {
+            for (WzSAXProperty mobData : mobDir.getSAXEntries().values()) {
+                registerMob(Integer.parseInt(mobData.getFileName().replaceAll(".img.xml", "")), mobData);
+            }
+        } else {
+            for (WzProperty mobData : mobDir.getEntries().values()) {
+                registerMob(Integer.parseInt(mobData.getNodeName().replaceAll(".img", "")), mobData);
+            }
         }
     }
 

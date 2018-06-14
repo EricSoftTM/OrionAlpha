@@ -29,10 +29,12 @@ import java.util.Map;
 public class WzPackage {
     private final Map<String, WzPackage> children;
     private final Map<String, WzProperty> entries;
+    private final Map<String, WzSAXProperty> saxEntries;
     
     public WzPackage() {
         this.children = new LinkedHashMap<>();
         this.entries = new LinkedHashMap<>();
+        this.saxEntries = new LinkedHashMap<>();
     }
     
     public WzPackage addPackage(File file) {
@@ -43,6 +45,7 @@ public class WzPackage {
     
     public void addEntry(File file) {
         entries.put(file.getName().replaceAll(".xml", ""), new WzProperty(file));
+        saxEntries.put(file.getName().replaceAll(".xml", ""), new WzSAXProperty(file));
     }
     
     public Map<String, WzPackage> getChildren() {
@@ -51,6 +54,10 @@ public class WzPackage {
     
     public Map<String, WzProperty> getEntries() {
         return entries;
+    }
+    
+    public Map<String, WzSAXProperty> getSAXEntries() {
+        return saxEntries;
     }
     
     public WzProperty getItem(String path) {
@@ -68,6 +75,26 @@ public class WzPackage {
         WzProperty prop = null;
         if (pkg.entries.containsKey(path)) {
             return pkg.entries.get(path);
+        }
+        
+        return prop;
+    }
+    
+    public WzSAXProperty getSAXItem(String path) {
+        WzPackage pkg = this;
+        while (path.contains("/")) {
+            if (pkg.children.containsKey(path.substring(0, path.indexOf("/")))) {
+                pkg = pkg.children.get(path.substring(0, path.indexOf("/")));
+                
+                path = path.substring(path.indexOf("/") + 1);
+            } else {
+                return null;
+            }
+        }
+        
+        WzSAXProperty prop = null;
+        if (pkg.entries.containsKey(path)) {
+            return pkg.saxEntries.get(path);
         }
         
         return prop;
@@ -91,5 +118,6 @@ public class WzPackage {
         
         this.children.clear();
         this.entries.clear();
+        this.saxEntries.clear();
     }
 }

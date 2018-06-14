@@ -68,9 +68,15 @@ public class NpcTemplate implements WzXML {
         }
     }
     
-    public static void load() {
-        for (WzProperty npcData : npcDir.getEntries().values()) {
-            registerNpc(Integer.parseInt(npcData.getNodeName().replaceAll(".img", "")), npcData);
+    public static void load(boolean useSAX) {
+        if (useSAX) {
+            for (WzSAXProperty npcData : npcDir.getSAXEntries().values()) {
+                registerNpc(Integer.parseInt(npcData.getFileName().replaceAll(".img.xml", "")), npcData);
+            }
+        } else {
+            for (WzProperty npcData : npcDir.getEntries().values()) {
+                registerNpc(Integer.parseInt(npcData.getNodeName().replaceAll(".img", "")), npcData);
+            }
         }
     }
     

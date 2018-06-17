@@ -17,6 +17,7 @@
  */
 package game.user.item;
 
+import common.Request;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
@@ -31,7 +32,6 @@ import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.user.User;
 import game.user.WvsContext;
-import game.user.WvsContext.Request;
 import game.user.skill.SkillInfo;
 import game.user.stat.CharacterTemporaryStat;
 import java.util.ArrayList;

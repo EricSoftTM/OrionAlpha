@@ -17,11 +17,11 @@
  */
 package game.user.command;
 
+import common.Request;
 import game.field.Field;
 import game.field.FieldPacket;
 import game.user.User;
 import game.user.WvsContext;
-import game.user.WvsContext.Request;
 
 /**
  * @author Arnah

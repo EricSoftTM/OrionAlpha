@@ -17,6 +17,7 @@
  */
 package game.user;
 
+import common.BroadcastMsg;
 import java.awt.Point;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -24,8 +25,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import common.ExpAccessor;
+import common.GivePopularityRes;
 import common.JobAccessor;
 import common.JobCategory;
+import common.Request;
+import common.WhisperFlags;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
@@ -33,6 +37,7 @@ import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.DBChar;
+import common.user.UserEffect;
 import game.GameApp;
 import game.field.*;
 import game.field.drop.Drop;
@@ -55,9 +60,6 @@ import game.messenger.Messenger;
 import game.miniroom.MiniRoom;
 import game.miniroom.MiniRoomBase;
 import game.script.ScriptVM;
-import game.user.WvsContext.BroadcastMsg;
-import game.user.WvsContext.GivePopularityRes;
-import game.user.WvsContext.Request;
 import game.user.command.CommandHandler;
 import game.user.command.UserGradeCode;
 import game.user.item.BundleItem;
@@ -1193,6 +1195,9 @@ public class User extends Creature {
             case ClientPacket.UserChangeStatRequest:
                 onChangeStatRequest(packet);
                 break;
+            case ClientPacket.Whisper:
+                onWhisper(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -2013,6 +2018,39 @@ public class User extends Creature {
         }
     }
     
+    public void onWhisper(InPacket packet) {
+        byte flag = packet.decodeByte();
+        String target = packet.decodeString();
+        if (flag == WhisperFlags.ReplyRequest) {
+            String text = packet.decodeString();
+            
+            User user = User.findUserByName(target, true);
+            boolean success = false;
+            if (user != null && user.getField() != null && user.getField().getFieldID() != 0) {
+                user.sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyReceive, null, getCharacterName(), text, -1, false));
+                
+                target = user.getCharacterName();
+                success = true;
+            }
+            sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyResult, target, null, null, -1, success));
+        } else if (flag == WhisperFlags.FindRequest) {
+            User user = User.findUserByName(target, true);
+            int fieldID = 0;
+            if (user != null && user.getField() != null) {
+                fieldID = user.getField().getFieldID();
+                if (user.isGM()) {
+                    fieldID = -1;
+                }
+                target = user.getCharacterName();
+            }
+            if (fieldID > 0) {
+                sendPacket(FieldPacket.onWhisper(WhisperFlags.FindResult, target, null, null, fieldID, false));
+            }
+        } else if (flag == WhisperFlags.BlockedResult) {
+            sendPacket(FieldPacket.onWhisper(WhisperFlags.BlockedResult, target, null, null, -1, false));
+        }
+    }
+    
     public void onTransferField(Field field, int x, int y, byte portal) {
         getField().onLeave(this);
         if (lock()) {
@@ -2414,19 +2452,41 @@ public class User extends Creature {
         }
     }
     
-    public void onUserEffect(boolean local, boolean remote, byte effect) {
+    public void onUserEffect(boolean local, boolean remote, byte effect, int... args) {
+        int skillID = 0;
+        int slv = 0;
+        if (args.length > 0) {
+            skillID = args[0];
+            if (args.length > 1) {
+                slv = args[1];
+            }
+        }
         if (remote) {
-            getField().splitSendPacket(getSplit(), UserRemote.onEffect(getCharacterID(), effect, 0, 0), this);
+            getField().splitSendPacket(getSplit(), UserRemote.onEffect(getCharacterID(), effect, skillID, slv), this);
         }
         if (local) {
-            sendPacket(UserLocal.onEffect(effect, 0, 0));
+            sendPacket(UserLocal.onEffect(effect, skillID, slv));
+        }
+    }
+    
+    public void postAvatarModified(int flag) {
+        if (((flag | avatarModFlag) != avatarModFlag) || flag == AvatarLook.Look) {
+            avatarModFlag |= flag;
+            avatarLook.load(character.getCharacterStat(), character.getEquipped(), character.getEquipped2());
+            if (msMessenger)
+                msm.notifyAvatarChanged();
+            getField().splitSendPacket(getSplit(), UserRemote.onAvatarModified(this, flag), this);
+            if (miniRoom != null) {
+                //miniRoom.onAvatarChanged(this);
+            }
+            avatarModFlag = 0;
         }
     }
     
     public final void validateStat(boolean calledByConstructor) {
         lock.lock();
         try {
-            //AvatarLook avatarOld = avatarLook.makeClone();
+            AvatarLook avatarOld = avatarLook.makeClone();
             //ItemAccessor.getRealEquip
             avatarLook.load(character.getCharacterStat(), character.getEquipped(), character.getEquipped2());
             
@@ -2467,16 +2527,27 @@ public class User extends Creature {
                     sendTemporaryStatReset(flag);
                 }
                 flag = 0;
-                // TODO: AvatarLook compare (current vs old)
+                if (!avatarOld.equals(avatarLook)) {
+                    //addCharacterDataMod(DBChar.Avatar);
+                    flag = AvatarLook.Look;
+                }
                 if (speed != secondaryStat.speed) {
                     flag |= AvatarLook.Unknown2;//idk, just a guess
                 }
-                // postAvatarModified(flag);
+                postAvatarModified(flag);
             }
-            
+            // Max all skills on a user based on their current Job Race
             if (isGM() && character.getSkillRecord().isEmpty()) {
-                // TODO: Max all skills
+                for (SkillEntry skill : SkillInfo.getInstance().getAllSkills()) {
+                    int skillID = skill.getSkillID();
+                    int skillRoot = skillID / 10000;
+                    
+                    if (character.getCharacterStat().getJob() == skillRoot) {
+                        character.getSkillRecord().put(skillID, skill.getLevelData().length);
+                    }
+                }
             }
+            avatarOld.getEquipped().clear();
         } finally {
             unlock();
         }
@@ -2496,13 +2567,5 @@ public class User extends Creature {
 
     public void setTempTradeMoney(int tempTradeMoney) {
         this.tempTradeMoney = tempTradeMoney;
-    }
-    
-    public class UserEffect {
-        public static final byte
-                LevelUp         = 0,
-                SkillUse        = 1,
-                SkillAffected   = 2
-        ;
     }
 }

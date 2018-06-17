@@ -17,6 +17,7 @@
  */
 package game.user.command;
 
+import common.Request;
 import common.user.CharacterStat;
 import game.field.Field;
 import game.field.FieldSplit;
@@ -25,7 +26,6 @@ import game.field.drop.DropPool;
 import game.field.life.LifePool;
 import game.field.life.npc.Npc;
 import game.user.User;
-import game.user.WvsContext.Request;
 import java.util.Iterator;
 
 /**

@@ -17,6 +17,7 @@
  */
 package game.user.skill;
 
+import common.Request;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,10 +26,10 @@ import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
 import game.field.life.mob.AttackElem;
 import game.user.User;
-import game.user.WvsContext.Request;
 import game.user.item.BundleItem;
 import game.user.item.ItemInfo;
 import game.user.skill.Skills.Assassin;
+import java.util.Collection;
 import util.Pointer;
 import util.wz.WzFileSystem;
 import util.wz.WzPackage;
@@ -101,6 +102,10 @@ public class SkillInfo {
             }
         }
         return false;
+    }
+    
+    public Collection<SkillEntry> getAllSkills() {
+        return skills.values();
     }
 
     public int getBundleItemMaxPerSlot(int itemID, CharacterData cd) {

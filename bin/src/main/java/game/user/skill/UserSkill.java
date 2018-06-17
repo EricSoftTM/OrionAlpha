@@ -19,15 +19,14 @@ package game.user.skill;
 
 import common.JobAccessor;
 import common.JobCategory;
+import common.Request;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemType;
 import common.user.CharacterStat.CharacterStatType;
+import common.user.UserEffect;
 import game.user.User;
-import game.user.User.UserEffect;
-import game.user.UserRemote;
 import game.user.WvsContext;
-import game.user.WvsContext.Request;
 import game.user.skill.Skills.*;
 import game.user.stat.CharacterTemporaryStat;
 import game.user.stat.SecondaryStatOption;
@@ -156,7 +155,7 @@ public class UserSkill {
         user.sendCharacterStat(Request.Excl, statFlag);
         user.sendTemporaryStatSet(skillFlag);
         if (user.getField() != null) {
-            user.getField().splitSendPacket(user.getSplit(), UserRemote.onEffect(user.getCharacterID(), UserEffect.SkillUse, skill.getSkillID(), slv), user);
+            user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
         }
     }
     
@@ -194,7 +193,7 @@ public class UserSkill {
         user.sendCharacterStat(Request.Excl, statFlag);
         user.sendTemporaryStatSet(skillFlag);
         if (user.getField() != null) {
-            user.getField().splitSendPacket(user.getSplit(), UserRemote.onEffect(user.getCharacterID(), UserEffect.SkillUse, skill.getSkillID(), slv), user);
+            user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
         }
     }
     
@@ -210,7 +209,7 @@ public class UserSkill {
             user.getField().getLifePool().onMobStatChangeSkill(user, mobID, skill, slv);
         }
         if (sendResult) {
-            user.getField().splitSendPacket(user.getSplit(), UserRemote.onEffect(user.getCharacterID(), UserEffect.SkillUse, skill.getSkillID(), slv), user);
+            user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
         }
         user.sendCharacterStat(Request.Excl, 0);
     }
@@ -224,7 +223,7 @@ public class UserSkill {
             user.sendCharacterStat(Request.Excl, 0);
             user.sendTemporaryStatSet(CharacterTemporaryStat.Booster);
             if (user.getField() != null) {
-                user.getField().splitSendPacket(user.getSplit(), UserRemote.onEffect(user.getCharacterID(), UserEffect.SkillUse, skill.getSkillID(), slv), user);
+                user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
             }
         } else {
             user.sendCharacterStat(Request.Excl, 0);

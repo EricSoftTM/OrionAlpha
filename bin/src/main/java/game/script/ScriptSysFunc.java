@@ -17,7 +17,9 @@
  */
 package game.script;
 
+import common.BroadcastMsg;
 import common.JobAccessor;
+import common.Request;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
@@ -31,8 +33,6 @@ import game.field.life.mob.Mob;
 import game.field.portal.Portal;
 import game.user.User;
 import game.user.WvsContext;
-import game.user.WvsContext.BroadcastMsg;
-import game.user.WvsContext.Request;
 import game.user.item.ChangeLog;
 import game.user.item.ExchangeElem;
 import game.user.item.Inventory;

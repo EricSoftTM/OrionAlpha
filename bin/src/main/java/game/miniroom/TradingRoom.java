@@ -17,12 +17,12 @@
  */
 package game.miniroom;
 
+import common.Request;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemType;
 import common.user.CharacterStat.CharacterStatType;
 import game.user.User;
-import game.user.WvsContext.Request;
 import game.user.item.BundleItem;
 import game.user.item.ChangeLog;
 import game.user.item.EquipItem;

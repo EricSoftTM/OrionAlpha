@@ -22,6 +22,7 @@ import common.item.ItemSlotBase;
 import common.user.CharacterStat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import network.packet.OutPacket;
 
 /**
@@ -70,5 +71,28 @@ public class AvatarLook {
     
     public List<Integer> getEquipped() {
         return hairEquip;
+    }
+    
+    public final AvatarLook makeClone() {
+        AvatarLook al = new AvatarLook();
+        al.getEquipped().clear();
+        al.getEquipped().addAll(getEquipped());
+        return al;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof AvatarLook) {
+            AvatarLook al = (AvatarLook) o;
+            return this.hairEquip.equals(al.hairEquip);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 23 * hash + Objects.hashCode(this.hairEquip);
+        return hash;
     }
 }

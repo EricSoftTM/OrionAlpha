@@ -17,6 +17,7 @@
  */
 package game.user.command;
 
+import common.Request;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotType;
@@ -29,8 +30,6 @@ import game.field.drop.DropPool;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.user.User;
-import game.user.WvsContext;
-import game.user.WvsContext.Request;
 import game.user.item.ChangeLog;
 import game.user.item.InventoryManipulator;
 import game.user.item.ItemInfo;
@@ -51,7 +50,7 @@ public class GMCommands {
     public static String sp(User user, CharacterStat stat, String[] args) {
         if (args.length > 0) {
             stat.setSP(Short.parseShort(args[0]));
-            user.sendCharacterStat(WvsContext.Request.Excl, CharacterStatType.SP);
+            user.sendCharacterStat(Request.Excl, CharacterStatType.SP);
             return null;
         }
         return "!sp <amount>";
@@ -60,7 +59,7 @@ public class GMCommands {
     public static String ap(User user, CharacterStat stat, String[] args) {
         if (args.length > 0) {
             stat.setAP(Short.parseShort(args[0]));
-            user.sendCharacterStat(WvsContext.Request.Excl, CharacterStatType.AP);
+            user.sendCharacterStat(Request.Excl, CharacterStatType.AP);
             return null;
         }
         return "!ap <amount>";

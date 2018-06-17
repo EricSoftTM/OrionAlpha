@@ -28,46 +28,60 @@ import util.Logger;
 /**
  *
  * @author Eric
+ * @author sunnyboy
  */
 public class Messenger {
+
     private final User user;
-    
+
     public Messenger(User user) {
         this.user = user;
     }
-    
+
     public void notifyAvatarChanged() {
-        
+
     }
-    
+
     public void onMSMEnter(InPacket packet) {
-        
+        if (user.isMsMessenger()) {
+            user.setMsMessenger(true);
+            MSMessenger.onEnter(packet.decodeInt(), user, user.getAvatarLook());
+        }
     }
-    
-    public void onMSMLeave(InPacket packet) {
-        
+
+    private void onMSMLeave(MSMessenger msm, InPacket packet) {
+        if (user.isMsMessenger()) {
+            user.setMsMessenger(false);
+            msm.onLeave(user);
+        }
     }
-    
+
     public void onMessenger(InPacket packet) {
         Logger.logReport("[Messenger] %s", packet.dumpString());
-        
+
+        MSMessenger msm = null;
+        if ((user == null) || ((msm = user.getMsmMessenger()) == null)) {
+            return;
+        }
         byte type = packet.decodeByte();
         switch (type) {
             case MessengerPacket.Enter:
                 onMSMEnter(packet);
                 break;
             case MessengerPacket.Leave:
-                onMSMLeave(packet);
+                onMSMLeave(msm, packet);
                 break;
             case MessengerPacket.Blocked:
                 break;
             case MessengerPacket.Invite:
+                MSMessenger.onInvite(user, packet.decodeString());
                 break;
             case MessengerPacket.Chat:
+                msm.onChat(user, packet.decodeString());
                 break;
         }
     }
-    
+
     public static OutPacket onEnter(byte idx, byte gender, int face, AvatarLook avatarLook, String characterName, boolean isNew) {
         OutPacket packet = new OutPacket(LoopbackPacket.Messenger);
         packet.encodeByte(MessengerPacket.Enter);
@@ -79,7 +93,7 @@ public class Messenger {
         packet.encodeBool(isNew);
         return packet;
     }
-    
+
     public static OutPacket onInvite(String inviter, int sn) {
         OutPacket packet = new OutPacket(LoopbackPacket.Messenger);
         packet.encodeByte(MessengerPacket.Invite);
@@ -87,7 +101,7 @@ public class Messenger {
         packet.encodeInt(sn);
         return packet;
     }
-    
+
     public static OutPacket onInviteResult(String targetName, boolean blockDeny) {
         OutPacket packet = new OutPacket(LoopbackPacket.Messenger);
         packet.encodeByte(MessengerPacket.InviteResult);
@@ -95,7 +109,7 @@ public class Messenger {
         packet.encodeBool(blockDeny);
         return packet;
     }
-    
+
     public static OutPacket onBlocked(String blockedUser, boolean blockDeny) {
         OutPacket packet = new OutPacket(LoopbackPacket.Messenger);
         packet.encodeByte(MessengerPacket.Blocked);
@@ -103,14 +117,14 @@ public class Messenger {
         packet.encodeBool(blockDeny); // true: block, false: deny
         return packet;
     }
-    
+
     public static OutPacket onChat(String text) {
         OutPacket packet = new OutPacket(LoopbackPacket.Messenger);
         packet.encodeByte(MessengerPacket.Chat);
         packet.encodeString(text);
         return packet;
     }
-    
+
     public static OutPacket onAvatar(byte idx, byte gender, int face, AvatarLook avatarLook) {
         OutPacket packet = new OutPacket(LoopbackPacket.Messenger);
         packet.encodeByte(MessengerPacket.Avatar);
@@ -120,21 +134,21 @@ public class Messenger {
         avatarLook.encode(packet);
         return packet;
     }
-    
+
     public static OutPacket onSelfEnterResult(byte idx) {
         OutPacket packet = new OutPacket(LoopbackPacket.Messenger);
         packet.encodeByte(MessengerPacket.SelfEnterResult);
         packet.encodeByte(idx);
         return packet;
     }
-    
+
     public static OutPacket onLeave(byte idx) {
         OutPacket packet = new OutPacket(LoopbackPacket.Messenger);
         packet.encodeByte(MessengerPacket.Leave);
         packet.encodeByte(idx);
         return packet;
     }
-    
+
     public static OutPacket onMigrated(List<Integer> flags, List<User> users) {
         OutPacket packet = new OutPacket(LoopbackPacket.Messenger);
         packet.encodeByte(MessengerPacket.Migrated);

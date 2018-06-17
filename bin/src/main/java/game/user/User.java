@@ -51,6 +51,7 @@ import game.field.life.npc.ShopItem;
 import game.field.life.npc.ShopResCode;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
+import game.messenger.MSMessenger;
 import game.messenger.Messenger;
 import game.miniroom.MiniRoom;
 import game.miniroom.MiniRoomBase;
@@ -166,7 +167,8 @@ public class User extends Creature {
     private MiniRoomBase miniRoom;
     private boolean miniRoomBalloon;
     // MSMessenger
-    private Messenger msm;
+    private Messenger userMSM;
+    private MSMessenger msmMessenger;
     private boolean msMessenger;
     // ScriptVM
     private ScriptVM runningVM;
@@ -225,7 +227,7 @@ public class User extends Creature {
         this.rndActionMan = new Rand32();
         this.calcDamage = new CalcDamage();
         this.userSkill = new UserSkill(this);
-        this.msm = new Messenger(this);
+        this.userMSM = new Messenger(this);
         // TODO: Nexon-like user caching to avoid DB load upon each login/migrate.
         this.character = GameDB.rawLoadCharacter(characterID);
         
@@ -940,7 +942,7 @@ public class User extends Creature {
     }
     
     public Messenger getMessenger() {
-        return msm;
+        return userMSM;
     }
     
     public int getPosMap() {
@@ -2497,6 +2499,23 @@ public class User extends Creature {
     public void setTempTradeMoney(int tempTradeMoney) {
         this.tempTradeMoney = tempTradeMoney;
     }
+
+    public MSMessenger getMsmMessenger() {
+        return msmMessenger;
+    }
+
+    public void setMsmMessenger(MSMessenger msmMessenger) {
+        this.msmMessenger = msmMessenger;
+    }
+
+    public boolean isMsMessenger() {
+        return msMessenger;
+    }
+
+    public void setMsMessenger(boolean msMessenger) {
+        this.msMessenger = msMessenger;
+    }
+
     
     public class UserEffect {
         public static final byte

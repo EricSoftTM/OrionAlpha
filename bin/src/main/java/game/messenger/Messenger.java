@@ -33,36 +33,70 @@ import util.Logger;
 public class Messenger {
 
     private final User user;
+    private MSMessenger msm;
 
     public Messenger(User user) {
         this.user = user;
+        this.msm = null;
     }
 
+    public MSMessenger getMSM() {
+        return msm;
+    }
+    
     public void notifyAvatarChanged() {
-
-    }
-
-    public void onMSMEnter(InPacket packet) {
-        if (user.isMsMessenger()) {
-            user.setMsMessenger(true);
-            MSMessenger.onEnter(packet.decodeInt(), user, user.getAvatarLook());
+        if (user.isMSMessenger() && getMSM() != null) {
+            getMSM().onAvatar(user, user.getAvatarLook());
         }
     }
 
-    private void onMSMLeave(MSMessenger msm, InPacket packet) {
-        if (user.isMsMessenger()) {
-            user.setMsMessenger(false);
+    public void onMSMEnter(InPacket packet) {
+        if (user.isMSMessenger()) {
+            Logger.logError("Invalid messenger packet");
+            user.closeSocket();
+        } else {
+            user.setMSMessenger(true);
+            
+            int sn = packet.decodeInt();
+            MSMessenger.onEnter(sn, user, user.getAvatarLook());
+        }
+    }
+
+    public void onMSMLeave(MSMessenger msm, InPacket packet) {
+        if (user.isMSMessenger()) {
+            user.setMSMessenger(false);
             msm.onLeave(user);
+        } else {
+            Logger.logError("Invalid messenger packet");
+            user.closeSocket();
+        }
+    }
+    
+    public void onMSMForward(byte type, InPacket packet) {
+        if (!user.isMSMessenger() && type != MessengerPacket.Blocked) {
+            Logger.logError("Invalid messenger packet");
+            user.closeSocket();
+            return;
+        }
+        if (type == MessengerPacket.Invite) {
+            String targetName = packet.decodeString();
+            MSMessenger.onInvite(user, targetName);
+        } else if (type == MessengerPacket.Chat) {
+            String chat = packet.decodeString();
+            if (getMSM() != null) {
+                getMSM().onChat(user, chat);
+            }
+        } else if (type == MessengerPacket.Blocked) {
+            String inviteUser = packet.decodeString();//might not exist..
+            String blockedUser = packet.decodeString();
+            boolean blockedDeny = packet.decodeBool();
+            if (getMSM() != null) {
+                getMSM().onBlocked(user, blockedUser, blockedDeny);
+            }
         }
     }
 
     public void onMessenger(InPacket packet) {
-        Logger.logReport("[Messenger] %s", packet.dumpString());
-
-        MSMessenger msm = null;
-        if ((user == null) || ((msm = user.getMsmMessenger()) == null)) {
-            return;
-        }
         byte type = packet.decodeByte();
         switch (type) {
             case MessengerPacket.Enter:
@@ -71,15 +105,11 @@ public class Messenger {
             case MessengerPacket.Leave:
                 onMSMLeave(msm, packet);
                 break;
-            case MessengerPacket.Blocked:
-                break;
-            case MessengerPacket.Invite:
-                MSMessenger.onInvite(user, packet.decodeString());
-                break;
-            case MessengerPacket.Chat:
-                msm.onChat(user, packet.decodeString());
-                break;
         }
+    }
+    
+    public void setMSM(MSMessenger msm) {
+        this.msm = msm;
     }
 
     public static OutPacket onEnter(byte idx, byte gender, int face, AvatarLook avatarLook, String characterName, boolean isNew) {

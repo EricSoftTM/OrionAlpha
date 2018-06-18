@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -33,74 +34,68 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class MSMessenger {
 
-    private final int mSMSN;
-    private final ReentrantLock lock;
+    private static final int MAX_CHARACTER = 3;
+    
+    private static final AtomicInteger msmSNCounter = new AtomicInteger();
+    private static final Lock lockMSM = new ReentrantLock();
+    private static final Map<Integer, MSMessenger> msMessenger = new HashMap<>();
+    
+    private final int msmSN;
+    private final Lock lock;
     private int userCount;
     private final List<Character> character;
-    private static final AtomicInteger count = new AtomicInteger();
-    private static final Map<Integer, MSMessenger> mSMessenger = new HashMap<>();
 
     public MSMessenger() {
-        this.mSMSN = count.incrementAndGet();
+        this.msmSN = msmSNCounter.incrementAndGet();
         this.lock = new ReentrantLock();
         this.userCount = 0;
-        this.character = new ArrayList<>(3);
-        for (int i = 0; i < character.size(); i++) {
-            character.add(i, null);
+        this.character = new ArrayList<>(MAX_CHARACTER);
+        for (int i = 0; i < MAX_CHARACTER; i++) {
+            character.add(i, new Character());
         }
-        mSMessenger.put(this.mSMSN, MSMessenger.this);
     }
 
     public static void onInvite(User user, String targetName) {
-        if (user.getMsmMessenger() != null) {
+        if (user.getMessenger().getMSM() != null) {
             User target = User.findUserByName(targetName, true);
+            if (user == target) {
+                return;
+            }
             if (target != null) {
-                user.sendPacket(Messenger.onInviteResult(targetName, true));
-                target.sendPacket(Messenger.onInvite(user.getCharacterName(), user.getMsmMessenger().getMSMSN()));
+                user.sendPacket(Messenger.onInviteResult(target.getCharacterName(), true));
+                target.sendPacket(Messenger.onInvite(user.getCharacterName(), user.getMessenger().getMSM().getSN()));
             } else {
                 user.sendPacket(Messenger.onInviteResult(targetName, false));
             }
         }
     }
-
-    private void onCreate(User user) {
-        if (user != null && user.lock()) {
-            if (user.isLogined()) { // does eric wanna use this?
-                try {
-                    Character msmChar = new Character();
-                    msmChar.setAvatarLook(user.getAvatarLook());
-                    msmChar.setId(user.getCharacter().getCharacterStat().getName());
-                    msmChar.setChannelID(user.getChannelID());
-                    character.set(0, msmChar);
-                    user.setMsmMessenger(this);
-                    ++userCount;
-                    user.sendPacket(Messenger.onSelfEnterResult((byte) findIndex(user)));
-                } finally {
-                    user.unlock();
-                }
-            }
-        }
-    }
-
-    private void onEnter(User user) {
+    
+    public void onBlocked(User user, String blockedUser, boolean blockDeny) {
         lock.lock();
         try {
-            if (!isDestroyed() && userCount < 3) {
-                int emptyIdx = findIndex(null);
-                if (user.isLogined()) { // does eric wanna use this?
-                    user.setMsmMessenger(this);
-                    Character msmChar = new Character();
-                    msmChar.setAvatarLook(user.getAvatarLook());
-                    msmChar.setId(user.getCharacter().getCharacterStat().getName());
-                    msmChar.setChannelID(user.getChannelID());
-                    character.set(emptyIdx, msmChar);
-                    ++userCount;
-                    user.sendPacket(Messenger.onSelfEnterResult((byte) emptyIdx));
-                    for (int i = 0; i < 3; ++i) {
+            if (!isDestroyed()) {
+                int idx = findIndex(user);
+                if (idx >= 0) {
+                    user.sendPacket(Messenger.onBlocked(blockedUser, blockDeny));
+                }
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    public void onAvatar(User user, AvatarLook al) {
+        lock.lock();
+        try {
+            if (!isDestroyed()) {
+                int idx = findIndex(user);
+                if (idx >= 0) {
+                    Character c = character.get(idx);
+                    c.setAvatarLook(al);
+                    for (int i = 0; i < MAX_CHARACTER; ++i) {
                         if (character.get(i).getUser() != null) {
-                            if (i != emptyIdx) {
-                                user.sendPacket(Messenger.onEnter((byte) i, user.getCharacter().getCharacterStat().getGender(), user.getCharacter().getCharacterStat().getFace(), character.get(i).getAvatarLook(), character.get(i).getId(), true));
-                                character.get(i).getUser().sendPacket(Messenger.onEnter((byte) emptyIdx, user.getCharacter().getCharacterStat().getGender(), user.getCharacter().getCharacterStat().getFace(), user.getAvatarLook(), character.get(i).getId(), true));
+                            if (idx != i) {
+                                character.get(i).getUser().sendPacket(Messenger.onAvatar((byte) idx, c.getUser().getCharacter().getCharacterStat().getGender(), c.getUser().getCharacter().getCharacterStat().getFace(), c.getAvatarLook()));
                             }
                         }
                     }
@@ -111,39 +106,103 @@ public class MSMessenger {
         }
     }
 
-    public int findIndex(User pUser) {
-        for (int i = 0; i < 3; ++i) {
-            if (this.character.get(i).getUser() == pUser) {
+    private boolean onCreate(User user, AvatarLook al) {
+        lock.lock();
+        try {
+            if (user.lock()) {
+                try {
+                    user.getMessenger().setMSM(this);
+                    
+                    ++userCount;
+                    
+                    Character c = character.get(0);
+                    c.setUser(user);
+                    c.setAvatarLook(al);
+                    c.setID(user.getCharacter().getCharacterStat().getName());
+                    
+                    lockMSM.lock();
+                    try {
+                        msMessenger.put(msmSN, this);
+                    } finally {
+                        lockMSM.unlock();
+                    }
+                    
+                    //user.sendPacket(Messenger.onSelfEnterResult((byte) findIndex(user)));
+                } finally {
+                    user.unlock();
+                }
+            }
+            return false;
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private boolean onEnter(User user, AvatarLook al) {
+        lock.lock();
+        try {
+            if (!isDestroyed() && userCount < MAX_CHARACTER) {
+                int emptyIdx = findIndex(null);
+                
+                user.getMessenger().setMSM(this);
+                
+                Character c = character.get(emptyIdx);
+                c.setUser(user);
+                c.setAvatarLook(al);
+                c.setID(user.getCharacter().getCharacterStat().getName());
+                ++userCount;
+                user.sendPacket(Messenger.onSelfEnterResult((byte) emptyIdx));
+                for (int i = 0; i < MAX_CHARACTER; ++i) {
+                    if (character.get(i).getUser() != null) {
+                        if (i != emptyIdx) {
+                            user.sendPacket(Messenger.onEnter((byte) i, user.getCharacter().getCharacterStat().getGender(), user.getCharacter().getCharacterStat().getFace(), character.get(i).getAvatarLook(), character.get(i).getID(), true));
+                            character.get(i).getUser().sendPacket(Messenger.onEnter((byte) emptyIdx, character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getGender(), character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getFace(), character.get(i).getAvatarLook(), character.get(i).getID(), true));
+                        }
+                    }
+                }
+                return true;
+            }
+        } finally {
+            lock.unlock();
+        }
+        return false;
+    }
+
+    public int findIndex(User user) {
+        for (int i = 0; i < MAX_CHARACTER; ++i) {
+            if (this.character.get(i).getUser() == user) {
                 return i;
             }
         }
         return -1;
     }
 
-    public static MSMessenger getMSM(int mSNID) {
-        if (mSMessenger.containsKey(mSNID)) {
-            return mSMessenger.get(mSNID);
+    public static MSMessenger getMSM(int msmSN) {
+        lockMSM.lock();
+        try {
+            return msMessenger.get(msmSN);
+        } finally {
+            lockMSM.unlock();
         }
-        return null;
     }
 
     public boolean isDestroyed() {
         return userCount == 0;
     }
 
-    public static void onEnter(int sn, User user, AvatarLook avatarLook) {
-        MSMessenger pMessenger = null;
-        if (sn > 0) {
-            pMessenger = getMSM(sn);
+    public static boolean onEnter(int sn, User user, AvatarLook al) {
+        MSMessenger msm = null;
+        if (sn != 0) {
+            msm = getMSM(sn);
         }
-        if (pMessenger != null) {
-            pMessenger.onEnter(user);
+        if (msm != null && msm.onEnter(user, al)) {
+            return true;
         } else {
-            if (sn > 0) {
-                user.sendPacket(Messenger.onSelfEnterResult((byte) 255)); // afaik
+            if (sn != 0) {
+                user.sendPacket(Messenger.onSelfEnterResult((byte) -1)); // afaik
             }
-            pMessenger = new MSMessenger();
-            pMessenger.onCreate(user);
+            msm = new MSMessenger();
+            return msm.onCreate(user, al);
         }
     }
 
@@ -153,11 +212,11 @@ public class MSMessenger {
             if (!isDestroyed()) {
                 int idx = findIndex(user);
                 if (idx >= 0) {
-                    for (int i = 0; i < 3; ++i) {
+                    for (int i = 0; i < MAX_CHARACTER; ++i) {
                         if (character.get(i).getUser() != null) {
-                            User msmUsers = character.get(i).getUser();
-                            if (msmUsers != user) {
-                                msmUsers.sendPacket(Messenger.onChat(chat));
+                            User msmUser = character.get(i).getUser();
+                            if (msmUser != user) {
+                                msmUser.sendPacket(Messenger.onChat(chat));
                             }
                         }
                     }
@@ -166,38 +225,41 @@ public class MSMessenger {
         } finally {
             lock.unlock();
         }
-
     }
 
-    public void onLeave(User user) {
-        int idx = findIndex(user);
-        if (idx >= 0) {
-            lock.lock();
-            try {
-                user.setMsmMessenger(null);
+    public boolean onLeave(User user) {
+        lock.lock();
+        try {
+            int idx = findIndex(user);
+            if (idx >= 0) {
+                user.getMessenger().setMSM(null);
                 
-               // character.get(idx).setUser(null);
-              //  character.get(idx).setId(null);
-                
-                this.character.set(idx, null); // do they keep user and just set the vars to empty/null?
+                character.get(idx).setUser(null);
+                character.get(idx).setID("");
                 
                 --this.userCount;
-                for (int i = 0; i < 3; ++i) {
+                for (int i = 0; i < MAX_CHARACTER; ++i) {
                     if (character.get(i).getUser() != null) {
                         character.get(i).getUser().sendPacket(Messenger.onLeave((byte) idx));
                     }
                 }
                 if (isDestroyed()) {
-                    character.clear();
-                    mSMessenger.remove(this.mSMSN);
+                    lockMSM.lock();
+                    try {
+                        msMessenger.remove(msmSN);
+                    } finally {
+                        lockMSM.unlock();
+                    }
+                    return true;
                 }
-            } finally {
-                lock.unlock();
             }
+            return false;
+        } finally {
+            lock.unlock();
         }
     }
 
-    public int getMSMSN() {
-        return mSMSN;
+    public int getSN() {
+        return msmSN;
     }
 }

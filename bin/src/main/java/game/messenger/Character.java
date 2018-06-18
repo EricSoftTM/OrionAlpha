@@ -27,23 +27,20 @@ import game.user.User;
 public class Character {
 
     private AvatarLook avatarLook;
-    private int channelID;
     private String id;
     private User user;
 
 
     public Character() {
+        this.id = "";
+        this.avatarLook = new AvatarLook();
     }
 
     public AvatarLook getAvatarLook() {
         return avatarLook;
     }
 
-    public int getChannelID() {
-        return channelID;
-    }
-
-    public String getId() {
+    public String getID() {
         return id;
     }
 
@@ -55,11 +52,7 @@ public class Character {
         this.avatarLook = avatarLook;
     }
 
-    public void setChannelID(int channelID) {
-        this.channelID = channelID;
-    }
-
-    public void setId(String id) {
+    public void setID(String id) {
         this.id = id;
     }
 

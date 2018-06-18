@@ -168,7 +168,6 @@ public class User extends Creature {
     private boolean miniRoomBalloon;
     // MSMessenger
     private Messenger userMSM;
-    private MSMessenger msmMessenger;
     private boolean msMessenger;
     // ScriptVM
     private ScriptVM runningVM;
@@ -2500,19 +2499,11 @@ public class User extends Creature {
         this.tempTradeMoney = tempTradeMoney;
     }
 
-    public MSMessenger getMsmMessenger() {
-        return msmMessenger;
-    }
-
-    public void setMsmMessenger(MSMessenger msmMessenger) {
-        this.msmMessenger = msmMessenger;
-    }
-
-    public boolean isMsMessenger() {
+    public boolean isMSMessenger() {
         return msMessenger;
     }
 
-    public void setMsMessenger(boolean msMessenger) {
+    public void setMSMessenger(boolean msMessenger) {
         this.msMessenger = msMessenger;
     }
 

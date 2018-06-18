@@ -83,15 +83,25 @@ public class Messenger {
             MSMessenger.onInvite(user, targetName);
         } else if (type == MessengerPacket.Chat) {
             String chat = packet.decodeString();
+            // Temporary way to invite other users since korean is a meme.
+            if (chat.contains("invite")) {
+                String targetName = chat.split("invite ")[1];
+                MSMessenger.onInvite(user, targetName);
+                return;
+            }
             if (getMSM() != null) {
                 getMSM().onChat(user, chat);
             }
         } else if (type == MessengerPacket.Blocked) {
-            String inviteUser = packet.decodeString();//might not exist..
+            String inviteUser = packet.decodeString();
             String blockedUser = packet.decodeString();
             boolean blockedDeny = packet.decodeBool();
-            if (getMSM() != null) {
-                getMSM().onBlocked(user, blockedUser, blockedDeny);
+            
+            User target = User.findUserByName(inviteUser, true);
+            if (target != null) {
+                if (target.getMessenger().getMSM() != null) {
+                    target.getMessenger().getMSM().onBlocked(target, blockedUser, blockedDeny);
+                }
             }
         }
     }
@@ -105,6 +115,9 @@ public class Messenger {
             case MessengerPacket.Leave:
                 onMSMLeave(msm, packet);
                 break;
+            default: {
+                onMSMForward(type, packet);
+            }
         }
     }
     

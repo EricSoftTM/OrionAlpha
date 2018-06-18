@@ -17,7 +17,6 @@
  */
 package game.messenger;
 
-import game.GameApp;
 import game.user.AvatarLook;
 import game.user.User;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import util.Logger;
 
 /**
  *
@@ -146,17 +146,17 @@ public class MSMessenger {
                 
                 user.getMessenger().setMSM(this);
                 
-                Character c = character.get(emptyIdx);
-                c.setUser(user);
-                c.setAvatarLook(al);
-                c.setID(user.getCharacter().getCharacterStat().getName());
+                character.get(emptyIdx).setUser(user);
+                character.get(emptyIdx).setAvatarLook(al);
+                character.get(emptyIdx).setID(user.getCharacter().getCharacterStat().getName());
                 ++userCount;
                 user.sendPacket(Messenger.onSelfEnterResult((byte) emptyIdx));
                 for (int i = 0; i < MAX_CHARACTER; ++i) {
                     if (character.get(i).getUser() != null) {
                         if (i != emptyIdx) {
-                            user.sendPacket(Messenger.onEnter((byte) i, user.getCharacter().getCharacterStat().getGender(), user.getCharacter().getCharacterStat().getFace(), character.get(i).getAvatarLook(), character.get(i).getID(), true));
-                            character.get(i).getUser().sendPacket(Messenger.onEnter((byte) emptyIdx, character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getGender(), character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getFace(), character.get(i).getAvatarLook(), character.get(i).getID(), true));
+                            // TODO: Figure out why isNew crashes. Temporarily disabled.
+                            user.sendPacket(Messenger.onEnter((byte) i, character.get(i).getUser().getCharacter().getCharacterStat().getGender(), character.get(i).getUser().getCharacter().getCharacterStat().getFace(), character.get(i).getAvatarLook(), character.get(i).getID(), false));
+                            character.get(i).getUser().sendPacket(Messenger.onEnter((byte) emptyIdx, character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getGender(), character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getFace(), character.get(emptyIdx).getAvatarLook(), character.get(emptyIdx).getID(), false));
                         }
                     }
                 }

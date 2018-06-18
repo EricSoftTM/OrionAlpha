@@ -17,12 +17,12 @@
  */
 package network.database;
 
+import common.GivePopularityRes;
 import common.item.ItemSlotBase;
 import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.CharacterStat;
 import common.user.DBChar;
-import game.user.WvsContext.GivePopularityRes;
 import game.user.item.Inventory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

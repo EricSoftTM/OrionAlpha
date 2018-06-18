@@ -17,11 +17,12 @@
  */
 package game.field.life;
 
+import common.Request;
 import common.item.BodyPart;
 import common.item.ItemType;
 import common.user.CharacterStat.CharacterStatType;
+import common.user.UserEffect;
 import game.field.Field;
-import game.field.FieldOpt;
 import game.field.StaticFoothold;
 import game.field.life.heapbase.CompareCtrlMax;
 import game.field.life.heapbase.CompareCtrlMin;
@@ -32,14 +33,9 @@ import game.field.life.mob.MobTemplate;
 import game.field.life.npc.Npc;
 import game.field.life.npc.NpcTemplate;
 import game.user.User;
-import game.user.User.UserEffect;
-import game.user.UserLocal;
-import game.user.WvsContext;
-import game.user.WvsContext.Request;
 import game.user.skill.SkillAccessor;
 import game.user.skill.SkillEntry;
 import game.user.skill.SkillLevelData;
-import game.user.skill.Skills;
 import game.user.skill.Skills.Assassin;
 import game.user.skill.Skills.Thief;
 import java.awt.Point;
@@ -979,7 +975,7 @@ public class LifePool {
                         }
                         
                         if (mpSteal != 0) {
-                            user.sendPacket(UserLocal.onEffect(UserEffect.SkillUse, mpStealSkill, 1));
+                            user.onUserEffect(true, false, UserEffect.SkillUse, mpStealSkill, 1);
                             user.incMP(mpSteal, false);
                             user.sendCharacterStat(Request.None, CharacterStatType.MP);
                         }

@@ -17,6 +17,7 @@
  */
 package game.user;
 
+import common.GivePopularityRes;
 import common.user.CharacterStat;
 import game.field.drop.DropPickup;
 import game.user.item.ChangeLog;
@@ -32,30 +33,6 @@ import network.packet.OutPacket;
  * @author Eric
  */
 public class WvsContext {
-    public class BroadcastMsg {
-        public static final byte
-                Notice  = 0,
-                Alert   = 1
-        ;
-    }
-    public class Request {
-        public static final byte
-                Normal  = -1,
-                None    = 0,
-                Excl    = 1
-        ;
-    }
-    public class GivePopularityRes {
-        public static final byte
-                Success             = 0,
-                InvalidCharacterID  = 1,
-                LevelLow            = 2,
-                AlreadyDoneToday    = 3,
-                AlreadyDoneTarget   = 4,
-                Notify              = 5,
-                UnknownError        = -1
-        ;
-    }
     
     public static OutPacket onInventoryOperation(List<ChangeLog> changeLog, byte onExclResult) {
         return InventoryManipulator.makeInventoryOperation(onExclResult, changeLog);

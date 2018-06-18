@@ -17,8 +17,8 @@
  */
 package game.miniroom;
 
+import common.Request;
 import game.user.User;
-import game.user.WvsContext.Request;
 import network.packet.InPacket;
 
 /**

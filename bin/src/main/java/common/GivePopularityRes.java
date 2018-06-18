@@ -15,29 +15,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.user;
-
-import network.packet.LoopbackPacket;
-import network.packet.OutPacket;
+package common;
 
 /**
  *
  * @author Eric
  */
-public class UserCommon {
-    
-    /**
-     * The character chat packet that sends a chat message to the field.
-     * 
-     * @param characterID The ID of the user sending the message
-     * @param text The message itself
-     * 
-     * @return The chat packet
-     */
-    public static OutPacket onChat(int characterID, String text) {
-        OutPacket packet = new OutPacket(LoopbackPacket.UserChat);
-        packet.encodeInt(characterID);
-        packet.encodeString(text);
-        return packet;
-    }
+public class GivePopularityRes {
+    public static final byte
+            Success             = 0,
+            InvalidCharacterID  = 1,
+            LevelLow            = 2,
+            AlreadyDoneToday    = 3,
+            AlreadyDoneTarget   = 4,
+            Notify              = 5,
+            UnknownError        = -1
+    ;
 }

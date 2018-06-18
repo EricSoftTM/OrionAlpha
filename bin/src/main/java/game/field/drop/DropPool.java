@@ -17,12 +17,11 @@
  */
 package game.field.drop;
 
+import common.Request;
 import game.field.Field;
 import game.field.FieldSplit;
 import game.field.StaticFoothold;
 import game.user.User;
-import game.user.WvsContext;
-import game.user.WvsContext.Request;
 import game.user.stat.CharacterTemporaryStat;
 import java.util.HashMap;
 import java.util.Iterator;

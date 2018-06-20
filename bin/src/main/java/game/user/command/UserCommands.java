@@ -51,12 +51,6 @@ public class UserCommands {
         }
         return "!say <message> - Broadcasts your message";
     }
-
-    public static String packet(User user, String[] args) {
-        user.sendPacket(WvsContext.onCashItemExpireMessage(1000000));
-        user.sendPacket(FieldPacket.onTransferFieldReqIgnored());
-        return null;
-    }
     
     public static String party(User user, String[] args) {
         if (args.length > 0) {

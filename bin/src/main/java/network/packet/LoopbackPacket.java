@@ -58,7 +58,7 @@ public class LoopbackPacket {
             Whisper = 30,
             BlowWeather = 31,
             GroupMessage = 32,
-            Unknown33 = 33,
+            AdminResult = 33,
             BEGIN_USERPOOL = 34,
             UserEnterField = 35,
             UserLeaveField = 36,

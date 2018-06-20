@@ -255,6 +255,12 @@ public class User extends Creature {
         this.characterName = character.getCharacterStat().getName();
         
         this.validateStat(true);
+        
+        // Apply default configured rates
+        this.incExpRate *= GameApp.getInstance().getExpRate();
+        this.incMesoRate = GameApp.getInstance().getMesoRate();
+        this.incDropRate *= GameApp.getInstance().getDropRate();
+        this.incDropRate_Ticket *= GameApp.getInstance().getDropRate();
     }
     
     /**
@@ -281,9 +287,9 @@ public class User extends Creature {
         if (miniRoom != null) {
             miniRoom = null;
         }
-        //if (runningVM != null) {
-        //    runningVM = null;
-        //}
+        if (runningVM != null) {
+            runningVM = null;
+        }
         /* End CUser::~CUser destructor */
     }
     
@@ -970,6 +976,22 @@ public class User extends Creature {
         return worldID;
     }
     
+    public double getExpRate() {
+        return incExpRate;
+    }
+    
+    public double getMesoRate() {
+        return incMesoRate;
+    }
+    
+    public double getDropRate() {
+        return incDropRate;
+    }
+    
+    public double getTicketDropRate() {
+        return incDropRate_Ticket;
+    }
+    
     public boolean isGM() {
         return gradeCode >= UserGradeCode.GM.getGrade();
     }
@@ -1092,9 +1114,10 @@ public class User extends Creature {
         moveAction = 0;
         footholdSN = 0;
         sendSetFieldPacket(true);
-        // TODO: Load anything else i'm missing
         if (getField().onEnter(this)) {
-            // TODO: Load messenger and other stuff
+            // I'm genuinely curious why Nexon has migration packets for messenger,
+            // when you can't "migrate" channels without logging out first?
+            // The only "migration" done is to the Shop, which can't access messenger.
         } else {
             Logger.logError("Failed in entering field");
             closeSocket();

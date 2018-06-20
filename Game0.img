@@ -6,6 +6,10 @@
 	
 	"PublicIP": "127.0.0.1",
 	"PrivateIP": "127.0.0.1",
+
+	"incExpRate": 100,
+	"incMesoRate": 100,
+	"incDropRate": 100,
 	
 	"login": {
 		"ip": "127.0.0.1",

@@ -55,6 +55,9 @@ public class GameApp implements Runnable {
     private int port;
     private byte worldID;
     private int connectionLimit;
+    private double incExpRate;
+    private double incMesoRate;
+    private double incDropRate;
     private final int waitingFirstPacket;
     private final long serverStartTime;
     private final AtomicLong itemInitSN;
@@ -65,6 +68,9 @@ public class GameApp implements Runnable {
     
     public GameApp() {
         this.connectionLimit = 4000;
+        this.incExpRate = 1.0d;
+        this.incMesoRate = 1.0d;
+        this.incDropRate = 1.0d;
         this.waitingFirstPacket = 1000 * 15;
         this.serverStartTime = System.currentTimeMillis();
         this.itemInitSN = new AtomicLong(0);
@@ -89,6 +95,10 @@ public class GameApp implements Runnable {
             
             this.addr = gameData.getString("PublicIP", "127.0.0.1");
             this.port = gameData.getInt("port", 8585);
+            
+            this.incExpRate = gameData.getInt("incExpRate", 100) * 0.01;
+            this.incMesoRate = gameData.getInt("incMesoRate", 100) * 0.01;
+            this.incDropRate = gameData.getInt("incDropRate", 100) * 0.01;
             
             int channelNo = gameData.getInt("channelNo", 1);
             for (int i = 0; i < channelNo; i++) {
@@ -141,6 +151,18 @@ public class GameApp implements Runnable {
         } finally {
             lockItemSN.unlock();
         }
+    }
+    
+    public double getExpRate() {
+        return incExpRate;
+    }
+    
+    public double getMesoRate() {
+        return incMesoRate;
+    }
+    
+    public double getDropRate() {
+        return incDropRate;
     }
     
     public int getConnectionLimit() {

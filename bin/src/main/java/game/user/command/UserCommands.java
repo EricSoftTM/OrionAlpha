@@ -20,6 +20,8 @@ package game.user.command;
 import common.Request;
 import game.field.Field;
 import game.field.FieldPacket;
+import game.party.PartyData;
+import game.party.PartyPacket;
 import game.user.User;
 import game.user.WvsContext;
 
@@ -51,8 +53,21 @@ public class UserCommands {
     }
 
     public static String packet(User user, String[] args) {
-        user.sendPacket(WvsContext.onIncEXPMessage(90));
+        user.sendPacket(WvsContext.onCashItemExpireMessage(1000000));
         user.sendPacket(FieldPacket.onTransferFieldReqIgnored());
+        return null;
+    }
+    
+    public static String party(User user, String[] args) {
+        if (args.length > 0) {
+            byte type = Byte.parseByte(args[0]);
+            user.sendPacket(PartyPacket.onPartyResult(type));
+        } else {
+            PartyData pd = new PartyData();
+            pd.getParty().getCharacterID().set(0, 1);
+            pd.getParty().getCharacterName().set(0, "Eric");
+            user.sendPacket(PartyPacket.onPartyResult(1, pd));
+        }
         return null;
     }
     

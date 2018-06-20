@@ -42,9 +42,9 @@ public class LoopbackPacket {
             TemporaryStatReset = 14,
             ChangeSkillRecordResult = 15,
             SkillUseResult = 16,
-            // Unknown = 17
+            PartyResult = 17,
             DropPickUpMessage = 18,
-            IncEXPMessage = 19, // No clue, this is incorrect though I think.
+            CashItemExpireMessage = 19,
             GivePopularityResult = 20,
             BroadcastMsg = 21,
             CharacterInfo = 22,
@@ -58,7 +58,7 @@ public class LoopbackPacket {
             Whisper = 30,
             BlowWeather = 31,
             GroupMessage = 32,
-            // Unknown = 33
+            Unknown33 = 33,
             BEGIN_USERPOOL = 34,
             UserEnterField = 35,
             UserLeaveField = 36,

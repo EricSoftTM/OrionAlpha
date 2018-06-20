@@ -86,9 +86,9 @@ public class WvsContext {
         return packet;
     }
     
-    public static OutPacket onIncEXPMessage(int inc) {
-        OutPacket packet = new OutPacket(LoopbackPacket.IncEXPMessage);
-        packet.encodeInt(inc);
+    public static OutPacket onCashItemExpireMessage(int itemID) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashItemExpireMessage);
+        packet.encodeInt(itemID);
         return packet;
     }
     

@@ -294,6 +294,10 @@ public class LifePool {
         return count;
     }
     
+    public int getMobGenCount() {
+        return mobGenCount;
+    }
+    
     public int getMobHP(int mobID) {
         List<Mob> mob = new ArrayList<>(mobs.values());
         for (Mob m : mob) {

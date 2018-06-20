@@ -22,12 +22,72 @@ package game.field.drop;
  * @author Eric
  */
 public class RewardInfo {
-    public byte type;
-    public int money;
-    public int itemId;
-    public int prob;
-    public int min;
-    public int max;
-    public int maxCount;
-    public int period;
+    private byte type;
+    private final int money;
+    private final int prob;
+    private int itemId;
+    private int min;
+    private int max;
+    private int maxCount;
+    private int period;
+    private final boolean premiumMap;
+    
+    public RewardInfo(int money, int itemId, int prob, int min, int max, boolean premium) {
+        this.money = money;
+        this.prob = prob;
+        if (this.money == 0) {
+            this.itemId = itemId;
+            this.min = min;
+            this.max = max;
+        }
+        this.premiumMap = premium;
+    }
+
+    public byte getType() {
+        return type;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public int getItemId() {
+        return itemId;
+    }
+
+    public int getProb() {
+        return prob;
+    }
+
+    public int getMin() {
+        return min;
+    }
+
+    public int getMax() {
+        return max;
+    }
+
+    public int getMaxCount() {
+        return maxCount;
+    }
+
+    public int getPeriod() {
+        return period;
+    }
+
+    public boolean isPremiumMap() {
+        return premiumMap;
+    }
+
+    public void setType(byte type) {
+        this.type = type;
+    }
+
+    public void setMaxCount(int maxCount) {
+        this.maxCount = maxCount;
+    }
+
+    public void setPeriod(int period) {
+        this.period = period;
+    }
 }

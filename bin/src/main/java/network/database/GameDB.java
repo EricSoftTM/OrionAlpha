@@ -23,6 +23,7 @@ import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.CharacterStat;
 import common.user.DBChar;
+import game.field.drop.RewardInfo;
 import game.user.item.Inventory;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -160,6 +161,33 @@ public class GameDB {
         }
         
         return cd;
+    }
+    
+    public static int rawLoadReward(int templateID, List<RewardInfo> rewardInfo) {
+        int count = 0;
+        
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `reward` WHERE `TemplateID` = ?")) {
+                ps.setInt(1, templateID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        double probRate = Math.min(1.0d, Math.max(0.0d, rs.getDouble("Prob")));
+                        int prob = Math.min(1000000000, Math.max(0, (int) (probRate * 1000000000.0d)));
+                        int money = rs.getInt("Money");
+                        int itemId = rs.getInt("Item");
+                        int min = rs.getInt("Min");
+                        int max = rs.getInt("Max");
+                        boolean premium = rs.getBoolean("premium");
+                        
+                        rewardInfo.add(count++, new RewardInfo(money, itemId, prob, min, max, premium));
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        
+        return count;
     }
     
     public static void rawSaveCharacter(CharacterStat cs) {

@@ -1596,7 +1596,7 @@ public class User extends Creature {
                     sendCharacterStat(Request.Excl, CharacterStatType.Money);
                     Reward reward = new Reward();
                     reward.setMoney(amount);
-                    reward.setType(RewardType.Money);
+                    reward.setType(RewardType.MONEY);
                     reward.setPeriod(0);
                     int x = getCurrentPosition().x;
                     int y1 = getCurrentPosition().y;

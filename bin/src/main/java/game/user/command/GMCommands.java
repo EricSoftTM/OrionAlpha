@@ -148,7 +148,7 @@ public class GMCommands {
                         user.sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
                         user.addCharacterDataMod(ItemAccessor.getItemTypeFromTypeIndex(ti));
                     } else {
-                        Reward reward = new Reward(RewardType.Item, item, 0, 0);
+                        Reward reward = new Reward(RewardType.ITEM, item, 0, 0);
                         pool.create(reward, user.getCharacterID(), 0, user.getCurrentPosition().x,
                                 user.getCurrentPosition().y, user.getCurrentPosition().x, 0, 0, user.isGM(), 0);
                     }

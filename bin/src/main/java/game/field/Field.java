@@ -224,6 +224,14 @@ public class Field {
         return this.forcedReturn;
     }
     
+    public double getIncEXPRate() {
+        return this.incRateEXP;
+    }
+    
+    public double getIncDropRate() {
+        return this.incRateDrop;
+    }
+    
     public int getOption() {
         return this.option;
     }
@@ -273,6 +281,10 @@ public class Field {
     
     public boolean isSwim() {
         return swim;
+    }
+    
+    public boolean isTown() {
+        return town;
     }
     
     public boolean isUserExist(int characterID) {

@@ -70,7 +70,7 @@ public class Inventory {
                                     if (ti == ItemType.Equip && pos1 < 0)
                                         user.validateStat(false);
                                     if (itemRemoved.get() != null && user.getField() != null) {
-                                        Reward reward = new Reward(RewardType.Item, itemRemoved.get(), 0, 0);
+                                        Reward reward = new Reward(RewardType.ITEM, itemRemoved.get(), 0, 0);
                                         user.getField().getDropPool().create(reward, user.getCharacterID(), 0, user.getCurrentPosition().x, user.getCurrentPosition().y, user.getCurrentPosition().x, 0, 0, user.isGM(), 0);
                                     }
                                 }

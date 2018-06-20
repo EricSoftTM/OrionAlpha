@@ -17,6 +17,7 @@
  */
 package game.field.life.mob;
 
+import common.Request;
 import game.field.Creature;
 import game.field.Field;
 import game.field.GameObjectType;
@@ -108,8 +109,54 @@ public class Mob extends Creature {
     }
     
     public int distributeExp(Pointer<Integer> lastDamageCharacterID) {
-        // TODO: Exp distribution handling
-        
+        int damageSum = damageLog.vainDamage;
+        int maxDamage = 0;
+        int characterID = 0;
+        for (Info info : damageLog.getLog()) {
+            damageSum += info.damage;
+            if (maxDamage < info.damage) {
+                maxDamage = info.damage;
+                characterID = info.characterID;
+            }
+            lastDamageCharacterID.set(info.characterID);
+        }
+        if (damageSum >= damageLog.initHP) {
+            if (getEXP() != 0) {
+                int idx = damageLog.getLog().size();
+                for (Info info : damageLog.getLog()) {
+                    if (info.damage > 0) {
+                        User user = User.findUser(info.characterID);
+                        if (user == null || user.getField() == null || user.getField().getFieldID() != damageLog.fieldID) {
+                            continue;
+                        }
+                        double lastSum = 0.0d;
+                        if (idx == 0) {
+                            lastSum = (double) getEXP() * 0.2d;
+                        }
+                        if (user.lock(1600)) {
+                            try {
+                                double incEXP = (((double) getEXP() * (double) info.damage) * 0.8 / (double) damageSum + lastSum);
+                                incEXP = alterEXPbyLevel(user.getCharacter().getCharacterStat().getLevel(), incEXP);
+                                incEXP *= user.getExpRate();
+                                incEXP *= getField().getIncEXPRate();
+                                incEXP = Math.max(1.0, incEXP);
+                                
+                                int flag = user.incEXP((int) incEXP, false);
+                                if (flag != 0) {
+                                    user.sendCharacterStat(Request.None, flag);
+                                }
+                            } finally {
+                                user.unlock();
+                            }
+                        }
+                        idx--;
+                    }
+                }
+            }
+            return characterID;
+        } else {
+            Logger.logError("Mob damaged HP is less than initial HP");
+        }
         return 0;
     }
     
@@ -188,10 +235,10 @@ public class Mob extends Creature {
             int ownerDropRate = 1;
             int ownerDropRate_Ticket = 1;
             if (user != null) {
-                ownerDropRate = 1;//getMesoRate
-                ownerDropRate_Ticket = 1;//getDropRate
+                ownerDropRate = (int) user.getMesoRate();
+                ownerDropRate_Ticket = (int) user.getTicketDropRate();
             }
-            List<Reward> rewards = Reward.create(template.getRewardInfo(), ownerDropRate, ownerDropRate_Ticket);
+            List<Reward> rewards = Reward.create(template.getRewardInfo(), false, ownerDropRate, ownerDropRate_Ticket);
             if (rewards == null || rewards.isEmpty()) {
                 return;
             }
@@ -200,7 +247,7 @@ public class Mob extends Creature {
                 if (reward.getItem() != null) {
                     itemID_Stolen = reward.getItem().getItemID();
                 }
-                if (reward.getType() == RewardType.Money) {
+                if (reward.getType() == RewardType.MONEY) {
                     reward.setMoney(reward.getMoney() / 2);
                 }
                 rewards.clear();

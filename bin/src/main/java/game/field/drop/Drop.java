@@ -63,12 +63,12 @@ public class Drop extends FieldObj {
         this.sourceID = sourceID;
         this.pt1 = new Point(x1, y1);
         this.pt2 = new Point(x2, y2);
-        this.isMoney = reward.getType() == RewardType.Money;
+        this.isMoney = reward.getType() == RewardType.MONEY;
         this.money = reward.getMoney();
         this.showMax = 0;
         this.period = reward.getPeriod();
         if (reward.getInfo() != null) {
-            this.showMax = reward.getInfo().maxCount;
+            this.showMax = reward.getInfo().getMaxCount();
         }
         this.item = reward.getItem();
     }

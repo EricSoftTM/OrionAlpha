@@ -129,4 +129,14 @@ public class FieldMan {
             lastUpdateForField = System.currentTimeMillis();
         }
     }
+
+    public boolean isConnected(int from, int to) {
+        from /= 100000;
+        to /= 100000;
+        if (from == to) {
+            return true;
+        }
+        // Not really sure how else to check this..
+        return true;
+    }
 }

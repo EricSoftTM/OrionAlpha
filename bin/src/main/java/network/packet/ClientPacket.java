@@ -44,7 +44,7 @@ public class ClientPacket {
             UserMeleeAttack = 16,
             UserShootAttack = 17,
             UserMagicAttack = 18,
-            Unknown19 = 19,
+            Unknown19 = 19, // Not sure if this even exists in the client?
             UserHit = 20, 
             UserChat = 21,
             UserEmotion = 22,
@@ -54,7 +54,7 @@ public class ClientPacket {
             UserChangeSlotPositionRequest = 26,
             UserStatChangeItemUseRequest = 27,
             UserConsumeCashItemUseRequest = 28,
-            Unknown29 = 29, // 00594187
+            UserPortalScrollUseRequest = 29,
             UserUpgradeItemUseRequest = 30, 
             UserAbilityUpRequest = 31,
             UserChangeStatRequest = 32,
@@ -64,13 +64,13 @@ public class ClientPacket {
             UserGivePopularityRequest = 36,
             UserPartyRequest = 37, 
             UserCharacterInfoRequest = 38,
-            Unknown39 = 39, // 00486F0C, command-related?
-            Whisper = 40, // 004879AA
-            Messenger = 41, // 00503603
+            BroadcastMsg = 39, // 00486F0C (byte bmType, string msg)
+            Whisper = 40,
+            Messenger = 41,
             MiniRoom = 42,
-            Unknown43 = 43, // 00487F0F, 00595858
-            Unknown44 = 44, // 00595755, 005958CA -> used from the Unknown17 Loopback in CWvsContext (00595690), can it be Party?
-            Unknown45 = 45, // 00486B38, command-related?
+            PartyRequest = 43, // 00487F0F, 00595858
+            PartyResult = 44, // 00595755, 005958CA
+            Admin = 45, // 00486B38
             END_USER = 46,
             BEGIN_FIELD = 47,
             BEGIN_LIFEPOOL = 48,

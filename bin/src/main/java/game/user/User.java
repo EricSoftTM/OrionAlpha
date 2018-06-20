@@ -71,6 +71,7 @@ import game.user.item.Inventory;
 import game.user.item.InventoryManipulator;
 import game.user.item.ItemInfo;
 import game.user.item.ItemVariationOption;
+import game.user.item.PortalScrollItem;
 import game.user.item.StateChangeItem;
 import game.user.skill.*;
 import game.user.skill.Skills.*;
@@ -1222,6 +1223,9 @@ public class User extends Creature {
             case ClientPacket.Whisper:
                 onWhisper(packet);
                 break;
+            case ClientPacket.UserPortalScrollUseRequest:
+                onPortalScrollUseRequest(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -1747,6 +1751,60 @@ public class User extends Creature {
     
     public void onMigrateToCashShopRequest(InPacket packet) {
         sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32("127.0.0.1"), 8787));
+    }
+    
+    public void onPortalScrollUseRequest(InPacket packet) {
+        if (getField() == null) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        if (lock()) {
+            try {
+                short pos = packet.decodeShort();
+                int itemID = packet.decodeInt();
+                ItemSlotBase item = character.getItem(ItemType.Consume, pos);
+                PortalScrollItem info = ItemInfo.getPortalScrollItem(itemID);
+                if (item == null || item.getItemID() != itemID || info == null || info.getItemID() != itemID) {
+                    Logger.logError("Incorrect portal-scroll-item use request nPOS(%d), nItemID(%d), pInfo(%p)", pos, itemID);
+                    //Logger.logError("Packet Dump: %s", packet.dumpString());
+                    closeSocket();
+                    return;
+                }
+                int fieldID = info.getMoveTo();
+                if (fieldID == -1) {
+                    fieldID = getField().getReturnFieldID();
+                } else {
+                    if ((getField().getOption() & FieldOpt.PortalScrollLimit) != 0) {
+                        sendCharacterStat(Request.Excl, 0);
+                        return;
+                    }
+                }
+                if (!canAttachAdditionalProcess() || fieldID == Field.Invalid || fieldID == getField().getFieldID()) {
+                    sendCharacterStat(Request.Excl, 0);
+                } else {
+                    if (FieldMan.getInstance().isConnected(getField().getFieldID(), fieldID)) {
+                        List<ChangeLog> changeLog = new ArrayList<>();
+                        Pointer<Integer> decRet = new Pointer<>(0);
+                        if (Inventory.rawRemoveItem(this, ItemType.Consume, pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
+                            Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                            addCharacterDataMod(DBChar.ItemSlotConsume);
+                            postTransferField(fieldID, "", false);
+                            sendCharacterStat(Request.Excl, 0);
+                            changeLog.clear();
+                            return;
+                        }
+                        Logger.logError("Incorrect portal-scroll-item use request nPOS(%d), nItemID(%d), pInfo(%p)", pos, itemID);
+                        //Logger.logError("Packet Dump: %s", packet.dumpString());
+                        closeSocket();
+                        changeLog.clear();
+                    } else {
+                        sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                    }
+                }
+            } finally {
+                unlock();
+            }
+        }
     }
     
     public void onStatChangeItemUseRequest(InPacket packet) {

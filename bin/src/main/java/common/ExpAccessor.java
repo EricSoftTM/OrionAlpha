@@ -28,8 +28,21 @@ import util.Pointer;
  * @author Eric
  */
 public class ExpAccessor {
-    public static final byte MAX_LEVEL = (byte) 200;
-    public static final int[] EXP_USER = {};
+    public static final int MAX_LEVEL = 200;
+    public static final int[] EXP_USER = new int[201];
+    
+    static {
+        // NEXTLEVEL::NEXTLEVEL
+        for (int i = 1; i <= 5; i++) {
+            EXP_USER[i] = i * (i * i / 2 + 15);
+        }
+        for (int i = 6; i <= 50; i++) {
+            EXP_USER[i] = i * i / 3 * (i * i / 3 + 19);
+        }
+        for (int i = 51; i <= MAX_LEVEL; i++) {
+            EXP_USER[i] = (int) ((float) EXP_USER[i - 1] * 1.0548f);
+        }
+    }
     
     /**
      * Processes EXP gains and if requirements are met, will level up the user.

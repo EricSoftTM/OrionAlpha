@@ -286,8 +286,8 @@ public class CharacterStat {
         this.skin = (byte) skin;
     }
 
-    public void setLevel(byte level) {
-        this.level = level;
+    public void setLevel(int level) {
+        this.level = (byte) level;
     }
 
     public void setJob(short job) {

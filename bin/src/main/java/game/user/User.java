@@ -2366,6 +2366,9 @@ public class User extends Creature {
     
     private void onUserDead() {
         sendTemporaryStatReset(secondaryStat.reset());
+        
+        ExpAccessor.decreaseExp(character, basicStat, getField().getLifePool().getMobGenCount() <= 0 || getField().isTown());
+        sendCharacterStat(Request.None, CharacterStatType.EXP);
     }
     
     public void onLevelUp() {

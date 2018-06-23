@@ -64,7 +64,7 @@ public class ClientPacket {
             UserGivePopularityRequest = 36,
             UserPartyRequest = 37, 
             UserCharacterInfoRequest = 38,
-            BroadcastMsg = 39, // 00486F0C (byte bmType, string msg)
+            BroadcastMsg = 39,
             Whisper = 40,
             Messenger = 41,
             MiniRoom = 42,

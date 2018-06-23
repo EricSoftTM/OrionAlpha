@@ -374,6 +374,13 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         }
     }
     
+    public void onExceptionLog(InPacket packet) {
+        String log = packet.decodeString();
+        int time = packet.decodeInt();
+        
+        Logger.logError("[EXCEPTION : %d] %s", time, log);
+    }
+    
     public void onSelectCharacter(InPacket packet) {
         if (this.loginState == 8) {
             this.characterID = packet.decodeInt();
@@ -468,6 +475,9 @@ public class ClientSocket extends SimpleChannelInboundHandler {
                     break;
                 case ClientPacket.SelectCharacter:
                     onSelectCharacter(packet);
+                    break;
+                case ClientPacket.ExceptionLog:
+                    onExceptionLog(packet);
                     break;
                 default: {
                     Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());

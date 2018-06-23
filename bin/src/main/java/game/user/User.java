@@ -1226,6 +1226,9 @@ public class User extends Creature {
             case ClientPacket.UserPortalScrollUseRequest:
                 onPortalScrollUseRequest(packet);
                 break;
+            case ClientPacket.BroadcastMsg:
+                onBroadcastMsg(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -1434,6 +1437,16 @@ public class User extends Creature {
                     
                 }
             }
+        }
+    }
+    
+    public void onBroadcastMsg(InPacket packet) {
+        if (isGM() && getField() != null) {
+            byte bmType = packet.decodeByte();
+            String msg = packet.decodeString();
+            
+            // TODO: Multi-channel support.
+            getField().broadcastPacket(WvsContext.onBroadcastMsg(bmType, msg), false);
         }
     }
     

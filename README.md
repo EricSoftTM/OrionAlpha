@@ -3,7 +3,7 @@ OrionAlpha - A Nexon Replica Emulator Project
 
 ----------------------------------------------------------------------
 ## Resources
- * You can download the game and client [here](https://mega.nz/#!yoVU2CpZ!J0U2UL_8-kV-x996Ui0qt4FgWdPgErMUALrlb59e41Y)
+ * You can download the game and client [here](https://mega.nz/#!O9Vy3C7Q!0FsLIilRwzImzjUY_9MxOqtvA4wuMn0SDWE65BkGHZk)
  * To emulate a korean locale in the client, you can download LocaleEmulator [here](https://mega.nz/#!T5t00IwA!YByix3DVt-_Pi0IpU-OwUnvhCDyZEPz4JQ6S-kbYHks)
  * You can download the named client IDB [here](https://mega.nz/#!vtUFjRII!_hMJIYcoQTqorjfd83wKKH5QahFIVKEk5O6I5ULTo_U)
 ## Requirements/Dependencies
@@ -43,7 +43,7 @@ OrionAlpha - A Nexon Replica Emulator Project
   ### Modifying IP
   If you intend to use OrionAlpha, you can change the IP in either our client or the clean client.
    * Our client's default IP is `127.0.0.1`
-   * Nexon's default IP is `218.153.9.173`
+   * Nexon's default IP's are `218.153.9.172` and `218.153.9.173`
   
   ### Enable Multi-Client
   Allow multiple clients to be open/executed simultaneously.

@@ -16,7 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: ?? ??'
-'Script: ?? ??'
+'NPC: Pio'
+'Script: Pio\'s lines'
 
-self.say("#rSorry, I am not coded yet.#k")
+'TODO: English Transaltion'
+self.sayNext("qui em #m1010000#, h?lojas de armas e mantimentos, e em #m60000#, um porto com um navio imenso chamado Victoria, e ?l?que voc?poder?encontar uma loja que vende escudos.");
+self.sayNext("H?alguns dias, eu peguei emprestado um martelo com #p11000# da loja de armas, e o martelo quebrou. O que devo fazer?");

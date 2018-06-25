@@ -22,7 +22,7 @@ package network.packet;
  * @author Eric
  */
 public class ClientPacket {
-    public static final short
+    public static final byte
             BEGIN_SOCKET = 0,
             CheckPassword = 1,
             SelectWorld = 2,
@@ -35,7 +35,7 @@ public class ClientPacket {
             // Maybe one is an acknowledge and the other is a request? idk
             AliveAck = 8,
             AliveAck2 = 9, // 0058B285
-            ExceptionLog = 10, // 0058B3B0
+            ExceptionLog = 10,
             END_SOCKET = 11,
             BEGIN_USER = 12,
             UserTransferFieldRequest = 13,

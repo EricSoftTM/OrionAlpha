@@ -74,3 +74,7 @@ OrionAlpha - A Nexon Replica Emulator Project
   Allows you to enter curse words without getting a pop-up and restricting your message from sending.
   * Change the instruction at address `004441B8` to `jmp 004441ED`
   
+  ### Remove Nexon ADs
+  Allows you to disable the ad balloons after closing the client because they're annoying.
+  * Change the instruction at address `005878A5` to `nop`
+  

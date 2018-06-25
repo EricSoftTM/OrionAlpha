@@ -78,3 +78,22 @@ OrionAlpha - A Nexon Replica Emulator Project
   Allows you to disable the ad balloons after closing the client because they're annoying.
   * Change the instruction at address `005878A5` to `nop`
   
+  ### Enable Droppable NX
+  Allows you to drop cash NX items like any other item.
+  * Change the instruction at address `0047965A` to `nop`
+  * Change the instruction at address `00479666` to `nop`
+  
+  ### Re-Enable Admin Actions
+  Restores the ability to allow GM/Admins to drop items, mesos, etc.
+  * Change the instruction at address `004795D2` to `jmp 004795E9`
+  * Change the instruction at address `005002E7` to `jmp 00500318`
+  
+  ### Modifying Damage Cap
+  Allows you to extend the damage cap up to a maximum of `32,767`.
+  * Change the instruction at address `005C3E98` to `13337.0` where `13337.0` is the new cap
+  
+  ### Modifying Meso Cap
+  Allows you to drop meso bags exceeding 50,000 by setting a new cap.
+  * Change the instruction at address `005003CE` to `cmp eax, 0xC350` where `0xC350` is the new max
+  * Change the instruction at address `005003D5` to `cmp eax, 0xC350` where `0xC350` is the new max
+  

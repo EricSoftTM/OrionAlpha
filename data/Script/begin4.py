@@ -16,21 +16,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: ???'
-'Script: Character control?'
-
-self.say("#bScript: begin4#k\r\n\r\n#rSorry, I am not coded yet.#k")
-
 '''
-TODO: Port to Python
-
-if (self.UserGetJob() % 1000 != 0) {
-	self.sayNext("Essa ?a ?ea de miss?s para aprendizes. Voc?n? ?um aprendiz, ?");
-	self.RegisterTransferField(104000000, "");
-} else {
-	self.sayNext("Chegou t? longe... incr?el! Voc?pode come?r a viajar por a?agora mesmo! Ok, eu te levo at?a pr?ima parada.");
-	self.sayNext("Mas vou te dar um conselho: Depois que sair daqui, voc?estar?livre, em lugares com muitos monstros e sem meios para voltar. Bem, ent?, at?depois!");
-	self.UserIncEXP(3, false);
-	self.RegisterTransferField(40000, "");
-}
+Author: Brookie
+NPC: Peter
+Script: Character control
 '''
+
+if self.userGetJob() != 0:
+    self.sayNext("Essa ?a ?ea de miss?s para aprendizes. Voc?n? ?um aprendiz, ?")
+    self.registerTransferField(104000000, "")
+else:
+    self.sayNext("Chegou t? longe... incr?el! Voc?pode come?r a viajar por a?agora mesmo! Ok, eu te levo at?a pr?ima parada.")
+    self.sayNext("Mas vou te dar um conselho: Depois que sair daqui, voc?estar?livre, em lugares com muitos monstros e sem meios para voltar. Bem, ent?, at?depois!")
+    self.userIncEXP(3, False)
+    self.registerTransferField(40000, "")

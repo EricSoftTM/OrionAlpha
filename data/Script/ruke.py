@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: ?? ??'
+'NPC: Luke'
 'Script: ?? ??'
 
-self.say("#rSorry, I am not coded yet.#k")
+self.say("#bScript: ruke#k\r\n\r\n#rSorry, I am not coded yet.#k")

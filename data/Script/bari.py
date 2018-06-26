@@ -16,8 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Bari'
-'Script: Ambassador Bari'
+'''
+Author: Eric
+NPC: Bari
+Script: Ambassador Bari
+'''
 
 'TODO: English translation'
 self.sayNext("Essa cidade é chamada de #b#m60000##k e fica ao leste da Ilha Maple. Você não quer avançar na carreira para poder lutar contra monstros muito mais fortes? Então, embarque no navio e siga para a #bIlha Victoria#k.");

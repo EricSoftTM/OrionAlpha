@@ -16,8 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Pio'
-'Script: Pio\'s lines'
+'''
+Author: Eric
+NPC: Pio
+Script: Pio's lines
+'''
 
 'TODO: English Transaltion'
 self.sayNext("qui em #m1010000#, h?lojas de armas e mantimentos, e em #m60000#, um porto com um navio imenso chamado Victoria, e ?l?que voc?poder?encontar uma loja que vende escudos.");

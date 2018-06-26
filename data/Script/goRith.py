@@ -16,8 +16,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Regular Cab'
-'Script: Transports users between the towns of Victoria Island.'
+'''
+Author: Eric
+NPC: Regular Cab
+Script: Transports users between the towns of Victoria Island.
+'''
 
 towns = [["Lith Harbor", 104000000, 120], ["Henesys", 100000000, 100], ["Ellinia", 101000000, 100], ["Kerning City", 103000000, 80]]
 
@@ -36,5 +39,5 @@ menu = "Choose your destination, the fare leties from place to place.\r\n#b"
 for i in range(0, len(towns)):
 	menu += "#L" + str(i) + "#" + towns[i][0] + " (" + str(towns[i][2]) + " mesos)#l\r\n"
 sel = self.askMenu(menu)
-if sel in (0, len(towns)):
+if sel in range(0, len(towns)):
 	goTown(towns[sel][0], towns[sel][1], towns[sel][2])

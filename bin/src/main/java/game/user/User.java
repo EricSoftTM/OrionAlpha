@@ -28,11 +28,13 @@ import common.ExpAccessor;
 import common.GivePopularityRes;
 import common.JobAccessor;
 import common.JobCategory;
+import common.OrionConfig;
 import common.Request;
 import common.WhisperFlags;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
+import common.item.ItemSlotType;
 import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
@@ -875,7 +877,16 @@ public class User extends Creature {
     public void destroyAdditionalProcess() {
         lock.lock();
         try {
-            // TODO: Close, Reset, Leave, and Destroy active processes.
+            this.tradingNpc = null;
+            if (miniRoom != null) {
+                //miniRoom.onUserLeave(this);
+            }
+            if (runningVM != null) {
+                runningVM.destroy(this);
+            }
+            if (secondaryStat != null) {
+                secondaryStat.reset();
+            }
         } finally {
             unlock();
         }
@@ -1005,10 +1016,56 @@ public class User extends Creature {
         if (getField() != null) {
             getField().onLeave(this);
             if (getField().getForcedReturnFieldID() == Field.Invalid) {
-                
+                if (getHP() == 0) {
+                    if (getField().getReturnFieldID() == Field.Invalid) {
+                        if (lock()) {
+                            try {
+                                setPosMap(getField().getReturnFieldID());
+                                if (OrionConfig.LOG_PACKETS) {
+                                    Logger.logReport("To find crash : just before GetRandStartPoint2");
+                                }
+                                setPortal(getField().getPortal().getRandStartPoint().getPortalIdx());
+                                if (getHP() == 0) {
+                                    character.getCharacterStat().setHP(50);
+                                }
+                                addCharacterDataMod(DBChar.Character);
+                            } finally {
+                                unlock();
+                            }
+                        }
+                    }
+                    //setField(null);
+                    return;
+                }
+                if (lock()) {
+                    try {
+                        Portal portal = getField().getPortal().findCloseStartPoint(curPos.x, curPos.y);
+                        if (getPosMap() != getField().getFieldID() || getPortal() != portal.getPortalIdx()) {
+                            setPosMap(getField().getFieldID());
+                            setPortal(portal.getPortalIdx());
+                            addCharacterDataMod(DBChar.Character);
+                        }
+                    } finally {
+                        unlock();
+                    }
+                }
             } else {
-                
+                if (lock()) {
+                    try {
+                        setPosMap(getField().getForcedReturnFieldID());
+                        Field field = FieldMan.getInstance().getField(getField().getForcedReturnFieldID(), false);
+                        byte portal = 0;
+                        if (field.getPortal() != null) {
+                            portal = field.getPortal().getRandStartPoint().getPortalIdx();
+                        }
+                        setPortal(portal);
+                        addCharacterDataMod(DBChar.Character);
+                    } finally {
+                        unlock();
+                    }
+                }
             }
+            //setField(null);
         }
     }
     
@@ -1229,6 +1286,9 @@ public class User extends Creature {
             case ClientPacket.BroadcastMsg:
                 onBroadcastMsg(packet);
                 break;
+            case ClientPacket.Admin:
+                onAdmin(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
@@ -1278,6 +1338,80 @@ public class User extends Creature {
                 }
                 addCharacterDataMod(DBChar.Character);
                 sendCharacterStat(Request.Excl, flag);
+            } finally {
+                unlock();
+            }
+        }
+    }
+    
+    public void onAdmin(InPacket packet) {
+        if (!isGM()) {
+            return;
+        }
+        byte type = packet.decodeByte();
+        
+        if (lock()) {
+            try {
+                switch (type) {
+                    case 0: {// Create Item
+                        int itemID = packet.decodeInt();
+                        byte ti = ItemAccessor.getItemTypeIndexFromID(itemID);
+                        if (ti < ItemType.Equip || ti > ItemType.Etc) {
+                            return;
+                        }
+
+                        ItemSlotBase item = ItemInfo.getItemSlot(itemID, ItemVariationOption.Normal);
+                        if (item != null) {
+                            if (item.getType() == ItemSlotType.Bundle) {
+                                item.setItemNumber(SkillInfo.getInstance().getBundleItemMaxPerSlot(itemID, character));
+                            }
+                            List<ChangeLog> changeLog = new ArrayList<>();
+                            if (Inventory.rawAddItem(this, ti, item, changeLog, null)) {
+                                Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                                addCharacterDataMod(ItemAccessor.getItemTypeFromTypeIndex(ti));
+                            }
+                            changeLog.clear();
+                        }
+                        break;
+                    }
+                    case 1: {// Delete Inventory
+                        byte ti = packet.decodeByte();
+                        if (ti < ItemType.Equip || ti > ItemType.Etc) {
+                            return;
+                        }
+                        for (int pos = 1; pos <= character.getItemSlotCount(ti); pos++) {
+                            ItemSlotBase item = character.getItem(ti, pos);
+                            if (item != null) {
+                                List<ChangeLog> changeLog = new ArrayList<>();
+                                if (Inventory.rawRemoveItem(this, ti, (short) pos, item.getItemNumber(), changeLog, new Pointer<>(0), null)) {
+                                    Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                                    addCharacterDataMod(ItemAccessor.getItemTypeFromTypeIndex(ti));
+                                }
+                                changeLog.clear();
+                            }
+                        }
+                        break;
+                    }
+                    case 2: {// Inc Exp
+                        int flag = incEXP(packet.decodeInt(), false);
+                        if (flag != 0) {
+                            sendCharacterStat(Request.None, flag);
+                        }
+                        break;
+                    }
+                    case 3: {// Block
+                        String characterName = packet.decodeString();
+                        break;
+                    }
+                    case 4: {// Send User? Temp Block?
+                        String characterName = packet.decodeString();
+                        int duration = packet.decodeInt();//or fieldID
+                        break;
+                    }
+                    default: {
+                        Logger.logReport("New admin command found (%d)", type);
+                    }
+                }
             } finally {
                 unlock();
             }
@@ -1469,11 +1603,12 @@ public class User extends Creature {
         if (target == null || target.isGM()) {
             sendCharacterStat(Request.Excl, 0);
         } else {
-            target.lock.lock();
-            try {
-                sendPacket(WvsContext.onCharacterInfo(target));
-            } finally {
-                target.unlock();
+            if (target.lock()) {
+                try {
+                    sendPacket(WvsContext.onCharacterInfo(target));
+                } finally {
+                    target.unlock();
+                }
             }
         }
     }

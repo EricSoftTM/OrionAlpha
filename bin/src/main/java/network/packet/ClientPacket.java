@@ -44,7 +44,7 @@ public class ClientPacket {
             UserMeleeAttack = 16,
             UserShootAttack = 17,
             UserMagicAttack = 18,
-            Unknown19 = 19, // Not sure if this even exists in the client?
+            Unknown = 19, // Not sure if this even exists in the client?
             UserHit = 20, 
             UserChat = 21,
             UserEmotion = 22,
@@ -70,7 +70,7 @@ public class ClientPacket {
             MiniRoom = 42,
             PartyRequest = 43, // 00487F0F, 00595858
             PartyResult = 44, // 00595755, 005958CA
-            Admin = 45, // 00486B38
+            Admin = 45,
             END_USER = 46,
             BEGIN_FIELD = 47,
             BEGIN_LIFEPOOL = 48,

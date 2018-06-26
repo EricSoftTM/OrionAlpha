@@ -5,7 +5,7 @@ OrionAlpha - A Nexon Replica Emulator Project
 ## Resources
  * You can download the game and client [here](https://mega.nz/#!O9Vy3C7Q!0FsLIilRwzImzjUY_9MxOqtvA4wuMn0SDWE65BkGHZk)
  * To emulate a korean locale in the client, you can download LocaleEmulator [here](https://mega.nz/#!T5t00IwA!YByix3DVt-_Pi0IpU-OwUnvhCDyZEPz4JQ6S-kbYHks)
- * You can download the named client IDB [here](https://mega.nz/#!vtUFjRII!_hMJIYcoQTqorjfd83wKKH5QahFIVKEk5O6I5ULTo_U)
+ * You can download the named client IDB [here](https://mega.nz/#!KgdRna6Q!T5Op7_b_JF62QEvHqeYFp2NJcEYeoigqFdOHpREf5pI)
 ## Requirements/Dependencies
  * Java JDK (8 or higher)
  * javax.json (or Java EE)
@@ -33,8 +33,8 @@ OrionAlpha - A Nexon Replica Emulator Project
   * `PrivateIP` -> The private IP address that connects the JVMs together.
   * `dbGameWorld` -> The Schema name of the active database that the emulator connects to.
   * `dbGameWorldSource` -> The IP and Port for your database.
-  * `incEXPRate` -> The server's Experience Rate modifier.
-  * `incMoneyRate` -> The server's Meso Rate modifier.
+  * `incExpRate` -> The server's Experience Rate modifier.
+  * `incMesoRate` -> The server's Meso Rate modifier.
   * `incDropRate` -> The server's Drop Rate modifier.
   ----------------------------------------------------------------------
   ## Client Modifications

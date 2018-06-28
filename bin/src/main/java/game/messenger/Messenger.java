@@ -97,7 +97,7 @@ public class Messenger {
             String blockedUser = packet.decodeString();
             boolean blockedDeny = packet.decodeBool();
             
-            User target = User.findUserByName(inviteUser, true);
+            User target = user.getChannel().findUserByName(inviteUser, true);
             if (target != null) {
                 if (target.getMessenger().getMSM() != null) {
                     target.getMessenger().getMSM().onBlocked(target, blockedUser, blockedDeny);

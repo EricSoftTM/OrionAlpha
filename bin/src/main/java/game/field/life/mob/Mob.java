@@ -125,7 +125,7 @@ public class Mob extends Creature {
                 int idx = damageLog.getLog().size();
                 for (Info info : damageLog.getLog()) {
                     if (info.damage > 0) {
-                        User user = User.findUser(info.characterID);
+                        User user = getField().findUser(info.characterID);
                         if (user == null || user.getField() == null || user.getField().getFieldID() != damageLog.fieldID) {
                             continue;
                         }
@@ -231,7 +231,7 @@ public class Mob extends Creature {
     
     public void giveReward(int ownerID, Point hit, short delay, boolean steal) {
         if (!alreadyStealed || !steal) {
-            User user = User.findUser(ownerID);
+            User user = getField().findUser(ownerID);
             int ownerDropRate = 1;
             int ownerDropRate_Ticket = 1;
             if (user != null) {

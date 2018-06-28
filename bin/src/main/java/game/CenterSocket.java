@@ -53,12 +53,14 @@ public class CenterSocket extends SimpleChannelInboundHandler {
     private final EventLoopGroup workerGroup;
     private final Lock lock;
     private final Lock lockSend;
+    private final byte channelID;
     private boolean closePosted;
     private String worldName;
     private String addr;
     private int port;
     
-    public CenterSocket() {
+    public CenterSocket(int channel) {
+        this.channelID = (byte) channel;
         this.worldName = "";
         this.addr = "";
         this.closePosted = false;
@@ -131,7 +133,7 @@ public class CenterSocket extends SimpleChannelInboundHandler {
             OutPacket packet = new OutPacket(Byte.MAX_VALUE);
             packet.encodeByte(GameApp.getInstance().getWorldID());
             packet.encodeString(getWorldName());
-            packet.encodeByte(GameApp.getInstance().getChannels().size());
+            encodeChannel(packet);
             sendPacket(packet);
             
             Logger.logReport("Center socket connected successfully");
@@ -140,8 +142,20 @@ public class CenterSocket extends SimpleChannelInboundHandler {
         }
     }
     
+    public void encodeChannel(OutPacket packet) {
+        game.Channel ch = GameApp.getInstance().getChannel(getChannelID());
+        
+        packet.encodeByte(ch.getChannelID());
+        packet.encodeString(ch.getAddr());
+        packet.encodeShort(ch.getPort());
+    }
+    
     public String getAddr() {
         return addr;
+    }
+    
+    public byte getChannelID() {
+        return channelID;
     }
     
     public int getPort() {
@@ -155,7 +169,7 @@ public class CenterSocket extends SimpleChannelInboundHandler {
     public void init(JsonObject data) {
         this.addr = data.getString("ip", "127.0.0.1");
         this.port = data.getInt("port", 8383);
-        this.worldName = data.getString("worldName", OrionConfig.SERVER_NAME);
+        this.worldName = data.getString("worldName", "OrionAlpha");
     }
     
     public void postCloseMessage() {
@@ -172,7 +186,7 @@ public class CenterSocket extends SimpleChannelInboundHandler {
     }
     
     public void processPacket(InPacket packet) {
-        if (GameAcceptor.getInstance() != null) {
+        if (GameAcceptor.getInstance(channelID) != null) {
             Logger.logReport("Packet received: %s", packet.dumpString());
         }
     }

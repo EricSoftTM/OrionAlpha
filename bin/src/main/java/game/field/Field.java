@@ -150,6 +150,22 @@ public class Field {
         }
     }
     
+    public synchronized final User findUser(int characterID) {
+        if (lock(1200)) {
+            try {
+                if (users.containsKey(characterID)) {
+                    User user = users.get(characterID);
+                    if (user != null) {
+                        return user;
+                    }
+                }
+            } finally {
+                unlock();
+            }
+        }
+        return null;
+    }
+    
     public DropPool getDropPool() {
         return dropPool;
     }

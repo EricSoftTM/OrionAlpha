@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import login.ChannelEntry;
 import login.LoginApp;
 import login.LoginPacket;
 import login.WorldEntry;
@@ -390,12 +391,14 @@ public class ClientSocket extends SimpleChannelInboundHandler {
                 return;
             }
             
-            WorldEntry pWorld = LoginApp.getInstance().getWorld(this.worldID);
-            if (pWorld != null) {
-                this.loginState = 9;
-                
-                short port = 8585;//TODO: Get proper port from channel..
-                sendPacket(LoginPacket.onSelectCharacterResult(1, Utilities.netIPToInt32(pWorld.getSocket().getAddr()), port, this.characterID), false);
+            WorldEntry world = LoginApp.getInstance().getWorld(this.worldID);
+            if (world != null) {
+                ChannelEntry ch = world.getChannel(this.channelID);
+                if (ch != null) {
+                    this.loginState = 9;
+                    
+                    sendPacket(LoginPacket.onSelectCharacterResult(1, Utilities.netIPToInt32(ch.getAddr()), ch.getPort(), this.characterID), false);
+                }
             }
         } else {
             postClose();

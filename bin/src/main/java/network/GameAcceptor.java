@@ -67,8 +67,8 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
         this.acceptorClosed = true;
     }
     
-    public static GameAcceptor getInstance() {
-        return GameApp.getInstance().getAcceptor();
+    public static GameAcceptor getInstance(int channel) {
+        return GameApp.getInstance().getChannel(channel).getAcceptor();
     }
     
     /**
@@ -87,6 +87,15 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
      */
     public String getAddr() {
         return this.addr.getAddress().getHostAddress().split(":")[0];
+    }
+    
+    /**
+     * Retrieves the channel index by subtracting the world port from this port.
+     * 
+     * @return The ChannelID of the server
+     */
+    public short getChannelID() {
+        return (short) (getPort() - GameApp.getInstance().getPort());
     }
     
     /**
@@ -139,6 +148,7 @@ public class GameAcceptor extends ChannelInitializer<SocketChannel> implements R
             }
             ClientSocket socket = new ClientSocket(ch);
             socket.setAddr(String.format("%s:%d", socket.getSocketRemoteIP(), addr.getPort()));
+            socket.setChannelID(getChannelID());
             socket.initSequence();
             int serialNo = serialNoCounter.incrementAndGet();
             socket.setLocalSocketSN(serialNo);

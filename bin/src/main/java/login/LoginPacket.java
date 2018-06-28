@@ -42,7 +42,7 @@ public class LoginPacket {
             for (WorldEntry world : LoginApp.getInstance().getWorlds()) {
                 packet.encodeByte(world.getChannels().size());
                 for (ChannelEntry channel : world.getChannels()) {
-                    packet.encodeString(world.getName() + "-" + channel.getChannelID());
+                    packet.encodeString(world.getName() + "-" + (channel.getChannelID() + 1));
                     packet.encodeInt(channel.getUserNo());
                     packet.encodeByte(channel.getWorldID());
                     packet.encodeByte(channel.getChannelID());

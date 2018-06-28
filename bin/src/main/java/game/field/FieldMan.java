@@ -35,7 +35,7 @@ import util.wz.WzUtil;
  */
 public class FieldMan {
     private static final WzPackage fieldDir = new WzFileSystem().init("Map/Map").getPackage();
-    private static final FieldMan instance = new FieldMan();
+    private static FieldMan[] managers;
     
     private final Map<Integer, Field> fields;
     private final Lock lock;
@@ -50,8 +50,19 @@ public class FieldMan {
         }, 100, 1000);
     }
     
-    public static FieldMan getInstance() {
-        return instance;
+    public static FieldMan getInstance(int channel) {
+        if (channel >= 0 && channel < managers.length) {
+            return managers[channel];
+        }
+        return null;
+    }
+    
+    public static void init(int channels) {
+        managers = new FieldMan[channels];
+        
+        for (int i = 0; i < channels; i++) {
+            managers[i] = new FieldMan();
+        }
     }
     
     public Field getField(int fieldID, boolean forceLoad) {

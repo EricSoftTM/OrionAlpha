@@ -108,7 +108,7 @@ public abstract class MiniRoomBase {
 
     public static int create(User userZero, byte type, InPacket packet, boolean tournament, int round) {
         int characterID = packet.decodeInt();
-        User userOne = User.findUser(characterID);
+        User userOne = userZero.getChannel().findUser(characterID);
         MiniRoomBase miniroom = miniRoomFactory(type);
         if (miniroom == null) {
             Logger.logError("Impossible MiniRoom created! New MiniRoomType found :: " + type);

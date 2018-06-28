@@ -66,6 +66,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private final Lock lockSend;
     private int migrateState;
     private int characterID;
+    private byte channelID;
     private User user;
     private final Channel channel;
     private SocketDecoder decoder;
@@ -181,6 +182,14 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         return addr;
     }
     
+    public game.Channel getChannel() {
+        return GameApp.getInstance().getChannel(getChannelID());
+    }
+    
+    public byte getChannelID() {
+        return channelID;
+    }
+    
     public int getCharacterID() {
         return characterID;
     }
@@ -211,15 +220,15 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         if (this.migrateState == MigrateState.Invalid || this.migrateState == MigrateState.WaitMigrateIn) {
             this.characterID = 0;
         }
-        GameApp.getInstance().getAcceptor().incRemainedSocket();
-        GameApp.getInstance().getAcceptor().removeSocket(this);
+        getChannel().getAcceptor().incRemainedSocket();
+        getChannel().getAcceptor().removeSocket(this);
         if (this.user != null) {
             this.user.onSocketDestroyed(false);
             this.user.destructUser();
             this.user = null;
         }
         this.channel.close();
-        GameApp.getInstance().getAcceptor().decRemainedSocket();
+        getChannel().getAcceptor().decRemainedSocket();
     }
     
     public void onMigrateIn(InPacket packet) {
@@ -229,7 +238,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             user = new User(this);
             if (user.getCharacterID() == characterID) {
                 migrateState = MigrateState.Identified;
-                if (User.registerUser(user)) {
+                if (getChannel().registerUser(user)) {
                     user.onMigrateInSuccess();
                     return;
                 }
@@ -302,6 +311,10 @@ public class ClientSocket extends SimpleChannelInboundHandler {
 
     public void setAddr(String addr) {
         this.addr = addr;
+    }
+    
+    public void setChannelID(int channel) {
+        this.channelID = (byte) channel;
     }
     
     public void sendPacket(OutPacket packet, boolean force) {

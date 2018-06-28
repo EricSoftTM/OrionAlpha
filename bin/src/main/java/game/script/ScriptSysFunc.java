@@ -31,6 +31,7 @@ import game.field.FieldMan;
 import game.field.GameObject;
 import game.field.life.mob.Mob;
 import game.field.portal.Portal;
+import game.user.AvatarLook;
 import game.user.User;
 import game.user.WvsContext;
 import game.user.item.ChangeLog;
@@ -155,6 +156,10 @@ public class ScriptSysFunc {
     
     public int getInputNoResult() {
         return inputNo;
+    }
+    
+    public byte getChannelID() {
+        return getUser().getChannelID();
     }
     
     public Point getCurrentPos() {
@@ -306,7 +311,7 @@ public class ScriptSysFunc {
     }
     
     public void fieldBroadcastMessage(int fieldID, byte bmType, String message) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return;
@@ -315,7 +320,7 @@ public class ScriptSysFunc {
     }
     
     public boolean fieldEnablePortal(int fieldID, String portal, boolean enable) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return false;
@@ -324,7 +329,7 @@ public class ScriptSysFunc {
     }
     
     public int fieldGetMobCount(int fieldID, int mobID) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return 0;
@@ -337,7 +342,7 @@ public class ScriptSysFunc {
     }
     
     public int fieldGetUserCount(int fieldID) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return 0;
@@ -346,7 +351,7 @@ public class ScriptSysFunc {
     }
     
     public boolean fieldIsUserExist(int fieldID, int characterID) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return false;
@@ -355,7 +360,7 @@ public class ScriptSysFunc {
     }
     
     public void fieldRemoveAllMob(int fieldID) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return;
@@ -364,7 +369,7 @@ public class ScriptSysFunc {
     }
     
     public void fieldRemoveMob(int fieldID, int mobTemplateID) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return;
@@ -373,7 +378,7 @@ public class ScriptSysFunc {
     }
     
     public void fieldSetMobGen(int fieldID, boolean mobGen, int mobTemplateID) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return;
@@ -386,7 +391,7 @@ public class ScriptSysFunc {
     }
     
     public void fieldSummonMob(int fieldID, int mobTemplateID, int x, int y, int count) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return;
@@ -400,7 +405,7 @@ public class ScriptSysFunc {
     }
     
     public void fieldSummonNpc(int fieldID, int npcTemplateID, int x, int y) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return;
@@ -409,7 +414,7 @@ public class ScriptSysFunc {
     }
     
     public void fieldTransferFieldAll(int fieldID, int portalIdx) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No field %d", fieldID);
             return;
@@ -926,13 +931,13 @@ public class ScriptSysFunc {
     public void userFace(int param) {
         getUser().getCharacter().getCharacterStat().setFace(param);
         getUser().sendCharacterStat(Request.None, CharacterStatType.Face);
-        //getUser().postAvatarModified(AvatarLook.Look);
+        getUser().postAvatarModified(AvatarLook.Look);
     }
     
     public void userHair(int param) {
         getUser().getCharacter().getCharacterStat().setHair(param);
         getUser().sendCharacterStat(Request.None, CharacterStatType.Hair);
-        //getUser().postAvatarModified(AvatarLook.Look);
+        getUser().postAvatarModified(AvatarLook.Look);
     }
     
     public void userJob(int val) {
@@ -955,7 +960,7 @@ public class ScriptSysFunc {
     public void userSkin(int param) {
         getUser().getCharacter().getCharacterStat().setSkin(param);
         getUser().sendCharacterStat(Request.None, CharacterStatType.Skin);
-        //getUser().postAvatarModified(AvatarLook.Look);
+        getUser().postAvatarModified(AvatarLook.Look);
     }
     
     public void registerTransferField(int field) {
@@ -963,7 +968,7 @@ public class ScriptSysFunc {
     }
     
     public void registerTransferField(int fieldID, int portalIdx) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         Portal portal = field.getPortal().getPortal(portalIdx);
         if (portal == null) {
             portal = field.getPortal().getPortal(0);
@@ -972,7 +977,7 @@ public class ScriptSysFunc {
     }
     
     public void registerTransferField(int fieldID, String portal) {
-        Field field = FieldMan.getInstance().getField(fieldID, false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
         if (field == null) {
             Logger.logError("VM run time error - No Field %d", fieldID);
             return;

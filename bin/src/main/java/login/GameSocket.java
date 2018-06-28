@@ -32,13 +32,13 @@ import network.packet.OutPacket;
  * @author Eric
  */
 public class GameSocket extends SimpleChannelInboundHandler {
-    public final Lock lockSend;
-    public boolean closePosted;
-    public boolean aliveReqSended;
-    public long lastAliveAckRcvTime;
-    public long lastAliveReqSndTime;
-    public String addr;
     private final Channel channel;
+    private final Lock lockSend;
+    private boolean closePosted;
+    private boolean aliveReqSended;
+    private long lastAliveAckRcvTime;
+    private long lastAliveReqSndTime;
+    private String addr;
     
     public GameSocket(Channel channel) {
         this.channel = channel;
@@ -109,14 +109,17 @@ public class GameSocket extends SimpleChannelInboundHandler {
         final byte type = packet.decodeByte();
         
         if (type == Byte.MAX_VALUE) {
-            WorldEntry world = new WorldEntry(this, packet.decodeByte(), packet.decodeString());
+            byte worldID = packet.decodeByte();
+            String worldName = packet.decodeString();
             
-            byte channels = packet.decodeByte();
-            for (byte i = 1; i <= channels; i++) {
-                world.addChannel(new ChannelEntry(world.getWorldID(), i));
+            WorldEntry world = LoginApp.getInstance().getWorld(worldID);
+            if (world == null) {
+                world = new WorldEntry(this, worldID, worldName);
+                
+                LoginApp.getInstance().addWorld(world);
             }
             
-            LoginApp.getInstance().addWorld(world);
+            world.addChannel(new ChannelEntry(world.getWorldID(), packet.decodeByte(), packet.decodeString(), packet.decodeShort()));
         }
     }
     

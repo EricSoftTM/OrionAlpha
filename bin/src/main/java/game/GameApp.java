@@ -19,7 +19,6 @@ package game;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -35,10 +34,9 @@ import game.field.life.mob.MobTemplate;
 import game.field.life.npc.NpcTemplate;
 import game.user.item.ItemInfo;
 import game.user.skill.SkillInfo;
-import network.GameAcceptor;
 import network.database.CommonDB;
 import network.database.Database;
-import network.database.GameDB;
+import network.packet.OutPacket;
 import util.Logger;
 import util.TimerThread;
 
@@ -46,13 +44,11 @@ import util.TimerThread;
  *
  * @author Eric
  */
-public class GameApp implements Runnable {
+public class GameApp extends Thread {
     private static final GameApp instance = new GameApp();
     
-    private GameAcceptor acceptor;
-    private CenterSocket socket;
     private String addr;
-    private int port;
+    private short port;
     private byte worldID;
     private int connectionLimit;
     private double incExpRate;
@@ -94,7 +90,7 @@ public class GameApp implements Runnable {
             }
             
             this.addr = gameData.getString("PublicIP", "127.0.0.1");
-            this.port = gameData.getInt("port", 8585);
+            this.port = (short) gameData.getInt("port", 8585);
             
             this.incExpRate = gameData.getInt("incExpRate", 100) * 0.01;
             this.incMesoRate = gameData.getInt("incMesoRate", 100) * 0.01;
@@ -102,33 +98,65 @@ public class GameApp implements Runnable {
             
             int channelNo = gameData.getInt("channelNo", 1);
             for (int i = 0; i < channelNo; i++) {
-                this.channels.add(new Channel((byte) i));
+                this.channels.add(new Channel(i, this.addr, this.port + i));
             }
             
             JsonObject loginData = gameData.getJsonObject("login");
             if (loginData != null) {
-                this.socket = new CenterSocket();
-                this.socket.init(loginData);
-                this.socket.connect();
+                for (Channel channel : getChannels()) {
+                    channel.getCenter().init(loginData);
+                    channel.getCenter().connect();
+                    // Pause each socket connection for a small interval of time
+                    // to allow each channel to be added sequentially.
+                    sleep(100);
+                }
             }
-        } catch (FileNotFoundException ex) {
+        } catch (FileNotFoundException | InterruptedException ex) {
             ex.printStackTrace(System.err);
         }
     }
     
     private void createAcceptor() {
-        this.acceptor = new GameAcceptor(new InetSocketAddress(addr, port));
-        this.acceptor.run();
+        for (Channel channel : channels) {
+            channel.getAcceptor().run();
+        }
 
-        Logger.logReport("Socket acceptor started");
+        Logger.logReport("Socket acceptors started");
     }
     
-    public final GameAcceptor getAcceptor() {
-        return acceptor;
+    public void encodeChannels(OutPacket packet) {
+        packet.encodeByte(channels.size());
+        for (Channel channel : channels) {
+            packet.encodeString(channel.getAddr());
+            packet.encodeShort(channel.getPort());
+        }
+    }
+    
+    public final Channel getChannel(int channel) {
+        if (channel >= 0 && channel < channels.size()) {
+            return channels.get(channel);
+        }
+        return null;
     }
     
     public final List<Channel> getChannels() {
         return channels;
+    }
+    
+    public double getExpRate() {
+        return incExpRate;
+    }
+    
+    public int getConnectionLimit() {
+        return connectionLimit;
+    }
+    
+    public double getDropRate() {
+        return incDropRate;
+    }
+    
+    public double getMesoRate() {
+        return incMesoRate;
     }
     
     public final long getNextCashSN() {
@@ -153,20 +181,8 @@ public class GameApp implements Runnable {
         }
     }
     
-    public double getExpRate() {
-        return incExpRate;
-    }
-    
-    public double getMesoRate() {
-        return incMesoRate;
-    }
-    
-    public double getDropRate() {
-        return incDropRate;
-    }
-    
-    public int getConnectionLimit() {
-        return connectionLimit;
+    public short getPort() {
+        return port;
     }
     
     public long getServerStartTime() {
@@ -227,7 +243,7 @@ public class GameApp implements Runnable {
         
         // Load Maps
         time = System.currentTimeMillis();
-        FieldMan.getInstance();
+        FieldMan.init(getChannels().size());
         Logger.logReport("Loaded map (field) data from map files in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
     }
     
@@ -245,10 +261,10 @@ public class GameApp implements Runnable {
         
         TimerThread.createTimerThread();
         
+        connectCenter();
         initializeDB();
         initializeItemSN();
         initializeGameData();
-        connectCenter();
         createAcceptor();
         Logger.logReport("The Game Server has been initialized in " + ((System.currentTimeMillis() - serverStartTime) / 1000.0) + " seconds.");
     }

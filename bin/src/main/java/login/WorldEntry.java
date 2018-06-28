@@ -38,12 +38,16 @@ public class WorldEntry {
         this.channels = new ArrayList<>();
     }
     
-    public void addChannel(ChannelEntry entry) {
-        this.channels.add(entry);
+    public void addChannel(ChannelEntry ch) {
+        channels.add(ch);
+    }
+    
+    public ChannelEntry getChannel(int channel) {
+        return channels.get(channel);
     }
     
     public final List<ChannelEntry> getChannels() {
-        return this.channels;
+        return channels;
     }
     
     public final GameSocket getSocket() {
@@ -51,15 +55,15 @@ public class WorldEntry {
     }
     
     public String getName() {
-        return this.name;
+        return name;
     }
     
     public byte getWorldID() {
-        return this.worldID;
+        return worldID;
     }
     
-    public void removeChannel(ChannelEntry entry) {
-        this.channels.remove(entry);
+    public void removeChannel(ChannelEntry ch) {
+        channels.remove(ch);
     }
     
     public void sendPacket(OutPacket packet) {

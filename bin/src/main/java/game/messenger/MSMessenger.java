@@ -57,7 +57,7 @@ public class MSMessenger {
 
     public static void onInvite(User user, String targetName) {
         if (user.getMessenger().getMSM() != null) {
-            User target = User.findUserByName(targetName, true);
+            User target = user.getChannel().findUserByName(targetName, true);
             if (user == target) {
                 return;
             }

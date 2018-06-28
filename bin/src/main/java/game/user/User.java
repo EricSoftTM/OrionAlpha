@@ -40,41 +40,23 @@ import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.DBChar;
 import common.user.UserEffect;
+import game.Channel;
 import game.GameApp;
 import game.field.*;
-import game.field.drop.Drop;
-import game.field.drop.DropPickup;
-import game.field.drop.Reward;
-import game.field.drop.RewardType;
+import game.field.drop.*;
 import game.field.life.AttackIndex;
 import game.field.life.AttackInfo;
-import game.field.life.mob.Mob;
-import game.field.life.mob.MobAttackInfo;
-import game.field.life.mob.MobTemplate;
-import game.field.life.npc.Npc;
-import game.field.life.npc.NpcTemplate;
-import game.field.life.npc.ShopDlg;
-import game.field.life.npc.ShopItem;
-import game.field.life.npc.ShopResCode;
+import game.field.life.mob.*;
+import game.field.life.npc.*;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
-import game.messenger.MSMessenger;
 import game.messenger.Messenger;
 import game.miniroom.MiniRoom;
 import game.miniroom.MiniRoomBase;
 import game.script.ScriptVM;
 import game.user.command.CommandHandler;
 import game.user.command.UserGradeCode;
-import game.user.item.BundleItem;
-import game.user.item.ChangeLog;
-import game.user.item.EquipItem;
-import game.user.item.ExchangeElem;
-import game.user.item.Inventory;
-import game.user.item.InventoryManipulator;
-import game.user.item.ItemInfo;
-import game.user.item.ItemVariationOption;
-import game.user.item.PortalScrollItem;
-import game.user.item.StateChangeItem;
+import game.user.item.*;
 import game.user.skill.*;
 import game.user.skill.Skills.*;
 import game.user.stat.BasicStat;
@@ -93,16 +75,10 @@ import util.*;
  * @author Eric
  */
 public class User extends Creature {
-    private static final Lock lockUser = new ReentrantLock();
-    private static final Map<Integer, User> users = new LinkedHashMap<>();
-    private static final Map<String, User> userByName = new LinkedHashMap<>();
-    
     private int accountID;
     private int characterID;
     private int gradeCode;
     private int localSocketSN;
-    private byte channelID;
-    private byte worldID;
     // Account/Character Names
     private String nexonClubID;
     private String characterName;
@@ -189,9 +165,6 @@ public class User extends Creature {
     
     protected User(int characterID) {
         super();
-        
-        this.worldID = 0;
-        this.channelID = 0;
         
         this.hide = false;
         this.onTransferField = false;
@@ -294,93 +267,6 @@ public class User extends Creature {
             runningVM = null;
         }
         /* End CUser::~CUser destructor */
-    }
-    
-    public static final void broadcast(OutPacket packet) {
-        lockUser.lock();
-        try {
-            for (User user : users.values()) {
-                if (user != null) {
-                    user.sendPacket(packet);
-                }
-            }
-        } finally {
-            lockUser.unlock();
-        }
-    }
-    
-    public static final void broadcastGMPacket(OutPacket packet) {
-        lockUser.lock();
-        try {
-            for (User user : users.values()) {
-                if (user != null && user.isGM()) {
-                    user.sendPacket(packet);
-                }
-            }
-        } finally {
-            lockUser.unlock();
-        }
-    }
-    
-    public static synchronized final User findUser(int characterID) {
-        lockUser.lock();
-        try {
-            if (users.containsKey(characterID)) {
-                User user = users.get(characterID);
-                if (user != null) {
-                    return user;
-                }
-            }
-            return null;
-        } finally {
-            lockUser.unlock();
-        }
-    }
-    
-    public static synchronized final User findUserByName(String name, boolean makeLower) {
-        lockUser.lock();
-        try {
-            if (makeLower)
-                name = name.toLowerCase();
-            if (userByName.containsKey(name)) {
-                User user = userByName.get(name);
-                if (user != null) {
-                    return user;
-                }
-            }
-            return null;
-        } finally {
-            lockUser.unlock();
-        }
-    }
-    
-    public static final Collection<User> getUsers() {
-        return Collections.unmodifiableCollection(users.values());
-    }
-    
-    public static synchronized final boolean registerUser(User user) {
-        lockUser.lock();
-        try {
-            if (users.containsKey(user.characterID)) {
-                return false;
-            } else {
-                users.put(user.characterID, user);
-                userByName.put(user.characterName.toLowerCase(), user);
-                return true;
-            }
-        } finally {
-            lockUser.unlock();
-        }
-    }
-    
-    public static final void unregisterUser(User user) {
-        lockUser.lock();
-        try {
-            users.remove(user.characterID);
-            userByName.remove(user.characterName.toLowerCase());
-        } finally {
-            lockUser.unlock();
-        }
     }
     
     ///////////////////////////// CQWUser START /////////////////////////////
@@ -932,8 +818,18 @@ public class User extends Creature {
         return calcDamage;
     }
     
+    public Channel getChannel() {
+        if (socket != null) {
+            return socket.getChannel();
+        }
+        return null;
+    }
+    
     public byte getChannelID() {
-        return channelID;
+        if (socket != null) {
+            return socket.getChannelID();
+        }
+        return 0;
     }
     
     public CharacterData getCharacter() {
@@ -985,7 +881,7 @@ public class User extends Creature {
     }
     
     public byte getWorldID() {
-        return worldID;
+        return GameApp.getInstance().getWorldID();
     }
     
     public double getExpRate() {
@@ -1053,7 +949,7 @@ public class User extends Creature {
                 if (lock()) {
                     try {
                         setPosMap(getField().getForcedReturnFieldID());
-                        Field field = FieldMan.getInstance().getField(getField().getForcedReturnFieldID(), false);
+                        Field field = FieldMan.getInstance(getChannelID()).getField(getField().getForcedReturnFieldID(), false);
                         byte portal = 0;
                         if (field.getPortal() != null) {
                             portal = field.getPortal().getRandStartPoint().getPortalIdx();
@@ -1137,13 +1033,13 @@ public class User extends Creature {
         if (getPosMap() / 10000000 == 99) {
             setPosMap(990001100);
         }
-        Field field = FieldMan.getInstance().getField(getPosMap(), false);
+        Field field = FieldMan.getInstance(getChannelID()).getField(getPosMap(), false);
         setField(field);
         if (getHP() == 0) {
             character.getCharacterStat().setHP((short) 50);
         }
         if (getField() == null) {
-            field = FieldMan.getInstance().getField(Field.Basic, false);
+            field = FieldMan.getInstance(getChannelID()).getField(Field.Basic, false);
             setField(field);
             setPosMap(field.getFieldID());
             setPortal(field.getPortal().getRandStartPoint().getPortalIdx());
@@ -1188,7 +1084,7 @@ public class User extends Creature {
                 destroyAdditionalProcess();
                 leaveField();
                 GameObjectBase.unregisterGameObject(this);
-                User.unregisterUser(this);
+                getChannel().unregisterUser(this);
             } finally {
                 unlock();
             }
@@ -1599,7 +1495,7 @@ public class User extends Creature {
     }
     
     public void onCharacterInfoRequest(InPacket packet) {
-        User target = User.findUser(packet.decodeInt());
+        User target = getField().findUser(packet.decodeInt());
         if (target == null || target.isGM()) {
             sendCharacterStat(Request.Excl, 0);
         } else {
@@ -1760,7 +1656,7 @@ public class User extends Creature {
     
     public void onGivePopularityRequest(InPacket packet) {
         int targetID = packet.decodeInt();
-        User target = User.findUser(targetID);
+        User target = getField().findUser(targetID);
         if (target == null || target == this) {
             sendPacket(WvsContext.onGivePopularityResult(GivePopularityRes.InvalidCharacterID, null, false));
         } else {
@@ -1930,7 +1826,7 @@ public class User extends Creature {
                 if (!canAttachAdditionalProcess() || fieldID == Field.Invalid || fieldID == getField().getFieldID()) {
                     sendCharacterStat(Request.Excl, 0);
                 } else {
-                    if (FieldMan.getInstance().isConnected(getField().getFieldID(), fieldID)) {
+                    if (FieldMan.getInstance(getChannelID()).isConnected(getField().getFieldID(), fieldID)) {
                         List<ChangeLog> changeLog = new ArrayList<>();
                         Pointer<Integer> decRet = new Pointer<>(0);
                         if (Inventory.rawRemoveItem(this, ItemType.Consume, pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
@@ -2254,7 +2150,7 @@ public class User extends Creature {
         if (flag == WhisperFlags.ReplyRequest) {
             String text = packet.decodeString();
             
-            User user = User.findUserByName(target, true);
+            User user = getChannel().findUserByName(target, true);
             boolean success = false;
             if (user != null && user.getField() != null && user.getField().getFieldID() != 0) {
                 user.sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyReceive, null, getCharacterName(), text, -1, false));
@@ -2264,7 +2160,7 @@ public class User extends Creature {
             }
             sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyResult, target, null, null, -1, success));
         } else if (flag == WhisperFlags.FindRequest) {
-            User user = User.findUserByName(target, true);
+            User user = getChannel().findUserByName(target, true);
             int fieldID = 0;
             if (user != null && user.getField() != null) {
                 fieldID = user.getField().getFieldID();
@@ -2329,7 +2225,7 @@ public class User extends Creature {
         if (lock()) {
             try {
                 if (!onTransferField || force) {
-                    if (fieldID != null && FieldMan.getInstance().isBlockedMap(fieldID)) {
+                    if (fieldID != null && FieldMan.getInstance(getChannelID()).isBlockedMap(fieldID)) {
                         Logger.logError("User tried to enter the Blocked Map #3 (From:%d,To:%d)", getField().getFieldID(), fieldID);
                         sendPacket(FieldPacket.onTransferFieldReqIgnored());
                     } else {
@@ -2395,13 +2291,13 @@ public class User extends Creature {
                                 return;
                             }
                         }
-                        Field field = FieldMan.getInstance().getField(fieldID, false);
+                        Field field = FieldMan.getInstance(getChannelID()).getField(fieldID, false);
                         if (field == null) {
                             Logger.logError("Invalid Field ID *1* : %d (Old: %d, IsDead: %b)", fieldID, getField().getFieldID(), isDead);
                             closeSocket();
                             return;
                         }
-                        if (FieldMan.getInstance().isBlockedMap(fieldID)) {
+                        if (FieldMan.getInstance(getChannelID()).isBlockedMap(fieldID)) {
                             Logger.logError("User tried to enter the Blocked Map #1 (From:%d,To:%d)", getField().getFieldID(), fieldID);
                             sendPacket(FieldPacket.onTransferFieldReqIgnored());
                             this.onTransferField = false;
@@ -2413,9 +2309,9 @@ public class User extends Creature {
                             } else {
                                 pt = field.getPortal().findCloseStartPoint(pos.x, pos.y);
                             }
-                            pos.x = pt.getPortalPos().x;
-                            pos.y = pt.getPortalPos().y;
                         }
+                        pos.x = pt.getPortalPos().x;
+                        pos.y = pt.getPortalPos().y;
                         onTransferField(field, pos.x, pos.y, pt.getPortalIdx());
                     }
                 }
@@ -2471,7 +2367,7 @@ public class User extends Creature {
                         //if (ItemAccessor.isJavelinItem(pr.getItem().getItemID()) && incRet.Get() == 0)
                         //    consumeOnPickup = true;
                         if (pr.getSourceID() == 0 /*&& pr.getOwnType() == Drop.UserOwn*/) {
-                            User user = User.findUser(pr.getOwnerID());
+                            User user = getChannel().findUser(pr.getOwnerID());
                             if (user != null) {
                                 user.flushCharacterData(0, true);
                             }
@@ -2584,7 +2480,7 @@ public class User extends Creature {
     public void setMaxLevelReach() {
         if (!isGM()) {
             String notice = String.format("[Congrats] %s has reached Level 200! Congratulate %s on such an amazing achievement!", characterName, characterName);
-            User.broadcast(WvsContext.onBroadcastMsg(BroadcastMsg.Notice, notice));
+            getChannel().broadcast(WvsContext.onBroadcastMsg(BroadcastMsg.Notice, notice));
         }
     }
     

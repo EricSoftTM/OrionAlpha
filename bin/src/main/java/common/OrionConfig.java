@@ -23,17 +23,6 @@ package common;
  * @author Eric
  */
 public class OrionConfig {
-    // Server Name
-    public static final String SERVER_NAME = "OrionAlpha";
-    
-    // Game Server Connection Info
-    public static final String GAME_ADDR = "127.0.0.1";
-    public static final int GAME_PORT = 7575;
-    
-    // Login Server Connection Info
-    public static final String LOGIN_ADDR = "127.0.0.1";
-    public static final int LOGIN_PORT = 8484;
-    
     // Version Info
     public static final int CLIENT_VER = 223;
     public static final String CLIENT_PATCH = "\0";

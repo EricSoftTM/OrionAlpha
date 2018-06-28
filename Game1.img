@@ -1,0 +1,19 @@
+{
+	"port": 8686,
+	
+	"gameWorldId": 1,
+	"channelNo": 2,
+	
+	"PublicIP": "127.0.0.1",
+	"PrivateIP": "127.0.0.1",
+
+	"incExpRate": 200,
+	"incMesoRate": 200,
+	"incDropRate": 200,
+	
+	"login": {
+		"ip": "127.0.0.1",
+		"port": 8383,
+		"worldName": "MapleMeme"
+	}
+}

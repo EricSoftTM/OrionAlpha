@@ -2671,7 +2671,7 @@ public class User extends Creature {
                     int skillID = skill.getSkillID();
                     int skillRoot = skillID / 10000;
                     
-                    if (character.getCharacterStat().getJob() == skillRoot) {
+                    if (JobAccessor.isCorrectJobForSkillRoot(character.getCharacterStat().getJob(), skillRoot)) {
                         character.getSkillRecord().put(skillID, skill.getLevelData().length);
                     }
                 }

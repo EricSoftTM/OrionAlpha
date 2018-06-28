@@ -252,7 +252,7 @@ public class GameApp extends Thread {
     }
     
     public static void main(String[] args) {
-        GameApp.getInstance().run();
+        GameApp.getInstance().start();
     }
     
     @Override

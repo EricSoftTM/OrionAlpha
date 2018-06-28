@@ -40,11 +40,14 @@ public class MobPool {
         return packet;
     }
     
-    public static OutPacket onAffected(int mobID, int skillID, short delay) {
-        OutPacket packet = new OutPacket(LoopbackPacket.MobAffected);
-        packet.encodeInt(mobID);
+    public static OutPacket onStatSet(Mob mob, int flagSet, int skillID, short delay) {
+        OutPacket packet = new OutPacket(LoopbackPacket.MobStatSet);
+        packet.encodeInt(mob.getGameObjectID());
+        mob.getMobStat().encodeTemporary(packet, flagSet);
         packet.encodeInt(skillID);
-        packet.encodeShort(delay);
+        if (skillID != 0) {
+            packet.encodeShort(delay);
+        }
         return packet;
     }
     

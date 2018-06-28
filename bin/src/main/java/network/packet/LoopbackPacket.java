@@ -88,7 +88,7 @@ public class LoopbackPacket {
             BEGIN_MOB = 60,
             MobMove = 61,
             MobCtrlAck = 62,
-            MobAffected = 63,
+            MobStatSet = 63,
             END_MOB = 64,
             END_MOBPOOL = 65,
             BEGIN_NPCPOOL = 66,

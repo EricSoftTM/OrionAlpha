@@ -30,7 +30,12 @@ public class MobStats {
             ACC     = 0x10,
             EVA     = 0x20,
             Speed   = 0x40,
-            Stun    = 0x80,
-            Freeze  = 0x100
+            // Doesn't do anything as far as I'm aware, but since
+            // Poison exists, I'll assume this is just a dummy stat.
+            Poison  = 0x80,
+            // Since Freeze also freezes a mob, but is a visual,
+            // I guess they are both the same MobStat?
+            Freeze  = 0x100,
+            Stun    = 0x100
     ;
 }

@@ -20,10 +20,12 @@ package game.user.command;
 import common.Request;
 import game.field.Field;
 import game.field.FieldPacket;
+import game.field.life.LifePool;
+import game.field.life.mob.Mob;
+import game.field.life.mob.MobStatOption;
 import game.party.PartyData;
 import game.party.PartyPacket;
 import game.user.User;
-import game.user.WvsContext;
 
 /**
  * @author Arnah
@@ -31,9 +33,6 @@ import game.user.WvsContext;
 public class UserCommands {
 
     public static String fixme(User user, String[] args) {
-        if (user.getCharacterID() == 1 && !user.isGM()) {
-            user.setGradeCode(UserGradeCode.Developer.getGrade());
-        }
         if (user.getScriptVM() != null) {
             user.setScriptVM(null);
         }
@@ -61,6 +60,34 @@ public class UserCommands {
             pd.getParty().getCharacterID().set(0, 1);
             pd.getParty().getCharacterName().set(0, "Eric");
             user.sendPacket(PartyPacket.onPartyResult(1, pd));
+        }
+        return null;
+    }
+    
+    public static String packet(User user, LifePool pool, String[] args) {
+        if (args.length > 0) {
+            int flag = Integer.parseInt(args[0]);
+            int skillID = 0;
+            if (args.length > 1) {
+                skillID = Integer.parseInt(args[1]);
+            }
+            int mobID = 100100;
+            if (args.length > 2) {
+                mobID = Integer.parseInt(args[2]);
+            }
+            
+            MobStatOption opt = new MobStatOption();
+            opt.setOption(1);
+            opt.setReason(skillID);
+            opt.setDuration(System.currentTimeMillis() + 1000 * 60);
+            
+            Mob mob = pool.getMobByTemplateID(mobID);
+            if (mob != null) {
+                mob.getMobStat().setStat(flag, opt);
+                mob.sendMobTemporaryStatSet(flag, 0);
+            } else {
+                return "Unable to find mob.";
+            }
         }
         return null;
     }

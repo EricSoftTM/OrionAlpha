@@ -56,6 +56,7 @@ public class Mob extends Creature {
     private boolean noDropPriority;
     private Controller controller;
     private boolean nextAttackPossible;
+    private boolean experiencedMoveStateChange;
     private int hp;
     private int mp;
     private MobDamageLog damageLog;
@@ -69,6 +70,8 @@ public class Mob extends Creature {
     private long lastAttack;
     private long lastMove;
     private long create;
+    private long lastRecovery;
+    private long lastUpdatePoison;
     private final Map<Integer, Long> attackers;
     
     public Mob(Field field, MobTemplate template, boolean noDropPriority) {
@@ -95,6 +98,7 @@ public class Mob extends Creature {
         this.lastAttack = time;
         this.lastMove = time;
         this.create = time;
+        this.lastUpdatePoison = 0;
         this.stat.setFrom(template);
     }
     
@@ -339,10 +343,17 @@ public class Mob extends Creature {
                 Logger.logError("Invalid Mob Damage. Name : %s, Damage: %d", user.getCharacterName(), damage);
                 return false;
             }
+            //int flagReset = stat.resetTemporary(time);
             if (hp > 0) {
                 damage = Math.min(damage, hp);
                 damageLog.addLog(characterID, damage, time);
                 setMobHP(hp - damage);
+                //if (hp > 0) {
+                    //if (attackType == 1 && stat.getStatOption(MobStats.Stun) != 0) {
+                        //flagReset |= stat.reset(MobStats.Stun);
+                    //}
+                //}
+                //sendMobTemporaryStatReset(flagReset);
                 return hp <= 0;
             }
         }
@@ -394,33 +405,73 @@ public class Mob extends Creature {
     public void onMobStatChangeSkill(User user, SkillEntry skill, byte slv, int damageSum) {
         SkillLevelData level = skill.getLevelData(slv);
         int prop = level.getProp();
+        int x = level.getX();
+        int y = level.getY();
         int skillID = skill.getSkillID();
         if (prop == 0) {
             prop = 100;
         }
-        if (Rand32.genRandom() % 100 >= prop) {
+        long time = System.currentTimeMillis();
+        long duration = time + 1000 * level.getTime();
+        if (Rand32.genRandom() % 100 >= prop || template.isBoss()) {
             return;
         }
         
+        MobStatOption opt = new MobStatOption();
+        opt.setOption(x);
+        opt.setReason(skillID);
+        opt.setDuration(duration);
+        
+        int flag = 0;
         switch (skillID) {
             case Wizard2.ColdBeam: {
+                int attr;
+                if ((attr = template.getDamagedElemAttr().get(AttackElem.Ice)) == AttackElemAttr.Damage0 || attr == AttackElemAttr.Damage50) {
+                    return;
+                }
+                opt.setOption(1);
+                flag |= stat.setStat(MobStats.Freeze, opt);
+                this.experiencedMoveStateChange = true;
                 break;
             }
             case Hunter.ArrowBomb:
             case Thief.Steal: {
+                if (skillID == Hunter.ArrowBomb && damageSum < template.getPushedDamage() && (Rand32.genRandom() % 3) != 0) {
+                    return;
+                }
+                opt.setOption(1);
+                flag |= stat.setStat(MobStats.Stun, opt);
+                this.experiencedMoveStateChange = true;
                 break;
             }
             case Wizard1.PoisonBreath: {
+                int attr;
+                if ((attr = template.getDamagedElemAttr().get(AttackElem.Poison)) == AttackElemAttr.Damage0 || attr == AttackElemAttr.Damage50) {
+                    return;
+                }
+                opt.setOption(Math.max(Math.min(Short.MAX_VALUE, getMaxHP() / (70 - slv)), level.getMAD()));
+                opt.setModOption(user.getCharacterID());
+                this.lastUpdatePoison = time;
+                flag |= stat.setStat(MobStats.Poison, opt);
                 break;
             }
             case Wizard1.Slow:
             case Wizard2.Slow: {
+                flag |= stat.setStat(MobStats.Speed, opt);
                 break;
             }
             case Page.Threaten:
             case Rogue.Disorder: {
+                flag |= stat.setStat(MobStats.PAD, opt);
+                flag |= stat.setStat(MobStats.PDD, new MobStatOption(y, skillID, duration));
                 break;
             }
+            default: {
+                return;
+            }
+        }
+        if (flag != 0) {
+            sendMobTemporaryStatSet(flag, 0);
         }
     }
     
@@ -431,6 +482,18 @@ public class Mob extends Creature {
             } else {
                 sendReleaseControlPacket(user, getGameObjectID());
             }
+        }
+    }
+    
+    public void sendMobTemporaryStatReset(int reset) {
+        if (reset != 0) {
+            //getField().splitSendPacket(getSplit(), MobPool.onStatSet(this, reset, 0, (short) 0), null);
+        }
+    }
+    
+    public void sendMobTemporaryStatSet(int flag, int delay) {
+        if (flag != 0) {
+            getField().splitSendPacket(getSplit(), MobPool.onStatSet(this, flag, stat.getStatReason(flag), (short) delay), null);
         }
     }
     
@@ -498,6 +561,21 @@ public class Mob extends Creature {
     public void update(long time) {
         if (hp <= 0)
             return;
+        if (stat.getStatOption(MobStats.Poison) != 0)
+            updatePoison(time);
+        int reset = stat.resetTemporary(time);
+        if (hp == 1) {
+            if (stat.getStatOption(MobStats.Poison) != 0)
+                reset |= stat.reset(MobStats.Poison);
+        }
+        if (reset != 0) {
+            sendMobTemporaryStatReset(reset);
+        }
+        if (time - lastRecovery > 8000) {
+            setMobHP(Math.min(hp + template.getHPRecovery(), getMaxHP()));
+            mp = Math.min(getMP() + template.getMPRecovery(), getMaxMP());
+            lastRecovery = time;
+        }
         if (time - lastMove > 5000) {
             getField().getLifePool().changeMobController(0, this, false);
             lastAttack = time;
@@ -507,6 +585,22 @@ public class Mob extends Creature {
             long attackTime = it.next();
             if (time - attackTime > 1000 * 5)
                 it.remove();
+        }
+    }
+    
+    public void updatePoison(long time) {
+        if (stat.getStatOption(MobStats.Poison) > 0) {
+            long lastPoison = Math.min(time, stat.getStatDuration(MobStats.Poison));
+            long times = (lastPoison - lastUpdatePoison) / 1000;
+            int oldHP = hp;
+            int poison = stat.getStatOption(MobStats.Poison);
+            
+            setMobHP(Math.max(1, (int) (hp - times * poison)));
+            
+            if (hp != oldHP)
+                damageLog.addLog(stat.getStat(MobStats.Poison).getModOption(), oldHP - hp, time);
+            
+            lastUpdatePoison += 1000 * times;
         }
     }
 }

@@ -15,9 +15,11 @@ OrionAlpha - A Nexon Replica Emulator Project
  * slf4j (1.7 or higher)
  ----------------------------------------------------------------------
  ## Architecture
- The OrionAlpha Emulator is split up into two parts: Login, and Game, and each execute on their own thread. 
- Login is the sole Login server which will have connectivity to each world and can migrate you back and forth. 
- Game is designed to be each world, and takes the JVM argument -DworldID=X to define which world it is. Each Game JVM that controls the world will also control all of its channels (thus, no multi-jvm here).
+ The OrionAlpha Emulator is split up into two parts: *Login*, and *Game*, each executing on their own thread. 
+ 
+ **Login** is the central server which will have connectivity to each world and can migrate you back and forth. 
+ 
+ **Game** is designed to be each world, and takes the JVM argument `-DgameID=X` to define which world it is. Each Game JVM that controls the world will also control all of its channels (thus, no multi-jvm here).
  
  ----------------------------------------------------------------------
  ## Server Configuration

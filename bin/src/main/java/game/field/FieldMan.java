@@ -94,7 +94,7 @@ public class FieldMan {
         final Field field = new Field(fieldID);
         
         WzProperty info = mapData.getNode("info");
-        field.setForcedReturn(WzUtil.getInt32(info.getNode("returnMap"), Field.Invalid));
+        field.setFieldReturn(WzUtil.getInt32(info.getNode("returnMap"), Field.Invalid));
         field.setForcedReturn(WzUtil.getInt32(info.getNode("forcedReturn"), Field.Invalid));
         field.setMobRate(WzUtil.getFloat(info.getNode("mobRate"), 1.0f));
         field.setRecoveryRate(WzUtil.getFloat(info.getNode("recovery"), 1.0f));

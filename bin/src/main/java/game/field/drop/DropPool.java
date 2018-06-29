@@ -180,7 +180,7 @@ public class DropPool {
                     return;
                 }
                 if (drop.getItem() != null) {
-                    // TODO: Check if item is one-of-a-kind and if they already have one.
+                    // One-of-a-kind items don't exist yet ;)
                 }
                 boolean pickUp = false;
                 if (drop.isEverlasting()) {

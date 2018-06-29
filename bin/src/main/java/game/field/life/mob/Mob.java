@@ -22,6 +22,7 @@ import game.field.Creature;
 import game.field.Field;
 import game.field.GameObjectType;
 import game.field.MovePath;
+import game.field.MovePath.Elem;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.field.life.Controller;
@@ -37,10 +38,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import network.packet.OutPacket;
 import util.Logger;
 import util.Pointer;
 import util.Rand32;
+import util.Rect;
 
 /**
  *
@@ -50,7 +54,7 @@ public class Mob extends Creature {
     private final MobTemplate template;
     private MobGen mobGen;
     private MobStat stat;
-    private int mobType;
+    private byte mobType;
     private int templateID;
     private short homeFoothold;
     private boolean noDropPriority;
@@ -66,6 +70,10 @@ public class Mob extends Creature {
     private final List<Reward> rewardPicked;
     private boolean alreadyStealed;
     private int itemID_Stolen;
+    private final List<Rect> moves;
+    private final Lock lockMoveRect;
+    private short lastX;
+    private short lastY;
     private boolean forcedDead;
     private long lastAttack;
     private long lastMove;
@@ -83,11 +91,17 @@ public class Mob extends Creature {
         this.mobType = 0;//MobSpecies.Beast
         this.controller = null;
         this.nextAttackPossible = false;
+        this.lastUpdatePoison = 0;
         this.damageLog = new MobDamageLog();
         this.footholdSN = 0;
         this.rewardPicked = new ArrayList<>();
         this.alreadyStealed = false;
         this.itemID_Stolen = 0;
+        this.moves = new ArrayList<>();
+        this.lockMoveRect = new ReentrantLock();
+        this.lastX = 0;
+        this.lastY = 0;
+        this.experiencedMoveStateChange = false;
         this.attackers = new HashMap<>();
         this.hp = getMaxHP();
         this.mp = getMaxMP();
@@ -95,10 +109,10 @@ public class Mob extends Creature {
         this.templateID = template.getTemplateID();
         this.stat = new MobStat();
         long time = System.currentTimeMillis();
+        this.lastRecovery = time;
         this.lastAttack = time;
         this.lastMove = time;
         this.create = time;
-        this.lastUpdatePoison = 0;
         this.stat.setFrom(template);
     }
     
@@ -107,9 +121,46 @@ public class Mob extends Creature {
     }
     
     public boolean checkIsPossibleMoveStart(User user, MovePath mp, Pointer<Boolean> result) {
-        // TODO: Calculate this later
+        Point moveStart = new Point(0, 0);
+        boolean suddenMove = true;
+        Elem head = mp.getElem().getFirst();
+        Elem tail = mp.getElem().getLast();
+        short x = head.getX();
+        short y = head.getY();
         
-        return true;
+        moveStart.x = x;
+        moveStart.y = y;
+        if (lastX == 0 || lastY == 0 || Math.abs(lastX - x) <= 500)
+            suddenMove = false;
+        lastX = tail.getX();
+        lastY = tail.getY();
+        if (experiencedMoveStateChange || Rand32.genRandom() % 100 >= 20)
+            return false;
+        lockMoveRect.lock();
+        try {
+            if (moves.isEmpty() || moves.size() < 2) {
+                return false;
+            }
+            Rect rc = moves.get(moves.size() - 1);//arcMove.a -> pTail?
+            Rect move = new Rect();
+            move.left = rc.left;
+            move.top = rc.top;
+            move.right = rc.right;
+            move.bottom = rc.bottom;
+            for (int i = 1; i < moves.size(); i++) {
+                move = move.unionRect(moves.get(i));
+            }
+            move.inflateRect(300, 300);
+            
+            boolean bMove = move.ptInRect(moveStart);
+            if (bMove || !suddenMove)
+                bMove = true;
+            result.set(bMove);
+            
+            return true;
+        } finally {
+            lockMoveRect.unlock();
+        }
     }
     
     public int distributeExp(Pointer<Integer> lastDamageCharacterID) {
@@ -523,7 +574,7 @@ public class Mob extends Creature {
     }
     
     public void setMobType(int type) {
-        this.mobType = type;
+        this.mobType = (byte) type;
     }
     
     public boolean setMovePosition(int x, int y, byte moveAction, short sn) {

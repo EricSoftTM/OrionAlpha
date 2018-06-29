@@ -24,6 +24,7 @@ import common.item.ItemSlotEquip;
 import common.item.ItemSlotType;
 import common.item.ItemType;
 import common.user.CharacterData;
+import game.user.command.UserGradeCode;
 import game.user.item.ItemInfo;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -314,7 +315,7 @@ public class User {
     }
 
     public boolean isGM() {
-        return gradeCode >= 3;//TODO: Proper GradeCode
+        return gradeCode >= UserGradeCode.GM.getGrade();
     }
 
     public final boolean lock() {

@@ -44,8 +44,7 @@ public class UserCommands {
         if (args.length > 0) {
             String text = args[0];
             
-            // TODO: Multi-channel broadcasting support.
-            field.splitSendPacket(user.getSplit(), FieldPacket.onGroupMessage(user.getCharacterName(), text), null);
+            user.getChannel().broadcast(FieldPacket.onGroupMessage(user.getCharacterName(), text));
             return null;
         }
         return "!say <message> - Broadcasts your message";

@@ -490,9 +490,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     }
     
     public void ResetLoginState(int loginState) {
-        if (this.accountID > 0) {
-            //mClientSocket.remove(dwAccountID);
-        }
         this.nexonClubID = "";
         this.worldID = -1;
         this.channelID = -1;
@@ -508,8 +505,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             this.failCount = 0;
         }
         this.loginState = loginState;
-        //COutPacket::Init(&v2->m_oPacket, 2, 1);
-        //TODO: Handle OutPacket LoginStates. I'm assuming this just directly sends a CheckPassword with nLoginState?
     }
     
     public void sendPacket(OutPacket packet, boolean force) {

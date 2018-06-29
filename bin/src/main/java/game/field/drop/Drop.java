@@ -17,11 +17,16 @@
  */
 package game.field.drop;
 
+import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
+import common.item.ItemType;
 import game.field.FieldObj;
 import game.user.User;
+import game.user.item.Inventory;
+import game.user.item.ItemInfo;
 import java.awt.Point;
 import network.packet.OutPacket;
+import util.Pointer;
 
 /**
  *
@@ -159,20 +164,17 @@ public class Drop extends FieldObj {
         if (showMax > 0) {
             if (user.lock()) {
                 try {
-                    int count = 0;
-                    /* TODO: Inventory handling
-                    int nCount = Inventory.GetItemCount(pUser, pItem.nItemID, true);
-                    if (ItemInfo.GetEquipItem(pItem.nItemID) != null) {
-                        Pointer<Integer> pnBodyPart = new Pointer<>(0);
-                        ItemConstants.get_bodypart_from_item(pItem.nItemID, pUser.character.characterStat.nGender, pnBodyPart, false);
-                        GW_ItemSlotBase pItemSlot = pUser.character.GetItem(ItemType.Equip, -pnBodyPart.Get());
-                        if (pItemSlot != null) {
-                            if (pItem.nItemID == pItemSlot.nItemID) {
-                                ++nCount;
+                    int count = Inventory.getItemCount(user, item.getItemID());
+                    if (ItemInfo.getEquipItem(item.getItemID()) != null) {
+                        Pointer<Integer> bodyPart = new Pointer<>(0);
+                        ItemAccessor.getBodyPartFromItem(item.getItemID(), user.getCharacter().getCharacterStat().getGender(), bodyPart, false);
+                        ItemSlotBase itemSlot = user.getCharacter().getItem(ItemType.Equip, -bodyPart.get());
+                        if (itemSlot != null) {
+                            if (item.getItemID() == itemSlot.getItemID()) {
+                                ++count;
                             }
                         }
                     }
-                    */
                     if (count >= showMax) {
                         return false;
                     }

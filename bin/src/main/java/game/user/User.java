@@ -1475,8 +1475,7 @@ public class User extends Creature {
             byte bmType = packet.decodeByte();
             String msg = packet.decodeString();
             
-            // TODO: Multi-channel support.
-            getField().broadcastPacket(WvsContext.onBroadcastMsg(bmType, msg), false);
+            getChannel().broadcast(WvsContext.onBroadcastMsg(bmType, msg));
         }
     }
     

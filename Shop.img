@@ -1,6 +1,26 @@
 {
 	"port": 8787,
+	"webPort": 8888,
+
+	"gameWorldId": 0,
 
 	"PublicIP": "127.0.0.1",
-	"PrivateIP": "127.0.0.1"
+	"PrivateIP": "127.0.0.1",
+
+	"cashDaemon": {
+		"CGS1": {
+			"ip": "127.0.0.1",
+			"port": 36091
+		}
+	},
+
+	"login": {
+		"ip": "127.0.0.1",
+		"port": 8383,
+		"worldName": "OrionAlpha"
+	},
+
+	"ClientBest": {
+
+	}
 }

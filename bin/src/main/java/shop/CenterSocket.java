@@ -15,10 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game;
+package shop;
 
-import game.user.ClientSocket;
-import game.user.User;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -39,10 +37,12 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.json.JsonObject;
-import network.GameAcceptor;
+import network.ShopAcceptor;
 import network.packet.CenterPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
+import shop.user.ClientSocket;
+import shop.user.User;
 import util.Logger;
 import util.Utilities;
 
@@ -56,14 +56,12 @@ public class CenterSocket extends SimpleChannelInboundHandler {
     private final EventLoopGroup workerGroup;
     private final Lock lock;
     private final Lock lockSend;
-    private final byte channelID;
     private boolean closePosted;
     private String worldName;
     private String addr;
     private int port;
     
-    public CenterSocket(int channel) {
-        this.channelID = (byte) channel;
+    public CenterSocket() {
         this.worldName = "";
         this.addr = "";
         this.closePosted = false;
@@ -133,10 +131,9 @@ public class CenterSocket extends SimpleChannelInboundHandler {
                     .channel();
             
             // Send the Center Server the Login server information request
-            OutPacket packet = new OutPacket(CenterPacket.InitGameSvr);
-            packet.encodeByte(GameApp.getInstance().getWorldID());
-            packet.encodeString(getWorldName());
-            encodeChannel(packet);
+            OutPacket packet = new OutPacket(CenterPacket.InitShopSvr);
+            packet.encodeString(ShopApp.getInstance().getAddr());
+            packet.encodeShort(ShopApp.getInstance().getPort());
             sendPacket(packet);
             
             Logger.logReport("Center socket connected successfully");
@@ -145,20 +142,8 @@ public class CenterSocket extends SimpleChannelInboundHandler {
         }
     }
     
-    public void encodeChannel(OutPacket packet) {
-        game.Channel ch = GameApp.getInstance().getChannel(getChannelID());
-        
-        packet.encodeByte(ch.getChannelID());
-        packet.encodeString(ch.getAddr());
-        packet.encodeShort(ch.getPort());
-    }
-    
     public String getAddr() {
         return addr;
-    }
-    
-    public byte getChannelID() {
-        return channelID;
     }
     
     public int getPort() {
@@ -175,15 +160,15 @@ public class CenterSocket extends SimpleChannelInboundHandler {
         this.worldName = data.getString("worldName", "OrionAlpha");
     }
     
-    public void onShopMigrateResult(InPacket packet) {
+    public void onGameMigrateResult(InPacket packet) {
         int characterID = packet.decodeInt();
         
-        User user = GameApp.getInstance().getChannel(getChannelID()).findUser(characterID);
+        User user = User.findUser(characterID);
         if (user != null) {
             if (packet.decodeBool()) {
                 user.sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32(packet.decodeString()), packet.decodeShort()));
             } else {
-                user.sendSystemMessage("The Cash Shop is unavailable.");
+                // Might as well close socket or something tbh..
             }
         }
     }
@@ -202,12 +187,12 @@ public class CenterSocket extends SimpleChannelInboundHandler {
     }
     
     public void processPacket(InPacket packet) {
-        if (GameAcceptor.getInstance(channelID) != null) {
+        if (ShopAcceptor.getInstance() != null) {
             final byte type = packet.decodeByte();
             
             switch (type) {
-                case CenterPacket.ShopMigrateRes:
-                    onShopMigrateResult(packet);
+                case CenterPacket.GameMigrateRes:
+                    onGameMigrateResult(packet);
                     break;
                 default: {
                     Logger.logReport("Packet received: %s", packet.dumpString());

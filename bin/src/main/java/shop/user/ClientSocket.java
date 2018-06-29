@@ -37,6 +37,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import network.SocketDecoder;
 import network.SocketEncoder;
+import network.packet.CenterPacket;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.LoopbackPacket;
@@ -379,7 +380,11 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private void onMigrateOut() {
         if (this.migrateState == MigrateState.Identified) {
             this.migrateState = MigrateState.WaitCenterMigrateOutResult;
-            sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32("127.0.0.1"), (short) 8585), false); // get ip/port from GameApp in future
+            
+            OutPacket packet = new OutPacket(CenterPacket.GameMigrateReq);
+            packet.encodeInt(getCharacterID());
+            
+            ShopApp.getInstance().getCenter().sendPacket(packet);
         }
     }
 

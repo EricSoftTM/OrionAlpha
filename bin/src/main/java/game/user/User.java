@@ -65,6 +65,7 @@ import game.user.stat.CharacterTemporaryStat;
 import game.user.stat.SecondaryStat;
 import network.database.CommonDB;
 import network.database.GameDB;
+import network.packet.CenterPacket;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
@@ -1109,7 +1110,7 @@ public class User extends Creature {
                 onTransferFieldRequest(packet);
                 break;
             case ClientPacket.UserMigrateToCashShopRequest:
-                onMigrateToCashShopRequest(packet);
+                onMigrateToCashShopRequest();
                 break;
             case ClientPacket.UserMove:
                 onMove(packet);
@@ -1792,8 +1793,27 @@ public class User extends Creature {
         }
     }
     
-    public void onMigrateToCashShopRequest(InPacket packet) {
-        sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32("127.0.0.1"), 8787));
+    public void onMigrateToCashShopRequest() {
+        if (getField() == null || getSocket() == null || this.nexonClubID == null || this.nexonClubID.isEmpty()) {
+            return;
+        }
+        
+        if (lock()) {
+            try {
+                if (canAttachAdditionalProcess()) {
+                    this.onTransferField = true;
+                    
+                    OutPacket packet = new OutPacket(CenterPacket.ShopMigrateReq);
+                    packet.encodeInt(getCharacterID());
+                    packet.encodeByte(getWorldID());
+                    packet.encodeByte(getChannelID());
+
+                    getChannel().getCenter().sendPacket(packet);
+                }
+            } finally {
+                unlock();
+            }
+        }
     }
     
     public void onPortalScrollUseRequest(InPacket packet) {

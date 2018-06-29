@@ -43,22 +43,22 @@ import util.wz.WzUtil;
  * @author Eric
  */
 public class ShopApp implements Runnable {
-
-    private ShopAcceptor acceptor;
-    private final Map<Long, Commodity> commodity;
-    private int connectionLimit;
-    private String ip;
-    private final AtomicLong cashItemInitSN;
-    private final AtomicLong itemInitSN;
-    private final Lock lockCashItemSN;
-    private final Lock lockItemSN;
-    private short port;
-    private final long serverStartTime;
-    private int waitingFirstPacket;
-    private byte worldID;
-
     private static final WzPackage etcDir = new WzFileSystem().init("Etc").getPackage();
     private static final ShopApp instance = new ShopApp();
+    
+    private String addr;
+    private short port;
+    private byte worldID;
+    private int connectionLimit;
+    private int waitingFirstPacket;
+    private ShopAcceptor acceptor;
+    private CenterSocket socket;
+    private final long serverStartTime;
+    private final AtomicLong itemInitSN;
+    private final AtomicLong cashItemInitSN;
+    private final Lock lockItemSN;
+    private final Lock lockCashItemSN;
+    private final Map<Long, Commodity> commodity;
 
     public ShopApp() {
         this.worldID = -2;//ShopSvr
@@ -79,24 +79,44 @@ public class ShopApp implements Runnable {
     public static void main(String[] args) {
         ShopApp.getInstance().run();
     }
-
-    private void createAcceptor() {
+    
+    private void connectCenter() {
         try (JsonReader reader = Json.createReader(new FileReader("Shop.img"))) {
             JsonObject shopData = reader.readObject();
+            
+            Integer world = shopData.getInt("gameWorldId", getWorldID());
+            if (world != getWorldID()) {
+                //this.worldID = world.byteValue();
+            }
 
-            this.ip = shopData.getString("PublicIP", "127.0.0.1");
+            this.addr = shopData.getString("PublicIP", "127.0.0.1");
             this.port = (short) shopData.getInt("port", 8787);
-            acceptor = new ShopAcceptor(new InetSocketAddress(ip, port));
-            acceptor.run();
-
-            Logger.logReport("Socket acceptor started");
+            
+            JsonObject loginData = shopData.getJsonObject("login");
+            if (loginData != null) {
+                this.socket = new CenterSocket();
+                this.socket.init(loginData);
+                this.socket.connect();
+            }
+            
         } catch (FileNotFoundException ex) {
             ex.printStackTrace(System.err);
         }
     }
 
+    private void createAcceptor() {
+        this.acceptor = new ShopAcceptor(new InetSocketAddress(addr, port));
+        this.acceptor.run();
+
+        Logger.logReport("Socket acceptor started");
+    }
+
     public final ShopAcceptor getAcceptor() {
         return acceptor;
+    }
+    
+    public final CenterSocket getCenter() {
+        return socket;
     }
 
     public Map<Long, Commodity> getCommodity() {
@@ -114,8 +134,8 @@ public class ShopApp implements Runnable {
         return connectionLimit;
     }
 
-    public String getIp() {
-        return ip;
+    public String getAddr() {
+        return addr;
     }
 
     public final long getNextCashSN() {
@@ -207,11 +227,12 @@ public class ShopApp implements Runnable {
 
     @Override
     public void run() {
+        connectCenter();
         initializeDB();
         initializeItemSN();
         initializeCommodity();
         createAcceptor();
-        Logger.logReport("WvsShop has been initialized in " + ((System.currentTimeMillis() - serverStartTime) / 1000.0) + " seconds.");
+        Logger.logReport("The Shop Server has been initialized in " + ((System.currentTimeMillis() - serverStartTime) / 1000.0) + " seconds.");
     }
 
     public void updateItemInitSN() {

@@ -49,6 +49,7 @@ public class LoginApp implements Runnable {
     
     private LoginAcceptor acceptor;
     private CenterAcceptor centerAcceptor;
+    private ShopEntry shop;
     private final List<WorldEntry> worlds;
     private final List<NewEquip> newEquip;
     private final List<String> forbiddenNames;
@@ -121,13 +122,13 @@ public class LoginApp implements Runnable {
     }
     
     private void createAcceptor() {
-        acceptor = new LoginAcceptor(new InetSocketAddress(addr, port));
-        acceptor.run();
+        this.acceptor = new LoginAcceptor(new InetSocketAddress(addr, port));
+        this.acceptor.run();
     }
     
     private void createCenterAcceptor() {
-        centerAcceptor = new CenterAcceptor(new InetSocketAddress(addr, centerPort));
-        centerAcceptor.run();
+        this.centerAcceptor = new CenterAcceptor(new InetSocketAddress(addr, centerPort));
+        this.centerAcceptor.run();
     }
     
     public WorldEntry getWorld(int worldID) {
@@ -165,6 +166,10 @@ public class LoginApp implements Runnable {
     
     public long getServerStartTime() {
         return serverStartTime;
+    }
+    
+    public ShopEntry getShop() {
+        return shop;
     }
     
     private void initializeCenter() {
@@ -247,6 +252,10 @@ public class LoginApp implements Runnable {
             ex.printStackTrace(System.err);
             System.exit(0);
         }
+    }
+    
+    public void setShop(ShopEntry shop) {
+        this.shop = shop;
     }
     
     public void setUp() {

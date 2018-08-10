@@ -260,14 +260,13 @@ public class TradingRoom extends MiniRoomBase {
     public void onPacket(int type, User user, InPacket packet) {
         switch (type) {
             case MiniRoomPacket.PutItem:
-                System.err.println("Putting item triggered");
                 onPutItem(user, packet);
                 break;
             case MiniRoomPacket.PutMoney:
                 onPutMoney(user, packet);
                 break;
             case MiniRoomPacket.Trade:
-                onTrade(user, packet);
+                onTrade(user);
                 break;
         }
     }
@@ -322,7 +321,7 @@ public class TradingRoom extends MiniRoomBase {
         }
     }
     
-    private void onTrade(User user, InPacket packet) {
+    private void onTrade(User user) {
         if (getCurUsers() > 0) {
             int idx = findUserSlot(user);
             if (!lock[idx]) {

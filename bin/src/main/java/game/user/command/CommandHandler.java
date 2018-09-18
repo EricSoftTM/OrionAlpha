@@ -90,8 +90,13 @@ public class CommandHandler {
                                 break;
                             }
                         }
-                        if (!unknownParameters && method.getParameterCount() == 2)
-                            break;
+                        if (!unknownParameters) {
+                            if (method.getParameterCount() == 2) {
+                                break;
+                            } else {
+                                unknownParameters = true;
+                            }
+                        }
                         index = -1;
                         methodArgs = new Object[method.getParameters().length];
                         for (Parameter param : method.getParameters()) {
@@ -109,13 +114,23 @@ public class CommandHandler {
                                 List<Field> checked = new ArrayList<>();
                                 Object value = findFieldFor(user, checked, param.getType());
                                 if (value == null) {
-                                    System.out.println("Failed to find " + param.getType().getSimpleName());
+                                    // System.out.println("Failed to find " + param.getType().getSimpleName());
                                     checked.clear();
                                     continue;
                                 }
                                 methodArgs[index] = value;
                                 checked.clear();
                             }
+                        }
+                        // If the current method has all args filled in
+                        // we break so we don't attempt a 2nd method with same name.
+                        int valid = 0;
+                        for (Object obj : methodArgs) {
+                            if (obj != null)
+                                valid++;
+                        }
+                        if (valid == method.getParameters().length) {
+                            break;
                         }
                     }
                 }

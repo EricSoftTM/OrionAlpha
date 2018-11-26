@@ -211,6 +211,10 @@ public class User extends Creature {
         this.character = GameDB.rawLoadCharacter(characterID);
         this.realEquip = new ArrayList<>(BodyPart.BP_Count + 1);
         
+        for (int i = 0; i <= BodyPart.BP_Count; i++) {
+            this.realEquip.add(i, null);
+        }
+        
         this.basicStat.clear();
         this.secondaryStat.clear();
     }

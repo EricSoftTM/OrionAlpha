@@ -24,7 +24,7 @@ package game.miniroom;
  */
 public enum MiniRoomLeave {
 
-    // NOT EVEN SURE IF THIS IS EVEN A THING YET
+    // NOT EVEN SURE IF THIS IS EVEN A THING YET, KMS 1.23 is probably too old for it
     
     // MiniRoomLeave
     UserRequest(0),// idk 

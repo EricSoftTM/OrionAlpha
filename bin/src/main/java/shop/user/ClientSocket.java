@@ -46,7 +46,6 @@ import network.security.XORCrypter;
 import shop.ShopApp;
 import util.Logger;
 import util.Rand32;
-import util.Utilities;
 
 /**
  *
@@ -295,7 +294,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
                 sendPacket(onAliveReq(packet.decodeInt()), false);
                 break;
             case ClientPacket.AliveAck2:
-                Logger.logReport("Unknown AliveAck2 recieved.");
                 break;
             case ClientPacket.MigrateIn:
                 onMigrateIn(packet);

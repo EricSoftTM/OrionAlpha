@@ -21,6 +21,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import util.Logger;
 
 /**
  * Our ConnectionPool and globally used Database Connection handler.
@@ -109,7 +110,7 @@ public class UnifiedDB {
             if (dataSource != null) {
                 return dataSource.getConnection();
             }
-            System.err.println("Attempting to make a connection before loading the database.");
+            Logger.logError("Attempting to make a connection before loading the database.");
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }

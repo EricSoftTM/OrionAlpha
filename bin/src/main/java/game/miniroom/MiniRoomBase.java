@@ -19,10 +19,8 @@ package game.miniroom;
 
 import game.field.Field;
 import game.user.User;
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,7 +39,6 @@ public abstract class MiniRoomBase {
     private static final Map<Integer, MiniRoomEntry> miniRoomEntry = new HashMap<>();
     private static final AtomicInteger miniRoomSNCounter = new AtomicInteger(30000);
 
-    private int balloonSN;
     private boolean closeRequest = false;
     private int curUsers = 0;
     private final List<Integer> reserved;
@@ -51,16 +48,11 @@ public abstract class MiniRoomBase {
     private final ReentrantLock lockMiniRoom;
     private final Lock lock;
     private int maxUsers = 0;
-    private final List<MiniRoomBase> miniEntry;
-    private int miniRoomSN;
-    private int miniRoomSpec;
-    private Point pointHost;
-    private int round;
+    private final int miniRoomSN;
     private final List<User> users;
 
     public MiniRoomBase(int maxUsers) {
         this.lockMiniRoom = new ReentrantLock();
-        this.miniEntry = new LinkedList<>();
         this.miniRoomSN = miniRoomSNCounter.incrementAndGet();
         this.maxUsers = maxUsers;
         this.users = new ArrayList<>(maxUsers);
@@ -68,7 +60,6 @@ public abstract class MiniRoomBase {
         this.reservedTime = new ArrayList<>(maxUsers);
         this.reserved = new ArrayList<>(maxUsers);
         this.lock = new ReentrantLock();
-        this.pointHost = new Point();
         for (int i = 0; i < maxUsers; i++) {
             this.users.add(i, null);
             this.leaveRequest.add(i, -1);
@@ -119,35 +110,12 @@ public abstract class MiniRoomBase {
             return 0;
         }
         int result = miniroom.onCreateBase(userZero, userOne);
-        System.err.println("create :: result " + result);
-        Logger.logReport("userZero %s miniroom object is %b", userZero.getCharacterName(), userZero.getMiniRoom());
-        Logger.logReport("userOne %s miniroom object is %b", userOne.getCharacterName(), userOne.getMiniRoom());
         if (result == 0) {
-            System.err.println("create :: 1 ");
             userZero.sendPacket(MiniRoomBaseDlg.onEnterResultStatic(userZero, miniroom));
             userOne.sendPacket(MiniRoomBaseDlg.onInviteStatic(userZero.getCharacterName(), miniroom.miniRoomSN));
         } else if (result == 1) {
-            System.err.println("create :: 1 ");
             userZero.sendPacket(MiniRoomBaseDlg.onInviteResultStatic(MiniRoomInvite.CannotInvite, userOne.getCharacterName()));
         }
-
-//        if (result == 0) {
-//            if (userOne != null) {
-//                Logger.logReport("user %s miniroom object is %b", userZero.getCharacterName(), userZero.getMiniRoom());
-//                Logger.logReport("userTraded %s miniroom object is %b", userOne.getCharacterName(), userZero.getMiniRoom());
-//                if (userOne.canAttachAdditionalProcess()) {
-//                    System.err.println("create :: 1 ");
-//                    userZero.sendPacket(MiniRoomBaseDlg.onEnterResultStatic(userZero, miniroom));
-//                    userOne.sendPacket(MiniRoomBaseDlg.onInviteStatic(userZero.getCharacterName(), miniroom.miniRoomSN));
-//                } else {
-//                    System.err.println("create :: 2 ");
-//                    userZero.sendPacket(MiniRoomBaseDlg.onInviteResultStatic(MiniRoomInvite.CannotInvite, userOne.getCharacterName()));
-//                }
-//            } else {
-//                System.err.println("create :: 3 ");
-//                userZero.sendPacket(MiniRoomBaseDlg.onInviteResultStatic(MiniRoomInvite.NoCharacter, null));
-//            }
-//        }
         return 0;
     }
 
@@ -171,7 +139,6 @@ public abstract class MiniRoomBase {
             Field field;
             if (user != null && (field = user.getField()) != null && field.lock()) {
                 try {
-                    Logger.logReport("DoLeave nLeaveType " + leaveType);
                     onLeave(user, leaveType);
                     if (leaveType > 0) {
                         user.sendPacket(MiniRoomBaseDlg.onLeave(idx, user, this)); // does this even do anything
@@ -212,7 +179,7 @@ public abstract class MiniRoomBase {
         if (idx != 0 || !isEntrusted()) {
             User user = this.users.get(idx);
             if (user != null) {
-                packet.encodeByte(idx); // might be outside
+                packet.encodeByte(idx);
                 packet.encodeByte(user.getCharacter().getCharacterStat().getGender());
                 packet.encodeInt(user.getCharacter().getCharacterStat().getFace());
                 user.getAvatarLook().encode(packet);
@@ -222,7 +189,7 @@ public abstract class MiniRoomBase {
     }
 
     public void encodeEnterResult(User user, OutPacket packet) {
-        
+
     }
 
     public void encodeLeave(User user, OutPacket packet) {
@@ -292,15 +259,15 @@ public abstract class MiniRoomBase {
             lock.unlock();
         }
     }
-    
+
     public int getCurUsers() {
         return curUsers;
     }
-    
+
     public int getMaxUsers() {
         return maxUsers;
     }
-    
+
     public List<User> getUsers() {
         return users;
     }
@@ -338,22 +305,14 @@ public abstract class MiniRoomBase {
     private int onCreateBase(User userZero, User userOne) {
         lockMiniRoom.lock();
         try {
-            // redo this add both user checks in 
-
-            if (userZero.canAttachAdditionalProcess()) { // i'm available to begin a trade
-                Logger.logReport("onCreateBase 1");
-                if (userOne.canAttachAdditionalProcess()) { // but are you ready?
-                    //   you're good? okay, let me setup my data
-                    Logger.logReport("onCreateBase 2");
+            if (userZero.canAttachAdditionalProcess()) {
+                if (userOne.canAttachAdditionalProcess()) {
                     userZero.setMiniRoom(this);
-                    this.pointHost = userZero.getCurrentPosition();
                     int admitted = this.isAdmitted(userZero, true);
                     if (admitted > 0) {
-                        Logger.logReport("onCreateBase 3");
                         userZero.setMiniRoom(null);
                         return 2;
                     } else {
-                        Logger.logReport("onCreateBase 4");
                         users.set(0, userZero);
                         leaveRequest.set(0, -1);
                         curUsers = 1;
@@ -366,31 +325,7 @@ public abstract class MiniRoomBase {
                     return 1;
                 }
             }
-            Logger.logReport("onCreateBase 5");
             return 2;
-
-//            int nRes = 0;
-//            if (userZero.canAttachAdditionalProcess()) {
-//                System.err.println("onCreateBase passed ");
-//                userZero.setMiniRoom(this);
-//                this.pointHost = userZero.getCurrentPosition();
-//                int admitted = this.isAdmitted(userZero, true);
-//                if (admitted > 0) {
-//                    userZero.setMiniRoom(null);
-//                } else {
-//                    System.err.println("onCreateBase passed 2");
-//                    users.set(0, userZero);
-//                    //  adwReserved.set(0, 0);
-//                    // anLeaveRequest.set(0, -1);
-//                    curUsers = 1;
-//                    MiniRoomEntry roomEntry = new MiniRoomEntry();
-//                    roomEntry.miniRoom = this;
-//                    miniRoomEntry.put(this.miniRoomSN, roomEntry);
-//                }
-//            } else {
-//                nRes = 1;
-//            }
-//            return nRes;
         } finally {
             lockMiniRoom.unlock();
         }
@@ -400,29 +335,23 @@ public abstract class MiniRoomBase {
         int slot = findEmptySlot(user.getCharacterID());
 
         if (curUsers == 0 || users.get(0) == null) {
-            Logger.logReport("onEnterBase Stop %d", 1);
             return 8;
         }
         if (slot < 0) {
-            Logger.logReport("onEnterBase Stop %d", 2);
             return MiniRoomEnter.Full;
         }
         if (findUser(slot) != null) {
-            Logger.logReport("onEnterBase Stop %d", 3);
             return 8;
         }
         if (!user.canAttachAdditionalProcess()) {
-            Logger.logReport("onEnterBase Stop %d", 4);
             return MiniRoomEnter.Busy;
         }
         user.setMiniRoom(this);
         int result = isAdmitted(user, false);
         if (result > 0) {
-            Logger.logReport("onEnterBase Stop %d", 5);
             user.setMiniRoom(null);
             return result;
         } else {
-            Logger.logReport("onEnterBase Stop %d", 6);
             users.set(slot, user);
             reserved.set(slot, 0);
             leaveRequest.set(slot, -1);
@@ -440,8 +369,6 @@ public abstract class MiniRoomBase {
         User user;
         if ((user = users.get(0)) != null) {
             user.sendPacket(MiniRoomBaseDlg.onEnterDecline(miniRoom, character, result));
-            // do i send another packet with char name and result? idunno lmao
-            //   user.sendPacket(MiniRoomBaseDlg.onInviteResultStatic(result, character));
         }
     }
 
@@ -452,7 +379,6 @@ public abstract class MiniRoomBase {
         int leaveType, leaveType2;
         if (this.curUsers > 0 && slot >= 0) {
             if (slot != 0) {
-                System.err.println("tryna trigger doLeave");
                 this.doLeave(slot, 0, true);
             }
             leaveType2 = 3;

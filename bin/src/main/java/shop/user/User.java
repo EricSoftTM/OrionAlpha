@@ -70,16 +70,13 @@ public class User {
     private int gender;
     private byte gradeCode;
 
-    private List<Integer> itemCount;
     private int kssn;
     private long lastCharacterDataFlush;
-    private byte level;
     private int localSocketSN;
     private final Lock lock;
     private final Lock lockSocket;
 
     private int modFlag;
-    private boolean msMessenger;
     private int price;
     private byte delta;
     private int nexonCash;
@@ -89,7 +86,6 @@ public class User {
 
     private String rcvCharacterName;
 
-    private FileTime registerDate;
     private int slotCount;
     private ClientSocket socket;
     private byte typeIndex;
@@ -103,7 +99,6 @@ public class User {
         this.cashKey = 0;
 
         this.cashItemInfo = new ArrayList<>();
-        this.itemCount = new ArrayList<>();
         this.nexonCash = 0;
         this.gender = -1;
         this.modFlag = 0;
@@ -220,6 +215,7 @@ public class User {
     }
 
     private void checkCashItemExpire(long time) {
+        // when you enter CS, it should check if your cs items if they expired or not. Needs packet to update inventory (?)
         if (time - this.nextCheckCashItemExpire >= 0 && this.doCheckCashItemExpire != true) {
             FileTime cur;
             if ((cur = SystemTime.getLocalTime().systemTimeToFileTime()) != null) {
@@ -403,13 +399,11 @@ public class User {
                         return;
                     }
                     SystemTime st = SystemTime.getLocalTime();
-                    if (st != null && (st.getYear() - Integer.parseInt(String.valueOf(this.birthDate).substring(0, 4))) < 14) { // can't gift if you're under 14
-                        // you're under 14 yrs old, cannot gift
+                    if (st != null && (st.getYear() - Integer.parseInt(String.valueOf(this.birthDate).substring(0, 4))) < 14) {
                         sendPacket(ShopPacket.onGiftFailed((byte) 32));
                         return;
                     }
                     if (ItemAccessor.getGenderFromID(comm.getItemID()) != receivedGift.getGender()) {
-                        // item gender != recieved gift users gender
                         sendPacket(ShopPacket.onGiftFailed((byte) 35));
                         return;
                     }
@@ -434,7 +428,6 @@ public class User {
 
                     ShopApp.getInstance().updateItemInitSN();
                 } else {
-                    // name is probably invalid
                     sendPacket(ShopPacket.onGiftFailed((byte) 35));
                 }
             }
@@ -458,7 +451,6 @@ public class User {
         } else {
             int newSlotCount = this.delta + this.character.getItemSlotCount(ti);
             if ((newSlotCount - this.delta) * getIncreasedSlotCount(ti, this.character.getCharacterStat().getJob()) > 80) {
-                //  packet error
                 return;
             }
             if (Inventory.incItemSlotCount(this, ti, this.delta)) {
@@ -512,7 +504,6 @@ public class User {
         sendPacket(Stage.onSetCashShop(this));
         sendPacket(ShopPacket.onLoadLockerDone(this.cashItemInfo));
         sendPacket(ShopPacket.onQueryCash(this));
-
     }
 
     private void onMoveLToS(InPacket packet) {
@@ -533,7 +524,6 @@ public class User {
                 Logger.logError("No valid slot remains for sn: %d", sn);
                 return;
             }
-            System.err.println("CashItemSN from onMoveLtoS " + sn);
             ItemSlotBase item = null;
             if (ti == ItemType.Equip) {
                 item = (ItemSlotEquip) ItemSlotBase.createItem(ItemSlotType.Equip);
@@ -544,7 +534,6 @@ public class User {
                 for (Iterator<CashItemInfo> it = this.cashItemInfo.iterator(); it.hasNext();) {
                     CashItemInfo cashItem = it.next();
                     if (cashItem != null && cashItem.getCashItemSN() == sn) {
-                        //assign the item it's stats and remove from array
                         item.setCashItemSN(cashItem.getCashItemSN());
                         item.setAccountID(cashItem.getAccountID());
                         item.setCharacterID(cashItem.getCharacterID());
@@ -554,7 +543,7 @@ public class User {
                         item.setBuyCharacterName(cashItem.getBuyCharacterName());
                         item.setDateExpire(cashItem.getDateExpire());
                         it.remove();
-                        break;// should only be 1 anyway
+                        break;
                     }
                 }
                 this.character.setItem(ti, pos, item);
@@ -711,6 +700,5 @@ public class User {
         private static final byte ItemSlotBundle = 0x8;
         private static final byte ItemSlotEtc = 0x10;
         private static final byte InventorySize = 0x20;
-        private static final byte GiftItem = 0x40;
     }
 }

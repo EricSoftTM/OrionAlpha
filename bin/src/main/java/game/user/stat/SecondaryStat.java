@@ -26,9 +26,7 @@ import common.user.CharacterData;
 import game.user.skill.SkillAccessor;
 import game.user.skill.SkillEntry;
 import game.user.skill.SkillInfo;
-import game.user.skill.Skills;
-import game.user.skill.Skills.Archer;
-import game.user.skill.Skills.Rogue;
+import game.user.skill.Skills.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -232,7 +230,7 @@ public class SecondaryStat {
         return reset;
     }
     
-    public void setFrom(BasicStat bs, List<ItemSlotBase> realEquip, List<ItemSlotBase> realEquip2, CharacterData cd) {
+    public void setFrom(BasicStat bs, List<ItemSlotBase> realEquip, CharacterData cd) {
         short job = bs.getJob();
         int jc = JobAccessor.getJobCategory(job);
         int slv;
@@ -251,21 +249,6 @@ public class SecondaryStat {
         this.jump = 100;
         
         final int BodyPartCount = BodyPart.BP_Count;
-        for (int pos = 1; pos <= BodyPartCount; pos++) {
-            ItemSlotEquip item = (ItemSlotEquip) realEquip.get(pos);
-            if (item != null) {
-                this.pad += item.iPAD;
-                this.pdd += item.iPDD;
-                this.mad += item.iMAD;
-                this.mdd += item.iMDD;
-                this.acc += item.iACC;
-                this.eva += item.iEVA;
-                this.craft += item.iCraft;
-                this.speed += item.iSpeed;
-                this.jump += item.iJump;
-            }
-        }
-        
         for (int pos = 1; pos <= BodyPartCount; pos++) {
             ItemSlotEquip item = (ItemSlotEquip) realEquip.get(pos);
             if (item != null) {
@@ -301,11 +284,9 @@ public class SecondaryStat {
         if (item != null)
             weaponItemID = item.getItemID();
         
-        Pointer<Integer> padInc = new Pointer<>(0);
         Pointer<Integer> accInc = new Pointer<>(0);
-        if (SkillAccessor.getWeaponMastery(cd, weaponItemID, attackType, accInc, padInc) != 0) {
+        if (SkillAccessor.getWeaponMastery(cd, weaponItemID, attackType, accInc) != 0) {
             this.acc += accInc.get();
-            this.pad += padInc.get();
         }
         
         this.pad = Math.max(Math.min(this.pad, SkillAccessor.PAD_MAX), 0);
@@ -314,7 +295,6 @@ public class SecondaryStat {
         this.mdd = Math.max(Math.min(this.mdd, SkillAccessor.MDD_MAX), 0);
         this.acc = Math.max(Math.min(this.acc, SkillAccessor.ACC_MAX), 0);
         this.eva = Math.max(Math.min(this.eva, SkillAccessor.EVA_MAX), 0);
-        this.craft = Math.max(Math.min(this.craft, SkillAccessor.CRAFT_MAX), 0);
         this.speed = Math.max(Math.min(this.speed, SkillAccessor.SPEED_MAX), 100);
         this.jump = Math.max(Math.min(this.jump, SkillAccessor.JUMP_MAX), 100);
     }

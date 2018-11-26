@@ -17,6 +17,8 @@
  */
 package game.user.item;
 
+import common.JobAccessor;
+import common.JobCategory;
 import common.item.BodyPart;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
@@ -199,20 +201,35 @@ public class ItemInfo {
         return null;
     }
     
-    public static boolean isAbleToEquip(int gender, int level, int job, int STR, int DEX, int INT, int LUK, int pop, int itemID, List<ItemSlotBase> realEquip) {
+    public static boolean isAbleToEquip(int gender, int level, int job, int STR, int DEX, int INT, int LUK, int pop, int itemID) {
         EquipItem info = getEquipItem(itemID);
         if (info != null) {
-            if (level != 0) {
-                int jobBit = 1 << ((job / 100) - 1);
-                return ItemAccessor.isMatchedItemIDGender(itemID, gender)
-                        && level >= info.getReqLevel()
-                        && STR >= info.getReqSTR()
-                        && DEX >= info.getReqDEX()
-                        && INT >= info.getReqINT()
-                        && LUK >= info.getReqLUK()
-                        && (info.getReqPOP() == 0 || pop >= info.getReqPOP())
-                        && (info.getReqJob() == 0 || info.getReqJob() == -1 && jobBit == 0 || info.getReqJob() > 0 && (info.getReqJob() & jobBit) > 0);
+            int jobCategory = JobAccessor.getJobCategory(job);
+            if (ItemAccessor.isCorrectBodyPart(itemID, BodyPart.PetWear, gender)) {
+                // While the item slot seems to exist, Pets don't exist yet.
+                // For now we'll just disallow any pet slot until then.
+                return false;
             }
+            int jobBit = 0;
+            if (jobCategory == JobCategory.Wizard) {
+                // In the actual KMS Alpha client, Magicians are not allowed
+                // to equip two-handed weapons.
+                int nWT = ItemAccessor.getWeaponType(itemID);
+                if (nWT != 0 && nWT != 30 && nWT != 33 && nWT != 31 && nWT != 32 && nWT != 38 && nWT != 37) {
+                    return false;
+                }
+                jobBit = 2;
+            } else if (jobCategory != 0) {
+                jobBit = 1 << (jobCategory - 1);
+            }
+            return ItemAccessor.isMatchedItemIDGender(itemID, gender)
+                    && level >= info.getReqLevel()
+                    && STR >= info.getReqSTR()
+                    && DEX >= info.getReqDEX()
+                    && INT >= info.getReqINT()
+                    && LUK >= info.getReqLUK()
+                    && (info.getReqPOP() == 0 || pop >= info.getReqPOP())
+                    && (info.getReqJob() == 0 || info.getReqJob() == -1 && jobBit == 0 || info.getReqJob() > 0 && (info.getReqJob() & jobBit) != 0);
         }
         return false;
     }

@@ -17,7 +17,10 @@
  */
 package common.item;
 
+import common.user.CharacterData;
 import common.user.DBChar;
+import game.user.item.ItemInfo;
+import java.util.List;
 import util.FileTime;
 import util.Pointer;
 
@@ -34,11 +37,12 @@ public class ItemAccessor {
     }
     
     public static int getGenderFromID(int itemID) {
-        return getItemTypeIndexFromID(itemID) == 1 ? itemID / 1000 % 10 : 2;
+        return getItemTypeIndexFromID(itemID) == ItemType.Equip ? itemID / 1000 % 10 : 2;
     }
 
     public static int getWeaponType(int itemID) {
-        if (getItemTypeIndexFromID(itemID) == ItemType.Equip) {
+        int type = itemID / 100000;
+        if (getItemTypeIndexFromID(itemID) == ItemType.Equip && (type == 13 || type == 14)) {
             return itemID / 10000 % 100;
         }
         return 0;
@@ -133,6 +137,56 @@ public class ItemAccessor {
                 return DBChar.ItemSlotEtc;
             default: {
                 return 0;
+            }
+        }
+    }
+    
+    public static void getRealEquip(CharacterData c, List<ItemSlotBase> realEquip, int excl1, int excl2) {
+        byte gender = c.getCharacterStat().getGender();
+        byte level = c.getCharacterStat().getLevel();
+        short job = c.getCharacterStat().getJob();
+        short STR = c.getCharacterStat().getSTR();
+        short DEX = c.getCharacterStat().getDEX();
+        short INT = c.getCharacterStat().getINT();
+        short LUK = c.getCharacterStat().getLUK();
+        short pop = c.getCharacterStat().getPOP();
+        short incSTR = 0, incDEX = 0, incINT = 0, incLUK = 0;
+        
+        ItemSlotEquip equip;
+        for (int pos = -1; pos >= -BodyPart.BP_Count; pos--) {
+            //equip = (ItemSlotEquip) realEquip.get(-pos);
+            if (pos != excl1 && pos != excl2) {
+                equip = (ItemSlotEquip) c.getItem(ItemType.Equip, pos);
+                if (equip != null) {
+                    incSTR += equip.iSTR;
+                    incDEX += equip.iDEX;
+                    incINT += equip.iINT;
+                    incLUK += equip.iLUK;
+                }
+                realEquip.set(-pos, equip);
+            } else {
+                realEquip.set(-pos, null);
+            }
+        }
+        
+        int pos = 0;
+        while (pos <= BodyPart.BP_Count) {
+            for (pos = 1; pos <= BodyPart.BP_Count; pos++) {
+                equip = (ItemSlotEquip) realEquip.get(pos);
+                if (equip != null) {
+                    int totSTR = incSTR + STR - equip.iSTR;
+                    int totDEX = incDEX + DEX - equip.iDEX;
+                    int totINT = incINT + INT - equip.iINT;
+                    int totLUK = incLUK + LUK - equip.iLUK;
+                    if (!ItemInfo.isAbleToEquip(gender, level, job, totSTR, totDEX, totINT, totLUK, pop, equip.getItemID())) {
+                        incSTR -= equip.iSTR;
+                        incDEX -= equip.iDEX;
+                        incINT -= equip.iINT;
+                        incLUK -= equip.iLUK;
+                        realEquip.set(pos, null);
+                        break;
+                    }
+                }
             }
         }
     }
@@ -231,8 +285,8 @@ public class ItemAccessor {
         return false;
     }
     
-    public static boolean isMatchedItemIDGender(int itemID, int characterGender) {
-        int gender = getGenderFromID(itemID);
-        return characterGender == 2 || gender == 2 || gender == characterGender;
+    public static boolean isMatchedItemIDGender(int itemID, int gender) {
+        int itemGender = getGenderFromID(itemID);
+        return gender == 2 || itemGender == 2 || itemGender == gender;
     }
 }

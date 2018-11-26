@@ -912,7 +912,7 @@ public class LifePool {
                         }
                         packet.encodeByte(action);
                         packet.encodeByte(speedDegree);
-                        packet.encodeByte(SkillAccessor.getWeaponMastery(user.getCharacter(), weaponItemID, attackType, null, null));
+                        packet.encodeByte(SkillAccessor.getWeaponMastery(user.getCharacter(), weaponItemID, attackType, null));
                         packet.encodeInt(bulletItemID);
                         for (AttackInfo info : attack) {
                             packet.encodeInt(info.mobID);

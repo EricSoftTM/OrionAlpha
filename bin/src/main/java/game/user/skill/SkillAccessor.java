@@ -26,7 +26,6 @@ import game.user.skill.Skills.*;
 import game.user.stat.BasicStat;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import network.packet.ClientPacket;
 import util.Pointer;
 
 /**
@@ -36,27 +35,26 @@ import util.Pointer;
 public class SkillAccessor {
     public static final int
             // The maximum damage that can be hit upon a monster from our client
-            MAX_CLIENT_DAMAGE   = 9999,//Confirmed
+            MAX_CLIENT_DAMAGE   = 9999,
             
             // The maximum per stat that a player can obtain and/or use.
             STR_MAX             = 999,
             DEX_MAX             = 999,
             INT_MAX             = 999,
             LUK_MAX             = 999,
-            PAD_MAX             = 1999,//Confirmed
-            PDD_MAX             = 999,//Confirmed
-            MAD_MAX             = 1999,//Confirmed
-            MDD_MAX             = 1999,
-            ACC_MAX             = 999,//Hmm
-            EVA_MAX             = 999,//Hmm
-            CRAFT_MAX           = 999,//Hmm
-            SPEED_MAX           = 140,
+            PAD_MAX             = 999,
+            PDD_MAX             = 999,
+            MAD_MAX             = 999,
+            MDD_MAX             = 999,
+            ACC_MAX             = 999,
+            EVA_MAX             = 999,
+            SPEED_MAX           = 130,
             JUMP_MAX            = 123,
-            HP_MAX              = 30000,//Confirmed
-            MP_MAX              = 10000,//Confirmed
-            POP_MAX             = 30000,
-            AP_MAX              = 255,
-            SP_MAX              = 255
+            HP_MAX              = 30000,
+            MP_MAX              = 10000,
+            POP_MAX             = 30000,//Unconfirmed
+            AP_MAX              = 255,//Unconfirmed
+            SP_MAX              = 255//Unconfirmed
     ;
     /**
      * The formula that controls the randomized ranges between a HP/MP increase.
@@ -428,7 +426,7 @@ public class SkillAccessor {
     }
 
     
-    public static int getWeaponMastery(CharacterData cd, int weaponItemID, int attackType, Pointer<Integer> accInc, Pointer<Integer> padInc) {
+    public static int getWeaponMastery(CharacterData cd, int weaponItemID, int attackType, Pointer<Integer> accInc) {
         final int MELEE = 1, SHOOT = 2;
         
         int wt = ItemAccessor.getWeaponType(weaponItemID);

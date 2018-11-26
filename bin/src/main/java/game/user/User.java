@@ -135,6 +135,7 @@ public class User extends Creature {
     // Character Data
     private final CharacterData character;
     private int characterDataModFlag;
+    private final List<ItemSlotBase> realEquip;
     // Avatar Look
     private final AvatarLook avatarLook;
     private int avatarModFlag;
@@ -208,6 +209,7 @@ public class User extends Creature {
         this.userMSM = new Messenger(this);
         // TODO: Nexon-like user caching to avoid DB load upon each login/migrate.
         this.character = GameDB.rawLoadCharacter(characterID);
+        this.realEquip = new ArrayList<>(BodyPart.BP_Count + 1);
         
         this.basicStat.clear();
         this.secondaryStat.clear();
@@ -249,6 +251,7 @@ public class User extends Creature {
         /* Begin CUser::~CUser destructor */
         flushCharacterData(0, true);
         Logger.logReport("User logout");
+        realEquip.clear();
         /* Begin CharacterData::~CharacterData destructor */
         for (List<Integer> itemTrading : character.getItemTrading())
             itemTrading.clear();
@@ -2271,7 +2274,7 @@ public class User extends Creature {
                             character.getCharacterStat().setHP(50);
                             basicStat.setFrom(character, character.getEquipped(), character.getEquipped2(), 0, 0);
                             secondaryStat.clear();
-                            secondaryStat.setFrom(basicStat, character.getEquipped(), character.getEquipped2(), character);
+                            secondaryStat.setFrom(basicStat, character.getEquipped(), character);
                             validateStat(false);
                             addCharacterDataMod(DBChar.Character);
                             isDead = true;
@@ -2635,7 +2638,7 @@ public class User extends Creature {
         lock.lock();
         try {
             AvatarLook avatarOld = avatarLook.makeClone();
-            //ItemAccessor.getRealEquip
+            ItemAccessor.getRealEquip(character, realEquip, 0, 0);
             avatarLook.load(character.getCharacterStat(), character.getEquipped(), character.getEquipped2());
             
             int maxHPIncRate = secondaryStat.getStatOption(CharacterTemporaryStat.MaxHP);
@@ -2646,8 +2649,8 @@ public class User extends Creature {
                 weaponID = character.getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
             }
             
-            basicStat.setFrom(character, character.getEquipped(), character.getEquipped2(), maxHPIncRate, maxMPIncRate);
-            secondaryStat.setFrom(basicStat, character.getEquipped(), character.getEquipped2(), character);
+            basicStat.setFrom(character, realEquip, character.getEquipped2(), maxHPIncRate, maxMPIncRate);
+            secondaryStat.setFrom(basicStat, realEquip, character);
             
             int flag = 0;
             if (character.getCharacterStat().getHP() > basicStat.getMHP()) {

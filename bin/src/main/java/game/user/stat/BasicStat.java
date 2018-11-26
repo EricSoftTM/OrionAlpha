@@ -100,33 +100,20 @@ public class BasicStat {
         this.mhp = c.getCharacterStat().getMHP();
         this.mmp = c.getCharacterStat().getMMP();
         
-        for (ItemSlotBase equip : realEquip) {
-            if (equip != null) {
-                ItemSlotEquip item = (ItemSlotEquip) equip;
-                this.STR += item.iSTR;
-                this.INT += item.iINT;
-                this.DEX += item.iDEX;
-                this.LUK += item.iLUK;
-                this.mhp += item.iMaxHP;
-                this.mmp += item.iMaxMP;
-            }
-        }
-        for (ItemSlotBase equip : realEquip2) {
-            if (equip != null) {
-                ItemSlotEquip item = (ItemSlotEquip) equip;
-                this.STR += item.iSTR;
-                this.INT += item.iINT;
-                this.DEX += item.iDEX;
-                this.LUK += item.iLUK;
-                this.mhp += item.iMaxHP;
-                this.mmp += item.iMaxMP;
+        ItemSlotEquip equip;
+        for (ItemSlotBase item : realEquip) {
+            if ((equip = (ItemSlotEquip) item) != null) {
+                this.STR += equip.iSTR;
+                this.INT += equip.iINT;
+                this.DEX += equip.iDEX;
+                this.LUK += equip.iLUK;
+                this.mhp += equip.iMaxHP;
+                this.mmp += equip.iMaxMP;
             }
         }
         
-        this.mhp += maxHPIncRate;
-        this.mmp += maxMPIncRate;
-        this.mhp = (short) Math.min(this.mhp, SkillAccessor.HP_MAX);
-        this.mmp = (short) Math.min(this.mmp, SkillAccessor.MP_MAX);
+        this.mhp = (short) Math.min((maxHPIncRate + 100) * this.mhp / 100, SkillAccessor.HP_MAX);
+        this.mmp = (short) Math.min((maxMPIncRate + 100) * this.mmp / 100, SkillAccessor.MP_MAX);
     }
 
     public void setGender(byte gender) {

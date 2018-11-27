@@ -443,22 +443,16 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         }
         final byte type = packet.decodeByte();
         if (OrionConfig.LOG_PACKETS) {
-            Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+            Logger.logReport("[Packet Logger] [0x%s]: %s", Integer.toHexString(type).toUpperCase(), packet.dumpString());
         }
         if (type == ClientPacket.AliveAck) {
-            // This is always the same value that was sent in the request.
-            // When sending an aliveReq from this responses time, it causes
-            // the client to flood acks in millisecond intervals..
-            int time = packet.decodeInt();
-            //Logger.logReport("[AliveAck] Requested Time: %d", time);
-        } else if (type == ClientPacket.AliveAck2) {
-            // This ack is always received first. If there is no response,
-            // the client will continue to only respond with this packet.
-            // Once we send an aliveReq, the client will begin to send
-            // both AliveAck and AliveAck2 requests with the same timestamps.
-            int time = packet.decodeInt();
-            sendPacket(onAliveReq(time), false);
-            //Logger.logReport("[AliveAck2] Received Time: %d", time);
+            this.aliveReqSent = 0;
+            this.lastAliveAck = packet.decodeInt();
+        } else if (type == ClientPacket.AliveReq) {
+            packet.decodeInt();
+            
+            this.aliveReqSent = System.currentTimeMillis() / 1000;
+            sendPacket(onAliveReq((int) this.aliveReqSent), false);
         } else if (type >= ClientPacket.BEGIN_SOCKET && type <= ClientPacket.END_SOCKET) {
             switch (type) {
                 case ClientPacket.CheckPassword:

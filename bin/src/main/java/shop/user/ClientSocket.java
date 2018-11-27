@@ -293,7 +293,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             case ClientPacket.AliveAck:
                 sendPacket(onAliveReq(packet.decodeInt()), false);
                 break;
-            case ClientPacket.AliveAck2:
+            case ClientPacket.AliveReq:
                 break;
             case ClientPacket.MigrateIn:
                 onMigrateIn(packet);

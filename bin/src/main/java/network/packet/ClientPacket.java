@@ -34,7 +34,7 @@ public class ClientPacket {
             // Both 0x8 and 0x9 are their own "AliveAck".. 
             // Maybe one is an acknowledge and the other is a request? idk
             AliveAck = 8,
-            AliveAck2 = 9, // 0058B285
+            AliveReq = 9, // 0058B285
             ExceptionLog = 10,
             END_SOCKET = 11,
             BEGIN_USER = 12,

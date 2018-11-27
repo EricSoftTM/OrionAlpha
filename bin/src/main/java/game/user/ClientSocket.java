@@ -274,10 +274,14 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private void processPacket(InPacket packet) {
         final byte type = packet.decodeByte();
         if (OrionConfig.LOG_PACKETS) {
-            Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+            Logger.logReport("[Packet Logger] [0x%s]: %s", Integer.toHexString(type).toUpperCase(), packet.dumpString());
         }
         if (type == ClientPacket.AliveAck) {
-            sendPacket(onAliveReq(packet.decodeInt()), false);
+            packet.decodeInt();//Acknowledged alive ack
+        } else if (type == ClientPacket.AliveReq) {
+            packet.decodeInt();//Received client alive req
+            
+            sendPacket(onAliveReq((int)(System.currentTimeMillis() / 1000)), false);
         } else if (type == ClientPacket.MigrateIn) {
             onMigrateIn(packet);
         } else {

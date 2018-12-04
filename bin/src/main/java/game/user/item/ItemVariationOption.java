@@ -58,7 +58,8 @@ public class ItemVariationOption {
                 randomBit >>= 1;
             }
             delta -= 2;
-            
+            if (delta < 0)
+                delta = 0;
             int variation = delta + v;
             switch (option) {
                 case Normal:

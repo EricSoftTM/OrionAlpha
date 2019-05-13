@@ -1612,7 +1612,7 @@ public class User extends Creature {
                 // idk if this is evan a megaphone packet or not, yolo it works
                 getField().broadcastPacket(FieldPacket.onGroupMessage(characterName, message), false);
             }
-            Inventory.sendInventoryOperation(this, Request.None, changeLog);
+            Inventory.sendInventoryOperation(this, Request.Excl, changeLog);
         } else {
             sendCharacterStat(Request.Excl, 0);
         }

@@ -31,21 +31,24 @@ import game.user.User;
  */
 public class CommandHandler {
 
+    /**
+     * @param input Command input with a prefix.
+     */
     public static void handle(User user, String input) {
         String[] args = new String[input.split(" ").length];
-        String val = "";
+        StringBuilder val = new StringBuilder();
         int index = 0;
         for (String s : input.split(" ")) {
             // Combines any strings inbetween quotes into one string in the array.
-            if (!val.isEmpty() || s.contains("\"")) {
-                boolean end = !val.isEmpty() && s.contains("\"");
-                if (!val.isEmpty()) {
-                    val += " ";// Add a space inbetween the text in the quote.
+            if ((val.length() > 0) || s.contains("\"")) {
+                boolean end = val.length() != 0 && s.contains("\"");
+                if (val.length() != 0) {
+                    val.append(" ");// Add a space inbetween the text in the quote.
                 }
-                val += s.replace("\"", "");
+                val.append(s.replace("\"", ""));
                 if (end || hasDoubleQuote(s)) {// Had a start and end quote so we are good.
-                    args[index++] = val;
-                    val = "";
+                    args[index++] = val.toString();
+                    val.setLength(0);
                 }
             } else {
                 args[index++] = s;
@@ -53,15 +56,15 @@ public class CommandHandler {
         }
         // If for some reason the val still has data we append it.
         // Can happen if someone doesn't include an ending quote.
-        if (!val.isEmpty())
-            args[index++] = val;
-        String command = args[0].replace("!", "").replace("@", "");
+        if (val.length() != 0)
+            args[index++] = val.toString();
+        String command = args[0].substring(1);//input is expected to have some type of command prefix.
         args = Arrays.copyOfRange(args, 1, index);// Cuts off the nulls created if quotes were used.
         for (UserGradeCode role : UserGradeCode.values()) {
             if (user.getGradeCode() < role.getGrade()) {
                 break;
             }
-            Class<?> clazz = null;
+            Class<?> clazz;
             try {
                 // Since in java we aren't able to grab a list of classes under a package
                 // I just do a list of 'grades' to check for specific class commands.
@@ -73,7 +76,6 @@ public class CommandHandler {
 
             Method commandMethod = null;
             Object[] methodArgs = null;
-            boolean unknownParameters = false;
             try {
                 // Allow the method to accept any values in user.
                 // method = clazz.getMethod(command, User.class, String[].class);
@@ -84,18 +86,8 @@ public class CommandHandler {
                         // We automatically fill in any User or String[] paremeters with the sender &
                         // args.
 
-                        for (Class<?> c : method.getParameterTypes()) {
-                            if (!c.equals(User.class) && !c.equals(String[].class)) {
-                                unknownParameters = true;
-                                break;
-                            }
-                        }
-                        if (!unknownParameters) {
-                            if (method.getParameterCount() == 2) {
-                                break;
-                            } else {
-                                unknownParameters = true;
-                            }
+                        if (method.getParameters().length == 0) {//No parameters, just pass it.
+                            break;
                         }
                         index = -1;
                         methodArgs = new Object[method.getParameters().length];
@@ -105,38 +97,33 @@ public class CommandHandler {
                                 methodArgs[index] = user;
                                 continue;
                             }
-                            if (param.getType().isAssignableFrom(String[].class)) {// Automatically fill in String[]
-                                                                                   // parameter.
+                            if (param.getType().isAssignableFrom(String[].class)) {// Automatically fill in String[] parameter.
                                 methodArgs[index] = args;
                                 continue;
                             }
-                            if (unknownParameters) {
-                                List<Field> checked = new ArrayList<>();
-                                Object value = findFieldFor(user, checked, param.getType());
-                                if (value == null) {
-                                    // System.out.println("Failed to find " + param.getType().getSimpleName());
-                                    checked.clear();
-                                    continue;
-                                }
-                                methodArgs[index] = value;
+                            List<Field> checked = new ArrayList<>();
+                            Object value = findFieldFor(user, checked, param.getType());
+                            if (value == null) {
+                                // System.out.println("Failed to find " + param.getType().getSimpleName());
                                 checked.clear();
+                                continue;
                             }
+                            methodArgs[index] = value;
+                            checked.clear();
                         }
                         // If the current method has all args filled in
                         // we break so we don't attempt a 2nd method with same name.
                         int valid = 0;
                         for (Object obj : methodArgs) {
-                            if (obj != null)
+                            if(obj != null) {
                                 valid++;
+                            }
                         }
                         if (valid == method.getParameters().length) {
                             break;
                         }
                     }
                 }
-            } catch (SecurityException ex) {
-                ex.printStackTrace(System.err);
-                continue;
             } catch (Exception ex) {
                 ex.printStackTrace(System.err);
                 continue;
@@ -144,23 +131,22 @@ public class CommandHandler {
             if (commandMethod != null) {
                 try {
                     Object ret = null;
-                    if (methodArgs == null || !unknownParameters) {
-                        ret = commandMethod.invoke(null, user, args);
-                    } else {
-                        int validArgs = 0;
+                    int validArgs = 0;
+                    if(methodArgs != null) {
                         for (Object obj : methodArgs) {
                             if (obj == null) {
                                 continue;
                             }
                             validArgs++;
                         }
-                        if (validArgs == commandMethod.getParameterCount()) {
-                            ret = commandMethod.invoke(null, methodArgs);
-                        } else {
-                            user.sendSystemMessage("Failed to execute the command.");
-                        }
                     }
-                    if (ret != null && ret instanceof String) {
+                    if (validArgs == commandMethod.getParameterCount()) {
+                        ret = commandMethod.invoke(null, methodArgs);//Does it matter if methodArgs is null?
+                    } else {
+                        user.sendSystemMessage("Failed to execute the command.");
+                    }
+
+                    if (ret instanceof String) {
                         user.sendSystemMessage(ret.toString());
                     }
                     methodArgs = null;

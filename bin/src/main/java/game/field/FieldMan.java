@@ -18,10 +18,8 @@
 package game.field;
 
 import java.awt.Point;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.ConcurrentHashMap;
 import util.Size;
 import util.TimerThread;
 import util.wz.WzFileSystem;
@@ -38,12 +36,9 @@ public class FieldMan {
     private static FieldMan[] managers;
     
     private final Map<Integer, Field> fields;
-    private final Lock lock;
-    private long lastUpdateForField;
     
     public FieldMan() {
-        this.fields = new HashMap<>();
-        this.lock = new ReentrantLock();
+        this.fields = new ConcurrentHashMap<>();
         
         TimerThread.Field.Register(() -> {
             FieldMan.this.update(System.currentTimeMillis());
@@ -71,14 +66,9 @@ public class FieldMan {
         } else {
             Field field = fields.get(fieldID);
             if (field == null || forceLoad) {
-                lock.lock();
-                try {
-                    if ((field != null && forceLoad) || field == null) {
-                        field = registerField(fieldID, fieldDir.getItem(String.format("%09d.img", fieldID)));
-                        fields.put(fieldID, field);
-                    }
-                } finally {
-                    lock.unlock();
+                field = registerField(fieldID, fieldDir.getItem(String.format("%09d.img", fieldID)));
+                if (field != null) {
+                    fields.put(fieldID, field);
                 }
             }
             return field;
@@ -91,29 +81,35 @@ public class FieldMan {
     }
     
     private Field registerField(int fieldID, WzProperty mapData) {
-        final Field field = new Field(fieldID);
-        
-        WzProperty info = mapData.getNode("info");
-        field.setFieldReturn(WzUtil.getInt32(info.getNode("returnMap"), Field.Invalid));
-        field.setForcedReturn(WzUtil.getInt32(info.getNode("forcedReturn"), Field.Invalid));
-        field.setMobRate(WzUtil.getFloat(info.getNode("mobRate"), 1.0f));
-        field.setRecoveryRate(WzUtil.getFloat(info.getNode("recovery"), 1.0f));
-        field.setStreetName(WzUtil.getString(info.getNode("streetName"), "NULL"));
-        field.setMapName(WzUtil.getString(info.getNode("mapName"), "NULL"));
-        field.setOption(WzUtil.getInt32(info.getNode("fieldLimit"), 0));
-        field.setAutoDecHP(WzUtil.getInt32(info.getNode("decHP"), 0));
-        field.setAutoDecMP(WzUtil.getInt32(info.getNode("decMP"), 0));
-        field.setClock(WzUtil.getBoolean(info.getNode("clock"), false));
-        field.setTown(WzUtil.getBoolean(info.getNode("town"), false));
-        field.setSwim(WzUtil.getBoolean(info.getNode("swim"), false));
-        
-        restoreFoothold(field, mapData.getNode("foothold"), mapData.getNode("ladderRope"), info);
-        field.getSpace2D().setFieldAttr(WzUtil.getFloat(info.getNode("fs"), 1.0f), field.isSwim());
-        field.makeSplit();
-        field.getPortal().restorePortal(mapData.getNode("portal"), field);
-        field.getLifePool().init(field, mapData);
-        
-        return field;
+        if (mapData != null) {
+            final Field field = new Field(fieldID);
+    
+            WzProperty info = mapData.getNode("info");
+            if (info != null) {
+                field.setFieldReturn(WzUtil.getInt32(info.getNode("returnMap"), Field.Invalid));
+                field.setForcedReturn(WzUtil.getInt32(info.getNode("forcedReturn"), Field.Invalid));
+                field.setMobRate(WzUtil.getFloat(info.getNode("mobRate"), 1.0f));
+                field.setRecoveryRate(WzUtil.getFloat(info.getNode("recovery"), 1.0f));
+                field.setStreetName(WzUtil.getString(info.getNode("streetName"), "NULL"));
+                field.setMapName(WzUtil.getString(info.getNode("mapName"), "NULL"));
+                field.setOption(WzUtil.getInt32(info.getNode("fieldLimit"), 0));
+                field.setAutoDecHP(WzUtil.getInt32(info.getNode("decHP"), 0));
+                field.setAutoDecMP(WzUtil.getInt32(info.getNode("decMP"), 0));
+                field.setClock(WzUtil.getBoolean(info.getNode("clock"), false));
+                field.setTown(WzUtil.getBoolean(info.getNode("town"), false));
+                field.setSwim(WzUtil.getBoolean(info.getNode("swim"), false));
+    
+                field.getSpace2D().setFieldAttr(WzUtil.getFloat(info.getNode("fs"), 1.0f), field.isSwim());
+            }
+    
+            restoreFoothold(field, mapData.getNode("foothold"), mapData.getNode("ladderRope"), info);
+            field.makeSplit();
+            field.getPortal().restorePortal(mapData.getNode("portal"), field);
+            field.getLifePool().init(field, mapData);
+    
+            return field;
+        }
+        return null;
     }
     
     private void restoreFoothold(Field field, WzProperty propFoothold, WzProperty ladderOrRope, WzProperty info) {
@@ -127,17 +123,8 @@ public class FieldMan {
     }
     
     private void updateField(long time) {
-        if (!fields.isEmpty()) {
-            lock.lock();
-            try {
-                for (Field field : fields.values()) {
-                    field.update(time);
-                }
-            } finally {
-                lock.unlock();
-            }
-        } else {
-            lastUpdateForField = System.currentTimeMillis();
+        for (Field field : fields.values()) {
+            field.update(time);
         }
     }
 

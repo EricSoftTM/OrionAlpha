@@ -16,7 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: ?? ??'
-'Script: ?? ??'
+'''
+Author: Eric
+NPC: Rowen the Fairy
+Quest: Collecting 100 Cursed Dolls (Requires 'A Clue to the Secret Book' Completion)
+'''
 
-self.say("#rSorry, I am not coded yet.#k")
+# TODO: Implement Collecting 100 Cursed Dolls quest handling.
+prompt = "Do you need me for something? Please don't bother me unless you need me right this minute."
+self.say(prompt)

@@ -16,47 +16,63 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Roger'
-'Script: ?? ??'
-
-self.say("#bScript: begin2#k\r\n\r\n#rSorry, I am not coded yet.#k")
-
 '''
-// 2. use the items  
-  script "begin2" {  
-  	qr = target.questRecord;  
-  	val = qr.getState( 1002 );  
+Author: Eric
+NPC: Roger
+Quest: Roger's Apple
+'''
 
-  		inventory = target.inventory;  
-  			if ( val == 0 ) {  
-  			if ( target.nGender == 0 ) {  
-  				self.say( "Ei, você aí! Posso falar com você por um minuto? Hahah! Eu sou #p2000#, um instrutor que ajuda novos viajantes como você." );  
-  				self.say( "Quem te falou para fazer ISSO? HAHAHAH! Você é um viajante MUITO curioso! Bom, bom, bom... Eu faço isso porque quero. É isso." );  
-  			}  
-  			else if ( target.nGender == 1 ) {  
-  				self.say( "Ei! Você aí! Você está livre? Hehe... Eu sou #p2000#, o instrutor, e adoro bater papo com #Ggarotos:garotas# legais como você e, claro, ajudar durante o jogo.#I" );  
-  				self.say( "Ei! Me dê um minuto do seu tempo. Eu vou lhe dar muitas informações valiosas. Qualquer coisa para uma belezinha como você. Hahaha!!!#I" );  
-  			}  
-  			self.say( "Certo! Vamos nos divertir! Yahh!" );  
-  			val2 = target.nHP / 2;  
-  			target.incHP( -val2, 0 );  
-  			self.say( "#GSurpreso:Surpresa#? Você não pode ficar com o HP abaixo de 0, eu vou lhe dar uma #r#t2010007##k para comer. Você pode recuperar sua força assim. Abra seu inventário e clique duas vezes nele." );  
-  			self.say( "Você terá que comer cada #t2010007# que eu te dei, mas pode recuperar HP ficando aí quieto, então, venha falar comigo quando tiver recuperado sua HP por completo." );  
-  			ret = inventory.exchange( 0, 2010007, 1 );  
-  			if ( ret == 0 ) self.say( "Você não comeu um pouquinho demais?" );  
-  			else qr.set( 1002, "" );  
-  		}  
-  	else if ( val == 1 and inventory.itemCount( 2010007 ) == 0 and target.nHP == target.nMHP ) {  
-  			self.say( "O que você faz se quiser pegar o item? É fácil, certo? Você pode designá-lo como uma #bTecla de Atalho#k no canto inferior direito da tela. Você não sabia disso, sabia? Hahaha!" );  
-  			self.say( "Certo! Você aprendeu muito, então toma aqui um presentinho. Você não deveria me agradecer por aprender uma perícia. Use-a quando necessário." );  
-  			self.say( "Isto é tudo o que posso te ensinar. É triste, mas tenho que dizer adeus. E tome cuidado por aí. Até mais..." );  
-  			target.incEXP( 2, 0 );  
-  			ret = inventory.exchange( 0, 2000000, 3, 2000003, 3 );  
-  			if ( ret == 0 ) self.say( "Você não comeu um pouquinho demais?" );  
-  			qr.setComplete( 1002 );  
-  	}  
-  	else if ( inventory.itemCount( 2010007 ) > 0 ) self.say( "Venha, coma a #r#t2010007##k que eu te dei~ Abra o inventário e clique na guia #b'Usar'#k, depois clique duas vezes no #t2010000# para pegá-la." );  
-  	else if ( target.nHP != target.nMHP ) self.say( "Você não recuperou totalmente sua força. Você comeu mesmo a #t2010007# que eu te dei? Tem certeza?" );  
-  	else self.say( "O tempo está ótimo hoje!" );  
-  }  
+# TODO: Implement Roger's Apple quest handling.
+prompt = "Hey! Nice weather today, huh?"
+self.say(prompt)
+
+# q1021s
+'''
+sel = self.askMenu(prompt + "\r\n\r\n#b#L0#Roger's Apple#l#k")
+if sel == 0:
+  if self.userGetGender() == 0:
+    self.sayNext("Hey, Man~  What's up? Haha!  I am Roger who can teach you adorable new Maplers lots of information.")
+    self.sayNext("You are asking who made me do this?  Ahahahaha!  Myself!  I wanted to do this and just be kind to you new travellers.")
+  else:
+    self.sayNext("Hey there, Pretty~ I am Roger who teaches you adorable new Maplers lots of information.")
+    self.sayNext("I know you are busy! Please spare me some time~ I can teach you some useful information! Ahahaha!")
+
+  ret = self.askYesNo("So..... Let me just do this for fun! Abaracadabra~!")
+  if ret == 0:
+    self.sayNext("I can't believe you have just turned down an attractive guy like me!")
+  else:
+    if self.inventoryGetItemCount(2010007) >= 1:
+      val = self.userGetHP() / 2
+      self.userIncHP(-val, False)
+      self.sayNext("Surprised? If HP becomes 0, then you are in trouble. Now, I will give you #r#t2010007##k. Please take it. You will feel stronger. Open the Item window and double click to consume. Hey, it's very simple to open the Item window. Just press #bI#k on your keyboard.")
+      self.sayNext("Please take all #t2010007# that I gave you. You will be able to see the HP bar increasing. Please talk to me again when you recover your HP 100%.")
+    else:
+      if self.inventoryExchange(0, [2010007, 1]) == False:
+        self.sayNext("Your use inventory must be full.")
+      else:
+        val = self.userGetHP() / 2
+        self.userIncHP(-val, False)
+        self.sayNext("Surprised? If HP becomes 0, then you are in trouble. Now, I will give you #r#t2010007##k. Please take it. You will feel stronger. Open the Item window and double click to consume. Hey, it's very simple to open the Item window. Just press #bI#k on your keyboard.")
+        self.sayNext("Please take all #t2010007# that I gave you. You will be able to see the HP bar increasing. Please talk to me again when you recover your HP 100%.")
+'''
+
+# q1021e
+'''
+if self.inventoryGetItemCount(2010007) == 0:
+  if self.userGetHP() == self.userGetMHP():
+    file = "#fUI/UIWindow.img/QuestIcon/"
+    self.sayNext("How easy is it to consume the item? Simple, right? You can set a #bhotkey#k on the right bottom slot. Haha you didn't know that! right? Oh, and if you are a beginner, HP will automatically recover itself as time goes by. Well it takes time but this is one of the strategies for the beginners.")
+    self.sayNext("Alright! Now that you have learned alot, I will give you a present. This is a must for your travel in Maple World, so thank me! Please use this under emergency cases!")
+    self.say("Okay, this is all I can teach you. I know it's sad but it is time to say good bye. Well take care if yourself and Good luck my friend!\r\n\r\n" + file + "4/0#\r\n#v2010000# 3 #t2010000#\r\n#v2010009# 3 #t2010009#\r\n\r\n" + file + "8/0# 10 exp")
+    
+    if self.inventoryExchange(0, [2010000, 3, 2010009, 3]) == True:
+      self.sayNext("Your inventory is full...")
+    else:
+      self.userIncEXP(10, False)
+      # TODO: Implement quest control on backend. => Set quest progress to completed.
+  else:
+    self.sayNext("Hey, your HP is not fully recovered yet. Did you take all the #t2010007# that I gave you? Are you sure?")
+else:
+  # Veja... Eu disse para voc?pegar cada #r#t2010007##k que eu te dei. Abra a Janela de Itens e clique na #baba USO#b. L?voc?ver?a #t2010007#, d?dois cliques para usar.
+  self.sayNext("filler text awaiting English translation, nice hacks m8")
 '''

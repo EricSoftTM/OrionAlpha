@@ -16,7 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Maya'
-'Script: ?? ??'
+'''
+Author: Eric
+NPC: Maya
+Quest: Maya of Henesys (Maya and the Weird Medicine)
+'''
 
-self.say("#bScript: maya#k\r\n\r\n#rSorry, I am not coded yet.#k")
+# TODO: Implement Maya of Henesys quest handling.
+prompt = "Cough... Cough... Ah... Headache... Can somebody help me?..."
+self.say(prompt)
+
+'''
+sel = self.askMenu(prompt + "\r\n\r\n#b#L0#Maya of Henesys#l#k")
+if sel == 0:
+	self.sayNext("")
+	ret = self.askYesNo("")
+	if ret == True:
+		# TODO: Implemented quest backend handling. => Set quest to started.
+'''

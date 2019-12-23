@@ -16,7 +16,23 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Teo'
-'Script: Florina beach? That, or some quest thing..'
+'''
+Author: Eric
+NPC: Teo
+Quest: Maya of Henesys (Maya and the Weird Medicine), Finding Sophia
+'''
 
-self.say("#bScript: teo#k\r\n\r\n#rSorry, I am not coded yet.#k")
+# TODO: Implement Maya of Henesys quest handling.
+# TODO: Implement Finding Sophia quest handling.
+prompt = "I heard that Maya is sick again. Tragic..."
+self.say(prompt)
+
+'''
+sel = self.askMenu(prompt + "\r\n\r\n#b#L0#Maya of Henesys#l#k") # After completing the dialogue, even if declining, this changes to 'Finding Sophia'.
+if sel == 0: # Initiate Finding Sophia Quest
+	self.sayNext("")
+	self.sayNext("")
+	ret = self.askYesNo("")
+	if ret == True:
+		# TODO: Implement quest control on backend. => Set quest progress to started.
+'''

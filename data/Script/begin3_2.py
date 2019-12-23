@@ -16,7 +16,22 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Seth'
-'Script: ?? ??'
+'''
+Author: Eric
+NPC: Sen
+Quest: Nina's Brother Sen
+'''
 
-self.say("#bScript: begin3_2#k\r\n\r\n#rSorry, I am not coded yet.#k")
+# TODO: Implement Nina's Brother Sen quest handling.
+# TODO: Implement Nina's Request quest handling.
+prompt = "There is nothing to eat in here. My poor tummy..."
+self.say(prompt)
+
+'''
+ret = self.askYesNo("")
+if ret == False:
+	self.say("Awww... You aren't going to tell her?")
+else:
+	self.say("You know where my sister is, right? I mean, you just talked to her...")
+	# TODO: Implement quest control on backend. => Set quest progress to started.
+'''

@@ -16,7 +16,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: ?? ??'
-'Script: ?? ??'
+'''
+Author: Eric
+NPC: Pia
+Quest: Pia and the Blue Mushroom
+'''
 
-self.say("#rSorry, I am not coded yet.#k")
+# TODO: Implement Pia and the Blue Mushroom quest handling.
+prompt = "Ah~! It is really getting to me!!! Blue Mushroom... Oh... Are you a stranger?"
+self.say(prompt)
+
+'''
+sel = self.askMenu(prompt + "\r\n\r\n#b#L0#Pia and the Blue Mushroom#l#k")
+if sel == 0:
+	self.sayNext("")
+	ret = self.askYesNo("")
+	if ret == True:
+		# TODO: Implemented quest backend handling. => Set quest to started.
+'''

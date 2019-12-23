@@ -19,11 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 Author: Eric
 NPC: Jane
-Script: Potion NPC after completing her quests
+Script: Potion NPC (Quest Required)
+Quest: Jane and the Wild Boar
 '''
 
-'10. Jane and the wild boar'
-val = "" 'self.questRecordGetState(2013)'
+val = "" # self.questRecordGetState(2013)
 isBeginner = self.userGetJob() == 0
 potionInfo = {}
 
@@ -42,6 +42,10 @@ potionInfo[2] = {
 	"Price": 1600,
 	"Recovery": "800 MP"
 }
+
+# TODO: Implement quest handling for Jane and the Wild Boar
+if self.userGetLevel() >= 25 and isBeginner == False:
+	val = "2"
 
 if val == "2":
 	self.sayNext("It's you... thanks to you I was able to get a lot done. Nowadays I've been making a bunch of items. If you need anything let me know.")
@@ -64,7 +68,7 @@ if val == "2":
 			else:
 				self.sayNext("Thank you for coming. Stuff here can always be made so if you need something, please come again.")
 elif self.userGetLevel() >= 40 and isBeginner == False:
-	'Voc?s?poder?comprar a po豫o depois de tomar conta dos meus pedidos.'
+	# Voc?s?poder?comprar a po豫o depois de tomar conta dos meus pedidos.
 	self.sayNext("You may purchase my potions once you have taken care of my orders.")
 elif self.userGetLevel() >= 25 and isBeginner == False:
 	self.sayNext("You don't seem strong enough to be able to purchase my potion...")

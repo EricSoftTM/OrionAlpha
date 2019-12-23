@@ -16,7 +16,24 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: ?? ??'
-'Script: ?? ??'
+'''
+Author: Eric
+NPC: Alex
+Quest: Alex's Request
+'''
 
-self.say("#rSorry, I am not coded yet.#k")
+# TODO: Implement Alex's Request quest handling.
+prompt = "It's been a months since I ran away from home, and frankly I'm sick of wandering around strange places now. But I feel weird about going home..."
+self.say(prompt)
+
+'''
+sel = self.askMenu(prompt + "\r\n\r\n#b#L0#Alex's Request#l#k")
+if sel == 0:
+	self.sayNext("")
+	ret = self.askYesNo("I don't think my dad will just let me walk back in the door... Not without beating the bejeebus out of me. Can you find a way to calm him down? I need your help, man.")
+	if ret == False:
+		self.say("You can't do me a favor because I'm an immature kid who ran away from home, right? I understand, but I'm trying to... Ah, nevermind.")
+	else:
+		self.sayNext("")
+		self.say("")
+'''

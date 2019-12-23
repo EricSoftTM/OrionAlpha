@@ -16,7 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: ?? ??'
-'Script: ?? ??'
+'''
+Author: Eric
+NPC: Manji
+Quest: Maya of Henesys (Maya and the Weird Medicine), Making Sparkling Rock (1), Manji and the Secret Group, A Special Assignment!
+'''
 
-self.say("#rSorry, I am not coded yet.#k")
+# TODO: Handle future Manji quests, assuming they exist.
+prompt = "Anyone who dares to stand in my path will be punished dearly..."
+self.say(prompt)

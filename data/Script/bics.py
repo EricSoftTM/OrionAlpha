@@ -16,7 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: ?? ??'
-'Script: ?? ??'
+'''
+Author: Eric
+NPC: Biggs
+Quest: Bigg's Collection of Items
+'''
 
-self.say("#rSorry, I am not coded yet.#k")
+# TODO: Implement Bigg's Collection of Items quest handling.
+prompt = "I can't stay in this town forever. Someone rescue me!"
+self.say(prompt)

@@ -16,7 +16,31 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: ?? ??'
-'Script: ?? ??'
+'''
+Author: Eric
+NPC: Blackbull
+Quest: Fixing Blackbull's House
+'''
 
-self.say("#rSorry, I am not coded yet.#k")
+# TODO: Implement Fixing Blackbull's House quest handling.
+prompt = "Our family grew, and I'll have to fix the house to make it bigger, but I need materials to do so..."
+self.say(prompt)
+
+'''
+	This doesn't exist in BMS nor Orion, so all we have are old references.
+
+	=> Dialogue
+		=> AskYesNo
+			=> Start Quest
+
+	Quest:
+		- 30 Tree Branch from Stump
+		- 50 Firewood from Axe Stump or Dark Axe Stump
+
+	=> Complete Quest
+		=> Rewards
+
+	Rewards:
+		- 50 EXP
+		- 1 Steel Shield or 1 Red Triangular Shield (Random Reward)
+'''

@@ -19,9 +19,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 Author: Eric
 NPC: Arwen the Fairy
-Script: Arwen Crafter
+Quest: Arwen and Ellinia
 '''
 
+# TODO: Implement Arwen and Ellinia quest handling.
+prompt = "I lost a very important item ..."
+self.say(prompt)
+
+'''
+sel = self.askMenu(prompt + "\r\n\r\n#b#L0#Arwen and Ellinia#l#k")
+if sel == 0:
+  ret = self.askYesNo("A few days ago, on my way back to Ellinia, I got ambushed by a monster, which made me run for my life. Ever since then, even if I wanted to venture outside Ellinia, just the thought of that monster waiting for me scares me to death. Can you please take care of those monsters?")
+  if ret == False:
+    self.say("I see... the thought of not being able to go outside for a while is just terrible... If you ever change your mind, please come talk to me.")
+  else:
+    # TODO: Implement quest control on backend. => Set quest progress to started.
+    self.sayNext("Thank you so much. Once you take care of those monsters, then and only then will I feel safe to walk out of Ellinia.")
+    self.say("Now, on your way back to Ellinia, please eliminate #b100 Green Mushrooms#k. Then myself or others like me won't feel threatened to go out of Ellinia for a little while.")
+'''
+
+# Moon and Star Rocks don't exist in this version yet. Whoops..
+'''
 menu = ""
 newItemID = ""
 
@@ -65,3 +83,4 @@ if self.userGetJob() != 0 and self.userGetLevel() > 39:
     self.say("Cool, get it here. " + newItemID1 + ". It's very well done, it's important to use good materials. If you ever need my help, count on me, okay?")
 else:
   self.say("I make valuable and rare items, but unfortunately, I can not do anything for a stranger like you.")
+'''

@@ -16,7 +16,25 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Mr. Wetbottom'
-'Script: Sleepywood Sauna Manager (store, or quest? idk)'
+'''
+Author: Eric
+NPC: Mr. Wetbottom
+Quest: A Clue to the Secret Book
+'''
 
-self.say("#bScript: cool#k\r\n\r\n#rSorry, I am not coded yet.#k")
+# TODO: Implement A Clue to the Secret Book quest handling.
+prompt = "Welcome to the VIP sauna of the Sleepywood Hotel. Actually I need some help here ..."
+self.say(prompt)
+
+'''
+sel = self.askMenu(prompt + "\r\n\r\n#b#L0#A Clue to the Secret Book#l#k")
+if sel == 0:
+	self.sayNext("Good job getting here. Now, I have a favor to ask. If you accept, I'll give you a piece of clothing. Just listen to my story.")
+	self.sayNext("I have a son that can do me no wrong. But one day he took a book that is very dear to me and left. That book...hmmm...I can't divulge much about it, but it is very, very important to me...")
+	ret = self.askYesNo("If you get me that book back safely, I'll give you a comfortable article of clothing, perfect for saunas like this. Do we have a deal?")
+	if ret == False:
+		self.say("I'll reward you handsomely for your work so if you ever change your mind, please let me know.")
+	else:
+		# TODO: Implement quest control on backend. => Set quest progress to started.
+		self.say("It won't be easy locating my son. Victoria Island is humongous. I'm guessing that he may be in a passage made of trees near Ellinia, because that's his favorite spot. Best of luck to you!")
+'''

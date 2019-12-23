@@ -28,19 +28,21 @@ import game.field.life.npc.NpcPool;
 import game.field.portal.PortalMap;
 import game.user.User;
 import game.user.UserRemote;
-import java.awt.Point;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
 import util.Logger;
 import util.Rect;
 import util.Size;
+
+import java.awt.*;
+import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
@@ -60,7 +62,7 @@ public class Field {
             ScreenWidthOffset   = (WvsScreenWidth * 75) / 100,
             ScreenHeightOffset  = (WvsScreenHeight * 75) / 100
     ;
-    
+
     private final AtomicInteger fieldObjIdCounter;
     private final int field;
     private int fieldReturn;
@@ -94,7 +96,7 @@ public class Field {
     private FieldSplit splitEnd;
     private List<FieldSplit> fieldSplit;
     private final Map<Integer, User> users;
-    
+
     public Field(int fieldID) {
         this.fieldObjIdCounter = new AtomicInteger(30000);
         this.field = fieldID;
@@ -108,7 +110,7 @@ public class Field {
         this.lock = new ReentrantLock();
         this.users = new ConcurrentHashMap<>();
     }
-    
+
     public void broadcastPacket(OutPacket packet, List<Integer> characters) {
         for (int characterID : characters) {
             User user = users.get(characterID);
@@ -117,14 +119,14 @@ public class Field {
             }
         }
     }
-    
+
     public void broadcastPacket(OutPacket packet, boolean exceptAdmin) {
         for (User user : users.values()) {
             if (user!= null && (!exceptAdmin || !user.isGM()))//!((pUser.nGradeCode & 1) > 0)
                 user.sendPacket(packet);
         }
     }
-    
+
     public void expireDrops(User user) {
         int count = dropPool.getDrops().size();
         dropPool.tryExpire(true);
@@ -132,35 +134,35 @@ public class Field {
             user.sendSystemMessage("Items Destroyed: " + count);
         }
     }
-    
+
     public User findUser(int characterID) {
         return users.get(characterID);
     }
-    
+
     public DropPool getDropPool() {
         return dropPool;
     }
-    
+
     public PortalMap getPortal() {
         return portal;
     }
-    
+
     public LifePool getLifePool() {
         return lifePool;
     }
-    
+
     public Size getMapSize() {
         return map;
     }
-    
+
     public double getMobRate() {
         return mobRate;
     }
-    
+
     public WvsPhysicalSpace2D getSpace2D() {
         return space2D;
     }
-    
+
     public void getEncloseSplit(FieldSplit p, FieldSplit[] split) {
         for (int i = 0; i < split.length; i++) {
             split[i] = null;
@@ -198,50 +200,50 @@ public class Field {
             }
         }
     }
-    
+
     public int getFieldID() {
         return this.field;
     }
-    
+
     public int getFieldType() {
         return FieldType.Default;
     }
-    
+
     public int getForcedReturnFieldID() {
         return this.forcedReturn;
     }
-    
+
     public double getIncEXPRate() {
         return this.incRateEXP;
     }
-    
+
     public double getIncDropRate() {
         return this.incRateDrop;
     }
-    
+
     public int getOption() {
         return this.option;
     }
-    
+
     public double getRecoveryRate() {
         return this.recoveryRate;
     }
-    
+
     public int getReturnFieldID() {
         return this.fieldReturn;
     }
-    
+
     public Collection<User> getUsers() {
         return users.values();
     }
-    
+
     public List<User> getUsers(boolean exceptAdmin) {
         List<User> users = new ArrayList<>(getUsers());
-    
+
         users.removeIf(user -> user == null || (exceptAdmin && user.isGM()));
         return users;
     }
-    
+
     public int incrementIdCounter() {
         if (fieldObjIdCounter.get() > 2000000000) {
             Logger.logError("The FieldObjID counter has exceeded 2billion objects, resetting to 30000.");
@@ -249,23 +251,23 @@ public class Field {
         }
         return fieldObjIdCounter.incrementAndGet();
     }
-    
+
     public boolean isSwim() {
         return swim;
     }
-    
+
     public boolean isTown() {
         return town;
     }
-    
+
     public boolean isUserExist(int characterID) {
         return users.containsKey(characterID);
     }
-    
+
     public final boolean lock() {
         return lock(700);
     }
-    
+
     public final boolean lock(long timeout) {
         try {
             return lock.tryLock(timeout, TimeUnit.MILLISECONDS);
@@ -274,13 +276,13 @@ public class Field {
         }
         return false;
     }
-    
+
     public Point makePointInSplit(int x, int y) {
         x = Math.min(Math.max(x, leftTop.x), (leftTop.x + ScreenWidthOffset * splitColCount) - 1);
         y = Math.min(Math.max(y, leftTop.y), (leftTop.y + ScreenHeightOffset * splitRowCount) - 1);
         return new Point(x, y);
     }
-    
+
     public void makeSplit() {
         this.splitColCount = (map.cx + (ScreenWidthOffset - 1)) / ScreenWidthOffset;
         this.splitRowCount = (map.cy + (ScreenHeightOffset - 1)) / ScreenHeightOffset;
@@ -293,7 +295,7 @@ public class Field {
         this.splitStart = fieldSplit.get(0);
         this.splitEnd = fieldSplit.get(fieldSplit.size() - 1);
     }
-    
+
     public boolean onEnter(final User user) {
         if (lock(1500)) {
             try {
@@ -313,7 +315,7 @@ public class Field {
                 }
                 // Jukebox
                 if (clock) {
-                    
+
                 }
                 return true;
             } finally {
@@ -322,7 +324,7 @@ public class Field {
         }
         return false;
     }
-    
+
     public void onLeave(User user) {
         if (lock(1100)) {
             try {
@@ -336,20 +338,20 @@ public class Field {
             }
         }
     }
-    
+
     public void onMobMove(User ctrl, Mob mob, InPacket packet) {
         short mobCtrlSN = packet.decodeShort();
         byte mobCtrlState = packet.decodeByte();//bDirLeft | (unsigned __int8)(16 * nMobCtrlState)
         boolean nextAttackPossible = (mobCtrlState & 0xF) != 0;
         byte action = packet.decodeByte();//2 * nAction | bLeft & 1
         int data = packet.decodeInt();
-        
-        if (mob.getController().getUser() != ctrl && ((mobCtrlState & 0xF0) == 0 || mob.isNextAttackPossible() 
+
+        if (mob.getController().getUser() != ctrl && ((mobCtrlState & 0xF0) == 0 || mob.isNextAttackPossible()
                 || !lifePool.changeMobController(ctrl.getCharacterID(), mob, true))) {
             mob.sendChangeControllerPacket(ctrl, (byte) 0);
             return;
         }
-        
+
         byte left = action;
         if (action < 0)
             action = -1;
@@ -365,8 +367,8 @@ public class Field {
                 FieldSplit centerSplit = null;
                 int x = tail.getX();
                 int y = tail.getY();
-                if (splitOld == null 
-                        || tail.getX() < (x = ScreenWidthOffset * splitOld.getCol() + leftTop.x - 100) 
+                if (splitOld == null
+                        || tail.getX() < (x = ScreenWidthOffset * splitOld.getCol() + leftTop.x - 100)
                         || tail.getX() > (x + WvsScreenWidth)
                         || tail.getY() < (y = ScreenHeightOffset * splitOld.getRow() + leftTop.y - 75)
                         || tail.getY() > (y + WvsScreenHeight)) {
@@ -391,7 +393,7 @@ public class Field {
             mp.getElem().clear();
         }
     }
-    
+
     public void onNpcMove(User ctrl, Npc npc, InPacket packet) {
         if (npc.getController() != null && npc.getController().getUser() == ctrl) {
             byte action = packet.decodeByte();
@@ -433,7 +435,7 @@ public class Field {
             }
         }
     }
-    
+
     public void onPacket(User user, byte type, InPacket packet) {
         if (type >= ClientPacket.BEGIN_LIFEPOOL && type <= ClientPacket.END_LIFEPOOL) {
             lifePool.onPacket(user, type, packet);
@@ -441,20 +443,20 @@ public class Field {
             dropPool.onPacket(user, type, packet);
         }
     }
-    
+
     public void onUserMove(User user, InPacket packet, Rect move) {
         if (user.getMiniRoom() != null) {
             return;
         }
         packet.decodeByte(); // Unknown -> v3 = *(_BYTE *)(dword_60423C + 180);
-        
+
         MovePath mp = new MovePath();
         mp.decode(packet);
         if (mp.getElem().isEmpty()) {
             Logger.logError("Received Empty Move Path [%s]", user.getCharacterName());
             return;
         }
-        
+
         Elem tail = mp.getElem().getLast();
         // Nexon applies the pTail coordinates here, however that will
         // cause an incorrect result on fieldsplits if the movement's
@@ -463,7 +465,7 @@ public class Field {
         final int xPos = user.getCurrentPosition().x;//pTail.x
         final int yPos = user.getCurrentPosition().y;//pTail.y
         user.setMovePosition(tail.getX(), tail.getY(), (byte) (tail.getMoveAction() & 0xFF), tail.getFh());
-        
+
         FieldSplit splitOld = user.getSplit();
         int x = ScreenWidthOffset * splitOld.getCol() + leftTop.x - 100;
         int y = ScreenHeightOffset * splitOld.getRow() + leftTop.y - 75;
@@ -493,7 +495,7 @@ public class Field {
         splitSendPacket(user.getSplit(), UserRemote.onMove(user.getCharacterID(), mp), user);
         mp.getElem().clear();
     }
-    
+
     public boolean onWeather(int itemID, String param, int duration) {
         if (!ItemAccessor.isWeatherItem(itemID) || weatherItemID != 0) {
             return false;
@@ -507,11 +509,11 @@ public class Field {
         broadcastPacket(FieldPacket.onBlowWeather(itemID, param), false);
         return true;
     }
-    
+
     public void setLeftTop(Point pt) {
         this.leftTop = pt;
     }
-    
+
     public void setMapSize(Size sz) {
         this.map = sz;
     }
@@ -571,7 +573,7 @@ public class Field {
     public void setIncRateDrop(double incRateDrop) {
         this.incRateDrop = incRateDrop;
     }
-    
+
     public FieldSplit splitFromPoint(int x, int y) {
         if ((x = x - leftTop.x) < 0 || (y = y - leftTop.y) < 0
                 || (x = x / ScreenWidthOffset) >= splitColCount
@@ -581,7 +583,7 @@ public class Field {
             return fieldSplit.get(x + y * splitColCount);
         }
     }
-    
+
     public void splitMigrateFieldObj(FieldSplit centerSplit, int foc, FieldObj obj) {
         FieldSplit[] src = new FieldSplit[9];
         getEncloseSplit(centerSplit, src);
@@ -608,7 +610,7 @@ public class Field {
         }
         System.arraycopy(src, 0, obj.getSplits(), 0, src.length);
     }
-    
+
     public void splitNotifyFieldObj(FieldSplit split, OutPacket packet, FieldObj obj) {
         if (split != null) {
             for (FieldObj objNew : split.getFieldObj(FieldSplit.User)) {
@@ -619,7 +621,7 @@ public class Field {
             }
         }
     }
-    
+
     public void splitRegisterFieldObj(FieldSplit split, int foc, FieldObj objNew, OutPacket packetEnter) {
         if (split != null) {
             for (User user : split.getUser()) {
@@ -632,7 +634,7 @@ public class Field {
             split.getFieldObj(foc).addLast(objNew);
         }
     }
-    
+
     public boolean splitRegisterFieldObj(int x, int y, int foc, FieldObj obj) {
         FieldSplit centerSplit = splitFromPoint(x, y);
         if (centerSplit != null) {
@@ -644,7 +646,7 @@ public class Field {
         }
         return false;
     }
-    
+
     public void splitRegisterUser(FieldSplit splitOld, FieldSplit splitNew, User user) {
         LinkedList<FieldObj> fieldObj;
         for (int i = 0; i < GameObjectType.NO; i++) {
@@ -683,7 +685,7 @@ public class Field {
             splitNew.getUser().addLast(user);
         }
     }
-    
+
     public void splitSendPacket(FieldSplit split, OutPacket packet, User except) {
         if (split != null) {
             for (FieldObj obj : split.getFieldObj(FieldSplit.User)) {
@@ -694,7 +696,7 @@ public class Field {
             }
         }
     }
-    
+
     public void splitUnregisterFieldObj(FieldSplit split, int foc, FieldObj posObj, OutPacket packetLeave) {
         if (split != null) {
             for (User user : split.getUser()) {
@@ -705,7 +707,7 @@ public class Field {
             split.getFieldObj(foc).remove(posObj);
         }
     }
-    
+
     public void splitUnregisterFieldObj(int foc, FieldObj obj) {
         for (FieldSplit split : obj.getSplits()) {
             if (split != null) {
@@ -713,13 +715,20 @@ public class Field {
             }
         }
     }
-    
+
     public final void unlock() {
         lock.unlock();
     }
-    
+
     public void update(long time) {
         lifePool.update(time);
         dropPool.tryExpire(false);
+        if (weatherItemID != 0 && ItemAccessor.isWeatherItem(weatherItemID)) {
+            if (weatherDuration != 0 && time - weatherBegin > 1000 * weatherDuration
+                    || weatherDuration == 0 && time - weatherBegin > 30000) {
+                weatherItemID = 0;
+                broadcastPacket(FieldPacket.onBlowWeather(0, null), false);
+            }
+        }
     }
 }

@@ -22,10 +22,10 @@ package util;
  * @author Eric
  */
 public class Utilities {
-    
+
     /**
      * Returns the specified 32-bit signed integer value as an array of bytes.
-     * 
+     *
      * @param val The value to convert
      * @return An array of bytes with length of 4
      */
@@ -36,12 +36,12 @@ public class Utilities {
         }
         return arr;
     }
-     
+
      /**
      * Converts a standard byte-array into a readable hex string AoB.
-     * 
+     *
      * @param buf The buffer containing an array of bytes
-     * @return A readable hex string 
+     * @return A readable hex string
      */
     public static String toHexString(byte[] buf) {
         StringBuilder str = new StringBuilder();
@@ -55,13 +55,13 @@ public class Utilities {
         str.deleteCharAt(str.length() - 1);
         return str.toString();
     }
-    
+
     /**
      * Converts an IP from a string to an integer.
      * e.g "127.0.0.1" -> 16777343
-     * 
+     *
      * @param addr The string representation of the IP
-     * 
+     *
      * @return The value of the IP as an integer
      */
     public static final int netIPToInt32(String addr) {
@@ -70,22 +70,52 @@ public class Utilities {
         }
         Long netaddr = 0L;
         String[] ip = addr.split("\\.");
-        
+
         for (int i = 0; i < 4; i++) {
             netaddr += Long.parseLong(ip[i]) << (i << 3);
         }
         return netaddr.intValue();
     }
-    
+
     /**
      * Converts an IP from an integer representation into a string.
      * e.g 16777343 -> "127.0.0.1"
-     * 
+     *
      * @param netaddr The integer representation of the IP
-     * 
+     *
      * @return The string representation of the IP
      */
     public static final String netIPToString(long netaddr) {
         return String.format("%d.%d.%d.%d", (netaddr & 0xFF), ((netaddr >> 8) & 0xFF), ((netaddr >> 16) & 0xFF), ((netaddr >> 24) & 0xFF));
+    }
+
+    //Thanks odin
+    /**
+     * Joins an array of strings starting from string <code>start</code> with a space.
+     *
+     * @param arr The array of strings to join.
+     * @param start Starting from which string.
+     * @return The joined strings.
+     */
+    public static String joinStringFrom(String[] arr, int start){
+        return joinStringFrom(arr, start, " ");
+    }
+
+    /**
+     * Joins an array of strings starting from string <code>start</code> with <code>sep</code> as a seperator.
+     *
+     * @param arr The array of strings to join.
+     * @param start Starting from which string.
+     * @return The joined strings.
+     */
+    public static String joinStringFrom(String[] arr, int start, String sep){
+        StringBuilder builder = new StringBuilder();
+        for(int i = start; i < arr.length; i++){
+            builder.append(arr[i]);
+            if(i != arr.length - 1){
+                builder.append(sep);
+            }
+        }
+        return builder.toString();
     }
 }

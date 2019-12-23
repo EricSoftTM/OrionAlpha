@@ -17,14 +17,14 @@
  */
 package game.user.command;
 
+import game.user.User;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import game.user.User;
 
 /**
  * @author Arnah
@@ -35,31 +35,9 @@ public class CommandHandler {
      * @param input Command input with a prefix.
      */
     public static void handle(User user, String input) {
-        String[] args = new String[input.split(" ").length];
-        StringBuilder val = new StringBuilder();
-        int index = 0;
-        for (String s : input.split(" ")) {
-            // Combines any strings inbetween quotes into one string in the array.
-            if ((val.length() > 0) || s.contains("\"")) {
-                boolean end = val.length() != 0 && s.contains("\"");
-                if (val.length() != 0) {
-                    val.append(" ");// Add a space inbetween the text in the quote.
-                }
-                val.append(s.replace("\"", ""));
-                if (end || hasDoubleQuote(s)) {// Had a start and end quote so we are good.
-                    args[index++] = val.toString();
-                    val.setLength(0);
-                }
-            } else {
-                args[index++] = s;
-            }
-        }
-        // If for some reason the val still has data we append it.
-        // Can happen if someone doesn't include an ending quote.
-        if (val.length() != 0)
-            args[index++] = val.toString();
-        String command = args[0].substring(1);//input is expected to have some type of command prefix.
-        args = Arrays.copyOfRange(args, 1, index);// Cuts off the nulls created if quotes were used.
+        String[] split = input.split(" ");
+        String command = split[0].substring(1);//input is expected to have some type of command prefix.
+        String[] args = Arrays.copyOfRange(split, 1, split.length);
         for (UserGradeCode role : UserGradeCode.values()) {
             if (user.getGradeCode() < role.getGrade()) {
                 break;
@@ -77,10 +55,18 @@ public class CommandHandler {
             Method commandMethod = null;
             Object[] methodArgs = null;
             try {
-                // Allow the method to accept any values in user.
-                // method = clazz.getMethod(command, User.class, String[].class);
                 for (Method method : clazz.getMethods()) {
-                    if (method.getName().equals(command)) {
+                    String usedAlias = null;
+                    CommandAlias alias = method.getAnnotation(CommandAlias.class);
+                    if (alias != null) {
+                        for (String s : alias.value()) {
+                            if (s.equalsIgnoreCase(command)) {
+                                usedAlias = s;
+                                break;
+                            }
+                        }
+                    }
+                    if (usedAlias != null || method.getName().equalsIgnoreCase(command)) {
                         commandMethod = method;
                         // Only do the field lookup if we actually have to.
                         // We automatically fill in any User or String[] paremeters with the sender &
@@ -89,8 +75,9 @@ public class CommandHandler {
                         if (method.getParameters().length == 0) {//No parameters, just pass it.
                             break;
                         }
-                        index = -1;
+                        int index = -1;
                         methodArgs = new Object[method.getParameters().length];
+                        boolean filledAlias = alias == null;
                         for (Parameter param : method.getParameters()) {
                             index++;
                             if (param.getType().isAssignableFrom(User.class)) {// Automatically fill in User parameter
@@ -99,6 +86,17 @@ public class CommandHandler {
                             }
                             if (param.getType().isAssignableFrom(String[].class)) {// Automatically fill in String[] parameter.
                                 methodArgs[index] = args;
+                                continue;
+                            }
+                            //Assumes if we are using an Alias annotation that the first String is used
+                            //for that alias.
+                            if (!filledAlias && param.getType().isAssignableFrom(String.class)) {
+                                if (usedAlias != null) {
+                                    methodArgs[index] = usedAlias;
+                                } else {//Used method name not alias.
+                                    methodArgs[index] = method.getName();
+                                }
+                                filledAlias = true;
                                 continue;
                             }
                             List<Field> checked = new ArrayList<>();

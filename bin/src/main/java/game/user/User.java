@@ -17,25 +17,8 @@
  */
 package game.user;
 
-import common.BroadcastMsg;
-import java.awt.Point;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import common.ExpAccessor;
-import common.GivePopularityRes;
-import common.JobAccessor;
-import common.JobCategory;
-import common.OrionConfig;
-import common.Request;
-import common.WhisperFlags;
-import common.item.BodyPart;
-import common.item.ItemAccessor;
-import common.item.ItemSlotBase;
-import common.item.ItemSlotType;
-import common.item.ItemType;
+import common.*;
+import common.item.*;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.DBChar;
@@ -43,10 +26,15 @@ import common.user.UserEffect;
 import game.Channel;
 import game.GameApp;
 import game.field.*;
-import game.field.drop.*;
+import game.field.drop.Drop;
+import game.field.drop.DropPickup;
+import game.field.drop.Reward;
+import game.field.drop.RewardType;
 import game.field.life.AttackIndex;
 import game.field.life.AttackInfo;
-import game.field.life.mob.*;
+import game.field.life.mob.Mob;
+import game.field.life.mob.MobAttackInfo;
+import game.field.life.mob.MobTemplate;
 import game.field.life.npc.*;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
@@ -69,7 +57,18 @@ import network.packet.CenterPacket;
 import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
-import util.*;
+import util.Logger;
+import util.Pointer;
+import util.Rand32;
+import util.Rect;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
@@ -164,14 +163,14 @@ public class User extends Creature {
     private Point curPos;
     private byte moveAction;
     private short footholdSN;
-    
+
     protected User(int characterID) {
         super();
-        
+
         this.hide = false;
         this.onTransferField = false;
         this.closeSocketNextTime = false;
-        
+
         this.emotion = 0;
         this.invalidHitPointCount = 0;
         this.invalidMobMoveCount = 0;
@@ -186,7 +185,7 @@ public class User extends Creature {
         this.avatarModFlag = 0;
         this.characterDataModFlag = 0;
         this.lastSelectNPCTime = 0;
-        
+
         long time = System.currentTimeMillis();
         this.lastCharacterHPInc = time;
         this.lastCharacterMPInc = time;
@@ -196,7 +195,7 @@ public class User extends Creature {
         this.nexonClubID = "";
         this.characterName = "";
         this.community = "#TeamEric";
-        
+
         this.curPos = new Point(0, 0);
         this.lock = new ReentrantLock(true);
         this.lockSocket = new ReentrantLock(true);
@@ -210,45 +209,45 @@ public class User extends Creature {
         // TODO: Nexon-like user caching to avoid DB load upon each login/migrate.
         this.character = GameDB.rawLoadCharacter(characterID);
         this.realEquip = new ArrayList<>(BodyPart.BP_Count + 1);
-        
+
         for (int i = 0; i <= BodyPart.BP_Count; i++) {
             this.realEquip.add(i, null);
         }
-        
+
         this.basicStat.clear();
         this.secondaryStat.clear();
     }
-    
+
     public User(ClientSocket socket) {
         this(socket.getCharacterID());
-        
+
         this.socket = socket;
         this.localSocketSN = socket.getLocalSocketSN();
-        
+
         Pointer<Integer> grade = new Pointer<>(0);
         Pointer<Integer> id = new Pointer<>(0);
         Pointer<String> nexonID = new Pointer<>("");
         GameDB.rawLoadAccount(socket.getCharacterID(), id, nexonID, grade);
-        
+
         this.accountID = id.get();
         this.nexonClubID = nexonID.get();
         this.gradeCode = grade.get();
-        
+
         this.characterID = character.getCharacterStat().getCharacterID();
         this.characterName = character.getCharacterStat().getName();
-        
+
         this.validateStat(true);
-        
+
         // Apply default configured rates
         this.incExpRate *= GameApp.getInstance().getExpRate();
         this.incMesoRate = GameApp.getInstance().getMesoRate();
         this.incDropRate *= GameApp.getInstance().getDropRate();
         this.incDropRate_Ticket *= GameApp.getInstance().getDropRate();
     }
-    
+
     /**
      * This is a User::~User deleting destructor.
-     * 
+     *
      * WARNING: This method should ONLY be used when you NULL the User object.
      */
     public final void destructUser() {
@@ -276,14 +275,14 @@ public class User extends Creature {
         }
         /* End CUser::~CUser destructor */
     }
-    
+
     ///////////////////////////// CQWUser START /////////////////////////////
     public boolean canStatChange(int inc, int dec) {
         // TODO
-        
+
         return false;
     }
-    
+
     public byte getLevel() {
         return character.getCharacterStat().getLevel();
     }
@@ -291,7 +290,7 @@ public class User extends Creature {
     public MiniRoomBase getMiniRoom() {
         return miniRoom;
     }
-    
+
     public boolean incAP(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -312,7 +311,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incDEX(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -333,7 +332,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public int incEXP(int inc, boolean onlyFull) {
         if (lock(1500)) {
             try {
@@ -373,7 +372,7 @@ public class User extends Creature {
         }
         return 0;
     }
-    
+
     public boolean incHP(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -400,7 +399,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incINT(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -421,7 +420,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incLUK(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -442,7 +441,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incMHP(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -463,7 +462,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incMMP(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -484,7 +483,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incMP(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -507,11 +506,11 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incMoney(int inc, boolean onlyFull) {
         return incMoney(inc, onlyFull, false);
     }
-    
+
     public boolean incMoney(int inc, boolean onlyFull, boolean totalMoneyChange) {
         lock.lock();
         try {
@@ -524,7 +523,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incPOP(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -545,7 +544,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incSP(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -566,7 +565,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean incSTR(int inc, boolean onlyFull) {
         lock.lock();
         try {
@@ -587,7 +586,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public int initEXP() {
         if (lock()) {
             try {
@@ -602,12 +601,12 @@ public class User extends Creature {
         }
         return 0;
     }
-    
+
     public boolean isValidStat(int STR, int DEX, int INT, int LUK, int remainAP) {
         // TODO
         return false;
     }
-    
+
     public void setFace(int val) {
         lock.lock();
         try {
@@ -618,7 +617,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public void setGender(int val) {
         lock.lock();
         try {
@@ -629,7 +628,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public void setHair(int val) {
         lock.lock();
         try {
@@ -640,7 +639,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public void setJob(int val) {
         if (JobAccessor.findJob(val) != null) {
             lock.lock();
@@ -685,7 +684,7 @@ public class User extends Creature {
                         if (root != null) {
                             for (SkillEntry skill : root.getSkills()) {
                                 int skillID = skill.getSkillID();
-                
+
                                 // Ignore - we don't have masteries yet.
                             }
                         }
@@ -703,7 +702,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void setSkin(int val) {
         lock.lock();
         try {
@@ -714,7 +713,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public void statChange(int inc, int dec, short incHP, short incMP) {
         lock.lock();
         try {
@@ -755,11 +754,11 @@ public class User extends Creature {
         }
     }
     ///////////////////////////// CQWUser END ///////////////////////
-    
+
     public void addCharacterDataMod(int flag) {
         this.characterDataModFlag |= flag;
     }
-    
+
     public boolean canAttachAdditionalProcess() {
         if (socket != null && !onTransferField && getHP() > 0 && miniRoom == null && tradingNpc == null) {
             if (runningVM == null)
@@ -767,7 +766,7 @@ public class User extends Creature {
         }
         return false;
     }
-    
+
     public void destroyAdditionalProcess() {
         lock.lock();
         try {
@@ -785,7 +784,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public void closeSocket() {
         lockSocket.lock();
         try {
@@ -796,11 +795,11 @@ public class User extends Creature {
             lockSocket.unlock();
         }
     }
-    
+
     public final boolean lock() {
         return lock(700);
     }
-    
+
     public final boolean lock(long timeout) {
         try {
             return lock.tryLock(timeout, TimeUnit.MILLISECONDS);
@@ -809,113 +808,113 @@ public class User extends Creature {
         }
         return false;
     }
-    
+
     public final void unlock() {
         lock.unlock();
     }
-    
+
     public AvatarLook getAvatarLook() {
         return avatarLook;
     }
-    
+
     public BasicStat getBasicStat() {
         return basicStat;
     }
-    
+
     public CalcDamage getCalcDamage() {
         return calcDamage;
     }
-    
+
     public Channel getChannel() {
         if (socket != null) {
             return socket.getChannel();
         }
         return null;
     }
-    
+
     public byte getChannelID() {
         if (socket != null) {
             return socket.getChannelID();
         }
         return 0;
     }
-    
+
     public CharacterData getCharacter() {
         return character;
     }
-    
+
     public int getCharacterID() {
         return characterID;
     }
-    
+
     public String getCharacterName() {
         return characterName;
     }
-    
+
     public int getGradeCode() {
         return gradeCode;
     }
-    
+
     public short getHP() {
         return character.getCharacterStat().getHP();
     }
-    
+
     public int getLocalSocketSN() {
         return localSocketSN;
     }
-    
+
     public Messenger getMessenger() {
         return userMSM;
     }
-    
+
     public int getPosMap() {
         return character.getCharacterStat().getPosMap();
     }
-    
+
     public byte getPortal() {
         return character.getCharacterStat().getPortal();
     }
-    
+
     public ScriptVM getScriptVM() {
         return runningVM;
     }
-    
+
     public SecondaryStat getSecondaryStat() {
         return secondaryStat;
     }
-    
+
     public ClientSocket getSocket() {
         return socket;
     }
-    
+
     public byte getWorldID() {
         return GameApp.getInstance().getWorldID();
     }
-    
+
     public double getExpRate() {
         return incExpRate;
     }
-    
+
     public double getMesoRate() {
         return incMesoRate;
     }
-    
+
     public double getDropRate() {
         return incDropRate;
     }
-    
+
     public double getTicketDropRate() {
         return incDropRate_Ticket;
     }
-    
+
     public boolean isGM() {
         return gradeCode >= UserGradeCode.GM.getGrade();
     }
-    
+
     public boolean isHide() {
         return hide;
     }
-    
+
     public void leaveField() {
         if (getField() != null) {
             getField().onLeave(this);
@@ -972,7 +971,7 @@ public class User extends Creature {
             //setField(null);
         }
     }
-    
+
     @Override
     public boolean isShowTo(User user) {
         if (hide && user.gradeCode >= gradeCode) {
@@ -990,7 +989,7 @@ public class User extends Creature {
     public OutPacket makeEnterFieldPacket() {
         return UserPool.onUserEnterField(this);
     }
-    
+
     public boolean setMovePosition(int x, int y, byte moveAction, short sn) {
         if (lock()) {
             try {
@@ -1005,37 +1004,37 @@ public class User extends Creature {
         }
         return false;
     }
-    
+
     public void setScriptVM(ScriptVM vm) {
         this.runningVM = vm;
     }
-    
+
     public String getCommunity() {
         return community;
     }
-    
+
     public Point getCurrentPosition() {
         return curPos;
     }
-    
+
     public byte getMoveAction() {
         return moveAction;
     }
-    
+
     public short getFootholdSN() {
         return footholdSN;
     }
-    
+
     @Override
     public int getGameObjectTypeID() {
         return GameObjectType.User;
     }
-    
+
     @Override
     public String toString() {
         return character.getCharacterStat().getName();
     }
-    
+
     public void onMigrateInSuccess() {
         Logger.logReport("User login from (%s)", socket.getAddr());
         if (getPosMap() / 10000000 == 99) {
@@ -1085,7 +1084,7 @@ public class User extends Creature {
             closeSocket();
         }
     }
-    
+
     public void onSocketDestroyed(boolean migrate) {
         if (lock()) {
             try {
@@ -1104,13 +1103,13 @@ public class User extends Creature {
             lockSocket.unlock();
         }
     }
-    
+
     public void onFieldPacket(byte type, InPacket packet) {
         if (getField() != null) {
             getField().onPacket(this, type, packet);
         }
     }
-    
+
     public void onPacket(byte type, InPacket packet) {
         switch (type) {
             case ClientPacket.UserTransferFieldRequest:
@@ -1202,7 +1201,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onAbilityUpRequest(InPacket packet) {
         if (lock()) {
             try {
@@ -1247,13 +1246,13 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onAdmin(InPacket packet) {
         if (!isGM()) {
             return;
         }
         byte type = packet.decodeByte();
-        
+
         if (lock()) {
             try {
                 switch (type) {
@@ -1321,30 +1320,30 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onAttack(byte type, InPacket packet) {
         if (secondaryStat.getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
             int reset = secondaryStat.resetByCTS(CharacterTemporaryStat.DarkSight);
             sendTemporaryStatReset(reset);
             return;
         }
-        
+
         //[01] 00 78 00 00 00 07 D1 02 CB FD 4C 02 D3 06 65 03
         byte attackInfo = packet.decodeByte();//nDamagePerMob | 16 * nMobCount
         byte damagePerMob = (byte) (attackInfo & 0xF);
         byte mobCount = (byte) ((attackInfo >>> 4) & 0xF);
         int skillID = packet.decodeInt();
-        
+
         this.lastAttack = System.currentTimeMillis();
         int bulletItemID = 0;
         int mobTemplateID = 0;
-        
+
         byte action = packet.decodeByte();//((_BYTE)bLeft << 7) | nAction & 0x7F
         byte left = (byte) ((action >> 7) & 1);
         byte speedDegree = packet.decodeByte();
-        
+
         if (getHP() > 0 && getField() != null) {
-            if (skillID == Fighter.FinalAttack || skillID == Fighter.FinalAttackEx || skillID == Page.FinalAttack || skillID == Page.FinalAttackEx 
+            if (skillID == Fighter.FinalAttack || skillID == Fighter.FinalAttackEx || skillID == Page.FinalAttack || skillID == Page.FinalAttackEx
                     || skillID == Spearman.FinalAttack || skillID == Spearman.FinalAttackEx || skillID == Hunter.FinalAttack_Bow || skillID == Crossbowman.FinalAttack_Crossbow)
                     this.lastAttackDelay = this.finalAttackDelay;
             long attackTime = System.currentTimeMillis();
@@ -1366,11 +1365,11 @@ public class User extends Creature {
             finalAttackDelay = 0;
             short bulletItemPos = 0;
             byte slv = 0;
-            
+
             if (type == ClientPacket.UserShootAttack) {
                 bulletItemPos = packet.decodeShort();
             }
-            
+
             List<AttackInfo> attack = new ArrayList<>(mobCount);
             for (int i = 0; i < mobCount; i++) {
                 AttackInfo info = new AttackInfo();
@@ -1389,12 +1388,12 @@ public class User extends Creature {
                 }
                 attack.add(info);
             }
-            
+
             Point ballStart = new Point();
             if (type == ClientPacket.UserShootAttack) {
                 // ptStart? TODO Check ShootAttack decodes
             }
-            
+
             byte attackType;
             if (type == ClientPacket.UserMagicAttack) {
                 attackType = 3;
@@ -1406,7 +1405,7 @@ public class User extends Creature {
                 Logger.logError("Attack Type Error %d", type);
                 return;
             }
-            
+
             SkillEntry skill = null;
             int maxCount = 1;
             int bulletCount = 1;
@@ -1472,35 +1471,35 @@ public class User extends Creature {
                     }
                 }
                 if (getField().getLifePool().onUserAttack(this, type, attackType, mobCount, damagePerMob, skill, slv, action, left, speedDegree, bulletItemID, attack, ballStart)) {
-                    
+
                 }
             }
         }
     }
-    
+
     public void onBroadcastMsg(InPacket packet) {
         if (isGM() && getField() != null) {
             byte bmType = packet.decodeByte();
             String msg = packet.decodeString();
-            
+
             getChannel().broadcast(WvsContext.onBroadcastMsg(bmType, msg));
         }
     }
-    
+
     public void onChat(InPacket packet) {
         if (getField() == null) {
             return;
         }
         String text = packet.decodeString();
-        
-        if (text.startsWith("!")) {
+
+        if (text.charAt(0) == '!' || text.charAt(0) == '@') {
             CommandHandler.handle(this, text);
             return;
         }
-        
+
         getField().splitSendPacket(getSplit(), UserCommon.onChat(characterID, text), null);
     }
-    
+
     public void onCharacterInfoRequest(InPacket packet) {
         User target = getField().findUser(packet.decodeInt());
         if (target == null || target.isGM()) {
@@ -1515,7 +1514,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onChangeSlotPositionRequest(InPacket packet) {
         byte type = packet.decodeByte();
         short oldPos = packet.decodeShort();
@@ -1523,7 +1522,7 @@ public class User extends Creature {
         short count = packet.decodeShort();
         Inventory.changeSlotPosition(this, Request.Excl, type, oldPos, newPos, count);
     }
-    
+
     public void onChangeStatRequest(InPacket packet) {
         if (getField() == null) {
             return;
@@ -1597,12 +1596,12 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onConsumeCashItemUseRequest(InPacket packet) {
         short pos = packet.decodeShort();
         int itemID = packet.decodeInt();
         String message = packet.decodeString();
-        
+
         List<ChangeLog> changeLog = new ArrayList<>();
         Pointer<Integer> decRet = new Pointer<>(0);
         if (Inventory.rawRemoveItem(this, ItemType.Consume, pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
@@ -1618,11 +1617,11 @@ public class User extends Creature {
         }
         changeLog.clear();
     }
-    
+
     public void onUpgradeItemRequest(InPacket packet) {
         Inventory.upgradeEquip(this, packet.decodeShort(), packet.decodeShort());
     }
-    
+
     public void onEmotion(InPacket packet) {
         if (getField() != null) {
             emotion = packet.decodeInt();
@@ -1631,7 +1630,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onDropMoneyRequest(InPacket packet) {
         if (getHP() == 0) {
             sendCharacterStat(Request.Excl, 0);
@@ -1660,7 +1659,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onGivePopularityRequest(InPacket packet) {
         int targetID = packet.decodeInt();
         User target = getField().findUser(targetID);
@@ -1671,13 +1670,13 @@ public class User extends Creature {
                 sendPacket(WvsContext.onGivePopularityResult(GivePopularityRes.LevelLow, null, false));
             } else {
                 boolean incFame = packet.decodeBool();
-            
+
                 byte ret = GameDB.rawCheckGivePopularity(characterID, targetID);
                 if (ret == GivePopularityRes.Success) {
                     target.incPOP(incFame ? 1 : -1, true);
                     target.sendCharacterStat(Request.None, CharacterStatType.POP);
                     target.sendPacket(WvsContext.onGivePopularityResult(GivePopularityRes.Notify, getCharacterName(), incFame));
-                    
+
                     sendPacket(WvsContext.onGivePopularityResult(GivePopularityRes.Success, target.getCharacterName(), incFame));
                 } else {
                     sendPacket(WvsContext.onGivePopularityResult(ret, null, false));
@@ -1685,7 +1684,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onHit(InPacket packet) {
         byte mobAttackIdx = packet.decodeByte();
         int obstacleData = 0;
@@ -1781,7 +1780,7 @@ public class User extends Creature {
                             if (obstacleData > 0) {
                                 int slv = obstacleData & 0xFF;
                                 int skillID = (obstacleData >> 8) & 0xFF;
-                                
+
                                 // Can't continue because MobSkills don't exist yet?
                                 // Unless they do, but aren't in Skill.wz? o.O
                             } else if (mobTemplateID != 0) {
@@ -1799,17 +1798,17 @@ public class User extends Creature {
             getField().getLifePool().onUserAttack(this, mobID, damage, hit, (short) 100);
         }
     }
-    
+
     public void onMigrateToCashShopRequest() {
         if (getField() == null || getSocket() == null || this.nexonClubID == null || this.nexonClubID.isEmpty()) {
             return;
         }
-        
+
         if (lock()) {
             try {
                 if (canAttachAdditionalProcess()) {
                     this.onTransferField = true;
-                    
+
                     OutPacket packet = new OutPacket(CenterPacket.ShopMigrateReq);
                     packet.encodeInt(getCharacterID());
                     packet.encodeByte(getWorldID());
@@ -1822,7 +1821,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onPortalScrollUseRequest(InPacket packet) {
         if (getField() == null) {
             sendCharacterStat(Request.Excl, 0);
@@ -1876,7 +1875,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onStatChangeItemUseRequest(InPacket packet) {
         if (getHP() == 0 || getField() == null || secondaryStat.getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
             sendCharacterStat(Request.Excl, 0);
@@ -1902,7 +1901,7 @@ public class User extends Creature {
                             return;
                         }
                         sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
-                        
+
                         int flag = sci.getInfo().apply(this, sci.getItemID(), character, basicStat, secondaryStat, System.currentTimeMillis(), false);
                         addCharacterDataMod(DBChar.ItemSlotConsume | DBChar.Character);
                         sendCharacterStat(Request.Excl, sci.getInfo().getFlag());
@@ -1916,7 +1915,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onScriptMessageAnswer(InPacket packet) {
         if (lock()) {
             try {
@@ -1928,13 +1927,13 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onSelectNpc(InPacket packet) {
         if (getField() != null) {
             long time = System.currentTimeMillis();
             if (lastSelectNPCTime == 0 || time <= lastSelectNPCTime || lastSelectNPCTime <= time - 500) {
                 this.lastSelectNPCTime = time;
-                
+
                 Npc npc = getField().getLifePool().getNpc(packet.decodeInt());
                 if (npc != null) {
                     if (npc.getNpcTemplate().getQuest() != null && !npc.getNpcTemplate().getQuest().isEmpty()) {
@@ -1948,7 +1947,7 @@ public class User extends Creature {
                                 if (!canAttachAdditionalProcess()) {
                                     return;
                                 }
-                                
+
                                 if (!npc.getNpcTemplate().getShopItem().isEmpty()) {
                                     this.tradingNpc = npc;
                                     sendPacket(ShopDlg.onOpenShopDlg(this, npc.getNpcTemplate()));
@@ -1962,7 +1961,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onShopRequest(InPacket packet) {
         if (lock(1000)) {
             try {
@@ -1980,8 +1979,8 @@ public class User extends Creature {
                         byte ti = ItemAccessor.getItemTypeIndexFromID(itemID);
                         ShopItem shopItem = null;
                         if (pos < 0 || npcTemplate.getShopItem().isEmpty() || pos >= npcTemplate.getShopItem().size()
-                                || (shopItem = npcTemplate.getShopItem().get(pos)).itemID != itemID || count <= 0 
-                                || (!ItemAccessor.isBundleTypeIndex(ti) 
+                                || (shopItem = npcTemplate.getShopItem().get(pos)).itemID != itemID || count <= 0
+                                || (!ItemAccessor.isBundleTypeIndex(ti)
                                 || ItemAccessor.isRechargeableItem(itemID)) && count != 1) {
                             Logger.logError("Incorrect shop request");
                             //Logger.logError("Packet Dump: %s", packet.dumpString());
@@ -2154,7 +2153,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onTransferFieldRequest(InPacket packet) {
         if (getField() == null || socket == null) {
             closeSocket();
@@ -2162,25 +2161,25 @@ public class User extends Creature {
         }
         postTransferField(null, null, false, null, false, packet);
     }
-    
+
     public void onMove(InPacket packet) {
         if (getField() != null) {
             Rect move = new Rect();
             getField().onUserMove(this, packet, move);
         }
     }
-    
+
     public void onWhisper(InPacket packet) {
         byte flag = packet.decodeByte();
         String target = packet.decodeString();
         if (flag == WhisperFlags.ReplyRequest) {
             String text = packet.decodeString();
-            
+
             User user = getChannel().findUserByName(target, true);
             boolean success = false;
             if (user != null && user.getField() != null && user.getField().getFieldID() != 0) {
                 user.sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyReceive, null, getCharacterName(), text, -1, false));
-                
+
                 target = user.getCharacterName();
                 success = true;
             }
@@ -2202,7 +2201,7 @@ public class User extends Creature {
             sendPacket(FieldPacket.onWhisper(WhisperFlags.BlockedResult, target, null, null, -1, false));
         }
     }
-    
+
     public void onTransferField(Field field, int x, int y, byte portal) {
         getField().onLeave(this);
         if (lock()) {
@@ -2227,7 +2226,7 @@ public class User extends Creature {
             closeSocket();
         }
     }
-    
+
     public void onTransferField(Field field, Portal portal) {
         if (lock()) {
             try {
@@ -2242,11 +2241,11 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void postTransferField(int fieldID, String portal, boolean force) {
         postTransferField(fieldID, portal, force, new Point(0, 0), true, null);
     }
-    
+
     public void postTransferField(Integer fieldID, String portal, boolean force, Point pos, boolean loopback, InPacket packet) {
         if (lock()) {
             try {
@@ -2346,7 +2345,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void sendCharacterStat(byte request, int flag) {
         lock.lock();
         try {
@@ -2357,7 +2356,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public boolean sendDropPickUpResultPacket(Drop pr, byte onExclRequest) {
         boolean pickUp = false;
         lock.lock();
@@ -2413,12 +2412,12 @@ public class User extends Creature {
             lock.unlock();
         }
     }
-    
+
     public void sendDropPickUpFailPacket(byte onExclRequest) {
         sendCharacterStat(onExclRequest, 0);
         sendPacket(WvsContext.onDropPickUpMessage(DropPickup.Done, 0, 0, 0));
     }
-    
+
     public void sendSetFieldPacket(boolean characterData) {
         if (characterData) {
             int s1 = Rand32.getInstance().random().intValue();
@@ -2430,7 +2429,7 @@ public class User extends Creature {
             sendPacket(Stage.onSetField(this, false, -1, -1, -1));
         }
     }
-    
+
     public void sendPacket(OutPacket packet) {
         lockSocket.lock();
         try {
@@ -2441,31 +2440,31 @@ public class User extends Creature {
             lockSocket.unlock();
         }
     }
-    
+
     public void sendSystemMessage(String msg) {
         sendPacket(WvsContext.onBroadcastMsg(BroadcastMsg.Notice, msg));
     }
-    
+
     public void setCommunity(String name) {
         this.community = name;
     }
-    
+
     public void setGradeCode(int grade) {
         this.gradeCode = grade;
     }
-    
+
     public void setMiniRoom(MiniRoomBase miniRoom) {
         this.miniRoom = miniRoom;
     }
-    
+
     public void setPosMap(int map) {
         character.getCharacterStat().setPosMap(map);
     }
-    
+
     public void setPortal(byte portal) {
         character.getCharacterStat().setPortal(portal);
     }
-    
+
     public boolean isWearItemOnNeed(int necessaryItemID) {
         int i = 0;
         while (character.getEquipped().get(i) == null || character.getEquipped().get(i).getItemID() != necessaryItemID) {
@@ -2475,7 +2474,7 @@ public class User extends Creature {
         }
         return true;
     }
-    
+
     public boolean isItemExist(byte ti, int itemID) {
         boolean exist = InventoryManipulator.isItemExist(character, ti, itemID);
         if (!exist) {
@@ -2491,42 +2490,42 @@ public class User extends Creature {
         }
         return exist;
     }
-    
+
     private void onUserDead() {
         sendTemporaryStatReset(secondaryStat.reset());
-        
+
         ExpAccessor.decreaseExp(character, basicStat, getField().getLifePool().getMobGenCount() <= 0 || getField().isTown());
         sendCharacterStat(Request.None, CharacterStatType.EXP);
     }
-    
+
     public void onLevelUp() {
         onUserEffect(true, true, UserEffect.LevelUp);
     }
-    
+
     public void setMaxLevelReach() {
         if (!isGM()) {
             String notice = String.format("[Congrats] %s has reached Level 200! Congratulate %s on such an amazing achievement!", characterName, characterName);
             getChannel().broadcast(WvsContext.onBroadcastMsg(BroadcastMsg.Notice, notice));
         }
     }
-    
+
     public void update(long time) {
         resetTemporaryStat(time, 0);
         flushCharacterData(time, false);
         checkCashItemExpire(time);
         checkGeneralItemExpire(time);
     }
-    
+
     public void checkGeneralItemExpire(long time) {
         // TODO: Item Expirations
     }
-    
+
     public void checkCashItemExpire(long time) {
         if (time - nextCheckCashItemExpire >= 0) {
             // TODO: Cash Item Expiration
         }
     }
-    
+
     public void flushCharacterData(long time, boolean force) {
         if (lock()) {
             try {
@@ -2545,7 +2544,7 @@ public class User extends Creature {
                         if ((characterDataModFlag & DBChar.ItemSlotEquip) != 0) {
                             CommonDB.rawUpdateItemEquip(characterID, character.getEquipped(), character.getEquipped2(), character.getItemSlot().get(ItemType.Equip));
                         }
-                        if ((characterDataModFlag & DBChar.ItemSlotConsume) != 0 || (characterDataModFlag & DBChar.ItemSlotInstall) != 0 
+                        if ((characterDataModFlag & DBChar.ItemSlotConsume) != 0 || (characterDataModFlag & DBChar.ItemSlotInstall) != 0
                                 || (characterDataModFlag & DBChar.ItemSlotEtc) != 0) {
                             CommonDB.rawUpdateItemBundle(characterID, character.getItemSlot());
                         }
@@ -2561,7 +2560,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void resetTemporaryStat(long time, int reasonID) {
         lock.lock();
         try {
@@ -2578,7 +2577,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public void sendTemporaryStatSet(int set) {
         if (set != 0) {
             lock.lock();
@@ -2592,7 +2591,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void sendTemporaryStatReset(int reset) {
         if (reset != 0) {
             lock.lock();
@@ -2606,7 +2605,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onUserEffect(boolean local, boolean remote, byte effect, int... args) {
         int skillID = 0;
         int slv = 0;
@@ -2623,7 +2622,7 @@ public class User extends Creature {
             sendPacket(UserLocal.onEffect(effect, skillID, slv));
         }
     }
-    
+
     public void postAvatarModified(int flag) {
         if (((flag | avatarModFlag) != avatarModFlag) || flag == AvatarLook.Look) {
             avatarModFlag |= flag;
@@ -2637,14 +2636,14 @@ public class User extends Creature {
             avatarModFlag = 0;
         }
     }
-    
+
     public final void validateStat(boolean calledByConstructor) {
         lock.lock();
         try {
             AvatarLook avatarOld = avatarLook.makeClone();
             ItemAccessor.getRealEquip(character, realEquip, 0, 0);
             avatarLook.load(character.getCharacterStat(), character.getEquipped(), character.getEquipped2());
-            
+
             int maxHPIncRate = secondaryStat.getStatOption(CharacterTemporaryStat.MaxHP);
             int maxMPIncRate = secondaryStat.getStatOption(CharacterTemporaryStat.MaxMP);
             int speed = secondaryStat.speed;
@@ -2652,10 +2651,10 @@ public class User extends Creature {
             if (character.getItem(ItemType.Equip, -BodyPart.Weapon) != null) {
                 weaponID = character.getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
             }
-            
+
             basicStat.setFrom(character, realEquip, character.getEquipped2(), maxHPIncRate, maxMPIncRate);
             secondaryStat.setFrom(basicStat, realEquip, character);
-            
+
             int flag = 0;
             if (character.getCharacterStat().getHP() > basicStat.getMHP()) {
                 incHP(0, false);
@@ -2665,7 +2664,7 @@ public class User extends Creature {
                 incMP(0, false);
                 flag |= CharacterStatType.MP;
             }
-            
+
             if (!calledByConstructor) {
                 if (flag != 0)
                     sendCharacterStat(Request.None, flag);
@@ -2696,7 +2695,7 @@ public class User extends Creature {
                 for (SkillEntry skill : SkillInfo.getInstance().getAllSkills()) {
                     int skillID = skill.getSkillID();
                     int skillRoot = skillID / 10000;
-                    
+
                     if (JobAccessor.isCorrectJobForSkillRoot(character.getCharacterStat().getJob(), skillRoot)) {
                         character.getSkillRecord().put(skillID, skill.getLevelData().length);
                     }
@@ -2707,7 +2706,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public int getTradeMoneyLimit() {
         return tradeMoneyLimit;
     }

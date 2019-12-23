@@ -34,6 +34,8 @@ import game.user.item.ChangeLog;
 import game.user.item.InventoryManipulator;
 import game.user.item.ItemInfo;
 import game.user.item.ItemVariationOption;
+import util.Utilities;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,12 +43,13 @@ import java.util.List;
  * @author Arnah
 */
 public class GMCommands {
-    
-    public static String clear(User user, Field field, String[] args) {
+
+    @CommandDesc("Clear drops on the map.")
+    public static String clear(User user, Field field) {
         field.expireDrops(user);
         return null;
     }
-    
+
     public static String sp(User user, CharacterStat stat, String[] args) {
         if (args.length > 0) {
             stat.setSP(Short.parseShort(args[0]));
@@ -55,7 +58,7 @@ public class GMCommands {
         }
         return "!sp <amount>";
     }
-    
+
     public static String ap(User user, CharacterStat stat, String[] args) {
         if (args.length > 0) {
             stat.setAP(Short.parseShort(args[0]));
@@ -64,7 +67,7 @@ public class GMCommands {
         }
         return "!ap <amount>";
     }
-    
+
     public static String map(User user, String[] args) {
         if (args.length > 0) {
             user.postTransferField(Integer.parseInt(args[0]), "", false);
@@ -72,60 +75,68 @@ public class GMCommands {
         }
         return "!map <mapid>";
     }
-    
+
+    @CommandDesc("Updates the level of your character")
     public static String level(User user, CharacterStat stat, String[] args) {
         if (args.length > 0) {
             stat.setLevel(Byte.parseByte(args[0]));
             user.sendCharacterStat(Request.Excl, CharacterStatType.LEV);
             return null;
         }
-        return "!level <level> - Updates the level of your character";
+        return "!level <level>";
     }
-    
+
+    @CommandDesc("Sets the amount of mesos in your inventory")
     public static String meso(User user, String[] args) {
         if (args.length > 0) {
             user.incMoney(Integer.parseInt(args[0]), true);
             user.sendCharacterStat(Request.Excl, CharacterStatType.Money);
             return null;
         }
-        return "!meso <amount> - Sets the amount of mesos in your inventory";
+        return "!meso <amount>";
     }
-    
+
+    @CommandDesc("Changes your job")
     public static String job(User user, CharacterStat stat, String[] args) {
         if (args.length > 0) {
             stat.setJob(Short.parseShort(args[0]));
             user.sendCharacterStat(Request.Excl, CharacterStatType.Job);
             return null;
         }
-        return "!job <jobid> - Changes your job";
+        return "!job <jobid>";
     }
-    
-    public static String heal(User user, CharacterStat stat, String[] args) {
+
+    public static String heal(User user, CharacterStat stat) {
         stat.setHP(stat.getMHP());
         stat.setMP(stat.getMMP());
         user.sendCharacterStat(Request.Excl, CharacterStatType.HP | CharacterStatType.MP);
         return null;
     }
-    
+
+    @CommandDesc("Broadcasts snowing weather with a message to the map")
     public static String weather(User user, Field field, String[] args) {
         if (args.length > 0) {
-            String text = args[0];
-            
-            field.splitSendPacket(user.getSplit(), FieldPacket.onBlowWeather(2090000, text), null);
+            String text = Utilities.joinStringFrom(args, 0);
+            field.onWeather(2090000, text, 60);
             return null;
         }
-        return "!weather <message> - Broadcasts snowing weather with a message to the map";
+        return "!weather <message>";
     }
 
-    public static String item(User user, CharacterData cd, DropPool pool, String[] args) {
-        return spawnItem("item", user, cd, pool, args);
+    @CommandDesc("Broadcasts your message")
+    public static String say(User user, String[] args) {
+        if (args.length > 0) {
+            String text = Utilities.joinStringFrom(args, 0);
+
+            user.getChannel().broadcast(FieldPacket.onGroupMessage(user.getCharacterName(), text));
+            return null;
+        }
+        return "!say <message>";
     }
 
-    public static String drop(User user, CharacterData cd, DropPool pool, String[] args) {
-        return spawnItem("drop", user, cd, pool, args);
-    }
-
-    private static String spawnItem(String alias, User user, CharacterData cd, DropPool pool, String[] args) {
+    @CommandAlias("drop")
+    @CommandDesc("Spawns items either in your inventory or on the ground")
+    public static String item(String alias, User user, CharacterData cd, DropPool pool, String[] args) {
         if (alias.equals("drop") || alias.equals("item")) {
             if (args.length > 0) {
                 int itemID = Integer.parseInt(args[0]);
@@ -158,7 +169,6 @@ public class GMCommands {
                 }
             }
         }
-        return "!item <itemid> - Spawns items either in your inventory or on the ground";
+        return "!item <itemid>";
     }
-    
 }

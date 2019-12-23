@@ -61,7 +61,7 @@ public class CompareCtrlMax extends HeapBase {
     @Override
     public void adjustUpward() {
         int count = getCount() - 1;
-        while (adjust(count) != 0) {
+        while (adjust(count) > 0) {
             count = (count - 1) >> 1;
         }
     }
@@ -78,16 +78,17 @@ public class CompareCtrlMax extends HeapBase {
                 getHeap().add(null);
             }
         }
+        t.setPosMaxHeap(getCount());
         getHeap().set(incCount(), t);
         adjustUpward();
-        return getCount();
+        return t.getPosMaxHeap();
     }
 
     @Override
     public void removeAt(int index) {
         getHeap().set(index, null);
         boolean last = decCount() == 1;
-        if (last && index < getCount()) {
+        if (!last && index < getCount()) {
             getHeap().set(index, getHeap().get(getCount()));
             for (int i = index;;) {
                 i = adjust(i);
@@ -99,8 +100,10 @@ public class CompareCtrlMax extends HeapBase {
 
     @Override
     public void swap(int index1, int index2) {
+        getHeap().get(index1).setPosMaxHeap(index2);
+        getHeap().get(index2).setPosMaxHeap(index1);
+    
         Controller t = getHeap().get(index1);
-
         getHeap().set(index1, getHeap().get(index2));
         getHeap().set(index2, t);
     }
@@ -110,13 +113,15 @@ public class CompareCtrlMax extends HeapBase {
         if (getCount() != 1) {
             decCount();
             if (index < getCount()) {
+                Controller t = getHeap().get(index);
+            
                 getHeap().set(index, getHeap().get(getCount()));
-                for (int i = index;;) {
-                    i = adjust(i);
-                    if (i == 0)
-                        break;
-                }
-                //reassign index back to origin?
+                getHeap().get(index).setPosMaxHeap(index);
+                do {
+                    index = adjust(index);
+                } while (index != 0);
+                t.setPosMaxHeap(getCount());
+                getHeap().set(getCount(), t);
             }
             incCount();
             adjustUpward();

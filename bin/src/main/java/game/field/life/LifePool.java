@@ -513,16 +513,9 @@ public class LifePool {
         Controller ctrl;
         Controller controller = ctrlNull;
         
-        // It's hard to tell if Nexon ever truly increments nIndex.
-        // I think they truly continue to force the controller on
-        // whoever has the least amount of controllers and then on
-        // each new controller they update the heap. Each new adjustment
-        // causes them to shift upward, allowing the new user with the
-        // least controllers to be next in line.
-        int index = 0;
         for (Iterator<Npc> it = controller.getCtrlNpc().iterator(); it.hasNext();) {
             Npc npc = it.next();
-            ctrl = ctrlMin.getHeap().get(index);
+            ctrl = ctrlMin.getHeap().get(0);
             if (ctrl.getCtrlCount() >= 50) {
                 break;
             }
@@ -532,11 +525,9 @@ public class LifePool {
             npc.sendChangeControllerPacket(ctrl.getUser(), true);
             it.remove();
         }
-        // Assume reiteration from head.
-        index = 0;
         for (Iterator<Mob> it = controller.getCtrlMob().iterator(); it.hasNext();) {
             Mob mob = it.next();
-            ctrl = ctrlMin.getHeap().get(index);
+            ctrl = ctrlMin.getHeap().get(0);
             if (ctrl.getCtrlCount() >= 50) {
                 break;
             }
@@ -546,11 +537,10 @@ public class LifePool {
             mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
             it.remove();
         }
-        // Assume final reiteration from head of each heap.
-        index = 0;
+        
         while (true) {
-            Controller minCtrl = ctrlMin.getHeap().get(index);
-            Controller maxCtrl = ctrlMax.getHeap().get(index);
+            Controller minCtrl = ctrlMin.getHeap().get(0);
+            Controller maxCtrl = ctrlMax.getHeap().get(0);
             
             if (maxCtrl.getCtrlCount() <= minCtrl.getCtrlCount() || maxCtrl.getCtrlCount() <= 20) {
                 return;
@@ -567,15 +557,13 @@ public class LifePool {
                 continue;
             }
             
-            if (maxCtrl.getCtrlMob().isEmpty() || maxCtrl.getCtrlMob().get(0) == null)
+            if (maxCtrl.getCtrlMob().isEmpty())
                 break;
-            Mob mob = maxCtrl.getCtrlMob().get(0);
-            if (mob == null) {
-                for (Mob p : maxCtrl.getCtrlMob()) {
-                    if (p != null) {
-                        mob = p;
-                        break;
-                    }
+            Mob mob = null;
+            for (Mob m : maxCtrl.getCtrlMob()) {
+                if (m != null) {
+                    mob = m;
+                    break;
                 }
             }
             if (mob == null)
@@ -612,23 +600,14 @@ public class LifePool {
                 if (ctrl != null) {
                     List<Mob> ctrlMob = new ArrayList<>(ctrl.getCtrlMob());
                     List<Npc> ctrlNpc = new ArrayList<>(ctrl.getCtrlNpc());
+    
+                    ctrlMin.removeAt(ctrl.getPosMinHeap());
+                    ctrlMax.removeAt(ctrl.getPosMaxHeap());
                     
-                    if (ctrl.getPosMinHeap() > 0 && ctrl.getPosMaxHeap() > 0) {
-                        ctrlMin.removeAt(ctrl.getPosMinHeap());
-                        ctrlMax.removeAt(ctrl.getPosMaxHeap());
-                    }
-                    
-                    // It's hard to tell if Nexon ever truly increments nIndex.
-                    // I think they truly continue to force the controller on
-                    // whoever has the least amount of controllers and then on
-                    // each new controller they update the heap. Each new adjustment
-                    // causes them to shift upward, allowing the new user with the
-                    // least controllers to be next in line.
-                    int index = 0;
                     for (Mob mob : ctrlMob) {
                         if (mob == null)
                             break;
-                        if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(index)) == null || ctrl.getCtrlCount() >= 50) {
+                        if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(0)) == null || ctrl.getCtrlCount() >= 50) {
                             ctrl = ctrlNull;
                         }
                         
@@ -637,12 +616,10 @@ public class LifePool {
                         mob.setController(ctrl);
                         mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
                     }
-                    // Assume reiteration from head.
-                    index = 0;
                     for (Npc npc : ctrlNpc) {
                         if (npc == null)
                             break;
-                        if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(index)) == null || ctrl.getCtrlCount() >= 50) {
+                        if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(0)) == null || ctrl.getCtrlCount() >= 50) {
                             ctrl = ctrlNull;
                         }
                         

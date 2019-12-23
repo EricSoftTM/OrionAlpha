@@ -7,12 +7,13 @@ OrionAlpha - A Nexon Replica Emulator Project
  * To emulate a korean locale in the client, you can download LocaleEmulator [here](https://mega.nz/#!T5t00IwA!YByix3DVt-_Pi0IpU-OwUnvhCDyZEPz4JQ6S-kbYHks)
  * You can download the named client IDB [here](https://mega.nz/#!KgdRna6Q!T5Op7_b_JF62QEvHqeYFp2NJcEYeoigqFdOHpREf5pI)
 ## Requirements/Dependencies
- * Java JDK (8 or higher)
+ * Java JDK (11 or higher)
  * javax.json (or Java EE)
- * Netty (4.1.15 or higher)
- * HikariCP (2.7 or higher)
- * MariaDB Connector/J (2.1 or higher)
- * slf4j (1.7 or higher)
+ * Netty (4.1.31 or higher)
+ * HikariCP (3.1.0 or higher)
+ * MariaDB Connector/J (2.2.3 or higher)
+ * slf4j (1.7.4 or higher)
+ * Jython (2.5.1 or higher)
  ----------------------------------------------------------------------
  ## Architecture
  The OrionAlpha Emulator is split up into two parts: *Login*, and *Game*, each executing on their own thread. 
@@ -26,18 +27,31 @@ OrionAlpha - A Nexon Replica Emulator Project
  Located within the root of the emulator are a few configuration files:
   * Game0, Game1, etc is used to configure each World.
   * Login is used to configure the Login.
+  * Shop is used to configure the Cash Shop.
+  * Database is used to configure the connection to the database.
   
-  The configuration is done within JSON; each property is defined as a key (string), and a value (int, boolean, etc).
+  The configuration is done within JSON; each property is defined as a key (string), and a value (int or string).
   Below will further explain the defintions of most of the properties used.
   
-  * `port` -> The port to be binded for the server's connection acceptor. 
+  Login/Game/Shop:
+  * `port` -> The port to be binded for the server's connection acceptor.
+  * `centerPort` -> The private port of your login server that connects JVMs together.
   * `PublicIP` -> The public IP address users will connect to.
   * `PrivateIP` -> The private IP address that connects the JVMs together.
+  
+  Database:
+  * `dbPort` -> The port to connect to your database.
   * `dbGameWorld` -> The Schema name of the active database that the emulator connects to.
-  * `dbGameWorldSource` -> The IP and Port for your database.
-  * `incExpRate` -> The server's Experience Rate modifier.
-  * `incMesoRate` -> The server's Meso Rate modifier.
-  * `incDropRate` -> The server's Drop Rate modifier.
+  * `dbGameWorldSource` -> The IP/hostname to connect to your database.
+  * `dbGameWorldInfo` -> The username/password of your database, separated by comma. (e.g "root,password")
+  
+  Game:
+  * `gameWorldId` -> The ID of the world (0 = Scania, 1 = Bera, etc).
+  * `channelNo` -> The number of channels for the world.
+  * `incExpRate` -> The server's Experience Rate modifier. We use Nexon's standard. (e.g 100 = 1x, 250 = 2.5x, etc)
+  * `incMesoRate` -> The server's Meso Rate modifier (Nexon standard).
+  * `incDropRate` -> The server's Drop Rate modifier (Nexon standard).
+  * `worldName` -> The name of the world. This is sent to and displayed in the login server.
   ----------------------------------------------------------------------
   ## Client Modifications
   Even knowing there's barely anything to edit in such an early version, below are helpful client edits.

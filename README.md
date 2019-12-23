@@ -13,7 +13,7 @@ OrionAlpha - A Nexon Replica Emulator Project
  * HikariCP (3.1.0 or higher)
  * MariaDB Connector/J (2.2.3 or higher)
  * slf4j (1.7.4 or higher)
- * Jython (2.5.1 or higher)
+ * Jython (2.7.1 or higher)
  ----------------------------------------------------------------------
  ## Architecture
  The OrionAlpha Emulator is split up into two parts: *Login*, and *Game*, each executing on their own thread. 

@@ -22,5 +22,20 @@
 hs_err_pid*
 /bin/target/
 
-# IntelliJ files
-.idea/
+# Project #
+###########
+.classpath
+.externalToolBuilders
+.idea
+.project
+.settings
+.checkstyle
+run
+eclipse
+nbproject
+atlassian-ide-plugin.xml
+build.xml
+nb-configuration.xml
+*.iml
+*.ipr
+*.iws

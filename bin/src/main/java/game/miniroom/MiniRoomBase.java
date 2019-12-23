@@ -136,26 +136,21 @@ public abstract class MiniRoomBase {
         lock.lock();
         try {
             User user = this.users.get(idx);
-            Field field;
-            if (user != null && (field = user.getField()) != null && field.lock()) {
-                try {
-                    onLeave(user, leaveType);
-                    if (leaveType > 0) {
-                        user.sendPacket(MiniRoomBaseDlg.onLeave(idx, user, this)); // does this even do anything
-                    }
-                    user.setMiniRoom(null);
-                    if (this.users.get(idx) != null) {
-                        this.users.set(idx, null);
-                    }
-                    --this.curUsers;
-                    if (broadCast) {
-                        broadCast(MiniRoomBaseDlg.onLeave(0, user, this), user);// does this even do anything
-                    }
-                    if (this.curUsers == 0) {
-                        removeMiniRoom();
-                    }
-                } finally {
-                    field.unlock();
+            if (user != null && user.getField() != null) {
+                onLeave(user, leaveType);
+                if (leaveType > 0) {
+                    user.sendPacket(MiniRoomBaseDlg.onLeave(idx, user, this)); // does this even do anything
+                }
+                user.setMiniRoom(null);
+                if (this.users.get(idx) != null) {
+                    this.users.set(idx, null);
+                }
+                --this.curUsers;
+                if (broadCast) {
+                    broadCast(MiniRoomBaseDlg.onLeave(0, user, this), user);// does this even do anything
+                }
+                if (this.curUsers == 0) {
+                    removeMiniRoom();
                 }
             }
         } finally {

@@ -39,10 +39,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
@@ -91,7 +88,6 @@ public class Field {
     private final PortalMap portal;
     private final LifePool lifePool;
     private final DropPool dropPool;
-    private final Lock lock;
     private FieldSplit splitStart;
     private FieldSplit splitEnd;
     private List<FieldSplit> fieldSplit;
@@ -104,10 +100,9 @@ public class Field {
         this.portal = new PortalMap();
         this.weatherItemID = 0;
         this.incRateEXP = 1.0d;
-        this.incRateDrop = 2.0d;
+        this.incRateDrop = 1.0d;
         this.lifePool = new LifePool(this);
         this.dropPool = new DropPool(this);
-        this.lock = new ReentrantLock();
         this.users = new ConcurrentHashMap<>();
     }
 
@@ -264,19 +259,6 @@ public class Field {
         return users.containsKey(characterID);
     }
 
-    public final boolean lock() {
-        return lock(700);
-    }
-
-    public final boolean lock(long timeout) {
-        try {
-            return lock.tryLock(timeout, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace(System.err);
-        }
-        return false;
-    }
-
     public Point makePointInSplit(int x, int y) {
         x = Math.min(Math.max(x, leftTop.x), (leftTop.x + ScreenWidthOffset * splitColCount) - 1);
         y = Math.min(Math.max(y, leftTop.y), (leftTop.y + ScreenHeightOffset * splitRowCount) - 1);
@@ -297,46 +279,31 @@ public class Field {
     }
 
     public boolean onEnter(final User user) {
-        if (lock(1500)) {
-            try {
-                if (!dropPool.onEnter(user)) {
-                    return false;
-                }
-                if (!splitRegisterFieldObj(user.getCurrentPosition().x, user.getCurrentPosition().y, FieldSplit.User, user)) {
-                    Logger.logError("Incorrect field position [%09d]", field);
-                    return false;
-                }
-                splitRegisterUser(null, user.getSplit(), user);
-                user.setPosMap(this.field);
-                users.put(user.getCharacterID(), user);
-                lifePool.insertController(user);
-                if (weatherItemID != 0) {
-                    user.sendPacket(FieldPacket.onBlowWeather(weatherItemID, weatherMsg));
-                }
-                // Jukebox
-                if (clock) {
-
-                }
-                return true;
-            } finally {
-                unlock();
-            }
+        if (!dropPool.onEnter(user)) {
+            return false;
         }
-        return false;
+        if (!splitRegisterFieldObj(user.getCurrentPosition().x, user.getCurrentPosition().y, FieldSplit.User, user)) {
+            Logger.logError("Incorrect field position [%09d]", field);
+            return false;
+        }
+        splitRegisterUser(null, user.getSplit(), user);
+        user.setPosMap(this.field);
+        users.put(user.getCharacterID(), user);
+        lifePool.insertController(user);
+        if (weatherItemID != 0) {
+            user.sendPacket(FieldPacket.onBlowWeather(weatherItemID, weatherMsg));
+        }
+        // Jukebox
+        // Clock
+        return true;
     }
 
     public void onLeave(User user) {
-        if (lock(1100)) {
-            try {
-                lifePool.removeController(user);
-                dropPool.onLeave(user);
-                users.remove(user.getCharacterID());
-                splitRegisterUser(user.getSplit(), null, user);
-                splitUnregisterFieldObj(FieldSplit.User, user);
-            } finally {
-                unlock();
-            }
-        }
+        lifePool.removeController(user);
+        dropPool.onLeave(user);
+        users.remove(user.getCharacterID());
+        splitRegisterUser(user.getSplit(), null, user);
+        splitUnregisterFieldObj(FieldSplit.User, user);
     }
 
     public void onMobMove(User ctrl, Mob mob, InPacket packet) {
@@ -671,9 +638,9 @@ public class Field {
                     }
                 }
             }
-            for (FieldObj pNew : fieldObj) {
-                if (pNew != null && pNew.isShowTo(user)) {
-                    user.sendPacket(pNew.makeEnterFieldPacket());
+            for (FieldObj objNew : fieldObj) {
+                if (objNew != null && objNew.isShowTo(user)) {
+                    user.sendPacket(objNew.makeEnterFieldPacket());
                 }
             }
             fieldObj.clear();

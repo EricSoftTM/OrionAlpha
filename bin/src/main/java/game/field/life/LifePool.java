@@ -45,6 +45,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
@@ -83,40 +85,30 @@ public class LifePool {
         this.ctrlMin = new CompareCtrlMin(16);
         this.ctrlMax = new CompareCtrlMax(16);
         this.ctrlNull = new Controller(null);
-        this.controllers = new HashMap<>();
-        this.mobs = new HashMap<>();
-        this.npcs = new HashMap<>();
+        this.controllers = new ConcurrentHashMap<>();
+        this.mobs = new ConcurrentHashMap<>();
+        this.npcs = new ConcurrentHashMap<>();
         this.mobGen = new ArrayList<>();
         this.mobGenExcept = new ArrayList<>();
         this.lastCreateMobTime = System.currentTimeMillis();
     }
     
     public boolean changeMobController(User user, int mobIdWanted, boolean chase) {
-        if (field.lock()) {
-            try {
-                if (mobs.containsKey(mobIdWanted)) {
-                    Mob mobWanted = mobs.get(mobIdWanted);
-                    if (mobWanted != null) {
-                        return changeMobController(user.getCharacterID(), mobWanted, chase);
-                    }
-                }
-            } finally {
-                field.unlock();
+        if (mobs.containsKey(mobIdWanted)) {
+            Mob mobWanted = mobs.get(mobIdWanted);
+            if (mobWanted != null) {
+                return changeMobController(user.getCharacterID(), mobWanted, chase);
             }
         }
         return false;
     }
     
     public boolean changeMobController(int characterID, Mob mobWanted, boolean chase) {
-        Controller ctrl = null;
+        Controller ctrl = controllers.get(characterID);
         Controller controller = mobWanted.getController();
         if (characterID != 0) {
-            if (!controllers.containsKey(characterID)) {
+            if (ctrl == null) {
                 return false;
-            } else {
-                ctrl = controllers.get(characterID);
-                if (ctrl == null)
-                    return false;
             }
             if (controller == ctrl) {
                 return true;
@@ -181,7 +173,6 @@ public class LifePool {
                 moveAction = template.getMoveAbility() == MoveAbility.Stop ? MoveActionType.Stand : MoveActionType.Move;
             }
             mob.setMovePosition(x, y, (byte) ((left & 1 | 2 * moveAction) & 0xFF), fh);
-            //mob.setMoveRect(new Rect(x, y, x, y));
             mob.setController(owner);
             
             if (mobType == 1) {
@@ -254,30 +245,13 @@ public class LifePool {
     }
     
     public Mob getMob(int mobID) {
-        if (field.lock()) {
-            try {
-                if (mobs.containsKey(mobID)) {
-                    return mobs.get(mobID);
-                }
-            } finally {
-                field.unlock();
-            }
-        }
-        return null;
+        return mobs.get(mobID);
     }
     
     public Mob getMobByTemplateID(int templateID) {
-        if (field.lock()) {
-            try {
-                List<Mob> mob = new ArrayList<>(mobs.values());
-                for (Mob m : mob) {
-                    if (m.getTemplateID() == templateID) {
-                        return m;
-                    }
-                }
-                mob.clear();
-            } finally {
-                field.unlock();
+        for (Mob mob : mobs.values()) {
+            if (mob.getTemplateID() == templateID) {
+                return mob;
             }
         }
         return null;
@@ -285,13 +259,11 @@ public class LifePool {
     
     public int getMobCount(int mobID) {
         int count = 0;
-        List<Mob> mob = new ArrayList<>(mobs.values());
-        for (Mob m : mob) {
-            if (m != null && m.getTemplateID() == mobID) {
+        for (Mob mob : mobs.values()) {
+            if (mob != null && mob.getTemplateID() == mobID) {
                 ++count;
             }
         }
-        mob.clear();
         return count;
     }
     
@@ -300,56 +272,31 @@ public class LifePool {
     }
     
     public int getMobHP(int mobID) {
-        List<Mob> mob = new ArrayList<>(mobs.values());
-        for (Mob m : mob) {
-            if (m != null && m.getTemplateID() == mobID) {
-                return m.getHP();
+        for (Mob mob : mobs.values()) {
+            if (mob != null && mob.getTemplateID() == mobID) {
+                return mob.getHP();
             }
         }
-        mob.clear();
         return -1;
     }
     
     public Npc getNpc(String name) {
-        if (field.lock()) {
-            try {
-                List<Npc> npc = new ArrayList<>(npcs.values());
-                for (Npc n : npc) {
-                    if (n.getNpcTemplate().getName().equals(name)) {
-                        return n;
-                    }
-                }
-                npc.clear();
-            } finally {
-                field.unlock();
+        for (Npc npc : npcs.values()) {
+            if (npc.getNpcTemplate().getName().equals(name)) {
+                return npc;
             }
         }
         return null;
     }
     
     public Npc getNpc(int id) {
-        if (field.lock()) {
-            try {
-                if (npcs.containsKey(id)) {
-                    return npcs.get(id);
-                }
-            } finally {
-                field.unlock();
-            }
-        }
-        return null;
+        return npcs.get(id);
     }
     
     public Npc getNpcByTemplateID(int templateID) {
-        if (field.lock()) {
-            try {
-                for (Npc npc : npcs.values()) {//TODO: lNpc?
-                    if (npc.getTemplateID() == templateID) {
-                        return npc;
-                    }
-                }
-            } finally {
-                field.unlock();
+        for (Npc npc : npcs.values()) {
+            if (npc.getTemplateID() == templateID) {
+                return npc;
             }
         }
         return null;
@@ -397,13 +344,7 @@ public class LifePool {
             if (id.isEmpty() || type.isEmpty()) continue;
             
             if (type.equalsIgnoreCase("n")) {
-                if (field.lock()) {
-                    try {
-                        createNpc(life, Integer.parseInt(id), 0, 0);
-                    } finally {
-                        field.unlock();
-                    }
-                }
+                createNpc(life, Integer.parseInt(id), 0, 0);
             } else {
                 MobTemplate template = MobTemplate.getMobTemplate(Integer.parseInt(id));
                 if (template == null) {
@@ -448,17 +389,11 @@ public class LifePool {
     }
     
     public void insertController(User user) {
-        if (field.lock()) {
-            try {
-                Controller t = new Controller(user);
-                t.setPosMinHeap(ctrlMin.insert(t));
-                t.setPosMaxHeap(ctrlMax.insert(t));
-                controllers.put(user.getCharacterID(), t);
-                redistributeLife();
-            } finally {
-                field.unlock();
-            }
-        }
+        Controller t = new Controller(user);
+        t.setPosMinHeap(ctrlMin.insert(t));
+        t.setPosMaxHeap(ctrlMax.insert(t));
+        controllers.put(user.getCharacterID(), t);
+        redistributeLife();
     }
     
     public void onMobPacket(User user, byte type, InPacket packet) {
@@ -579,61 +514,47 @@ public class LifePool {
     }
     
     public void removeAllMob() {
-        if (field.lock()) {
-            try {
-                List<Mob> mob = new ArrayList<>(mobs.values());
-                for (Mob m : mob) {
-                    m.setForcedDead(true);
-                    removeMob(m);
-                }
-                mob.clear();
-            } finally {
-                field.unlock();
-            }
+        for (Mob mob : mobs.values()) {
+            mob.setForcedDead(true);
+            removeMob(mob);
         }
     }
     
     public void removeController(User user) {
-        if (field.lock()) {
-            try {
-                Controller ctrl = controllers.remove(user.getCharacterID());
-                if (ctrl != null) {
-                    List<Mob> ctrlMob = new ArrayList<>(ctrl.getCtrlMob());
-                    List<Npc> ctrlNpc = new ArrayList<>(ctrl.getCtrlNpc());
-    
-                    ctrlMin.removeAt(ctrl.getPosMinHeap());
-                    ctrlMax.removeAt(ctrl.getPosMaxHeap());
-                    
-                    for (Mob mob : ctrlMob) {
-                        if (mob == null)
-                            break;
-                        if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(0)) == null || ctrl.getCtrlCount() >= 50) {
-                            ctrl = ctrlNull;
-                        }
-                        
-                        ctrl.getCtrlMob().add(mob);
-                        updateCtrlHeap(ctrl);
-                        mob.setController(ctrl);
-                        mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
-                    }
-                    for (Npc npc : ctrlNpc) {
-                        if (npc == null)
-                            break;
-                        if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(0)) == null || ctrl.getCtrlCount() >= 50) {
-                            ctrl = ctrlNull;
-                        }
-                        
-                        ctrl.getCtrlNpc().add(npc);
-                        updateCtrlHeap(ctrl);
-                        npc.setController(ctrl);
-                        npc.sendChangeControllerPacket(ctrl.getUser(), true);
-                    }
-                    ctrlMob.clear();
-                    ctrlNpc.clear();
+        Controller ctrl = controllers.remove(user.getCharacterID());
+        if (ctrl != null) {
+            List<Mob> ctrlMob = new ArrayList<>(ctrl.getCtrlMob());
+            List<Npc> ctrlNpc = new ArrayList<>(ctrl.getCtrlNpc());
+        
+            ctrlMin.removeAt(ctrl.getPosMinHeap());
+            ctrlMax.removeAt(ctrl.getPosMaxHeap());
+        
+            for (Mob mob : ctrlMob) {
+                if (mob == null)
+                    break;
+                if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(0)) == null || ctrl.getCtrlCount() >= 50) {
+                    ctrl = ctrlNull;
                 }
-            } finally {
-                field.unlock();
+            
+                ctrl.getCtrlMob().add(mob);
+                updateCtrlHeap(ctrl);
+                mob.setController(ctrl);
+                mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
             }
+            for (Npc npc : ctrlNpc) {
+                if (npc == null)
+                    break;
+                if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(0)) == null || ctrl.getCtrlCount() >= 50) {
+                    ctrl = ctrlNull;
+                }
+            
+                ctrl.getCtrlNpc().add(npc);
+                updateCtrlHeap(ctrl);
+                npc.setController(ctrl);
+                npc.sendChangeControllerPacket(ctrl.getUser(), true);
+            }
+            ctrlMob.clear();
+            ctrlNpc.clear();
         }
     }
     
@@ -649,18 +570,10 @@ public class LifePool {
     }
     
     public void removeMob(int mobTemplateID) {
-        if (field.lock()) {
-            try {
-                List<Mob> mob = new ArrayList<>(mobs.values());
-                for (Mob m : mob) {
-                    if (m.getTemplateID() == mobTemplateID) {
-                        m.setForcedDead(true);
-                        removeMob(m);
-                    }
-                }
-                mob.clear();
-            } finally {
-                field.unlock();
+        for (Mob mob : mobs.values()) {
+            if (mob.getTemplateID() == mobTemplateID) {
+                mob.setForcedDead(true);
+                removeMob(mob);
             }
         }
     }
@@ -687,17 +600,9 @@ public class LifePool {
     }
     
     public void removeNpcByTemplate(int templateID) {
-        if (field.lock()) {
-            try {
-                List<Npc> npc = new ArrayList<>(npcs.values());
-                for (Npc n : npc) {
-                    if (n.getTemplateID() == templateID) {
-                        removeNpc(n);
-                    }
-                }
-                npc.clear();
-            } finally {
-                field.unlock();
+        for (Npc npc : npcs.values()) {
+            if (npc.getTemplateID() == templateID) {
+                removeNpc(npc);
             }
         }
     }
@@ -741,104 +646,90 @@ public class LifePool {
             if (mobCount <= 0) {
                 return;
             }
-            if (field.lock()) {
-                try {
-                    final List<Mob> mob = new ArrayList<>(mobs.values());
-                    final List<Point> points = new ArrayList<>();
-                    final List<MobGen> mobGens = new ArrayList<>();
-                    int count = 0;
-                    for (Iterator<Mob> it = mob.iterator(); it.hasNext();) {
-                        Mob m = it.next();
-                        if (m != null) {
-                            points.add(new Point(m.getCurrentPos().x, m.getCurrentPos().y));
-                        } else {
-                            it.remove();
-                        }
-                    }
-                    boolean checkArea = false;
-                    for (MobGen pmg : mobGen) {
-                        if (!mobGenEnable) {
-                            break;
-                        }
-                        if (!mobGenExcept.contains(pmg.templateID)) {
-                            if (pmg.regenInterval == 0) {
-                                checkArea = true;
-                            } else {
-                                if (pmg.regenInterval >= 0 || reset) {
-                                    if (pmg.mobCount.get() == 0 && time - pmg.regenAfter >= 0) {
-                                        mobGens.add(pmg);
-                                        points.add(new Point(pmg.x, pmg.y));
-                                    }
-                                }
-                            }
-                        }
-                        if (checkArea) {
-                            Rect rc = new Rect(pmg.x - 100, pmg.y - 100, pmg.x + 100, pmg.y + 100);
-                            boolean add = true;
-                            int i = 0;
-                            while (i < points.size()) {
-                                Point pt = points.get(i);
-                                if (pt == null) {
-                                    break;
-                                }
-                                if (rc.ptInRect(pt)) {
-                                    add = false;
-                                    break;
-                                }
-                                ++i;
-                            }
-                            if (add) {
+            final List<Mob> mob = new ArrayList<>(mobs.values());
+            final List<Point> points = new ArrayList<>();
+            final List<MobGen> mobGens = new ArrayList<>();
+            int count = 0;
+            for (Iterator<Mob> it = mob.iterator(); it.hasNext();) {
+                Mob m = it.next();
+                if (m != null) {
+                    points.add(new Point(m.getCurrentPos().x, m.getCurrentPos().y));
+                } else {
+                    it.remove();
+                }
+            }
+            boolean checkArea = false;
+            for (MobGen pmg : mobGen) {
+                if (!mobGenEnable) {
+                    break;
+                }
+                if (!mobGenExcept.contains(pmg.templateID)) {
+                    if (pmg.regenInterval == 0) {
+                        checkArea = true;
+                    } else {
+                        if (pmg.regenInterval >= 0 || reset) {
+                            if (pmg.mobCount.get() == 0 && time - pmg.regenAfter >= 0) {
                                 mobGens.add(pmg);
                                 points.add(new Point(pmg.x, pmg.y));
                             }
-                            checkArea = false;
                         }
-                        ++count;
-                        if (count >= mobGenCount) {
+                    }
+                }
+                if (checkArea) {
+                    Rect rc = new Rect(pmg.x - 100, pmg.y - 100, pmg.x + 100, pmg.y + 100);
+                    boolean add = true;
+                    int i = 0;
+                    while (i < points.size()) {
+                        Point pt = points.get(i);
+                        if (pt == null) {
                             break;
                         }
-                    }
-                    if (!mobGens.isEmpty()) {
-                        int index;
-                        while (true) {
-                            if (mobGens.isEmpty())
-                                break;
-                            index = (int) (Rand32.getInstance().random() % mobGens.size());
-                            MobGen pmg = mobGens.remove(index);
-                            if (pmg == null)
-                                continue;
-                            if (createMob(pmg.templateID, pmg, pmg.x, pmg.y, pmg.fh, false, pmg.f, 0, null))
-                                --mobCount;
-                            if (mobCount <= 0) {
-                                break;
-                            }
+                        if (rc.ptInRect(pt)) {
+                            add = false;
+                            break;
                         }
+                        ++i;
                     }
-                    mob.clear();
-                    points.clear();
-                    mobGens.clear();
-                } finally {
-                    field.unlock();
+                    if (add) {
+                        mobGens.add(pmg);
+                        points.add(new Point(pmg.x, pmg.y));
+                    }
+                    checkArea = false;
                 }
-                lastCreateMobTime = time;
+                ++count;
+                if (count >= mobGenCount) {
+                    break;
+                }
             }
+            if (!mobGens.isEmpty()) {
+                int index;
+                while (true) {
+                    if (mobGens.isEmpty())
+                        break;
+                    index = (int) (Rand32.getInstance().random() % mobGens.size());
+                    MobGen pmg = mobGens.remove(index);
+                    if (pmg == null)
+                        continue;
+                    if (createMob(pmg.templateID, pmg, pmg.x, pmg.y, pmg.fh, false, pmg.f, 0, null))
+                        --mobCount;
+                    if (mobCount <= 0) {
+                        break;
+                    }
+                }
+            }
+            mob.clear();
+            points.clear();
+            mobGens.clear();
+            lastCreateMobTime = time;
         }
     }
     
     public void update(long time) {
-        if (field.lock(1200)) {
-            try {
-                for (Npc npc : npcs.values()) {
-                    npc.update(time);
-                }
-                List<Mob> mob = new ArrayList<>(mobs.values());
-                for (Mob m : mob) {
-                    m.update(time);
-                }
-                mob.clear();
-            } finally {
-                field.unlock();
-            }
+        for (Npc npc : npcs.values()) {
+            npc.update(time);
+        }
+        for (Mob mob : mobs.values()) {
+            mob.update(time);
         }
         tryCreateMob(false);
     }
@@ -851,141 +742,129 @@ public class LifePool {
     }
     
     public boolean onUserAttack(User user, byte type, byte attackType, byte mobCount, byte damagePerMob, SkillEntry skill, byte slv, byte action, byte left, byte speedDegree, int bulletItemID, List<AttackInfo> attack, Point ballStart) {
-        if (field.lock(1200)) {
+        if (user.lock()) {
             try {
-                if (user.lock()) {
-                    try {
-                        int skillID = 0;
-                        if (skill != null) {
-                            skillID = skill.getSkillID();
+                int skillID = 0;
+                if (skill != null) {
+                    skillID = skill.getSkillID();
+                }
+                int weaponItemID = user.getCharacter().getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
+            
+                if (mobCount > 0) {
+                    for (Iterator<AttackInfo> it = attack.iterator(); it.hasNext();) {
+                        AttackInfo info = it.next();
+                        if (!mobs.containsKey(info.mobID)) {
+                            it.remove();
+                            continue;
                         }
-                        int weaponItemID = user.getCharacter().getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
-                        
-                        if (mobCount > 0) {
-                            for (Iterator<AttackInfo> it = attack.iterator(); it.hasNext();) {
-                                AttackInfo info = it.next();
-                                if (!mobs.containsKey(info.mobID)) {
-                                    it.remove();
-                                    continue;
-                                }
-                                Mob mob = mobs.get(info.mobID);
-                                if (mob != null) {
-                                    if (type == ClientPacket.UserMagicAttack) {
-                                        user.getCalcDamage().MDamage(user.getCharacter(), user.getBasicStat(), user.getSecondaryStat(), mob.getMobStat(), damagePerMob, weaponItemID, action, skill, slv, info.damageCli, mobCount);
-                                    } else {
-                                        user.getCalcDamage().PDamage(user.getCharacter(), user.getBasicStat(), user.getSecondaryStat(), mob.getMobStat(), damagePerMob, weaponItemID, bulletItemID, attackType, action, skill, slv, info.damageCli);
-                                    }
-                                } else {
-                                    user.getCalcDamage().skip();
-                                }
+                        Mob mob = mobs.get(info.mobID);
+                        if (mob != null) {
+                            if (type == ClientPacket.UserMagicAttack) {
+                                user.getCalcDamage().MDamage(user.getCharacter(), user.getBasicStat(), user.getSecondaryStat(), mob.getMobStat(), damagePerMob, weaponItemID, action, skill, slv, info.damageCli, mobCount);
+                            } else {
+                                user.getCalcDamage().PDamage(user.getCharacter(), user.getBasicStat(), user.getSecondaryStat(), mob.getMobStat(), damagePerMob, weaponItemID, bulletItemID, attackType, action, skill, slv, info.damageCli);
                             }
+                        } else {
+                            user.getCalcDamage().skip();
                         }
-                        
-                        OutPacket packet = new OutPacket(type);
-                        packet.encodeInt(user.getCharacterID());
-                        packet.encodeByte(damagePerMob | 16 * mobCount);
-                        packet.encodeByte(slv);
-                        if (slv > 0) {
-                            packet.encodeInt(skillID);
-                        }
-                        packet.encodeByte(action);
-                        packet.encodeByte(speedDegree);
-                        packet.encodeByte(SkillAccessor.getWeaponMastery(user.getCharacter(), weaponItemID, attackType, null));
-                        packet.encodeInt(bulletItemID);
-                        for (AttackInfo info : attack) {
-                            packet.encodeInt(info.mobID);
-                            packet.encodeByte(info.hitAction);
-                            for (int i = 0; i < damagePerMob; i++) {
-                                packet.encodeShort(info.damageCli.get(i));
-                            }
-                        }
-                        getField().splitSendPacket(user.getSplit(), packet, user);
-                        
-                        Pointer<Integer> prop = new Pointer<>(0);
-                        Pointer<Integer> percent = new Pointer<>(0);
-                        int mpSteal = 0;
-                        int mpStealSkill = SkillAccessor.getMPStealSkillData(user.getCharacter(), attackType, prop, percent);
-                        if (mobCount > 0) {
-                            for (Iterator<AttackInfo> it = attack.iterator(); it.hasNext();) {
-                                AttackInfo info = it.next();
-                                if (!mobs.containsKey(info.mobID)) {
-                                    it.remove();
-                                    continue;
-                                }
-                                Mob mob = mobs.get(info.mobID);
-                                
-                                Rect hitPoint = new Rect(mob.getCurrentPos().x, mob.getCurrentPos().y, mob.getCurrentPos().x, mob.getCurrentPos().y);
-                                hitPoint.inflateRect(100, 100);
-                                if (!hitPoint.ptInRect(info.hit)) {
-                                    info.hit = mob.getCurrentPos();
-                                }
-                                
-                                if (percent.get() != 0) {
-                                    mpSteal += mob.onMobMPSteal(prop.get(), (int) Math.ceil((double) percent.get() / (double) mobCount));
-                                }
-                                
-                                int damageSum = 0;
-                                if (damagePerMob > 0) {
-                                    for (int damage : info.damageCli) {
-                                        damageSum += damage;
-                                        if (mob.onMobHit(user, damage, attackType)) {
-                                            removeMob(mob);
-                                            mob.onMobDead(info.hit, info.delay);
-                                            break;
-                                        }
-                                    }
-                                }
-                                
-                                if (skill != null && slv > 0) {
-                                    SkillLevelData level = skill.getLevelData(slv);
-                                    if (skillID == Thief.Steal) {
-                                        if (!mob.getTemplate().isBoss() && Rand32.genRandom() % 100 < level.getProp()) {
-                                            mob.giveReward(user.getCharacterID(), info.hit, info.delay, true);
-                                        }
-                                    } else if (skillID == Assassin.Drain) {
-                                        int hp = Math.min(Math.min(damageSum * level.getX() / 100, user.getCharacter().getCharacterStat().getMHP() / 2), mob.getMaxHP());
-                                        if (user.incHP(hp, false)) {
-                                            user.sendCharacterStat(Request.None, CharacterStatType.HP);
-                                        }
-                                    } else {
-                                        if (mob.getHP() > 0 && damageSum > 0) {
-                                            mob.onMobStatChangeSkill(user, skill, slv, damageSum);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        
-                        if (mpSteal != 0) {
-                            user.onUserEffect(true, false, UserEffect.SkillUse, mpStealSkill, 1);
-                            user.incMP(mpSteal, false);
-                            user.sendCharacterStat(Request.None, CharacterStatType.MP);
-                        }
-                        
-                        return mobCount != 0;
-                    } finally {
-                        user.unlock();
                     }
                 }
+            
+                OutPacket packet = new OutPacket(type);
+                packet.encodeInt(user.getCharacterID());
+                packet.encodeByte(damagePerMob | 16 * mobCount);
+                packet.encodeByte(slv);
+                if (slv > 0) {
+                    packet.encodeInt(skillID);
+                }
+                packet.encodeByte(action);
+                packet.encodeByte(speedDegree);
+                packet.encodeByte(SkillAccessor.getWeaponMastery(user.getCharacter(), weaponItemID, attackType, null));
+                packet.encodeInt(bulletItemID);
+                for (AttackInfo info : attack) {
+                    packet.encodeInt(info.mobID);
+                    packet.encodeByte(info.hitAction);
+                    for (int i = 0; i < damagePerMob; i++) {
+                        packet.encodeShort(info.damageCli.get(i));
+                    }
+                }
+                getField().splitSendPacket(user.getSplit(), packet, user);
+            
+                Pointer<Integer> prop = new Pointer<>(0);
+                Pointer<Integer> percent = new Pointer<>(0);
+                int mpSteal = 0;
+                int mpStealSkill = SkillAccessor.getMPStealSkillData(user.getCharacter(), attackType, prop, percent);
+                if (mobCount > 0) {
+                    for (Iterator<AttackInfo> it = attack.iterator(); it.hasNext();) {
+                        AttackInfo info = it.next();
+                        if (!mobs.containsKey(info.mobID)) {
+                            it.remove();
+                            continue;
+                        }
+                        Mob mob = mobs.get(info.mobID);
+                    
+                        Rect hitPoint = new Rect(mob.getCurrentPos().x, mob.getCurrentPos().y, mob.getCurrentPos().x, mob.getCurrentPos().y);
+                        hitPoint.inflateRect(100, 100);
+                        if (!hitPoint.ptInRect(info.hit)) {
+                            info.hit = mob.getCurrentPos();
+                        }
+                    
+                        if (percent.get() != 0) {
+                            mpSteal += mob.onMobMPSteal(prop.get(), (int) Math.ceil((double) percent.get() / (double) mobCount));
+                        }
+                    
+                        int damageSum = 0;
+                        if (damagePerMob > 0) {
+                            for (int damage : info.damageCli) {
+                                damageSum += damage;
+                                if (mob.onMobHit(user, damage, attackType)) {
+                                    removeMob(mob);
+                                    mob.onMobDead(info.hit, info.delay);
+                                    break;
+                                }
+                            }
+                        }
+                    
+                        if (skill != null && slv > 0) {
+                            SkillLevelData level = skill.getLevelData(slv);
+                            if (skillID == Thief.Steal) {
+                                if (!mob.getTemplate().isBoss() && Rand32.genRandom() % 100 < level.getProp()) {
+                                    mob.giveReward(user.getCharacterID(), info.hit, info.delay, true);
+                                }
+                            } else if (skillID == Assassin.Drain) {
+                                int hp = Math.min(Math.min(damageSum * level.getX() / 100, user.getCharacter().getCharacterStat().getMHP() / 2), mob.getMaxHP());
+                                if (user.incHP(hp, false)) {
+                                    user.sendCharacterStat(Request.None, CharacterStatType.HP);
+                                }
+                            } else {
+                                if (mob.getHP() > 0 && damageSum > 0) {
+                                    mob.onMobStatChangeSkill(user, skill, slv, damageSum);
+                                }
+                            }
+                        }
+                    }
+                }
+            
+                if (mpSteal != 0) {
+                    user.onUserEffect(true, false, UserEffect.SkillUse, mpStealSkill, 1);
+                    user.incMP(mpSteal, false);
+                    user.sendCharacterStat(Request.None, CharacterStatType.MP);
+                }
+            
+                return mobCount != 0;
             } finally {
-                field.unlock();
+                user.unlock();
             }
         }
         return false;
     }
 
     public void onUserAttack(User user, int mobID, int damage, Point hit, short delay) {
-        if (field.lock()) {
-            try {
-                if (mobID != 0 && mobs.containsKey(mobID)) {
-                    Mob mob = mobs.get(mobID);
-                    if (mob.onMobHit(user, damage, (byte) 0)) {
-                        removeMob(mob);
-                        mob.onMobDead(hit, delay);
-                    }
-                }
-            } finally {
-                field.unlock();
+        if (mobID != 0 && mobs.containsKey(mobID)) {
+            Mob mob = mobs.get(mobID);
+            if (mob.onMobHit(user, damage, (byte) 0)) {
+                removeMob(mob);
+                mob.onMobDead(hit, delay);
             }
         }
     }

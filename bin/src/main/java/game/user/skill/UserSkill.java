@@ -55,49 +55,37 @@ public class UserSkill {
             sendFailPacket();
             return;
         }
-        if (user.getField().lock(1000)) {
-            try {
-                if (user.lock()) {
-                    try {
-                        if (!checkMovementSkill(skillID, slv)) {
-                            return;
-                        }
-                        Pointer<SkillEntry> skillEntry = new Pointer<>();
-                        if (slv <= 0 || SkillInfo.getInstance().getSkillLevel(user.getCharacter(), skillID, skillEntry) < slv
-                                || !SkillInfo.getInstance().adjustConsumeForActiveSkill(user, skillID, slv)) {
-                            sendFailPacket();
-                            return;
-                        }
-                        SkillEntry skill = skillEntry.get();
-                        if (SkillAccessor.isMobStatChange(skillID)) {
-                            doActiveSkill_MobStatChange(skill, slv, packet, true);
-                            return;
-                        } else if (SkillAccessor.isPartyStatChange(skillID)) {
-                            doActiveSkill_PartyStatChange(skill, slv, packet);
-                            return;
-                        } else if (SkillAccessor.isSelfStatChange(skillID)) {
-                            doActiveSkill_SelfStatChange(skill, slv, packet);
-                            return;
-                        } else if (SkillAccessor.isWeaponBooster(skillID)) {
-                            doActiveSkill_WeaponBooster(skill, slv, 1, 1);
-                            return;
-                        }
-                        switch (skillID) {
-                            case Wizard2.Teleport:
-                            case Wizard1.Teleport:
-                            case Cleric.Teleport:
-                                doActiveSkill_Teleport(skill, slv);
-                                break;
-                            default: {
-                                Logger.logReport("Found new skill: %d", skillID);
-                            }
-                        }
-                    } finally {
-                        user.unlock();
-                    }
-                }
-            } finally {
-                user.getField().unlock();
+        if (!checkMovementSkill(skillID, slv)) {
+            return;
+        }
+        Pointer<SkillEntry> skillEntry = new Pointer<>();
+        if (slv <= 0 || SkillInfo.getInstance().getSkillLevel(user.getCharacter(), skillID, skillEntry) < slv
+                || !SkillInfo.getInstance().adjustConsumeForActiveSkill(user, skillID, slv)) {
+            sendFailPacket();
+            return;
+        }
+        SkillEntry skill = skillEntry.get();
+        if (SkillAccessor.isMobStatChange(skillID)) {
+            doActiveSkill_MobStatChange(skill, slv, packet, true);
+            return;
+        } else if (SkillAccessor.isPartyStatChange(skillID)) {
+            doActiveSkill_PartyStatChange(skill, slv, packet);
+            return;
+        } else if (SkillAccessor.isSelfStatChange(skillID)) {
+            doActiveSkill_SelfStatChange(skill, slv, packet);
+            return;
+        } else if (SkillAccessor.isWeaponBooster(skillID)) {
+            doActiveSkill_WeaponBooster(skill, slv, 1, 1);
+            return;
+        }
+        switch (skillID) {
+            case Wizard2.Teleport:
+            case Wizard1.Teleport:
+            case Cleric.Teleport:
+                doActiveSkill_Teleport(skill, slv);
+                break;
+            default: {
+                Logger.logReport("Found new skill: %d", skillID);
             }
         }
     }

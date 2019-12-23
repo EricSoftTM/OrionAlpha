@@ -1881,39 +1881,27 @@ public class User extends Creature {
             sendCharacterStat(Request.Excl, 0);
             return;
         }
-        if (getField().lock(1000)) {
-            try {
-                if (lock()) {
-                    try {
-                        short pos = packet.decodeShort();
-                        int itemID = packet.decodeInt();
-                        ItemSlotBase item = character.getItem(ItemType.Consume, pos);
-                        StateChangeItem sci = ItemInfo.getStateChangeItem(itemID);
-                        if (item == null || item.getItemID() != itemID || sci == null) {
-                            sendCharacterStat(Request.Excl, 0);
-                            return;
-                        }
-                        List<ChangeLog> changeLog = new ArrayList<>();
-                        Pointer<Integer> decRet = new Pointer<>(0);
-                        if (!InventoryManipulator.rawRemoveItem(character, ItemType.Consume, pos, 1, changeLog, decRet, new Pointer<>()) || decRet.get() != 1) {
-                            changeLog.clear();
-                            sendCharacterStat(Request.Excl, 0);
-                            return;
-                        }
-                        sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
-
-                        int flag = sci.getInfo().apply(this, sci.getItemID(), character, basicStat, secondaryStat, System.currentTimeMillis(), false);
-                        addCharacterDataMod(DBChar.ItemSlotConsume | DBChar.Character);
-                        sendCharacterStat(Request.Excl, sci.getInfo().getFlag());
-                        sendTemporaryStatSet(flag);
-                    } finally {
-                        unlock();
-                    }
-                }
-            } finally {
-                getField().unlock();
-            }
+        short pos = packet.decodeShort();
+        int itemID = packet.decodeInt();
+        ItemSlotBase item = character.getItem(ItemType.Consume, pos);
+        StateChangeItem sci = ItemInfo.getStateChangeItem(itemID);
+        if (item == null || item.getItemID() != itemID || sci == null) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
         }
+        List<ChangeLog> changeLog = new ArrayList<>();
+        Pointer<Integer> decRet = new Pointer<>(0);
+        if (!InventoryManipulator.rawRemoveItem(character, ItemType.Consume, pos, 1, changeLog, decRet, new Pointer<>()) || decRet.get() != 1) {
+            changeLog.clear();
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
+    
+        int flag = sci.getInfo().apply(this, sci.getItemID(), character, basicStat, secondaryStat, System.currentTimeMillis(), false);
+        addCharacterDataMod(DBChar.ItemSlotConsume | DBChar.Character);
+        sendCharacterStat(Request.Excl, sci.getInfo().getFlag());
+        sendTemporaryStatSet(flag);
     }
 
     public void onScriptMessageAnswer(InPacket packet) {

@@ -131,7 +131,7 @@ public class GMCommands {
                 int itemID = Integer.parseInt(args[0]);
                 ItemSlotBase item = ItemInfo.getItemSlot(itemID, ItemVariationOption.Normal);
                 String itemName = ItemInfo.getItemName(itemID);
-                if (itemName.isEmpty())
+                if (itemName == null || itemName.isEmpty())
                     itemName = String.valueOf(itemID);
                 if (item != null) {
                     if (item.getType() == ItemSlotType.Bundle) {

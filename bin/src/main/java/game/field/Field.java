@@ -29,11 +29,8 @@ import game.field.portal.PortalMap;
 import game.user.User;
 import game.user.UserRemote;
 import java.awt.Point;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
@@ -109,36 +106,22 @@ public class Field {
         this.lifePool = new LifePool(this);
         this.dropPool = new DropPool(this);
         this.lock = new ReentrantLock();
-        this.users = new HashMap<>();
+        this.users = new ConcurrentHashMap<>();
     }
     
     public void broadcastPacket(OutPacket packet, List<Integer> characters) {
-        if (lock(1200)) {
-            try {
-                for (int characterID : characters) {
-                    User user = users.get(characterID);
-                    if (user != null) {
-                        user.sendPacket(packet);
-                    }
-                }
-            } finally {
-                unlock();
+        for (int characterID : characters) {
+            User user = users.get(characterID);
+            if (user != null) {
+                user.sendPacket(packet);
             }
         }
     }
     
     public void broadcastPacket(OutPacket packet, boolean exceptAdmin) {
-        if (lock(1200)) {
-            try {
-                List<User> characters = new ArrayList<>(users.values());
-                for (User user : characters) {
-                    if (user!= null && (!exceptAdmin || !user.isGM()))//!((pUser.nGradeCode & 1) > 0)
-                        user.sendPacket(packet);
-                }
-                characters.clear();
-            } finally {
-                unlock();
-            }
+        for (User user : users.values()) {
+            if (user!= null && (!exceptAdmin || !user.isGM()))//!((pUser.nGradeCode & 1) > 0)
+                user.sendPacket(packet);
         }
     }
     
@@ -150,20 +133,8 @@ public class Field {
         }
     }
     
-    public synchronized final User findUser(int characterID) {
-        if (lock(1200)) {
-            try {
-                if (users.containsKey(characterID)) {
-                    User user = users.get(characterID);
-                    if (user != null) {
-                        return user;
-                    }
-                }
-            } finally {
-                unlock();
-            }
-        }
-        return null;
+    public User findUser(int characterID) {
+        return users.get(characterID);
     }
     
     public DropPool getDropPool() {
@@ -190,10 +161,10 @@ public class Field {
         return space2D;
     }
     
-    public void getEncloseSplit(FieldSplit p, List<FieldSplit> split) {
-        split.clear();
-        for (int i = 0; i < 9; i++)
-            split.add(i, null);
+    public void getEncloseSplit(FieldSplit p, FieldSplit[] split) {
+        for (int i = 0; i < split.length; i++) {
+            split[i] = null;
+        }
         // =============
         // [0]  [1]  [2]    [Row - 1]
         // [3]  {4}  [5]    [Row + 0]
@@ -203,27 +174,27 @@ public class Field {
         int col = p.getCol();
         if (row != 0) {
             if (col != 0) {
-                split.set(0, fieldSplit.get((col - 1) + (row - 1) * splitColCount));
+                split[0] = fieldSplit.get((col - 1) + (row - 1) * splitColCount);
             }
-            split.set(1, fieldSplit.get(col + (row - 1) * splitColCount));
+            split[1] = fieldSplit.get(col + (row - 1) * splitColCount);
             if (col < splitColCount - 1) {
-                split.set(2, fieldSplit.get((col + 1) + (row - 1) * splitColCount));
+                split[2] = fieldSplit.get((col + 1) + (row - 1) * splitColCount);
             }
         }
         if (col != 0) {
-            split.set(3, fieldSplit.get((col - 1) + row * splitColCount));
+            split[3] = fieldSplit.get((col - 1) + row * splitColCount);
         }
-        split.set(4, p);
+        split[4] = p;
         if (col < splitColCount - 1) {
-            split.set(5, fieldSplit.get((col + 1) + row * splitColCount));
+            split[5] = fieldSplit.get((col + 1) + row * splitColCount);
         }
         if (row < splitRowCount - 1) {
             if (col != 0) {
-                split.set(6, fieldSplit.get((col - 1) + (row + 1) * splitColCount));
+                split[6] = fieldSplit.get((col - 1) + (row + 1) * splitColCount);
             }
-            split.set(7, fieldSplit.get(col + (row + 1) * splitColCount));
+            split[7] = fieldSplit.get(col + (row + 1) * splitColCount);
             if (col < splitColCount - 1) {
-                split.set(8, fieldSplit.get((col + 1) + (row + 1) * splitColCount));
+                split[8] = fieldSplit.get((col + 1) + (row + 1) * splitColCount);
             }
         }
     }
@@ -260,39 +231,23 @@ public class Field {
         return this.fieldReturn;
     }
     
-    public List<User> getUsers() {
-        synchronized (users) {
-            return new ArrayList<>(users.values());
-        }
+    public Collection<User> getUsers() {
+        return users.values();
     }
     
     public List<User> getUsers(boolean exceptAdmin) {
-        List<User> users = getUsers();
-        
-        if (exceptAdmin) {
-            for (Iterator<User> it = users.iterator(); it.hasNext();) {
-                User user = it.next();
-                if (user.isGM()) {
-                    it.remove();
-                }
-            }
-        }
+        List<User> users = new ArrayList<>(getUsers());
+    
+        users.removeIf(user -> user == null || (exceptAdmin && user.isGM()));
         return users;
     }
     
     public int incrementIdCounter() {
-        if (lock(1100)) {
-            try {
-                if (fieldObjIdCounter.get() > 2000000000) {
-                    Logger.logError("The FieldObjID counter has exceeded 2billion objects, resetting to 30000.");
-                    fieldObjIdCounter.set(30000);
-                }
-                return fieldObjIdCounter.incrementAndGet();
-            } finally {
-                unlock();
-            }
+        if (fieldObjIdCounter.get() > 2000000000) {
+            Logger.logError("The FieldObjID counter has exceeded 2billion objects, resetting to 30000.");
+            fieldObjIdCounter.set(30000);
         }
-        return Integer.MIN_VALUE;
+        return fieldObjIdCounter.incrementAndGet();
     }
     
     public boolean isSwim() {
@@ -304,14 +259,7 @@ public class Field {
     }
     
     public boolean isUserExist(int characterID) {
-        if (lock()) {
-            try {
-                return users.containsKey(characterID);
-            } finally {
-                unlock();
-            }
-        }
-        return false;
+        return users.containsKey(characterID);
     }
     
     public final boolean lock() {
@@ -352,7 +300,7 @@ public class Field {
                 if (!dropPool.onEnter(user)) {
                     return false;
                 }
-                if (!splitRegisterFieldObj(user.getCurrentPosition().x, user.getCurrentPosition().y, 0, user)) {
+                if (!splitRegisterFieldObj(user.getCurrentPosition().x, user.getCurrentPosition().y, FieldSplit.User, user)) {
                     Logger.logError("Incorrect field position [%09d]", field);
                     return false;
                 }
@@ -382,7 +330,7 @@ public class Field {
                 dropPool.onLeave(user);
                 users.remove(user.getCharacterID());
                 splitRegisterUser(user.getSplit(), null, user);
-                splitUnregisterFieldObj(0, user);
+                splitUnregisterFieldObj(FieldSplit.User, user);
             } finally {
                 unlock();
             }
@@ -495,6 +443,9 @@ public class Field {
     }
     
     public void onUserMove(User user, InPacket packet, Rect move) {
+        if (user.getMiniRoom() != null) {
+            return;
+        }
         packet.decodeByte(); // Unknown -> v3 = *(_BYTE *)(dword_60423C + 180);
         
         MovePath mp = new MovePath();
@@ -547,21 +498,14 @@ public class Field {
         if (!ItemAccessor.isWeatherItem(itemID) || weatherItemID != 0) {
             return false;
         }
-        if (lock()) {
-            try {
-                this.weatherItemID = itemID;
-                this.weatherMsg = param;
-                this.weatherBegin = System.currentTimeMillis();
-                if (duration != 0) {
-                    this.weatherDuration = duration;
-                }
-                broadcastPacket(FieldPacket.onBlowWeather(itemID, param), false);
-                return true;
-            } finally {
-                unlock();
-            }
+        this.weatherItemID = itemID;
+        this.weatherMsg = param;
+        this.weatherBegin = System.currentTimeMillis();
+        if (duration != 0) {
+            this.weatherDuration = duration;
         }
-        return false;
+        broadcastPacket(FieldPacket.onBlowWeather(itemID, param), false);
+        return true;
     }
     
     public void setLeftTop(Point pt) {
@@ -639,63 +583,53 @@ public class Field {
     }
     
     public void splitMigrateFieldObj(FieldSplit centerSplit, int foc, FieldObj obj) {
-        List<FieldSplit> src = new ArrayList<>();
+        FieldSplit[] src = new FieldSplit[9];
         getEncloseSplit(centerSplit, src);
         int i;
         for (FieldSplit split : src) {
-            i = 0;
-            for (FieldSplit objSplit : obj.getSplits()) {
-                if (split == objSplit)
-                    break;
-                ++i;
-            }
-            if (i >= 9) {
-                splitRegisterFieldObj(split, foc, obj, obj.makeEnterFieldPacket());
-            } else {
-                obj.getSplits().set(i, null);
-            }
-        }
-        for (FieldSplit split : obj.getSplits()) {
             if (split != null) {
-                splitUnregisterFieldObj(split, foc, obj, obj.makeLeaveFieldPacket());
+                i = 0;
+                for (FieldSplit objSplit : obj.getSplits()) {
+                    if (split == objSplit)
+                        break;
+                    ++i;
+                }
+                if (i >= obj.getSplits().length) {
+                    splitRegisterFieldObj(split, foc, obj, obj.makeEnterFieldPacket());
+                } else {
+                    obj.setSplit(i, null);
+                }
             }
         }
-        obj.getSplits().clear();
-        obj.getSplits().addAll(src);
-        obj.getPosSplit().clear();
+        for (FieldSplit pSplit : obj.getSplits()) {
+            if (pSplit != null) {
+                splitUnregisterFieldObj(pSplit, foc, obj, obj.makeLeaveFieldPacket());
+            }
+        }
+        System.arraycopy(src, 0, obj.getSplits(), 0, src.length);
     }
     
     public void splitNotifyFieldObj(FieldSplit split, OutPacket packet, FieldObj obj) {
-        if (split != null && lock()) {
-            try {
-                for (FieldObj pNew : split.getFieldObj()) {
-                    if (pNew != null && (pNew instanceof User)) {
-                        User user = (User) pNew;
-                        if (obj == null || obj.isShowTo(user)) {
-                            user.sendPacket(packet);
-                        }
-                    }
+        if (split != null) {
+            for (FieldObj objNew : split.getFieldObj(FieldSplit.User)) {
+                User user = (User) objNew;
+                if (obj == null || obj.isShowTo(user)) {
+                    user.sendPacket(packet);
                 }
-            } finally {
-                unlock();
             }
         }
     }
     
     public void splitRegisterFieldObj(FieldSplit split, int foc, FieldObj objNew, OutPacket packetEnter) {
-        if (split != null && lock()) {
-            try {
-                for (User user : split.getUser()) {
-                    if (user != null) {
-                        if (objNew.isShowTo(user)) {
-                            user.sendPacket(packetEnter);
-                        }
+        if (split != null) {
+            for (User user : split.getUser()) {
+                if (user != null) {
+                    if (objNew.isShowTo(user)) {
+                        user.sendPacket(packetEnter);
                     }
                 }
-                split.getFieldObj().add(foc, objNew);
-            } finally {
-                unlock();
             }
+            split.getFieldObj(foc).addLast(objNew);
         }
     }
     
@@ -712,77 +646,71 @@ public class Field {
     }
     
     public void splitRegisterUser(FieldSplit splitOld, FieldSplit splitNew, User user) {
-        if (lock()) {
-            try {
-                if (splitOld != null) {
-                    for (FieldObj obj : splitOld.getFieldObj()) {
-                        if (splitNew == null || !splitNew.getFieldObj().contains(obj)) {
-                            if (obj != null) {
-                                user.sendPacket(obj.makeLeaveFieldPacket());
-                            }
-                        }
-                    }
-                }
-                if (splitNew != null) {
-                    for (FieldObj obj : splitNew.getFieldObj()) {
-                        if (splitOld == null || !splitOld.getFieldObj().contains(obj)) {
-                            if (obj != null && obj.isShowTo(user)) {
-                                user.sendPacket(obj.makeEnterFieldPacket());
-                            }
-                        }
-                    }
-                }
-                if (splitOld != splitNew) {
-                    if (splitOld != null) {
-                        splitOld.getUser().remove(user);
-                    }
-                    if (splitNew != null) {
-                        splitNew.getUser().add(user);
-                    }
-                }
-            } finally {
-                unlock();
+        LinkedList<FieldObj> fieldObj;
+        for (int i = 0; i < GameObjectType.NO; i++) {
+            fieldObj = new LinkedList<>();
+            if (splitNew != null) {
+                fieldObj.clear();
+                fieldObj.addAll(splitNew.getFieldObj(i));
             }
+            if (splitOld != null) {
+                for (FieldObj pOld : splitOld.getFieldObj(i)) {
+                    FieldObj pObj = null;
+                    for (FieldObj pNew : fieldObj) {
+                        if (pOld == pNew) {
+                            pObj = pNew;
+                            break;
+                        }
+                    }
+                    if (pObj != null) {
+                        fieldObj.remove(pObj);
+                    } else if (splitNew != null) {
+                        user.sendPacket(pOld.makeLeaveFieldPacket());
+                    }
+                }
+            }
+            for (FieldObj pNew : fieldObj) {
+                if (pNew != null && pNew.isShowTo(user)) {
+                    user.sendPacket(pNew.makeEnterFieldPacket());
+                }
+            }
+            fieldObj.clear();
+        }
+        if (splitOld != null) {
+            splitOld.getUser().remove(user);
+        }
+        if (splitNew != null) {
+            splitNew.getUser().addLast(user);
         }
     }
     
     public void splitSendPacket(FieldSplit split, OutPacket packet, User except) {
-        // TODO: Improve the threading here, possible deadlock.
-        if (split != null && lock(1200)) {
-            try {
-                for (FieldObj obj : split.getFieldObj()) {
-                    if (obj != null && (obj instanceof User)) {
-                        User user = (User) obj;
-                        if (user != except) {
-                            user.sendPacket(packet);
-                        }
-                    }
+        if (split != null) {
+            for (FieldObj obj : split.getFieldObj(FieldSplit.User)) {
+                User user = (User) obj;
+                if (user != except) {
+                    user.sendPacket(packet);
                 }
-            } finally {
-                unlock();
             }
         }
     }
     
     public void splitUnregisterFieldObj(FieldSplit split, int foc, FieldObj posObj, OutPacket packetLeave) {
-        if (split != null && lock(1000)) {
-            try {
-                for (User user : split.getUser()) {
-                    if (user != null) {
-                        user.sendPacket(packetLeave);
-                    }
+        if (split != null) {
+            for (User user : split.getUser()) {
+                if (user != null) {
+                    user.sendPacket(packetLeave);
                 }
-                split.getFieldObj().remove(posObj);
-            } finally {
-                unlock();
             }
+            split.getFieldObj(foc).remove(posObj);
         }
     }
     
     public void splitUnregisterFieldObj(int foc, FieldObj obj) {
         for (FieldSplit split : obj.getSplits()) {
-            if (split != null)
+            if (split != null) {
                 splitUnregisterFieldObj(split, foc, obj, obj.makeLeaveFieldPacket());
+            }
         }
     }
     

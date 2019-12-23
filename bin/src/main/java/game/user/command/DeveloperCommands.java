@@ -85,7 +85,7 @@ public class DeveloperCommands {
             if (user.sendDropPickUpResultPacket(drop, Request.None)) {
                 it.remove();
                 for (FieldSplit split : drop.getSplits()) {
-                    field.splitUnregisterFieldObj(split, 4, drop, drop.makeLeaveFieldPacket(Drop.PickedUpByUser, user.getCharacterID()));
+                    field.splitUnregisterFieldObj(split, FieldSplit.Drop, drop, drop.makeLeaveFieldPacket(Drop.PickedUpByUser, user.getCharacterID()));
                 }
             }
         }

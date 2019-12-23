@@ -18,9 +18,6 @@
 package game.field;
 
 import game.user.User;
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.List;
 import network.packet.OutPacket;
 
 /**
@@ -29,36 +26,31 @@ import network.packet.OutPacket;
  */
 public abstract class FieldObj {
     private Field field;
-    private final List<FieldSplit> split;
-    private final List<Point> posSplit;
-    private int posFieldObjList;
+    private final FieldSplit[] split;
     
     public FieldObj() {
-        this.field = null;
-        this.posFieldObjList = 0;
-        this.split = new ArrayList<>(9);
-        this.posSplit = new ArrayList<>(9);
+        this(null);
     }
     
     public FieldObj(Field field) {
-        this();
         this.field = field;
+        this.split = new FieldSplit[9];
     }
     
     public boolean isShowTo(User user) {
         return true;
     }
     
-    public List<Point> getPosSplit() {
-        return posSplit;
-    }
-    
-    public List<FieldSplit> getSplits() {
+    public FieldSplit[] getSplits() {
         return split;
     }
     
     public FieldSplit getSplit() {
-        return split.get(4);
+        return split[4];
+    }
+    
+    public void setSplit(int index, FieldSplit split) {
+        this.split[index] = split;
     }
     
     public Field getField() {

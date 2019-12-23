@@ -23,6 +23,7 @@ import common.item.ItemType;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.UserEffect;
 import game.field.Field;
+import game.field.FieldSplit;
 import game.field.StaticFoothold;
 import game.field.life.heapbase.CompareCtrlMax;
 import game.field.life.heapbase.CompareCtrlMin;
@@ -193,7 +194,7 @@ public class LifePool {
                 mob.setMobType(2);
             
             Point pt = field.makePointInSplit(x, y);
-            field.splitRegisterFieldObj(pt.x, pt.y, 1, mob);
+            field.splitRegisterFieldObj(pt.x, pt.y, FieldSplit.Mob, mob);
             
             mobs.put(mob.getGameObjectID(), mob);
             mob.sendChangeControllerPacket(owner.getUser(), MobCtrl.Active_Int);
@@ -240,7 +241,7 @@ public class LifePool {
             npc.setController(ctrlNull);
             npcs.put(npc.getGameObjectID(), npc);
             ctrlNull.getCtrlNpc().add(npc);
-            field.splitRegisterFieldObj(x, y, 2, npc);
+            field.splitRegisterFieldObj(x, y, FieldSplit.Npc, npc);
             return npc;
         } else {
             Logger.logError("Failed in creating Npc(%d) in map(%d)", templateID, field.getFieldID());
@@ -666,7 +667,7 @@ public class LifePool {
             updateCtrlHeap(mob.getController());
             mob.sendChangeControllerPacket(mob.getController().getUser(), (byte) 0);
         }
-        field.splitUnregisterFieldObj(1, mob);
+        field.splitUnregisterFieldObj(FieldSplit.Mob, mob);
         mob.setRemoved();
     }
     
@@ -694,7 +695,7 @@ public class LifePool {
         npc.getController().getCtrlNpc().remove(npc);
         updateCtrlHeap(npc.getController());
         npc.sendChangeControllerPacket(npc.getController().getUser(), false);
-        npc.getField().splitUnregisterFieldObj(2, npc);
+        npc.getField().splitUnregisterFieldObj(FieldSplit.Npc, npc);
         
         //Not sure why Nexon seems to re-create the Npc after removal..
         NpcTemplate template = NpcTemplate.getNpcTemplate(templateID);

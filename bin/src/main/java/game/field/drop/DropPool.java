@@ -52,50 +52,37 @@ public class DropPool {
     }
     
     public void create(Reward reward, int ownerID, int sourceID, int x1, int y1, int x2, int y2, int delay, boolean admin, int pos) {
-        if (field.lock(1100)) {
-            try {
-                Pointer<Integer> py2 = new Pointer<>(y2);
-                StaticFoothold pfh = field.getSpace2D().getFootholdUnderneath(x2, y1 - 100, py2);
-                y2 = py2.get();
-                FieldSplit centerSplit = field.splitFromPoint(x2, y2);
-                if (centerSplit == null || pfh == null || !field.getSpace2D().isPointInMBR(x2, y2, true)) {
-                    Pointer<Integer> px2 = new Pointer<>(x2);
-                    pfh = field.getSpace2D().getFootholdClosest(field, x2, y1, px2, py2, x1);
-                    x2 = px2.get();
-                    y2 = py2.get();
-                    centerSplit = field.splitFromPoint(x2, y2);
-                }
-                if (centerSplit != null && pfh != null) {
-                    int id = dropIdCounter.incrementAndGet();
-                    Drop drop = new Drop(id, reward, ownerID, sourceID, x1, y1, x2, y2);
-                    drop.setField(field);
-                    drop.setCreateTime(System.currentTimeMillis());
-                    drop.setPos(pos);
-                    drop.setEverlasting(false);
-                    field.getEncloseSplit(centerSplit, drop.getSplits());
-                    drops.put(id, drop);
-                    for (FieldSplit split : drop.getSplits()) {
-                        field.splitRegisterFieldObj(split, 4, drop, drop.makeEnterFieldPacket(Drop.Create, delay));
-                    }
-                    field.splitNotifyFieldObj(centerSplit, drop.makeEnterFieldPacket(Drop.JustShowing, delay), drop);
-                } else {
-                    Logger.logError("Cannot Create Drop [ ptHitx : %d, ptHity : %d, cx : %d, FieldID: %d ]", x1, y1, x2, field.getFieldID());
-                }
-            } finally {
-                field.unlock();
+        Pointer<Integer> py2 = new Pointer<>(y2);
+        StaticFoothold pfh = field.getSpace2D().getFootholdUnderneath(x2, y1 - 100, py2);
+        y2 = py2.get();
+        FieldSplit centerSplit = field.splitFromPoint(x2, y2);
+        if (centerSplit == null || pfh == null || !field.getSpace2D().isPointInMBR(x2, y2, true)) {
+            Pointer<Integer> px2 = new Pointer<>(x2);
+            pfh = field.getSpace2D().getFootholdClosest(field, x2, y1, px2, py2, x1);
+            x2 = px2.get();
+            y2 = py2.get();
+            centerSplit = field.splitFromPoint(x2, y2);
+        }
+        if (centerSplit != null && pfh != null) {
+            int id = dropIdCounter.incrementAndGet();
+            Drop drop = new Drop(id, reward, ownerID, sourceID, x1, y1, x2, y2);
+            drop.setField(field);
+            drop.setCreateTime(System.currentTimeMillis());
+            drop.setPos(pos);
+            drop.setEverlasting(false);
+            field.getEncloseSplit(centerSplit, drop.getSplits());
+            drops.put(id, drop);
+            for (FieldSplit split : drop.getSplits()) {
+                field.splitRegisterFieldObj(split, FieldSplit.Drop, drop, drop.makeEnterFieldPacket(Drop.Create, delay));
             }
+            field.splitNotifyFieldObj(centerSplit, drop.makeEnterFieldPacket(Drop.JustShowing, delay), drop);
+        } else {
+            Logger.logError("Cannot Create Drop [ ptHitx : %d, ptHity : %d, cx : %d, FieldID: %d ]", x1, y1, x2, field.getFieldID());
         }
     }
     
     public Drop get(int dropID) {
-        if (field.lock()) {
-            try {
-                return drops.get(dropID);
-            } finally {
-                field.unlock();
-            }
-        }
-        return null;
+        return drops.get(dropID);
     }
     
     public Map<Integer, Drop> getDrops() {
@@ -117,25 +104,19 @@ public class DropPool {
     }
     
     public void remove(int id, int delay) {
-        if (field.lock()) {
-            try {
-                if (drops.containsKey(id)) {
-                    Drop drop = drops.get(id);
-                    if (drop != null) {
-                        int leaveType = Drop.ByTimeOut;
-                        int option = 0;
-                        if (delay != 0) {
-                            option = delay;
-                            //leaveType = Drop.Explode;
-                        }
-                        for (FieldSplit split : drop.getSplits()) {
-                            field.splitUnregisterFieldObj(split, 4, drop, drop.makeLeaveFieldPacket(leaveType, option));
-                        }
-                        drops.remove(id);
-                    }
+        if (drops.containsKey(id)) {
+            Drop drop = drops.get(id);
+            if (drop != null) {
+                int leaveType = Drop.ByTimeOut;
+                int option = 0;
+                if (delay != 0) {
+                    option = delay;
+                    //leaveType = Drop.Explode;
                 }
-            } finally {
-                field.unlock();
+                for (FieldSplit split : drop.getSplits()) {
+                    field.splitUnregisterFieldObj(split, FieldSplit.Drop, drop, drop.makeLeaveFieldPacket(leaveType, option));
+                }
+                drops.remove(id);
             }
         }
     }
@@ -143,19 +124,13 @@ public class DropPool {
     public void tryExpire(boolean removeAll) {
         long time = System.currentTimeMillis();
         if (removeAll || (time - lastExpire) >= 10000) {
-            if (field.lock()) {
-                try {
-                    for (Iterator<Map.Entry<Integer, Drop>> it = drops.entrySet().iterator(); it.hasNext();) {
-                        Drop drop = it.next().getValue();
-                        if (!drop.isEverlasting()&& (removeAll || time - drop.getCreateTime() >= 180000)) {
-                            it.remove();
-                            for (FieldSplit split : drop.getSplits()) {
-                                field.splitUnregisterFieldObj(split, 4, drop, drop.makeLeaveFieldPacket(Drop.ByTimeOut, 0));
-                            }
-                        }
+            for (Iterator<Map.Entry<Integer, Drop>> it = drops.entrySet().iterator(); it.hasNext();) {
+                Drop drop = it.next().getValue();
+                if (!drop.isEverlasting()&& (removeAll || time - drop.getCreateTime() >= 180000)) {
+                    it.remove();
+                    for (FieldSplit split : drop.getSplits()) {
+                        field.splitUnregisterFieldObj(split, FieldSplit.Drop, drop, drop.makeLeaveFieldPacket(Drop.ByTimeOut, 0));
                     }
-                } finally {
-                    field.unlock();
                 }
             }
             lastExpire = time;
@@ -169,33 +144,27 @@ public class DropPool {
         }
         
         int dropID = packet.decodeInt();
-        if (field.lock(1200)) {
-            try {
-                Drop drop = drops.get(dropID);
-                if (drop == null) {
-                    return;
-                }
-                if (!drop.isShowTo(user)) {
-                    user.sendDropPickUpFailPacket(Request.Excl);
-                    return;
-                }
-                if (drop.getItem() != null) {
-                    // One-of-a-kind items don't exist yet ;)
-                }
-                boolean pickUp = false;
-                if (drop.isEverlasting()) {
-                    // these don't technically exist yet, so ignore these.
-                } else {
-                    pickUp = user.sendDropPickUpResultPacket(drop, Request.Excl);
-                }
-                if (pickUp) {
-                    drops.remove(dropID);
-                    for (FieldSplit split : drop.getSplits()) {
-                        field.splitUnregisterFieldObj(split, 4, drop, drop.makeLeaveFieldPacket(Drop.PickedUpByUser, user.getCharacterID()));
-                    }
-                }
-            } finally {
-                field.unlock();
+        Drop drop = drops.get(dropID);
+        if (drop == null) {
+            return;
+        }
+        if (!drop.isShowTo(user)) {
+            user.sendDropPickUpFailPacket(Request.Excl);
+            return;
+        }
+        if (drop.getItem() != null) {
+            // One-of-a-kind items don't exist yet ;)
+        }
+        boolean pickUp = false;
+        if (drop.isEverlasting()) {
+            // these don't technically exist yet, so ignore these.
+        } else {
+            pickUp = user.sendDropPickUpResultPacket(drop, Request.Excl);
+        }
+        if (pickUp) {
+            drops.remove(dropID);
+            for (FieldSplit split : drop.getSplits()) {
+                field.splitUnregisterFieldObj(split, FieldSplit.Drop, drop, drop.makeLeaveFieldPacket(Drop.PickedUpByUser, user.getCharacterID()));
             }
         }
     }

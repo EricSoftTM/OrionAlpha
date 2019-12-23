@@ -16,8 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Francois'
-'Script: Ellinia\'s Item Creator'
+'''
+NPC: Francois
+Script: Ellinia Item Refiner
+'''
 
 self.say("#bScript: refine_ellinia#k\r\n\r\n#rSorry, I am not coded yet.#k")
 

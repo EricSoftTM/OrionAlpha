@@ -23,10 +23,10 @@ Script: Character control
 '''
 
 if self.userGetJob() != 0:
-    self.sayNext("Essa ?a ?ea de miss?s para aprendizes. Voc?n? ?um aprendiz, ?")
+    self.say("This is the mission area for apprentices. You're not an apprentice, are you?")
     self.registerTransferField(104000000, "")
 else:
-    self.sayNext("Chegou t? longe... incr?el! Voc?pode come?r a viajar por a?agora mesmo! Ok, eu te levo at?a pr?ima parada.")
-    self.sayNext("Mas vou te dar um conselho: Depois que sair daqui, voc?estar?livre, em lugares com muitos monstros e sem meios para voltar. Bem, ent?, at?depois!")
+    self.sayNext("You have come so far... incredible! You can start traveling around right now! Ok, I'll take you to the next stop.")
+    self.sayNext("But I'll give you some advice: Once you get out of here, you'll be left in places with lots of monsters and no means to return. Well then, see you later!")
     self.userIncEXP(3, False)
     self.registerTransferField(40000, "")

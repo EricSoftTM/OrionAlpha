@@ -16,8 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Mr. Thunder'
-'Script: Perion\'s Item Creator'
+'''
+NPC: Mr. Thunder
+Script: Perion Item Refiner
+'''
 
 self.say("#bScript: refine_perion#k\r\n\r\n#rSorry, I am not coded yet.#k")
 

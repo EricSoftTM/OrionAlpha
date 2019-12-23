@@ -22,6 +22,5 @@ NPC: Pio
 Script: Pio's lines
 '''
 
-'TODO: English Transaltion'
-self.sayNext("qui em #m1010000#, h?lojas de armas e mantimentos, e em #m60000#, um porto com um navio imenso chamado Victoria, e ?l?que voc?poder?encontar uma loja que vende escudos.");
-self.sayNext("H?alguns dias, eu peguei emprestado um martelo com #p11000# da loja de armas, e o martelo quebrou. O que devo fazer?");
+self.sayNext("Here at Amherst, there are weapon and grocery stores, and at Southperry, a port with a huge ship called Victoria, you can find a shop that sells shields.");
+self.say("A few days ago I borrowed a hammer with Sid from the weapon shop, and the hammer broke. What should I do?");

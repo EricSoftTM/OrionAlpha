@@ -22,6 +22,5 @@ NPC: Bari
 Script: Ambassador Bari
 '''
 
-'TODO: English translation'
-self.sayNext("Essa cidade é chamada de #b#m60000##k e fica ao leste da Ilha Maple. Você não quer avançar na carreira para poder lutar contra monstros muito mais fortes? Então, embarque no navio e siga para a #bIlha Victoria#k.");
-self.say("Você irá precisar de 150 mesos, mas não é tanto dinheiro assim... você pode conseguir essa quantia eliminando os monstros espalhados pela ilha. Você pode até mesmo vender itens nas lojas espalhadas pela cidade.");
+self.sayNext("This city is called #b#Southperry#k and is east of Maple Island. Don't you want to advance your career so you can fight much stronger monsters? Then board the ship and head to #bVictoria Island#k.");
+self.say("You will need 150 mesos, it's not that much money... you can get that amount by eliminating the monsters scattered around the island. You can even sell items in stores around the city.");

@@ -16,8 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Vicious'
-'Script: Henesys Item Maker'
+'''
+NPC: Vicious
+Script: Henesys Item Refiner
+'''
 
 self.say("#bScript: refine_henesys#k\r\n\r\n#rSorry, I am not coded yet.#k")
 

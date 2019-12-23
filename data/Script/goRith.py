@@ -35,9 +35,9 @@ def goTown(mapName, mapNum, fee):
 		self.say("There's a lot to see in this town. Come back back when you want to go elsewhere.")
 
 self.sayNext("Hi, i'm the Regular Cab. You came to the right place if you want to go to another town fast and secure. Your satisfaction is guaranteed.")
-menu = "Choose your destination, the fare leties from place to place.\r\n#b"
+menu = "Choose your destination, the fare leties from place to place.#b"
 for i in range(0, len(towns)):
-	menu += "#L" + str(i) + "#" + towns[i][0] + " (" + str(towns[i][2]) + " mesos)#l\r\n"
+	menu += "\r\n#L" + str(i) + "#" + towns[i][0] + " (" + str(towns[i][2]) + " mesos)#l"
 sel = self.askMenu(menu)
 if sel in range(0, len(towns)):
 	goTown(towns[sel][0], towns[sel][1], towns[sel][2])

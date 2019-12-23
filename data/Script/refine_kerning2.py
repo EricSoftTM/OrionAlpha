@@ -16,8 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-'NPC: Chris'
-'Script: Kerning\'s Ore Refiner'
+'''
+NPC: Chris
+Script: Kerning City Ore Refiner
+'''
 
 self.say("#bScript: refine_kerning2#k\r\n\r\n#rSorry, I am not coded yet.#k")
 

@@ -22,7 +22,6 @@ NPC: Hotel Receptionist
 Script: Enters users into the Sleepywood sauna
 '''
 
-'A receptionist from sleepywood hotel'
 hotel = [[105040401, 499], [105040402, 999]]
 
 self.sayNext("Welcome. We're the Sleepywood Hotel. Our hotel works hard to serve you the best at all times. If you are tired and worn out from hunting, how about a relaxing stay at our hotel?")

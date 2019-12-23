@@ -683,10 +683,6 @@ public class Field {
         }
     }
 
-    public final void unlock() {
-        lock.unlock();
-    }
-
     public void update(long time) {
         lifePool.update(time);
         dropPool.tryExpire(false);

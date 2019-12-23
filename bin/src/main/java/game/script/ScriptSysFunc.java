@@ -67,7 +67,7 @@ public class ScriptSysFunc {
         if (runningVM.getTarget() != target) {
             return;
         }
-        if (runningVM.getHistoryPos() < 0 || runningVM.getMsgHistory().isEmpty()) {
+        if (runningVM.getHistoryPos() == 0 || runningVM.getMsgHistory().isEmpty()) {
             Logger.logError("Invalid quest msg history position");
             return;
         }
@@ -81,22 +81,22 @@ public class ScriptSysFunc {
                         tryFinish();
                         return;
                     }
-                    if (runningVM.getHistoryPos() == runningVM.getMsgHistory().size() - 1) {
+                    if (runningVM.getHistoryPos() == runningVM.getMsgHistory().size()) {
                         tryResume();
                         return;
                     }
                     posMsgHistory = runningVM.getHistoryPos() + 1;
                 } else {
-                    if (ret < 0 || runningVM.getHistoryPos() < 0) {
+                    if (ret < 0 || runningVM.getHistoryPos() == 0) {
                         tryFinish();
                         return;
                     }
                     posMsgHistory = runningVM.getHistoryPos() - 1;
                 }
                 runningVM.setHistoryPos(posMsgHistory);
-                MsgHistory msg = runningVM.getMsgHistory().get(posMsgHistory);
-                boolean next = (Boolean) msg.getMemory().get(1);
-                target.sendPacket(ScriptMan.onSay((byte) msg.getSpeakerTypeID(), msg.getSpeakerTemplateID(), (String) msg.getMemory().get(0), posMsgHistory != 1, next));
+                MsgHistory msgHistory = runningVM.getMsgHistory().get(posMsgHistory - 1);
+                boolean next = (Boolean) msgHistory.getMemory().get(1);
+                target.sendPacket(ScriptMan.onSay((byte) msgHistory.getSpeakerTypeID(), msgHistory.getSpeakerTemplateID(), (String) msgHistory.getMemory().get(0), posMsgHistory != 1, next));
                 break;
             case ScriptMessage.AskYesNo:
                 if (ret == -1) {
@@ -111,10 +111,19 @@ public class ScriptSysFunc {
                     tryFinish();
                     return;
                 }
-                int sel = packet.decodeByte() & 0xFF;
+                byte sel = packet.decodeByte();
                 if ((sel & 0x80) == 0) {
-                    //CUser::TryChangeHairOrFace(pTarget, *(_DWORD *)&v7[20].dummy[0], *(_DWORD *)(v18 + 4 * v17));
+                    MsgHistory msg = runningVM.getMsgHistory().get(runningVM.getHistoryPos() - 1);
+                    if (msg != null && msg.getMemory().size() > 2) {
+                        if (msg.getCouponItemID() > 0) {
+                            int canadite[] = (int[]) msg.getMemory().get(2);
+                            ret = target.tryChangeHairOrFace(msg.getCouponItemID(), canadite[sel]);
+                        } else {
+                            ret = sel;
+                        }
+                    }
                 }
+                this.value = ret;
                 tryResume();
                 break;
             case ScriptMessage.AskMenu:
@@ -206,7 +215,8 @@ public class ScriptSysFunc {
                 msg.setPacket(ScriptMan.onAskYesNo(speakerTypeID, speakerTemplateID, (String) memory.get(0)));
                 break;
             case ScriptMessage.AskAvatar:
-                msg.setPacket(ScriptMan.onAskAvatar(speakerTypeID, speakerTemplateID, (String) memory.get(0), (int[]) memory.get(1)));
+                msg.setCouponItemID((Integer) memory.get(1));
+                msg.setPacket(ScriptMan.onAskAvatar(speakerTypeID, speakerTemplateID, (String) memory.get(0), (int[]) memory.get(2)));
                 break;
             case ScriptMessage.AskMenu:
                 msg.setPacket(ScriptMan.onAskMenu(speakerTypeID, speakerTemplateID, (String) memory.get(0)));
@@ -265,9 +275,14 @@ public class ScriptSysFunc {
         return value;
     }
     
-    public Object askAvatar(String text, int canadite[]) {
+    public Object askAvatar(String text, int... canadite) {
+        return askAvatar(text, -1, canadite);
+    }
+    
+    public Object askAvatar(String text, int couponItemID, int... canadite) {
         List<Object> memory = new ArrayList<>();
         memory.add(text);
+        memory.add(couponItemID);
         memory.add(canadite);
         makeMessagePacket(ScriptMessage.AskAvatar, memory, runningVM.getSelf());
         sendMessageAnswer();
@@ -986,7 +1001,7 @@ public class ScriptSysFunc {
     }
     
     private void sendMessageAnswer() {
-        runningVM.getTarget().sendPacket(runningVM.getMsgHistory().get(runningVM.getHistoryPos()).getPacket());
+        runningVM.getTarget().sendPacket(runningVM.getMsgHistory().get(runningVM.getHistoryPos() - 1).getPacket());
         runningVM.getStatus().set(ScriptVM.Message);
     }
     

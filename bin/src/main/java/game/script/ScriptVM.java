@@ -100,12 +100,21 @@ public class ScriptVM {
         }
     }
     
+    public void destruct() {
+        posMsgHistory = 0;
+        msgHistory.clear();
+        if (self != null) {
+            this.self = null;
+        }
+        // Nullify target in Destroy
+    }
+    
     public Point getCurrentPos() {
         return curPos;
     }
     
     public int getHistoryPos() {
-        return posMsgHistory - 1;
+        return posMsgHistory;
     }
     
     public LinkedList<MsgHistory> getMsgHistory() {
@@ -156,7 +165,7 @@ public class ScriptVM {
                             File file = new File(PATH + scriptName + ".py");
                             if (!file.exists()) {
                                 if (npc != null) {
-                                    file = new File (PATH + s.getTemplateID() + ".py");
+                                    file = new File(PATH + s.getTemplateID() + ".py");
                                 }
                             }
                             
@@ -164,9 +173,7 @@ public class ScriptVM {
                                 this.script = file;
                                 return true;
                             } else {
-                                // TODO: Render NPC dialog instead.
                                 target.sendSystemMessage("The script {" + scriptName + "} has not yet been implemented.");
-                                
                                 Logger.logError("inexistent script '%s' (TemplateID: %d)", scriptName, s != null ? s.getTemplateID() : -1);
                             }
                         }
@@ -206,11 +213,11 @@ public class ScriptVM {
         });
     }
     
-    static ScriptEngine getEngine() {
+    private static ScriptEngine getEngine() {
         return PYTHON_ENGINE;
     }
     
-    static ExecutorService getPool() {
+    private static ExecutorService getPool() {
         return POOL;
     }
 }

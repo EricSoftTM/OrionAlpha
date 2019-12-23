@@ -67,6 +67,9 @@ public class ItemAccessor {
     }
 
     public static boolean isTreatSingly(ItemSlotBase p) {
+        if (ItemInfo.isCashItem(p.getItemID())) {
+            return true;
+        }
         byte ti = getItemTypeIndexFromID(p.getItemID());
         return !isBundleTypeIndex(ti) || isRechargeableItem(p.getItemID()) || FileTime.compareFileTime(p.getDateExpire(), FileTime.END) < 0;
     }

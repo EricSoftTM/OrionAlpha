@@ -49,7 +49,7 @@ if self.userGetGender() == 1:
     changeFace11 += 1000
 
 # Post-Beta: 5152001 => Beta: 4052001
-face = self.askAvatar("Let's see... I can turn your face into something totally new. You want to try? By #bHenesys Cosmetic Surgery Coupon (Premium)#k, you can get a look of your own. Calmly choose a face of your choice ...", [changeFace1, changeFace2, changeFace3, changeFace4, changeFace5, changeFace6, changeFace7, changeFace8, changeFace9, changeFace10, changeFace11])
+face = self.askAvatar("Let's see... I can turn your face into something totally new. You want to try? By #bHenesys Cosmetic Surgery Coupon (Premium)#k, you can get a look of your own. Calmly choose a face of your choice ...", 4052001, [changeFace1, changeFace2, changeFace3, changeFace4, changeFace5, changeFace6, changeFace7, changeFace8, changeFace9, changeFace10, changeFace11])
 if face == 1:
 	self.say("Okay, the procedure is over. Look, here is a mirror. What do you think? Even I admit this is a work of art... haha, well, call me when you get sick of this new look, okay?")
 elif face == -1:

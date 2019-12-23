@@ -28,9 +28,10 @@ import network.packet.OutPacket;
 public class MsgHistory {
     private int type;
     private OutPacket packet;
-    private final List memory;
+    private final List<Object> memory;
     private int speakerTypeID;
     private int speakerTemplateID;
+    private int couponItemID;
     
     public MsgHistory(int type) {
         this.type = type;
@@ -45,8 +46,12 @@ public class MsgHistory {
         return packet;
     }
     
-    public List getMemory() {
+    public List<Object> getMemory() {
         return memory;
+    }
+    
+    public int getCouponItemID() {
+        return couponItemID;
     }
     
     public int getSpeakerTypeID() {
@@ -63,6 +68,10 @@ public class MsgHistory {
     
     public void setPacket(OutPacket packet) {
         this.packet = packet;
+    }
+    
+    public void setCouponItemID(int itemID) {
+        this.couponItemID = itemID;
     }
     
     public void setSpeakerTypeID(int type) {

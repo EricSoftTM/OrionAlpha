@@ -773,12 +773,11 @@ public class User extends Creature {
             this.tradingNpc = null;
             if (miniRoom != null) {
                 //miniRoom.onUserLeave(this);
+	            miniRoom = null;
             }
             if (runningVM != null) {
+            	runningVM.destruct();
                 runningVM.destroy(this);
-            }
-            if (secondaryStat != null) {
-                secondaryStat.reset();
             }
         } finally {
             unlock();
@@ -2495,6 +2494,57 @@ public class User extends Creature {
             String notice = String.format("[Congrats] %s has reached Level 200! Congratulate %s on such an amazing achievement!", characterName, characterName);
             getChannel().broadcast(WvsContext.onBroadcastMsg(BroadcastMsg.Notice, notice));
         }
+    }
+    
+    public byte tryChangeHairOrFace(int couponItemID, int param) {
+        if (ItemAccessor.getItemTypeIndexFromID(couponItemID) != ItemType.Etc) {
+            return -1;
+        }
+        boolean valid = false;
+        byte type = (byte) (couponItemID / 1000 % 10);
+        switch (type) {
+            case 0://Hair
+                valid = (param != character.getCharacterStat().getHair());
+                //valid &= ItemInfo.isValidHairID(param);
+                break;
+            case 1://Hair Color(?)
+                valid = (param != character.getCharacterStat().getHair());
+                //valid &= ItemInfo.isValidHairID(param);
+                break;
+            case 2://Face
+                valid = (param != character.getCharacterStat().getFace());
+                //valid &= ItemInfo.isValidFaceID(param);
+                break;
+        }
+        if (!valid) {
+            return -3;
+        }
+        ItemSlotBase item;
+        int slotCount = character.getItemSlotCount(ItemType.Etc);
+        for (int pos = 1; pos <= slotCount; pos++) {
+            item = character.getItem(ItemType.Etc, pos);
+            if (item != null && item.getItemID() == couponItemID && item.isCashItem() && character.getItemTrading().get(ItemType.Etc).get(pos) == 0) {
+                Pointer<Integer> decRet = new Pointer<>(0);
+                List<ChangeLog> changeLog = new ArrayList<>();
+                if (Inventory.rawRemoveItem(this, ItemType.Etc, (short) pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
+                    addCharacterDataMod(DBChar.ItemSlotEtc);
+                    Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                    if (type == 0 || type == 1) {
+                        setHair(param);
+                        sendCharacterStat(Request.None, CharacterStatType.Hair);
+	                    postAvatarModified(AvatarLook.Look);
+                    } else if (type == 2) {
+                        setFace(param);
+	                    sendCharacterStat(Request.None, CharacterStatType.Face);
+	                    postAvatarModified(AvatarLook.Face);
+                    }
+                    return 1;
+                } else {
+                    return -1;
+                }
+            }
+        }
+        return -1;
     }
 
     public void update(long time) {

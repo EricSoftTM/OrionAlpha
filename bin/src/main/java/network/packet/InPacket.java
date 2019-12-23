@@ -311,6 +311,7 @@ public class InPacket {
             
             // We will continue to use the buffer, so we
             // must reset its index before we re-write.
+            recvBuff.resetReaderIndex();
             recvBuff.resetWriterIndex();
             
             int src0 = 0;

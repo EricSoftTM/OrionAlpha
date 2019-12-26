@@ -17,17 +17,13 @@
  */
 package network;
 
+import io.netty.channel.*;
 import login.GameSocket;
 import common.OrionConfig;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -37,8 +33,6 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import network.packet.InPacket;
 
 /**
@@ -47,12 +41,11 @@ import network.packet.InPacket;
  * 
  * @author Eric
  */
-public class CenterAcceptor extends ChannelInitializer<SocketChannel> implements Runnable {
+public class CenterAcceptor {
     private final SocketAddress addr;
-    private EventLoopGroup acceptor, childGroup;
+    private EventLoopGroup bossGroup, workerGroup;
     private Channel channel;
     private final List<GameSocket> sockets;
-    private final Lock lock;
     
     /**
      * Constructs Game Server-specific acceptors for each World and Channel.
@@ -61,35 +54,42 @@ public class CenterAcceptor extends ChannelInitializer<SocketChannel> implements
      */
     public CenterAcceptor(SocketAddress pAddr) {
         this.addr = pAddr;
-        this.lock = new ReentrantLock();
         this.sockets = new ArrayList<>();
     }
     
+    public void addSocket(GameSocket socket) {
+        sockets.add(socket);
+    }
+    
     public void removeSocket(GameSocket socket) {
-        lock.lock();
-        try {
-            sockets.remove(socket);
-        } finally {
-            lock.unlock();
-        }
+        sockets.remove(socket);
     }
     
     /**
-     * Initializes the GameAcceptor and binds to our SocketAddress.
+     * Initializes the CenterAcceptor and binds to our SocketAddress.
      */
-    @Override
-    public void run() {
+    public void start() {
         try {
-            acceptor = new NioEventLoopGroup(4);
-            childGroup = new NioEventLoopGroup(10);
-            channel =  new ServerBootstrap().group(acceptor, childGroup)
+            bossGroup = new NioEventLoopGroup();
+            workerGroup = new NioEventLoopGroup();
+            
+            channel =  new ServerBootstrap().group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(this)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            GameSocket socket = new GameSocket(ch);
+                            
+                            ch.pipeline().addLast("GameSocket", socket);
+                        }
+                    })
                     .option(ChannelOption.SO_BACKLOG, OrionConfig.MAX_CONNECTIONS)
                     .option(ChannelOption.ALLOCATOR, new PooledByteBufAllocator(true))
                     .childOption(ChannelOption.TCP_NODELAY, true)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .bind(addr).syncUninterruptibly().channel().closeFuture().channel();
+            
+            
         } catch (Exception ex) {
             ex.printStackTrace(System.err);
         }
@@ -99,37 +99,16 @@ public class CenterAcceptor extends ChannelInitializer<SocketChannel> implements
      * Once the server socket has been closed,
      * we gracefully shutdown (or unbind) the server.
      */
-    public void unbind() {
-        channel.close();
-        acceptor.shutdownGracefully();
-        childGroup.shutdownGracefully();
-    }
-
-    /**
-     * Initializes an incoming SocketChannel,
-     * constructs their ClientSocket handler,
-     * and inserts the channel into the
-     * pipeline. 
-     * 
-     * This method will also update the
-     * current active connections count 
-     * on our GUI.
-     * 
-     * @param ch Incoming socket channel
-     * @throws Exception 
-     */
-    @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
-        GameSocket socket = new GameSocket(ch);
-        
-        ch.pipeline().addLast(
-                new CenterDecoder(), 
-                socket, 
-                new CenterEncoder() 
-        );
+    public void terminate() {
+	    try {
+		    channel.close();
+	    } finally {
+		    bossGroup.shutdownGracefully();
+		    workerGroup.shutdownGracefully();
+	    }
     }
     
-    private static class CenterDecoder extends ReplayingDecoder<Void> {
+    public static class CenterDecoder extends ReplayingDecoder<Void> {
         
         @Override
         protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
@@ -145,7 +124,7 @@ public class CenterAcceptor extends ChannelInitializer<SocketChannel> implements
         }
     }
     
-    private static class CenterEncoder extends MessageToByteEncoder<byte[]> {
+    public static class CenterEncoder extends MessageToByteEncoder<byte[]> {
         
         @Override
         protected void encode(ChannelHandlerContext ctx, byte[] message, ByteBuf out) throws Exception {

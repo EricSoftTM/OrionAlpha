@@ -427,6 +427,10 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         }
     }
     
+    public void onUpdate(long time) {
+    
+    }
+    
     public boolean postClose() {
         if (!this.closePosted) {
             this.closePosted = true;

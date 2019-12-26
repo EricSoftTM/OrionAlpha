@@ -44,7 +44,7 @@ import util.wz.WzUtil;
  *
  * @author Eric
  */
-public class LoginApp implements Runnable {
+public class LoginApp {
     private static final LoginApp instance = new LoginApp();
     
     private LoginAcceptor acceptor;
@@ -123,12 +123,12 @@ public class LoginApp implements Runnable {
     
     private void createAcceptor() {
         this.acceptor = new LoginAcceptor(new InetSocketAddress(addr, port));
-        this.acceptor.run();
+        this.acceptor.start();
     }
     
     private void createCenterAcceptor() {
         this.centerAcceptor = new CenterAcceptor(new InetSocketAddress(addr, centerPort));
-        this.centerAcceptor.run();
+        this.centerAcceptor.start();
     }
     
     public WorldEntry getWorld(int worldID) {
@@ -140,8 +140,8 @@ public class LoginApp implements Runnable {
         return null;
     }
     
-    public final List<WorldEntry> getWorlds() {
-        return this.worlds;
+    public List<WorldEntry> getWorlds() {
+        return worlds;
     }
     
     public final long getNextCashSN() {
@@ -239,11 +239,10 @@ public class LoginApp implements Runnable {
     }
     
     public static void main(String[] args) {
-        LoginApp.getInstance().run();
+        LoginApp.getInstance().start();
     }
     
-    @Override
-    public void run() {
+    public void start() {
         try {
             Logger.logReport("MapleStory Korea Service WvsLogin.exe.");
             setUp();

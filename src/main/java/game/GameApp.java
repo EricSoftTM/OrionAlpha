@@ -44,7 +44,7 @@ import util.TimerThread;
  *
  * @author Eric
  */
-public class GameApp extends Thread {
+public class GameApp {
     private static final GameApp instance = new GameApp();
     
     private String addr;
@@ -108,7 +108,7 @@ public class GameApp extends Thread {
                     channel.getCenter().connect();
                     // Pause each socket connection for a small interval of time
                     // to allow each channel to be added sequentially.
-                    sleep(100);
+                    Thread.sleep(100);
                 }
             }
         } catch (FileNotFoundException | InterruptedException ex) {
@@ -118,7 +118,7 @@ public class GameApp extends Thread {
     
     private void createAcceptor() {
         for (Channel channel : channels) {
-            channel.getAcceptor().run();
+            channel.getAcceptor().start();
         }
 
         Logger.logReport("Socket acceptors started");
@@ -255,8 +255,7 @@ public class GameApp extends Thread {
         GameApp.getInstance().start();
     }
     
-    @Override
-    public void run() {
+    public void start() {
         this.worldID = Byte.parseByte(System.getProperty("gameID", "0"));
         
         TimerThread.createTimerThread();

@@ -42,7 +42,7 @@ import util.wz.WzUtil;
  *
  * @author Eric
  */
-public class ShopApp implements Runnable {
+public class ShopApp {
     private static final ShopApp instance = new ShopApp();
     
     private String addr;
@@ -76,7 +76,7 @@ public class ShopApp implements Runnable {
     }
 
     public static void main(String[] args) {
-        ShopApp.getInstance().run();
+        ShopApp.getInstance().start();
     }
     
     private void connectCenter() {
@@ -105,7 +105,7 @@ public class ShopApp implements Runnable {
 
     private void createAcceptor() {
         this.acceptor = new ShopAcceptor(new InetSocketAddress(addr, port));
-        this.acceptor.run();
+        this.acceptor.start();
 
         Logger.logReport("Socket acceptor started");
     }
@@ -225,8 +225,7 @@ public class ShopApp implements Runnable {
         CommonDB.rawLoadItemInitSN(this.worldID, this.itemInitSN, this.cashItemInitSN);
     }
 
-    @Override
-    public void run() {
+    public void start() {
         connectCenter();
         initializeDB();
         initializeItemSN();

@@ -29,13 +29,14 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import java.net.SocketAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+
+import io.netty.util.concurrent.ScheduledFuture;
 import login.LoginApp;
 import login.user.ClientSocket;
 import util.Logger;
@@ -46,14 +47,14 @@ import util.Logger;
  * 
  * @author Eric
  */
-public class LoginAcceptor extends ChannelInitializer<SocketChannel> implements Runnable {
+public class LoginAcceptor {
     private final AtomicInteger serialNoCounter;
     private final Map<Integer, ClientSocket> sn2pSocket;
     private final Map<String, Integer> ipCount;//Nexon _actually_ stores this as a UINT dwIP key.
-    private final Lock lock;
     private final SocketAddress addr;
-    private EventLoopGroup acceptor, childGroup;
+    private EventLoopGroup bossGroup, workerGroup;
     private Channel channel;
+    private ScheduledFuture<?> update;
     public boolean acceptorClosed;
     public boolean isWebDead;
     public boolean isLaunchingModeBeingChanged;
@@ -68,9 +69,8 @@ public class LoginAcceptor extends ChannelInitializer<SocketChannel> implements 
     public LoginAcceptor(SocketAddress addr) {
         this.addr = addr;
         this.serialNoCounter = new AtomicInteger(0);
-        this.sn2pSocket = new HashMap<>();
-        this.ipCount = new HashMap<>();
-        this.lock = new ReentrantLock();
+        this.sn2pSocket = new ConcurrentHashMap<>();
+        this.ipCount = new ConcurrentHashMap<>();
         this.acceptorClosed = true;
     }
     
@@ -79,93 +79,80 @@ public class LoginAcceptor extends ChannelInitializer<SocketChannel> implements 
     }
     
     public ClientSocket getSocket(int localSocketSN) {
-        lock.lock();
-        try {
-            return sn2pSocket.get(localSocketSN);
-        } finally {
-            lock.unlock();
-        }
+        return sn2pSocket.get(localSocketSN);
     }
     
     public int getSocketCount() {
-        lock.lock();
-        try {
-            return sn2pSocket.size();
-        } finally {
-            lock.unlock();
-        }
+        return sn2pSocket.size();
     }
     
     public void removeSocket(ClientSocket socket) {
-        lock.lock();
-        try {
-            sn2pSocket.remove(socket.getLocalSocketSN());
-        } finally {
-            lock.unlock();
-        }
+        sn2pSocket.remove(socket.getLocalSocketSN());
     }
     
     /**
      * Initializes the LoginAcceptor and binds to our SocketAddress.
      */
-    @Override
-    public void run() {
+    public void start() {
         try {
-            acceptor = new NioEventLoopGroup();
-            childGroup = new NioEventLoopGroup();
-            channel =  new ServerBootstrap().group(acceptor, childGroup)
+            bossGroup = new NioEventLoopGroup();
+            workerGroup = new NioEventLoopGroup();
+            
+            channel =  new ServerBootstrap().group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(this)
+		            .childHandler(new ChannelInitializer<SocketChannel>() {
+			            @Override
+			            protected void initChannel(SocketChannel ch) throws Exception {
+				            LoginAcceptor.this.initChannel(ch);
+			            }
+		            })
                     .option(ChannelOption.SO_BACKLOG, OrionConfig.MAX_CONNECTIONS)
                     .option(ChannelOption.ALLOCATOR, new PooledByteBufAllocator(true))
                     .childOption(ChannelOption.TCP_NODELAY, true)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .bind(addr).syncUninterruptibly().channel().closeFuture().channel();
+	
+	        update = bossGroup.scheduleAtFixedRate(() -> update(System.currentTimeMillis()), 1000, 100, TimeUnit.MILLISECONDS);
             
             acceptorClosed = false;
         } catch (Exception ex) {
             ex.printStackTrace(System.err);
         }
     }
-    
-    /**
-     * Once the server socket has been closed,
-     * we gracefully shutdown (or unbind) the server.
-     */
-    public void unbind() {
-        channel.close();
-        acceptor.shutdownGracefully();
-        childGroup.shutdownGracefully();
-    }
+	
+	/**
+	 * Once the server socket has been closed,
+	 * we gracefully shutdown (or unbind) the server.
+	 */
+	public void terminate() {
+		try {
+			if (update != null) {
+				update.cancel(true);
+			}
+			channel.close();
+		} finally {
+			bossGroup.shutdownGracefully();
+			workerGroup.shutdownGracefully();
+		}
+	}
+	
+	private void update(long time) {
+		for (ClientSocket socket : sn2pSocket.values()) {
+			if (socket != null) {
+				socket.onUpdate(time);
+			}
+		}
+	}
 
-    /**
-     * Initializes an incoming SocketChannel,
-     * constructs their ClientSocket handler,
-     * and inserts the channel into the
-     * pipeline. 
-     * 
-     * This method will also update the
-     * current active connections count 
-     * on our GUI.
-     * 
-     * @param ch Incoming socket channel
-     * @throws Exception 
-     */
-    @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
+    private void initChannel(SocketChannel ch) throws Exception {
         if (this.isLaunchingModeBeingChanged || this.acceptorClosed) {
             return;
         }
         ClientSocket socket = new ClientSocket(ch);
         socket.initSequence();//rand() | (rand() << 16)
-        this.lock.lock();
-        try {
-            int serialNo = this.serialNoCounter.incrementAndGet();
-            socket.setLocalSocketSN(serialNo);
-            this.sn2pSocket.put(serialNo, socket);
-        } finally {
-            this.lock.unlock();
-        }
+	    int serialNo = this.serialNoCounter.incrementAndGet();
+	    socket.setLocalSocketSN(serialNo);
+	    this.sn2pSocket.put(serialNo, socket);
         ch.pipeline().addLast("ClientSocket", socket);
         if (!this.ipCount.containsKey(socket.getSocketRemoteIP())) {
             this.ipCount.put(socket.getSocketRemoteIP(), 0);

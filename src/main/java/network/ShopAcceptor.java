@@ -28,11 +28,12 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import java.net.InetSocketAddress;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+
+import io.netty.util.concurrent.ScheduledFuture;
 import shop.ShopApp;
 import shop.user.ClientSocket;
 import shop.user.ClientSocket.MigrateState;
@@ -41,27 +42,26 @@ import shop.user.ClientSocket.MigrateState;
  *
  * @author sunnyboy
  */
-public class ShopAcceptor extends ChannelInitializer<SocketChannel> implements Runnable {
+public class ShopAcceptor {
     private final AtomicInteger serialNoCounter;
     private final Map<Integer, ClientSocket> sn2pSocket;
-    private final Lock lock;
     private final InetSocketAddress addr;
-    private EventLoopGroup workerGroup, childGroup;
+    private EventLoopGroup bossGroup, workerGroup;
     private Channel channel;
+	private ScheduledFuture<?> update;
     private boolean acceptorClosed;
     private final AtomicInteger remainedSocket;
     
     /**
-     * Constructs Game Server-specific acceptors for each World and Channel.
-     * 
-     * @param pAddr Our IP Socket Address that contains the IP and Port to bind to
+     * Constructs Shop Server acceptor.
+     *
+     * @param addr Our Socket Address that contains the IP and Port to bind to
      */
-    public ShopAcceptor(InetSocketAddress pAddr) {
-        this.addr = pAddr;
+    public ShopAcceptor(InetSocketAddress addr) {
+        this.addr = addr;
         this.serialNoCounter = new AtomicInteger(0);
         this.remainedSocket = new AtomicInteger(0);
-        this.sn2pSocket = new HashMap<>();
-        this.lock = new ReentrantLock();
+        this.sn2pSocket = new ConcurrentHashMap<>();
         this.acceptorClosed = true;
     }
     
@@ -78,39 +78,53 @@ public class ShopAcceptor extends ChannelInitializer<SocketChannel> implements R
     }
     
     public ClientSocket getSocket(int localSocketSN) {
-        lock.lock();
-        try {
-            return sn2pSocket.get(localSocketSN);
-        } finally {
-            lock.unlock();
-        }
+        return sn2pSocket.get(localSocketSN);
     }
     
     public void removeSocket(ClientSocket socket) {
-        lock.lock();
-        try {
-            sn2pSocket.remove(socket.getLocalSocketSN());
-        } finally {
-            lock.unlock();
-        }
+        sn2pSocket.remove(socket.getLocalSocketSN());
     }
     
     /**
-     * Initializes the GameAcceptor and binds to our SocketAddress.
+     * Initializes the ShopAcceptor and binds to our SocketAddress.
      */
-    @Override
-    public void run() {
+    public void start() {
         try {
-            workerGroup = new NioEventLoopGroup(4);
-            childGroup = new NioEventLoopGroup(10);
-            channel =  new ServerBootstrap().group(workerGroup, childGroup)
+            bossGroup = new NioEventLoopGroup();
+            workerGroup = new NioEventLoopGroup();
+            
+            channel =  new ServerBootstrap().group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(this)
+                    .childHandler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        protected void initChannel(SocketChannel ch) throws Exception {
+                            if (acceptorClosed) {
+                                return;
+                            }
+                            ClientSocket socket = new ClientSocket(ch);
+                            socket.setAddr(String.format("%s:%d", socket.getSocketRemoteIP(), addr.getPort()));
+                            socket.initSequence();
+                            int serialNo = serialNoCounter.incrementAndGet();
+                            socket.setLocalSocketSN(serialNo);
+                            sn2pSocket.put(serialNo, socket);
+                            ch.pipeline().addLast("ClientSocket", socket);
+                            socket.setAcceptInfo(System.currentTimeMillis());
+                            if (sn2pSocket.size() > ShopApp.getInstance().getConnectionLimit()) {
+                                for (ClientSocket client : sn2pSocket.values()) {
+                                    if (client != null && client.getMigrateState() == MigrateState.WaitMigrateIn) {
+                                        client.postClose();
+                                    }
+                                }
+                            }
+                        }
+                    })
                     .option(ChannelOption.SO_BACKLOG, OrionConfig.MAX_CONNECTIONS)
                     .option(ChannelOption.ALLOCATOR, new PooledByteBufAllocator(true))
                     .childOption(ChannelOption.TCP_NODELAY, true)
                     .childOption(ChannelOption.SO_KEEPALIVE, true)
                     .bind(addr).syncUninterruptibly().channel().closeFuture().channel();
+    
+            update = bossGroup.scheduleAtFixedRate(() -> update(System.currentTimeMillis()), 1000, 100, TimeUnit.MILLISECONDS);
             
             acceptorClosed = false;
         } catch (Exception ex) {
@@ -122,49 +136,23 @@ public class ShopAcceptor extends ChannelInitializer<SocketChannel> implements R
      * Once the server socket has been closed,
      * we gracefully shutdown (or unbind) the server.
      */
-    public void unbind() {
-        channel.close();
-        workerGroup.shutdownGracefully();
-        childGroup.shutdownGracefully();
-    }
-
-    /**
-     * Initializes an incoming SocketChannel,
-     * constructs their ClientSocket handler,
-     * and inserts the channel into the
-     * pipeline. 
-     * 
-     * This method will also update the
-     * current active connections count 
-     * on our GUI.
-     * 
-     * @param ch Incoming socket channel
-     * @throws Exception 
-     */
-    @Override
-    protected void initChannel(SocketChannel ch) throws Exception {
-        lock.lock();
+    public void terminate() {
         try {
-            if (acceptorClosed) {
-                return;
+            if (update != null) {
+                update.cancel(true);
             }
-            ClientSocket socket = new ClientSocket(ch);
-            socket.setAddr(String.format("%s:%d", socket.getSocketRemoteIP(), addr.getPort()));
-            socket.initSequence();
-            int serialNo = serialNoCounter.incrementAndGet();
-            socket.setLocalSocketSN(serialNo);
-            sn2pSocket.put(serialNo, socket);
-            ch.pipeline().addLast("ClientSocket", socket);
-            socket.setAcceptInfo(System.currentTimeMillis());
-            if (sn2pSocket.size() > ShopApp.getInstance().getConnectionLimit()) {
-                for (ClientSocket client : sn2pSocket.values()) {
-                    if (client != null && client.getMigrateState() == MigrateState.WaitMigrateIn) {
-                        client.postClose();
-                    }
-                }
-            }
+            channel.close();
         } finally {
-            lock.unlock();
+            bossGroup.shutdownGracefully();
+            workerGroup.shutdownGracefully();
+        }
+    }
+    
+    private void update(long time) {
+        for (ClientSocket socket : sn2pSocket.values()) {
+            if (socket != null) {
+                socket.onUpdate(time);
+            }
         }
     }
 }

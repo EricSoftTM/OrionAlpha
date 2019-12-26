@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import network.CenterAcceptor.CenterDecoder;
+import network.CenterAcceptor.CenterEncoder;
 import network.packet.CenterPacket;
 import network.packet.InPacket;
 import network.packet.OutPacket;
@@ -37,23 +39,23 @@ public class GameSocket extends SimpleChannelInboundHandler {
     private final Channel channel;
     private final Lock lockSend;
     private boolean closePosted;
-    private boolean aliveReqSended;
-    private long lastAliveAckRcvTime;
-    private long lastAliveReqSndTime;
     private String addr;
+    
+    public byte worldID;
+    public String worldName;
     
     public GameSocket(Channel channel) {
         this.channel = channel;
         this.lockSend = new ReentrantLock();
         this.closePosted = false;
-        this.aliveReqSended = false;
-        this.lastAliveAckRcvTime = 0;
         this.addr = "";
+        this.worldName = "";
     }
     
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        super.channelActive(ctx);
+	    channel.pipeline().addBefore("GameSocket", "CenterEncoder", new CenterEncoder());
+	    channel.pipeline().addBefore("GameSocket", "CenterDecoder", new CenterDecoder());
     }
     
     @Override
@@ -63,7 +65,6 @@ public class GameSocket extends SimpleChannelInboundHandler {
         } finally {
             ctx.channel().close();
         }
-        super.channelInactive(ctx);
     }
     
     @Override
@@ -95,11 +96,18 @@ public class GameSocket extends SimpleChannelInboundHandler {
     
     public void onClose() {
         LoginApp.getInstance().getCenterAcceptor().removeSocket(this);
+	
+	    WorldEntry world = LoginApp.getInstance().getWorld(worldID);
+	    if (world != null) {
+	    	world.getChannels().clear();
+	    	
+	    	LoginApp.getInstance().getWorlds().remove(world);
+	    }
     }
     
     public void onGameConnected(InPacket packet) {
-        byte worldID = packet.decodeByte();
-        String worldName = packet.decodeString();
+        this.worldID = packet.decodeByte();
+        this.worldName = packet.decodeString();
 
         WorldEntry world = LoginApp.getInstance().getWorld(worldID);
         if (world == null) {
@@ -109,6 +117,7 @@ public class GameSocket extends SimpleChannelInboundHandler {
         }
 
         world.addChannel(new ChannelEntry(world.getWorldID(), packet.decodeByte(), packet.decodeString(), packet.decodeShort()));
+        LoginApp.getInstance().getCenterAcceptor().addSocket(this);
     }
     
     public void onGameMigrateRequest(int characterID) {

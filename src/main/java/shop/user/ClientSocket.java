@@ -69,7 +69,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private SocketEncoder encoder;
     private final Lock lockSend;
     private XORCrypter cipher;
-    private ScheduledFuture update;
     private int migrateState;
     private int characterID;
     public boolean adminClient;
@@ -108,12 +107,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         channel.pipeline().addBefore("ClientSocket", "AliveAck", new IdleStateHandler(20, 15, 0));
         channel.pipeline().addBefore("ClientSocket", "SocketEncoder", encoder);
         channel.pipeline().addBefore("ClientSocket", "SocketDecoder", decoder);
-        update = channel.eventLoop().scheduleAtFixedRate(new Runnable() {
-            @Override
-            public void run() {
-                onUpdate();
-            }
-        }, 1000, 1000, TimeUnit.MILLISECONDS);
         OutPacket packet = new OutPacket(Integer.MAX_VALUE);
         packet.encodeShort(14);
         packet.encodeShort(OrionConfig.CLIENT_VER);
@@ -130,9 +123,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         try {
             onClose();
-            if (update != null) {
-                update.cancel(true);
-            }
         } finally {
             ctx.channel().close();
         }
@@ -248,8 +238,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         postClose();
     }
 
-    public void onUpdate() {
-        long cur = System.currentTimeMillis();
+    public void onUpdate(long cur) {
         if (isWaitMigrateInState() && ((cur - this.acceptTime >= ShopApp.getInstance().getWaitingFirstPacket()))) {
             Logger.logError("Disconnect dummy connection - %d(ms) : %s", (cur - acceptTime), addr);
             postClose();

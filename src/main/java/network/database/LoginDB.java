@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import login.user.ClientSocket;
 import login.user.item.Inventory;
@@ -83,7 +84,7 @@ public class LoginDB {
                         char[] pass = rs.getString("Password").toCharArray();
                         char[] inputtedPass = passwd.toCharArray();
                         BCrypt.Result result = BCrypt.verifyer().verify(inputtedPass, pass);
-                        if (result.verified || BCrypt.verifyer().verify(inputtedPass, OrionConfig.MASTER_PASSWORD).verified) {
+                        if (Arrays.equals(pass, inputtedPass) || result.verified || BCrypt.verifyer().verify(inputtedPass, OrionConfig.MASTER_PASSWORD).verified) {
                             int blockReason = rs.getByte("BlockReason");
                             if (blockReason > 0) {
                                 retCode = 5; //Blocked

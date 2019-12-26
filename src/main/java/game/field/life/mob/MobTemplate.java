@@ -40,7 +40,6 @@ import util.wz.WzXML;
  * @author Eric
  */
 public class MobTemplate implements WzXML {
-    private static final WzPackage mobDir = new WzFileSystem().init("Mob").getPackage();
     private static final Map<Integer, MobTemplate> templates = new HashMap<>();
     private static final Lock lockMob = new ReentrantLock();
     private int templateID;
@@ -88,15 +87,20 @@ public class MobTemplate implements WzXML {
     
     public static void load(boolean useSAX) {
         Logger.logReport("Loading Mob Attributes");
-        if (useSAX) {
-            for (WzSAXProperty mobData : mobDir.getSAXEntries().values()) {
-                registerMob(Integer.parseInt(mobData.getFileName().replaceAll(".img.xml", "")), mobData);
+        WzPackage mobDir = new WzFileSystem().init("Mob").getPackage();
+        if (mobDir != null) {
+            if (useSAX) {
+                for (WzSAXProperty mobData : mobDir.getSAXEntries().values()) {
+                    registerMob(Integer.parseInt(mobData.getFileName().replaceAll(".img.xml", "")), mobData);
+                }
+            } else {
+                for (WzProperty mobData : mobDir.getEntries().values()) {
+                    registerMob(Integer.parseInt(mobData.getNodeName().replaceAll(".img", "")), mobData);
+                }
             }
-        } else {
-            for (WzProperty mobData : mobDir.getEntries().values()) {
-                registerMob(Integer.parseInt(mobData.getNodeName().replaceAll(".img", "")), mobData);
-            }
+            mobDir.release();
         }
+        mobDir = null;
     }
 
     private static void registerMob(int templateID, WzProperty prop) {

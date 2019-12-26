@@ -33,7 +33,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Eric
  */
 public class WzSAXProperty {
-    private static final SAXParserFactory FACTORY = SAXParserFactory.newInstance();
+    private static SAXParser PARSER;
     
     private File file;
     private List<WzXML> entities;
@@ -58,8 +58,6 @@ public class WzSAXProperty {
     
     public final void parse() {
         try {
-            SAXParser parser = getFactory().newSAXParser();
-            
             DefaultHandler handler = new DefaultHandler() {
                 String rootElement = null;
 
@@ -79,7 +77,7 @@ public class WzSAXProperty {
                 }
             };
             
-            parser.parse(file, handler);
+            getParser().parse(file, handler);
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             ex.printStackTrace(System.err);
         }
@@ -93,7 +91,10 @@ public class WzSAXProperty {
         this.file = null;
     }
     
-    static SAXParserFactory getFactory() {
-        return FACTORY;
+    private static SAXParser getParser() throws ParserConfigurationException, SAXException {
+    	if (PARSER == null) {
+    		PARSER = SAXParserFactory.newInstance().newSAXParser();
+	    }
+	    return PARSER;
     }
 }

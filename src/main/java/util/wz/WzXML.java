@@ -23,5 +23,5 @@ package util.wz;
  */
 public interface WzXML {
     
-    public void parse(String root, String name, String value, WzNodeType type);
+    void parse(String root, String name, String value, WzNodeType type);
 }

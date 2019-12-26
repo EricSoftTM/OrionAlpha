@@ -19,11 +19,14 @@ package util.wz;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -33,6 +36,8 @@ import org.xml.sax.SAXException;
  * @author Eric
  */
 public class WzProperty {
+	private static DocumentBuilderFactory FACTORY;
+	
     private File file;
     private Node node;
     private List<WzProperty> props;
@@ -48,8 +53,11 @@ public class WzProperty {
     }
     
     private void serialize() {
-        try {
-            this.node = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file).getFirstChild();
+	    if (FACTORY == null) {
+		    FACTORY = DocumentBuilderFactory.newInstance();
+	    }
+	    try (InputStream stream = new FileInputStream(file)) {
+	    	this.node = FACTORY.newDocumentBuilder().parse(stream).getFirstChild();
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             ex.printStackTrace(System.err);
         }
@@ -160,17 +168,22 @@ public class WzProperty {
     }
     
     public final void release() {
-        int children = node.getChildNodes().getLength();
-        if (children > 0) {
-            for (int i = 0; i < children; i++) {
-                Node child = node.getChildNodes().item(i);
-                if (child != null) {
-                    node.removeChild(node.getChildNodes().item(i));
-                }
-            }
-        }
+    	if (node != null) {
+		    int children = node.getChildNodes().getLength();
+		    if (children > 0) {
+			    for (int i = 0; i < children; i++) {
+				    Node child = node.getChildNodes().item(i);
+				    if (child != null) {
+					    node.removeChild(node.getChildNodes().item(i));
+				    }
+			    }
+		    }
+	    }
         
         if (props != null) {
+            for (WzProperty child : props) {
+	            child.release();
+            }
             props.clear();
         }
         

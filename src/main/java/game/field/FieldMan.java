@@ -20,6 +20,8 @@ package game.field;
 import java.awt.Point;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+
 import util.Size;
 import util.TimerThread;
 import util.wz.WzFileSystem;
@@ -32,8 +34,8 @@ import util.wz.WzUtil;
  * @author Eric
  */
 public class FieldMan {
-    private static final WzPackage fieldDir = new WzFileSystem().init("Map/Map").getPackage();
     private static FieldMan[] managers;
+	private static ReentrantLock lock;
     
     private final Map<Integer, Field> fields;
     
@@ -54,6 +56,7 @@ public class FieldMan {
     
     public static void init(int channels) {
         managers = new FieldMan[channels];
+	    lock = new ReentrantLock();
         
         for (int i = 0; i < channels; i++) {
             managers[i] = new FieldMan();
@@ -66,10 +69,20 @@ public class FieldMan {
         } else {
             Field field = fields.get(fieldID);
             if (field == null || forceLoad) {
-                field = registerField(fieldID, fieldDir.getItem(String.format("%09d.img", fieldID)));
-                if (field != null) {
-                    fields.put(fieldID, field);
-                }
+            	lock.lock();
+            	try {
+            		WzPackage fieldDir = new WzFileSystem().init("Map/Map").getPackage();
+            		if (fieldDir != null) {
+			            field = registerField(fieldID, fieldDir.getItem(String.format("%09d.img", fieldID)));
+			            if (field != null) {
+				            fields.put(fieldID, field);
+			            }
+			            fieldDir.release();
+		            }
+		            fieldDir = null;
+	            } finally {
+            		lock.unlock();
+	            }
             }
             return field;
         }

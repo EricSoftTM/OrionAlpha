@@ -19,8 +19,8 @@ package util.wz;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  *
@@ -32,9 +32,9 @@ public class WzPackage {
     private final Map<String, WzSAXProperty> saxEntries;
     
     public WzPackage() {
-        this.children = new LinkedHashMap<>();
-        this.entries = new LinkedHashMap<>();
-        this.saxEntries = new LinkedHashMap<>();
+        this.children = new ConcurrentHashMap<>();
+        this.entries = new ConcurrentHashMap<>();
+        this.saxEntries = new ConcurrentHashMap<>();
     }
     
     public WzPackage addPackage(File file) {
@@ -63,41 +63,31 @@ public class WzPackage {
     public WzProperty getItem(String path) {
         WzPackage pkg = this;
         while (path.contains("/")) {
-            if (pkg.children.containsKey(path.substring(0, path.indexOf("/")))) {
-                pkg = pkg.children.get(path.substring(0, path.indexOf("/")));
+            String dir = path.substring(0, path.indexOf("/"));
+            if (pkg.children.containsKey(dir)) {
+                pkg = pkg.children.get(dir);
                 
                 path = path.substring(path.indexOf("/") + 1);
             } else {
                 return null;
             }
         }
-        
-        WzProperty prop = null;
-        if (pkg.entries.containsKey(path)) {
-            return pkg.entries.get(path);
-        }
-        
-        return prop;
+        return pkg.entries.get(path);
     }
     
     public WzSAXProperty getSAXItem(String path) {
         WzPackage pkg = this;
         while (path.contains("/")) {
-            if (pkg.children.containsKey(path.substring(0, path.indexOf("/")))) {
-                pkg = pkg.children.get(path.substring(0, path.indexOf("/")));
-                
+            String dir = path.substring(0, path.indexOf("/"));
+            if (pkg.children.containsKey(dir)) {
+                pkg = pkg.children.get(dir);
+        
                 path = path.substring(path.indexOf("/") + 1);
             } else {
                 return null;
             }
         }
-        
-        WzSAXProperty prop = null;
-        if (pkg.entries.containsKey(path)) {
-            return pkg.saxEntries.get(path);
-        }
-        
-        return prop;
+        return pkg.saxEntries.get(path);
     }
     
     public final void release() {
@@ -110,6 +100,13 @@ public class WzPackage {
         }
         for (Iterator<Map.Entry<String, WzProperty>> it = entries.entrySet().iterator(); it.hasNext();) {
             Map.Entry<String, WzProperty> p = it.next();
+            if (p != null && p.getValue() != null) {
+                p.getValue().release();
+            }
+            it.remove();
+        }
+        for (Iterator<Map.Entry<String, WzSAXProperty>> it = saxEntries.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<String, WzSAXProperty> p = it.next();
             if (p != null && p.getValue() != null) {
                 p.getValue().release();
             }

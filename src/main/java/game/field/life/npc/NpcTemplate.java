@@ -43,7 +43,6 @@ import util.wz.WzXML;
  * @author Eric
  */
 public class NpcTemplate implements WzXML {
-    private static final WzPackage npcDir = new WzFileSystem().init("Npc").getPackage();
     private static final Map<Integer, NpcTemplate> templates = new HashMap<>();
     private static final Lock lockNpc = new ReentrantLock();
     private int templateID;
@@ -69,15 +68,20 @@ public class NpcTemplate implements WzXML {
     }
     
     public static void load(boolean useSAX) {
-        if (useSAX) {
-            for (WzSAXProperty npcData : npcDir.getSAXEntries().values()) {
-                registerNpc(Integer.parseInt(npcData.getFileName().replaceAll(".img.xml", "")), npcData);
+        WzPackage npcDir = new WzFileSystem().init("Npc").getPackage();
+        if (npcDir != null) {
+            if (useSAX) {
+                for (WzSAXProperty npcData : npcDir.getSAXEntries().values()) {
+                    registerNpc(Integer.parseInt(npcData.getFileName().replaceAll(".img.xml", "")), npcData);
+                }
+            } else {
+                for (WzProperty npcData : npcDir.getEntries().values()) {
+                    registerNpc(Integer.parseInt(npcData.getNodeName().replaceAll(".img", "")), npcData);
+                }
             }
-        } else {
-            for (WzProperty npcData : npcDir.getEntries().values()) {
-                registerNpc(Integer.parseInt(npcData.getNodeName().replaceAll(".img", "")), npcData);
-            }
+            npcDir.release();
         }
+        npcDir = null;
     }
     
     private static void registerNpc(int templateID, WzProperty prop) {

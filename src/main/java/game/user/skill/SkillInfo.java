@@ -43,7 +43,6 @@ import util.wz.WzUtil;
  */
 public class SkillInfo {
 
-    private final WzPackage skillDir = new WzFileSystem().init("Skill").getPackage();
     private static final SkillInfo instance = new SkillInfo();
     private final Map<Integer, SkillEntry> skills;
     private final Map<Integer, SkillRoot> skillRoots;
@@ -157,9 +156,14 @@ public class SkillInfo {
     }
 
     private void iterateSkillInfo() {
-        for (WzProperty root : skillDir.getEntries().values()) {
-            loadSkillRoot(root);
+        WzPackage skillDir = new WzFileSystem().init("Skill").getPackage();
+        if (skillDir != null) {
+            for (WzProperty root : skillDir.getEntries().values()) {
+                loadSkillRoot(root);
+            }
+            skillDir.release();
         }
+        skillDir = null;
     }
 
     private void loadSkillRoot(WzProperty root) {

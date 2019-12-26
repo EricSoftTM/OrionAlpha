@@ -36,7 +36,7 @@ public class WzFileSystem {
     }
     
     public WzFileSystem init(String name) {
-        File file = new File(System.getProperty("wzpath"), name);
+        File file = new File(System.getProperty("wzpath", "./data"), name);
         if (!file.isDirectory() || file.getName().endsWith(".xml")) {
             Logger.logError("Invalid filesystem initialized.");
             return null;

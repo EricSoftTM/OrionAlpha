@@ -43,7 +43,6 @@ import util.wz.WzUtil;
  * @author Eric
  */
 public class ShopApp implements Runnable {
-    private static final WzPackage etcDir = new WzFileSystem().init("Etc").getPackage();
     private static final ShopApp instance = new ShopApp();
     
     private String addr;
@@ -180,10 +179,11 @@ public class ShopApp implements Runnable {
         time = System.currentTimeMillis();
         ItemInfo.load();
         Logger.logReport("Loaded Item Info in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
-
-        try {
-            time = System.currentTimeMillis();
+    
+        WzPackage etcDir = new WzFileSystem().init("Etc").getPackage();
+        if (etcDir != null) {
             WzProperty img = etcDir.getItem("Commodity.img");
+            time = System.currentTimeMillis();
             for (WzProperty imgDir : img.getChildNodes()) {
                 Commodity comm = new Commodity();
                 comm.setSN(WzUtil.getInt32(imgDir.getNode("SN"), 0));
@@ -194,10 +194,10 @@ public class ShopApp implements Runnable {
                 comm.setPriority(WzUtil.getByte(imgDir.getNode("Priority"), 0));
                 commodity.put(comm.getSN(), comm);
             }
+            etcDir.release();
             Logger.logReport("Loaded Commodity in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
-        } catch (Exception ex) {
-            ex.printStackTrace(System.err);
         }
+        etcDir = null;
     }
 
     private void initializeDB() {

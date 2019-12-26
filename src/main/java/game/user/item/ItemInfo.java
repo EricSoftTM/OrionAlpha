@@ -45,9 +45,6 @@ import util.wz.WzUtil;
  */
 public class ItemInfo {
 
-    private static WzPackage characterDir;
-    private static WzPackage itemDir;
-    private static WzPackage fieldDir;
     protected static final Map<Integer, BundleItem> bundleItem;
     protected static final Map<Integer, EquipItem> equipItem;
     protected static final Map<Integer, StateChangeItem> statChangeItem;
@@ -58,11 +55,6 @@ public class ItemInfo {
     protected static final Map<Integer, String> itemString;
     
     static {
-        // Initialize Packages
-        characterDir = new WzFileSystem().init("Character").getPackage();
-        itemDir = new WzFileSystem().init("Item").getPackage();
-        fieldDir = new WzFileSystem().init("Map/Map").getPackage();
-        
         // Initialize Item Containers
         bundleItem = new HashMap<>();
         equipItem = new HashMap<>();
@@ -283,23 +275,23 @@ public class ItemInfo {
 
     public static void load() {
         Logger.logReport("Loading Equip Info");
-        for (Entry<String, WzPackage> category : characterDir.getChildren().entrySet()) {
-            if (!category.getKey().equals("Afterimage")) {
-                for (WzProperty itemData : category.getValue().getEntries().values()) {
-                    registerEquipItemInfo(itemData);
+        WzPackage characterDir = new WzFileSystem().init("Character").getPackage();
+        if (characterDir != null) {
+            for (Entry<String, WzPackage> category : characterDir.getChildren().entrySet()) {
+                if (!category.getKey().equals("Afterimage")) {
+                    for (WzProperty itemData : category.getValue().getEntries().values()) {
+                        registerEquipItemInfo(itemData);
+                    }
                 }
+                category.getValue().release();
             }
-            category.getValue().release();
+            characterDir.release();
         }
-        characterDir.release();
+        characterDir = null;
 
         Logger.logReport("Loading Bundle Info");
         iterateBundleItem();
         iterateMapString();
-        
-        characterDir = null;
-        itemDir = null;
-        fieldDir = null;
     }
 
     private static void registerEquipItemInfo(WzProperty itemData) {
@@ -348,17 +340,21 @@ public class ItemInfo {
     }
 
     private static void iterateBundleItem() {
-        String[] category = {"Consume", "Etc"};
-        for (String cat : category) {
-            WzPackage pack = itemDir.getChildren().get(cat);
-            for (WzProperty itemSection : pack.getEntries().values()) {
-                for (WzProperty itemData : itemSection.getChildNodes()) {
-                    loadBundleItem(itemData);
+        WzPackage itemDir = new WzFileSystem().init("Item").getPackage();
+        if (itemDir != null) {
+            String[] category = {"Consume", "Etc"};
+            for (String cat : category) {
+                WzPackage pack = itemDir.getChildren().get(cat);
+                for (WzProperty itemSection : pack.getEntries().values()) {
+                    for (WzProperty itemData : itemSection.getChildNodes()) {
+                        loadBundleItem(itemData);
+                    }
                 }
+                pack.release();
             }
-            pack.release();
+            itemDir.release();
         }
-        itemDir.release();
+        itemDir = null;
     }
 
     private static void loadBundleItem(WzProperty itemData) {
@@ -498,14 +494,22 @@ public class ItemInfo {
         upgradeItem.put(item.getItemID(), item);
     }
 
+    // Disabled since this is just eating up memory and isn't even used yet.
     private static void iterateMapString() {
-        for (WzProperty map : fieldDir.getEntries().values()) {
-            int mapid = Integer.parseInt(map.getNodeName().replace(".img", ""));
-            WzProperty info = map.getNode("info");
-            if (info != null) {
-                mapString.put(mapid, WzUtil.getString(info.getNode("mapName"), "NULL"));
+        /*
+        WzPackage fieldDir = new WzFileSystem().init("Map/Map").getPackage();
+        if (fieldDir != null) {
+            for (WzProperty map : fieldDir.getEntries().values()) {
+                WzProperty info = map.getNode("info");
+                if (info != null) {
+                    int mapID = Integer.parseInt(map.getNodeName().replace(".img", ""));
+                    mapString.put(mapID, WzUtil.getString(info.getNode("mapName"), "NULL"));
+                }
+                map.release();
             }
+            fieldDir.release();
         }
-        fieldDir.release();
+        fieldDir = null;
+        */
     }
 }

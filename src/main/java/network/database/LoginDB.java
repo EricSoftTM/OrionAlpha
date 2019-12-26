@@ -17,6 +17,7 @@
  */
 package network.database;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import common.OrionConfig;
 import common.item.BodyPart;
 import common.item.ItemSlotBase;
@@ -33,12 +34,11 @@ import java.util.ArrayList;
 import java.util.List;
 import login.user.ClientSocket;
 import login.user.item.Inventory;
-import network.security.BCrypt;
 import util.Pointer;
 
 /**
  * Login DB Processing
- * 
+ *
  * @author Eric
  */
 public class LoginDB {
@@ -52,10 +52,10 @@ public class LoginDB {
         "questperform",
         "skillrecord"
     };
-    
+
     public static boolean rawCheckDuplicateID(String id, int accountID) {
         boolean nameUsed = true;
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(`CharacterName`) FROM `character` WHERE `CharacterName` = ?")) {
                 ps.setString(1, id);
@@ -68,20 +68,22 @@ public class LoginDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-        
+
         return nameUsed;
     }
-    
+
     public static int rawCheckPassword(String id, String passwd, ClientSocket socket) {
         int retCode = 2; //DBFail
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` WHERE `LoginID` = ?")) {
                 ps.setString(1, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        String pass = rs.getString("Password");
-                        if (BCrypt.checkPassword(passwd, pass) || BCrypt.checkPassword(passwd, OrionConfig.MASTER_PASSWORD)) {
+                        char[] pass = rs.getString("Password").toCharArray();
+                        char[] inputtedPass = passwd.toCharArray();
+                        BCrypt.Result result = BCrypt.verifyer().verify(inputtedPass, pass);
+                        if (result.verified || BCrypt.verifyer().verify(inputtedPass, OrionConfig.MASTER_PASSWORD).verified) {
                             int blockReason = rs.getByte("BlockReason");
                             if (blockReason > 0) {
                                 retCode = 5; //Blocked
@@ -91,10 +93,10 @@ public class LoginDB {
                                 socket.setGender(rs.getByte("Gender"));
                                 socket.setGradeCode(rs.getByte("GradeCode"));
                                 socket.setSSN(rs.getInt("SSN1"));
-                                
+
                                 retCode = 1; //Success
                             }
-                        } else {
+                        } else {//Log result error?
                             retCode = 4; //IncorrectPassword
                         }
                     } else {
@@ -105,13 +107,13 @@ public class LoginDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-        
+
         return retCode;
     }
-    
+
     public static int rawCheckUserConnected(int accountID) {
         int retCode = 2; //DBFail
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT `ConnectIP` FROM `userconnection` WHERE `AccountID` = ?")) {
                 ps.setInt(1, accountID);
@@ -126,23 +128,23 @@ public class LoginDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-        
+
         return retCode;
     }
-    
+
     public static int rawCreateNewCharacter(int accountID, int worldIdx, String characterName, int gender, int face, int skin, int hair, int level, int job, int clothes, int pants, int shoes, int weapon, List<Integer> stats, int map, Pointer<Integer> characterID) {
         int retCode = 2; //DBFail
         int result;
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             // Construct the new character
             try (PreparedStatement ps = con.prepareStatement("INSERT INTO `character` (`AccountID`, `WorldID`, `CharacterName`, `Gender`, `Skin`, `Face`, `Hair`, `Level`, `Job`, `STR`, `DEX`, `INT`, `LUK`, `Map`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 result = Database.execute(con, ps, accountID, worldIdx, characterName, gender, skin, face, hair, level, job, stats.get(0), stats.get(1), stats.get(2), stats.get(3), map);
-                
+
                 if (result >= 0) {
                     retCode = 1; //Success
                 }
-                
+
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         characterID.set(rs.getInt(1));
@@ -185,13 +187,13 @@ public class LoginDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-        
+
         return retCode;
     }
-    
+
     public static int rawDeleteCharacter(int characterID) {
         int retCode = 0; //Success
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             for (String deleteCharacter : DELETE_CHARACTER) {
                 String query = String.format("DELETE FROM `%s` WHERE `CharacterID` = ?", deleteCharacter);
@@ -206,13 +208,13 @@ public class LoginDB {
             retCode = 2; //DBFail?
             ex.printStackTrace(System.err);
         }
-        
+
         return retCode;
     }
-    
+
     public static int rawGetEveryWorldCharList(int accountID, List<Integer> worldID, List<Integer> characterID) {
         int count = 0;
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT `WorldID`, `CharacterID` FROM `character` WHERE `AccountID` = ?")) {
                 ps.setInt(1, accountID);
@@ -227,13 +229,13 @@ public class LoginDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-        
+
         return count;
     }
-    
+
     public static int rawGetWorldCharList(int accountID, int worldID, List<Integer> characterID) {
         int count = 0;
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT `CharacterID` FROM `character` WHERE `AccountID` = ? AND `WorldID` = ?")) {
                 ps.setInt(1, accountID);
@@ -248,13 +250,13 @@ public class LoginDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-        
+
         return count;
     }
-    
+
     public static CharacterData rawLoadCharacter(int characterID) {
         CharacterData cd = null;
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             // Load Stats
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `CharacterID` = ?")) {
@@ -275,7 +277,7 @@ public class LoginDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-        
+
         return cd;
     }
 }

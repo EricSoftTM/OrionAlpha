@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Channel-0" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="game.GameApp" />
+    <module name="OrionAlpha" />
+    <option name="VM_PARAMETERS" value="-DgameID=0" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="login.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

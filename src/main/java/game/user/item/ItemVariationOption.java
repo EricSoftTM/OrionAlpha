@@ -48,8 +48,8 @@ public class ItemVariationOption {
      * @param option The type of item variation as defined above
      * @return The new variation if provided
      */
-    public static Integer getVariation(int v, int option) {//ITEMVARIATIONOPTION enOption
-        if (v != 0) {
+    public static int getVariation(int v, int option) {//ITEMVARIATIONOPTION enOption
+        if (v != 0 && option != None) {
             int randRange = Math.min(v / 10 + 1, 5);
             int randomBit = Rand32.getRand(1 << (randRange + 2), 0).intValue();
             int delta = 0;
@@ -57,22 +57,24 @@ public class ItemVariationOption {
                 delta += randomBit & 1;
                 randomBit >>= 1;
             }
-            delta -= 2;
-            if (delta < 0)
-                delta = 0;
+            delta = Math.max(0, delta - 2);
+            
             int variation = delta + v;
             switch (option) {
                 case Normal:
                     if (Rand32.getRand(2, 0) == 0)
                         variation = Math.max(v - delta, 0);
                     break;
-                case None:
                 case Better:
+	                if (Rand32.getRand(10, 0) >= 3)
+	                	break;
+	                return v;
                 case Great:
+	                if (Rand32.getRand(10, 0) >= 1)
+		                break;
+	                return v;
                 default: {
-                    if ((option == Better && Rand32.getRand(10, 0) >= 3) || (option == Great && Rand32.getRand(10, 0) >= 1))
-                        break;
-                    variation = v;
+                    return v;
                 }
             }
             

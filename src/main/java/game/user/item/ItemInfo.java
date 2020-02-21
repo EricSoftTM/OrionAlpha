@@ -158,22 +158,22 @@ public class ItemInfo {
                 return null;
             }
             ItemSlotEquip item = new ItemSlotEquip(itemID);
-            item.ruc = ItemVariationOption.getVariation(info.getTUC(), option).byteValue();//Total Upgrade Count
-            item.iSTR = ItemVariationOption.getVariation(info.getIncSTR(), option).shortValue();
-            item.iDEX = ItemVariationOption.getVariation(info.getIncDEX(), option).shortValue();
-            item.iINT = ItemVariationOption.getVariation(info.getIncINT(), option).shortValue();
-            item.iLUK = ItemVariationOption.getVariation(info.getIncLUK(), option).shortValue();
-            item.iMaxHP = ItemVariationOption.getVariation(info.getIncMaxHP(), option).shortValue();
-            item.iMaxMP = ItemVariationOption.getVariation(info.getIncMaxMP(), option).shortValue();
-            item.iPAD = ItemVariationOption.getVariation(info.getIncPAD(), option).shortValue();
-            item.iMAD = ItemVariationOption.getVariation(info.getIncMAD(), option).shortValue();
-            item.iPDD = ItemVariationOption.getVariation(info.getIncPDD(), option).shortValue();
-            item.iMDD = ItemVariationOption.getVariation(info.getIncMDD(), option).shortValue();
-            item.iACC = ItemVariationOption.getVariation(info.getIncACC(), option).shortValue();
-            item.iEVA = ItemVariationOption.getVariation(info.getIncEVA(), option).shortValue();
-            item.iCraft = ItemVariationOption.getVariation(info.getIncCraft(), option).shortValue();
-            item.iSpeed = ItemVariationOption.getVariation(info.getIncSpeed(), option).shortValue();
-            item.iJump = ItemVariationOption.getVariation(info.getIncJump(), option).shortValue();
+            item.ruc = (byte) ItemVariationOption.getVariation(info.getTUC(), option);//Total Upgrade Count
+            item.iSTR = (short) ItemVariationOption.getVariation(info.getIncSTR(), option);
+            item.iDEX = (short) ItemVariationOption.getVariation(info.getIncDEX(), option);
+            item.iINT = (short) ItemVariationOption.getVariation(info.getIncINT(), option);
+            item.iLUK = (short) ItemVariationOption.getVariation(info.getIncLUK(), option);
+            item.iMaxHP = (short) ItemVariationOption.getVariation(info.getIncMaxHP(), option);
+            item.iMaxMP = (short) ItemVariationOption.getVariation(info.getIncMaxMP(), option);
+            item.iPAD = (short) ItemVariationOption.getVariation(info.getIncPAD(), option);
+            item.iMAD = (short) ItemVariationOption.getVariation(info.getIncMAD(), option);
+            item.iPDD = (short) ItemVariationOption.getVariation(info.getIncPDD(), option);
+            item.iMDD = (short) ItemVariationOption.getVariation(info.getIncMDD(), option);
+            item.iACC = (short) ItemVariationOption.getVariation(info.getIncACC(), option);
+            item.iEVA = (short) ItemVariationOption.getVariation(info.getIncEVA(), option);
+            item.iCraft = (short) ItemVariationOption.getVariation(info.getIncCraft(), option);
+            item.iSpeed = (short) ItemVariationOption.getVariation(info.getIncSpeed(), option);
+            item.iJump = (short) ItemVariationOption.getVariation(info.getIncJump(), option);
             
             return item.makeClone();
         } else {

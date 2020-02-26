@@ -121,7 +121,6 @@ public class LifePool {
                     ctrl = p;
                     break;
                 }
-                ctrl = null;
             }
             if (ctrl == null)
                 return false;

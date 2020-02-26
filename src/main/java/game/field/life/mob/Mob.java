@@ -436,6 +436,7 @@ public class Mob extends Creature {
             for (Info info : damageLog.getLog()) {
                 if (info.characterID == characterID) {
                     infoAdd = info;
+                    break;
                 }
             }
             if (infoAdd == null || time - infoAdd.time > 5000) {

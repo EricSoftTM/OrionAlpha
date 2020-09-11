@@ -351,9 +351,9 @@ public class User extends Creature {
                     }
                     Pointer<Boolean> reachMaxLev = new Pointer<>(false);
                     if (ExpAccessor.tryProcessLevelUp(character, basicStat, inc, reachMaxLev)) {
+                        incAP(5, false);
                         if (character.getCharacterStat().getJob() != 0) {
                             incSP(3, false);
-                            incAP(5, false);
                         }
                         flag |= CharacterStatType.LEV | CharacterStatType.AP | CharacterStatType.SP;
                         flag |= CharacterStatType.HP | CharacterStatType.MP | CharacterStatType.MHP | CharacterStatType.MMP;

@@ -26,7 +26,7 @@ USE orionalpha;
 --
 
 DROP TABLE IF EXISTS `characters`;
-CREATE TABLE `character` (
+CREATE TABLE `characters` (
   `CharacterID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `AccountID` int(11) NOT NULL,
   `WorldID` tinyint(2) unsigned NOT NULL DEFAULT 0,

@@ -85,7 +85,7 @@ public class ShopDB {
 
     public static void rawLoadAccount(int characterID, User user) {
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterID = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `characters` c ON u.AccountID = c.AccountID WHERE c.CharacterID = ?")) {
                 ps.setInt(1, characterID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -108,7 +108,7 @@ public class ShopDB {
         ReceivedGift receivedGift = null;
         
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterName = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `characters` c ON u.AccountID = c.AccountID WHERE c.CharacterName = ?")) {
                 ps.setString(1, rcvCharacterName);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -131,7 +131,7 @@ public class ShopDB {
         try (Connection con = Database.getDB().poolConnection()) {
             CharacterData cd = new CharacterData();
             // Load Stats
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `CharacterID` = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `characters` WHERE `CharacterID` = ?")) {
                 ps.setInt(1, characterID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {

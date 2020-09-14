@@ -76,7 +76,7 @@ public class GameDB {
     
     public static void rawLoadAccount(int characterID, Pointer<Integer> accountID, Pointer<String> nexonClubID, Pointer<Integer> gradeCode) {
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterID = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `characters` c ON u.AccountID = c.AccountID WHERE c.CharacterID = ?")) {
                 ps.setInt(1, characterID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -96,7 +96,7 @@ public class GameDB {
         
         try (Connection con = Database.getDB().poolConnection()) {
             // Load Stats
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `CharacterID` = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `characters` WHERE `CharacterID` = ?")) {
                 ps.setInt(1, characterID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -192,7 +192,7 @@ public class GameDB {
     
     public static void rawSaveCharacter(CharacterStat cs) {
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("UPDATE `character` SET `CharacterName` = ?, `Gender` = ?, `Skin` = ?, `Face` = ?, `Hair` = ?, `Level` = ?, `Job` = ?, `STR` = ?, `DEX` = ?, `INT` = ?, `LUK` = ?, `HP` = ?, `MP` = ?, `MaxHP` = ?, `MaxMP` = ?, `AP` = ?, `SP` = ?, `EXP` = ?, `POP` = ?, `Money` = ?, `Map` = ?, `Portal` = ? WHERE `CharacterID` = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `characters` SET `CharacterName` = ?, `Gender` = ?, `Skin` = ?, `Face` = ?, `Hair` = ?, `Level` = ?, `Job` = ?, `STR` = ?, `DEX` = ?, `INT` = ?, `LUK` = ?, `HP` = ?, `MP` = ?, `MaxHP` = ?, `MaxMP` = ?, `AP` = ?, `SP` = ?, `EXP` = ?, `POP` = ?, `Money` = ?, `Map` = ?, `Portal` = ? WHERE `CharacterID` = ?")) {
                 Database.execute(con, ps, cs.getName(), cs.getGender(), cs.getSkin(), cs.getFace(), cs.getHair(), cs.getLevel(), cs.getJob(), cs.getSTR(), cs.getDEX(), cs.getINT(), cs.getLUK(), cs.getHP(), cs.getMP(), cs.getMHP(), cs.getMMP(), cs.getAP(), cs.getSP(), cs.getEXP(), cs.getPOP(), cs.getMoney(), cs.getPosMap(), cs.getPortal(), cs.getCharacterID());
             }
         } catch (SQLException ex) {

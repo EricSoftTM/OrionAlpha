@@ -44,7 +44,7 @@ import util.Pointer;
  */
 public class LoginDB {
     static final String[] DELETE_CHARACTER = {
-        "character",
+        "characters",
         "givepopularity",
         "inventorysize",
         "itemlocker",
@@ -58,7 +58,7 @@ public class LoginDB {
         boolean nameUsed = true;
 
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(`CharacterName`) FROM `character` WHERE `CharacterName` = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT COUNT(`CharacterName`) FROM `characters` WHERE `CharacterName` = ?")) {
                 ps.setString(1, id);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
@@ -139,7 +139,7 @@ public class LoginDB {
 
         try (Connection con = Database.getDB().poolConnection()) {
             // Construct the new character
-            try (PreparedStatement ps = con.prepareStatement("INSERT INTO `character` (`AccountID`, `WorldID`, `CharacterName`, `Gender`, `Skin`, `Face`, `Hair`, `Level`, `Job`, `STR`, `DEX`, `INT`, `LUK`, `Map`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO `characters` (`AccountID`, `WorldID`, `CharacterName`, `Gender`, `Skin`, `Face`, `Hair`, `Level`, `Job`, `STR`, `DEX`, `INT`, `LUK`, `Map`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
                 result = Database.execute(con, ps, accountID, worldIdx, characterName, gender, skin, face, hair, level, job, stats.get(0), stats.get(1), stats.get(2), stats.get(3), map);
 
                 if (result >= 0) {
@@ -217,7 +217,7 @@ public class LoginDB {
         int count = 0;
 
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT `WorldID`, `CharacterID` FROM `character` WHERE `AccountID` = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `WorldID`, `CharacterID` FROM `characters` WHERE `AccountID` = ?")) {
                 ps.setInt(1, accountID);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
@@ -238,7 +238,7 @@ public class LoginDB {
         int count = 0;
 
         try (Connection con = Database.getDB().poolConnection()) {
-            try (PreparedStatement ps = con.prepareStatement("SELECT `CharacterID` FROM `character` WHERE `AccountID` = ? AND `WorldID` = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `CharacterID` FROM `characters` WHERE `AccountID` = ? AND `WorldID` = ?")) {
                 ps.setInt(1, accountID);
                 ps.setInt(2, worldID);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -260,7 +260,7 @@ public class LoginDB {
 
         try (Connection con = Database.getDB().poolConnection()) {
             // Load Stats
-            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `CharacterID` = ?")) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `characters` WHERE `CharacterID` = ?")) {
                 ps.setInt(1, characterID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {

@@ -22,10 +22,10 @@ CREATE DATABASE IF NOT EXISTS orionalpha;
 USE orionalpha;
 
 --
--- Definition of table `character`
+-- Definition of table `characters`
 --
 
-DROP TABLE IF EXISTS `character`;
+DROP TABLE IF EXISTS `characters`;
 CREATE TABLE `character` (
   `CharacterID` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `AccountID` int(11) NOT NULL,
@@ -56,16 +56,16 @@ CREATE TABLE `character` (
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `character`
+-- Dumping data for table `characters`
 --
 
-/*!40000 ALTER TABLE `character` DISABLE KEYS */;
-INSERT INTO `character` (`CharacterID`,`AccountID`,`WorldID`,`CharacterName`,`Gender`,`Skin`,`Face`,`Hair`,`Level`,`Job`,`STR`,`DEX`,`INT`,`LUK`,`HP`,`MP`,`MaxHP`,`MaxMP`,`AP`,`SP`,`EXP`,`POP`,`Money`,`Map`,`Portal`) VALUES 
+/*!40000 ALTER TABLE `characters` DISABLE KEYS */;
+INSERT INTO `characters` (`CharacterID`,`AccountID`,`WorldID`,`CharacterName`,`Gender`,`Skin`,`Face`,`Hair`,`Level`,`Job`,`STR`,`DEX`,`INT`,`LUK`,`HP`,`MP`,`MaxHP`,`MaxMP`,`AP`,`SP`,`EXP`,`POP`,`Money`,`Map`,`Portal`) VALUES 
  (1,1,0,'Eric',0,0,20001,30000,44,310,50,50,50,50,999,999,999,999,50,50,0,1337,9986396,100000000,4),
  (2,1,0,'Erica',1,0,21000,31000,42,230,999,999,999,999,30000,30000,30000,30000,5,10,0,1337,9999990,104040000,2),
  (3,2,0,'Justin',0,0,20000,30030,10,0,5,6,6,8,50,5,50,5,0,0,0,0,0,0,0),
  (4,4,0,'Brookie',1,0,21001,31057,10,0,8,6,5,6,50,5,50,5,0,0,0,0,1337,104040000,0);
-/*!40000 ALTER TABLE `character` ENABLE KEYS */;
+/*!40000 ALTER TABLE `characters` ENABLE KEYS */;
 
 
 --

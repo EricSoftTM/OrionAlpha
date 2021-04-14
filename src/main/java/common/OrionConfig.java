@@ -24,9 +24,9 @@ package common;
  */
 public class OrionConfig {
     // Version Info
-    public static final int CLIENT_VER = 223;
+    public static final int CLIENT_VER = 20;
     public static final String CLIENT_PATCH = "\0";
-    public static final int GAME_LOCALE = 1; //KR
+    public static final int GAME_LOCALE = 3; //JP
 
     // Maximum Active Network Sessions
     public static final int MAX_CONNECTIONS = 1000;

@@ -364,23 +364,23 @@ public class CharacterStat {
         public static final int
                 Face    = 0x1,
                 Hair    = 0x2,
-                Skin    = 0x4,//Incorrect (does this correspond to AvatarModified's 0x4 flag?)
-                PetSN   = 0x8,//Incorrect (does this correspond to AvatarModified's 0x8 flag?)
-                LEV     = 0x10,
-                Job     = 0x20,
-                STR     = 0x40,
-                DEX     = 0x80,
-                INT     = 0x100,
-                LUK     = 0x200,
-                HP      = 0x400,
-                MHP     = 0x800,
-                MP      = 0x1000,
-                MMP     = 0x2000,
-                AP      = 0x4000,
-                SP      = 0x8000,
-                EXP     = 0x10000,
-                POP     = 0x20000,
-                Money   = 0x40000
+                Skin    = 0x4,//Incorrect
+                PetSN   = 0x4,
+                LEV     = 0x8,
+                Job     = 0x10,
+                STR     = 0x20,
+                DEX     = 0x40,
+                INT     = 0x80,
+                LUK     = 0x100,
+                HP      = 0x200,
+                MHP     = 0x400,
+                MP      = 0x800,
+                MMP     = 0x1000,
+                AP      = 0x2000,
+                SP      = 0x4000,
+                EXP     = 0x8000,
+                POP     = 0x10000,
+                Money   = 0x20000
         ;
     }
 }

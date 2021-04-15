@@ -1,18 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="0012100.img">
-    <imgdir name="info">
-        <string name="name" value="마이"/>
-        <imgdir name="speak">
-            <string name="0" value="혹시 날 알고 있어? 모른다구? 정말 세상 물정 모르는 사람이군!"/>
-            <string name="1" value="나에게 도전할 생각이라면 단념하는게 좋을껄?"/>
-            <string name="2" value="오늘도 내 투지를 만족시켜 줄 녀석은 없는 건가..."/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="54" height="80">
-            <vector name="origin" x="26" y="80"/>
-            <int name="z" value="0"/>
-            <int name="delay" value="500"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="0012100.img"><imgdir name="info"><string name="name" value="マイ"/><imgdir name="speak"><string name="0" value="アタシのこと知らないなんて、モグリもいいとこよっ！"/><string name="1" value="アンタがアタシに挑戦するのは100万年ほど早いわよっ！"/><string name="2" value="アンタ、見どころがあるような気もしないでもないのよね…"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="54" height="80"><vector name="origin" x="26" y="80"/><int name="z" value="0"/><int name="delay" value="500"/></canvas></imgdir></imgdir>

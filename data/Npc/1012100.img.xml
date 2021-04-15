@@ -1,17 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1012100.img">
-    <imgdir name="info">
-        <string name="name" value="헬레나"/>
-        <string name="quest" value="bowman"/>
-        <imgdir name="speak">
-            <string name="0" value="궁수로 전직하고 싶은가요?"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="60" height="71">
-            <vector name="origin" x="27" y="71"/>
-            <int name="z" value="0"/>
-            <int name="delay" value="1200"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1012100.img"><imgdir name="info"><string name="name" value="ヘレナ"/><string name="quest" value="bowman"/><imgdir name="speak"><string name="0" value="弓使いに転職したいのですか？"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="60" height="71"><vector name="origin" x="27" y="71"/><int name="z" value="0"/><int name="delay" value="1200"/></canvas></imgdir></imgdir>

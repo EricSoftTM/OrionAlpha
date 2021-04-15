@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1072004.img">
-    <imgdir name="info">
-        <string name="name" value="전사 전직교관"/>
-        <string name="quest" value="inside_swordman"/>
-        <imgdir name="speak">
-            <string name="0" value="전사 2차 전직을 하고 싶은가? 먼저 페리온의 &apos;주먹펴고 일어서&apos;님을 찾아가 보게나."/>
-            <string name="1" value="나의 시험을 통과한 자만이 전사 2차 전직을 할 수 있지."/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="57" height="97">
-            <vector name="origin" x="28" y="97"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1072004.img"><imgdir name="info"><string name="name" value="戦士転職教官"/><string name="quest" value="inside_swordman"/><imgdir name="speak"><string name="0" value="戦士の2次職へ転職したいのか？　それならばまずはペリオンの‘コブシを開いて立て’様をたずねてみなさい。"/><string name="1" value="私の試験をパスした者のみが、戦士の2次職へと転職ができる。"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="57" height="97"><vector name="origin" x="28" y="97"/></canvas></imgdir></imgdir>

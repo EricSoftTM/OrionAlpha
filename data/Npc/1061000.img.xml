@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1061000.img">
-    <imgdir name="info">
-        <string name="name" value="크리슈라마"/>
-        <string name="quest" value="refine_sleepy"/>
-        <imgdir name="speak">
-            <string name="0" value="뭔가 필요한 물건이라도 있는가..."/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="71" height="71">
-            <vector name="origin" x="35" y="71"/>
-            <int name="z" value="0"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1061000.img"><imgdir name="info"><string name="name" value="クリシュラマ"/><string name="quest" value="refine_sleepy"/><imgdir name="speak"><string name="0" value="何か欲しい物でもあるのか…。"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="71" height="71"><vector name="origin" x="35" y="71"/><int name="z" value="0"/></canvas></imgdir></imgdir>

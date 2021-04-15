@@ -1,17 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1022004.img">
-    <imgdir name="info">
-        <string name="name" value="스미스"/>
-        <string name="quest" value="refine_perion2"/>
-        <imgdir name="speak">
-            <string name="0" value="난 선더님의 수제자야."/>
-            <string name="1" value="뭔가 만들고 싶은 물건이 있다면 나에게 맡겨봐."/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="53" height="69">
-            <vector name="origin" x="26" y="69"/>
-            <int name="z" value="0"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1022004.img"><imgdir name="info"><string name="name" value="スミス"/><string name="quest" value="refine_perion2"/><imgdir name="speak"><string name="0" value="ボクはサンダー様の一番弟子だよ。"/><string name="1" value="何か作りたいものがあったらボクに頼んでよ。"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="53" height="69"><vector name="origin" x="26" y="69"/><int name="z" value="0"/></canvas></imgdir></imgdir>

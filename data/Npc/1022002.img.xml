@@ -1,18 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1022002.img">
-    <imgdir name="info">
-        <string name="name" value="만지"/>
-        <string name="quest" value="manji"/>
-        <imgdir name="speak">
-            <string name="0" value="..."/>
-            <string name="1" value="말 시키지 마라..."/>
-            <string name="2" value="그냥 가라... 다친다..."/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="78" height="79">
-            <vector name="origin" x="23" y="79"/>
-            <int name="z" value="0"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1022002.img"><imgdir name="info"><string name="name" value="マンジ"/><string name="quest" value="manji"/><imgdir name="speak"><string name="0" value="……。"/><string name="1" value="邪魔をするな…。"/><string name="2" value="そのまま行け…。ケガをしたくなかったらな。"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="78" height="79"><vector name="origin" x="23" y="79"/><int name="z" value="0"/></canvas></imgdir></imgdir>

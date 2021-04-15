@@ -1,13 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="Game.img">
-    <sound name="Bird"/>
-    <sound name="GameIn"/>
-    <sound name="Portal"/>
-    <sound name="LevelUp"/>
-    <sound name="PickUpItem"/>
-    <sound name="Jump"/>
-    <sound name="Tombstone"/>
-    <sound name="DropItem"/>
-    <sound name="Portal2"/>
-    <sound name="UseShopItem"/>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="Game.img"><sound name="Bird"/><sound name="GameIn"/><sound name="Portal"/><sound name="LevelUp"/><sound name="PickUpItem"/><sound name="Jump"/><sound name="Tombstone"/><sound name="DropItem"/><sound name="Portal2"/><sound name="UseShopItem"/></imgdir>

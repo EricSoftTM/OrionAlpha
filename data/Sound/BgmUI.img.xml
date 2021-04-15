@@ -1,8 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="BgmUI.img">
-    <sound name="NxLogo"/>
-    <sound name="WzLogo"/>
-    <sound name="Title"/>
-    <sound name="WCSelect"/>
-    <sound name="ShopBgm"/>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="BgmUI.img"><sound name="NxLogo"/><sound name="WzLogo"/><sound name="Title"/><sound name="WCSelect"/><sound name="ShopBgm"/></imgdir>

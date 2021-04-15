@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1072003.img">
-    <imgdir name="info">
-        <string name="name" value="도적 전직교관"/>
-        <string name="quest" value="change_rogue"/>
-        <imgdir name="speak">
-            <string name="0" value="도적 2차 전직을 하고 싶은가? 먼저 커닝시티의 &apos;다크로드&apos;님을 찾아가 보게나."/>
-            <string name="1" value="나의 시험을 통과한 자만이 도적 2차 전직을 할 수 있지."/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="58" height="69">
-            <vector name="origin" x="29" y="69"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1072003.img"><imgdir name="info"><string name="name" value="盗賊転職教官"/><string name="quest" value="change_rogue"/><imgdir name="speak"><string name="0" value="盗賊の2次職へ転職したいのか？　それならばまずはカニングシティーの‘ダークロード’様をたずねてみなさい。"/><string name="1" value="私の試験をパスした者のみが、盗賊の2次職へと転職ができる。"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="58" height="69"><vector name="origin" x="29" y="69"/></canvas></imgdir></imgdir>

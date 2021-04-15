@@ -1,18 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="0209.img">
-    <imgdir name="02090000">
-        <imgdir name="info">
-            <canvas name="icon" width="32" height="32">
-                <vector name="origin" x="0" y="32"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <canvas name="iconRaw" width="32" height="32">
-                <vector name="origin" x="0" y="32"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <string name="name" value="눈 내리기"/>
-            <int name="cash" value="1"/>
-            <string name="desc" value="캐릭터가 속한 맵에 1 분간 눈을 내린다"/>
-        </imgdir>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="0209.img"><imgdir name="02090000"><imgdir name="info"><canvas name="icon" width="32" height="32"><vector name="origin" x="0" y="32"/><int name="z" value="0"/></canvas><canvas name="iconRaw" width="32" height="32"><vector name="origin" x="0" y="32"/><int name="z" value="0"/></canvas><string name="name" value="雪降らし"/><int name="cash" value="1"/><string name="desc" value="キャラクターがいるマップに1分間雪を降らせる。"/><string name="path" value="Map/MapHelper.img/weather/snow"/><int name="type" value="1"/><string name="msg0" value="雪を降らせますか？"/><string name="msg1" value="%sが雪を降らせました。"/></imgdir></imgdir><imgdir name="02090001"><imgdir name="info"><canvas name="icon" width="30" height="30"><vector name="origin" x="-1" y="30"/></canvas><canvas name="iconRaw" width="30" height="29"><vector name="origin" x="-1" y="30"/></canvas><string name="name" value="花降らし"/><int name="cash" value="1"/><string name="desc" value="キャラクターがいるマップに1分間花をふりまく。"/><string name="path" value="Map/MapHelper.img/weather/flower"/><int name="type" value="2"/><string name="msg0" value="花を降らせますか？"/><string name="msg1" value="%sが花を降らました。"/></imgdir></imgdir><imgdir name="02090002"><imgdir name="info"><canvas name="icon" width="32" height="32"><vector name="origin" x="0" y="32"/></canvas><canvas name="iconRaw" width="32" height="32"><vector name="origin" x="0" y="32"/></canvas><string name="name" value="シャボン玉"/><int name="cash" value="1"/><string name="desc" value="キャラクターがいるマップに1分間シャボン玉をふりまく。"/><string name="path" value="Map/MapHelper.img/weather/soap"/><int name="type" value="1"/><string name="msg0" value="シャボン玉を降らせますか？"/><string name="msg1" value="%sがシャボン玉を降らせました。"/></imgdir></imgdir></imgdir>

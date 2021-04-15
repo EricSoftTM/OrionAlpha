@@ -1,17 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1052100.img">
-    <imgdir name="info">
-        <string name="name" value="원장 나탈리"/>
-        <string name="quest" value="hair_kerning1"/>
-        <imgdir name="speak">
-            <string name="0" value="내 머리스타일 멋지지? 원래 미용사들은 최신 유행을 제일 먼저 따르니까 당연하지... 오호호~"/>
-            <string name="1" value="그 머리가 지겨워졌지? 내가 예쁘고 멋지게 다듬어 줄테니까 맡겨만 줘!"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="49" height="71">
-            <vector name="origin" x="24" y="71"/>
-            <int name="z" value="0"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1052100.img"><imgdir name="info"><string name="name" value="ドンジオバネ"/><string name="quest" value="hair_kerning1"/><imgdir name="speak"><string name="0" value="おいおい、君のヘアスタイルにはセンスがないぞ。どうだ？　この私に任せてみるは気ないか？"/><string name="1" value="ハハハ！　わが美容室によくぞ来た！　そこでしばし待っておれ。"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="56" height="81"><vector name="origin" x="28" y="81"/></canvas></imgdir></imgdir>

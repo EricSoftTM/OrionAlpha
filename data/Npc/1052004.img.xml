@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1052004.img">
-    <imgdir name="info">
-        <string name="name" value="원장 덴마"/>
-        <string name="quest" value="face_henesys1"/>
-        <imgdir name="speak">
-            <string name="0" value="성형 수술을 하고 싶은가? 나에게 맡겨만 주게나."/>
-            <string name="1" value="가끔씩 얼굴을 바꿔보는 것도 나쁘지 않다네."/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="43" height="74">
-            <vector name="origin" x="21" y="74"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1052004.img"><imgdir name="info"><string name="name" value="院長デンマ"/><string name="quest" value="face_henesys1"/><imgdir name="speak"><string name="0" value="整形手術がしたいのか？　どれ、わしに任せてくれ。"/><string name="1" value="たまには顔を変えてみるのも悪くはないな。"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="43" height="74"><vector name="origin" x="21" y="74"/></canvas></imgdir></imgdir>

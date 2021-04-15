@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1052000.img">
-    <imgdir name="info">
-        <string name="name" value="알렉스"/>
-        <string name="quest" value="alex"/>
-        <imgdir name="speak">
-            <string name="0" value="아~ 따분해~"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="48" height="75">
-            <vector name="origin" x="28" y="75"/>
-            <int name="z" value="0"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1052000.img"><imgdir name="info"><string name="name" value="アレックス"/><string name="quest" value="alex"/><imgdir name="speak"><string name="0" value="ああ～退屈だな～。"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="48" height="75"><vector name="origin" x="28" y="75"/><int name="z" value="0"/></canvas></imgdir></imgdir>

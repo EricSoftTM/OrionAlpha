@@ -1,15 +1,1 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="1061003.img">
-    <imgdir name="info">
-        <string name="name" value="시워언해"/>
-        <string name="quest" value="cool"/>
-        <imgdir name="speak">
-            <string name="0" value="후후... 고급 사우나실을 이용하러 왔군? 어때... 나와 거래할 생각은 없는가?"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="stand">
-        <canvas name="0" width="54" height="72">
-            <vector name="origin" x="27" y="72"/>
-        </canvas>
-    </imgdir>
-</imgdir>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><imgdir name="1061003.img"><imgdir name="info"><string name="name" value="超極楽"/><string name="quest" value="cool"/><imgdir name="speak"><string name="0" value="ほほう……高級サウナを利用しに来たのか？　どうだ、俺と取り引きしないか？"/></imgdir></imgdir><imgdir name="stand"><canvas name="0" width="54" height="72"><vector name="origin" x="27" y="72"/></canvas></imgdir></imgdir>

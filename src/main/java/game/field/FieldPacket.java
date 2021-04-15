@@ -45,6 +45,11 @@ public class FieldPacket {
         return packet;
     }
     
+    public static OutPacket onTransferChannelReqIgnored() {
+        OutPacket packet = new OutPacket(LoopbackPacket.TransferChannelReqIgnored);
+        return packet;
+    }
+    
     /**
      * Gets a admin request packet (ie. hide, banned, etc.)
      *

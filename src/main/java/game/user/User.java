@@ -62,6 +62,7 @@ import util.Logger;
 import util.Pointer;
 import util.Rand32;
 import util.Rect;
+import util.Utilities;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -1120,6 +1121,9 @@ public class User extends Creature {
         switch (type) {
             case ClientPacket.UserTransferFieldRequest:
                 onTransferFieldRequest(packet);
+                break;
+            case ClientPacket.UserTransferChannelRequest:
+                onTransferChannelRequest(packet);
                 break;
             case ClientPacket.UserMigrateToCashShopRequest:
                 onMigrateToCashShopRequest();
@@ -2203,6 +2207,35 @@ public class User extends Creature {
                         this.tradingNpc = null;
                         break;
                     }
+                }
+            } finally {
+                unlock();
+            }
+        }
+    }
+    
+    public void onTransferChannelRequest(InPacket packet) {
+        byte channelID = packet.decodeByte();
+        if (getHP() == 0 || (getField().getOption() & FieldOpt.MigrateLimit) != 0) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        if (channelID < 0 || channelID > GameApp.getInstance().getChannels().size() || channelID == getChannelID()) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        Channel channel = GameApp.getInstance().getChannel(channelID);
+        if (channel == null) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        if (lock()) {
+            try {
+                if (canAttachAdditionalProcess()) {
+                    onTransferField = true;
+                    sendPacket(ClientSocket.onMigrateCommand(false, Utilities.netIPToInt32(channel.getAddr()), channel.getPort()));
+                } else {
+                    sendPacket(FieldPacket.onTransferChannelReqIgnored());
                 }
             } finally {
                 unlock();

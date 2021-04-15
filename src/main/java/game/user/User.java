@@ -1402,8 +1402,8 @@ public class User extends Creature {
             sendTemporaryStatReset(reset);
             return;
         }
-
-        //[01] 00 78 00 00 00 07 D1 02 CB FD 4C 02 D3 06 65 03
+        
+        //[11] [AC 95 21 00] [00] [1C] [03] [4A 00 00 00] [08] [F6 04] [D7 00] [C2 01] [99 05]
         byte attackInfo = packet.decodeByte();//nDamagePerMob | 16 * nMobCount
         byte damagePerMob = (byte) (attackInfo & 0xF);
         byte mobCount = (byte) ((attackInfo >>> 4) & 0xF);
@@ -1413,7 +1413,8 @@ public class User extends Creature {
         int bulletItemID = 0;
         int mobTemplateID = 0;
 
-        byte action = packet.decodeByte();//((_BYTE)bLeft << 7) | nAction & 0x7F
+        byte option = packet.decodeByte();//bFinalAfterSlashBlast
+        int action = packet.decodeByte(true);//((_BYTE)bLeft << 7) | nAction & 0x7F
         byte left = (byte) ((action >> 7) & 1);
         byte speedDegree = packet.decodeByte();
 
@@ -1515,6 +1516,8 @@ public class User extends Creature {
             }
             if (maxCount <= 1)
                 maxCount = 1;
+            if ((option & SkillAccessor.FinalRangeAttack) != 0)//Final Attack
+                maxCount = 6;
             if (maxCount < mobCount) {
                 Logger.logError("Invalid mob count (Skill:%d,Lv:%d,Mob:%d)", skillID, slv, mobTemplateID);
             } else {
@@ -1545,7 +1548,7 @@ public class User extends Creature {
                         changeLog.clear();
                     }
                 }
-                if (getField().getLifePool().onUserAttack(this, type, attackType, mobCount, damagePerMob, skill, slv, action, left, speedDegree, bulletItemID, attack, ballStart)) {
+                if (getField().getLifePool().onUserAttack(this, type, attackType, mobCount, damagePerMob, skill, slv, option, action, left, speedDegree, bulletItemID, attack, ballStart)) {
 
                 }
             }

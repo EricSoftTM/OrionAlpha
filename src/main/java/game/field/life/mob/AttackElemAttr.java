@@ -27,6 +27,7 @@ public class AttackElemAttr {
             Damage0     = 1, //Immune
             Damage50    = 2, //Strong
             Damage150   = 3, //Weak
-            Damage200   = 4  //Normal (Doom? o.o)
+            Damage200   = 4, //Normal (Doom? o.o)
+            Count       = 5
     ;
 }

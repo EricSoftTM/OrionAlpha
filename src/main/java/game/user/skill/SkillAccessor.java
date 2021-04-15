@@ -36,6 +36,10 @@ public class SkillAccessor {
     public static final int
             // The maximum damage that can be hit upon a monster from our client
             MAX_CLIENT_DAMAGE   = 9999,
+    
+            // Skill Options
+            FinalRangeAttack = 0x1,
+            SoulArrow = 0x2,
             
             // The maximum per stat that a player can obtain and/or use.
             STR_MAX             = 999,

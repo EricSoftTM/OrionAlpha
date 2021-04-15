@@ -49,6 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import network.packet.ClientPacket;
 import network.packet.InPacket;
+import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 import util.Logger;
 import util.Pointer;
@@ -740,7 +741,7 @@ public class LifePool {
         }
     }
     
-    public boolean onUserAttack(User user, byte type, byte attackType, byte mobCount, byte damagePerMob, SkillEntry skill, byte slv, byte action, byte left, byte speedDegree, int bulletItemID, List<AttackInfo> attack, Point ballStart) {
+    public boolean onUserAttack(User user, byte type, byte attackType, byte mobCount, byte damagePerMob, SkillEntry skill, byte slv, byte option, int action, byte left, byte speedDegree, int bulletItemID, List<AttackInfo> attack, Point ballStart) {
         if (user.lock()) {
             try {
                 int skillID = 0;
@@ -750,6 +751,7 @@ public class LifePool {
                 int weaponItemID = user.getCharacter().getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
             
                 if (mobCount > 0) {
+                    int order = 0;
                     for (Iterator<AttackInfo> it = attack.iterator(); it.hasNext();) {
                         AttackInfo info = it.next();
                         if (!mobs.containsKey(info.mobID)) {
@@ -763,12 +765,25 @@ public class LifePool {
                             } else {
                                 user.getCalcDamage().PDamage(user.getCharacter(), user.getBasicStat(), user.getSecondaryStat(), mob.getMobStat(), damagePerMob, weaponItemID, bulletItemID, attackType, action, skill, slv, info.damageCli);
                             }
+                            if (skill != null) {
+                                skill.adjustDamageDecRate(slv, order, info.damageCli, (option & SkillAccessor.FinalRangeAttack) != 0);
+                            }
                         } else {
                             user.getCalcDamage().skip();
                         }
+                        order++;
                     }
                 }
             
+                if (type == ClientPacket.UserMeleeAttack) {
+                    type = LoopbackPacket.UserMeleeAttack;
+                } else if (type == ClientPacket.UserMagicAttack) {
+                    type = LoopbackPacket.UserMagicAttack;
+                } else if (type == ClientPacket.UserShootAttack) {
+                    type = LoopbackPacket.UserShootAttack;
+                } else {
+                    return false;
+                }
                 OutPacket packet = new OutPacket(type);
                 packet.encodeInt(user.getCharacterID());
                 packet.encodeByte(damagePerMob | 16 * mobCount);
@@ -782,9 +797,11 @@ public class LifePool {
                 packet.encodeInt(bulletItemID);
                 for (AttackInfo info : attack) {
                     packet.encodeInt(info.mobID);
-                    packet.encodeByte(info.hitAction);
-                    for (int i = 0; i < damagePerMob; i++) {
-                        packet.encodeShort(info.damageCli.get(i));
+                    if (info.mobID != 0) {
+                        packet.encodeByte(info.hitAction);
+                        for (int i = 0; i < damagePerMob; i++) {
+                            packet.encodeShort(info.damageCli.get(i));
+                        }
                     }
                 }
                 getField().splitSendPacket(user.getSplit(), packet, user);

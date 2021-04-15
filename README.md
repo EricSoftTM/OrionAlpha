@@ -54,6 +54,19 @@ OrionAlpha - A Nexon Replica Emulator Project
   * `incDropRate` -> The server's Drop Rate modifier (Nexon standard).
   * `worldName` -> The name of the world. This is sent to and displayed in the login server.
   ----------------------------------------------------------------------
+  ## MapleStory AcGuardian Bypass
+  Wizet had an impressive amount of security checks thrown in this client, and unlike KMS Beta, **this client needs a bypass**.
+
+  Description | Address | Instruction
+  ----------- | ------- | -----------
+  Strip out the activation of MapleStoryAcGuardian events. | 005D147D | JMP 005D14B7
+  Strip out the initialization of CRC for the current module and every DLL in the directory. | 005D15C5 | NOP
+  Strip out three different kinds of CRC checks on random 5-10s ticks. | 004FC0D0 | RET
+  Strip out the creation of MapleStoryAcGuardian events. | 005D37FA | NOP
+  Strip out the CSecurityThread::Update thread start function. | 005D3801 | NOP
+  Strip out CRC integrity checks from CWvsApp::InitializeResMan | 005D4664 | JMP 005D4670
+  Strip out the CSecurityThread ack timeout checks from CWvsApp::CallUpdate | 005D5511 | NOP
+
   ## Client Modifications
   Even knowing there's barely anything to edit in such an early version, below are helpful client edits.
   

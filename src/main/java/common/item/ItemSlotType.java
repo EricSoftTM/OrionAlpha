@@ -26,6 +26,6 @@ public class ItemSlotType {
     public static final byte
             Equip   = 1,
             Bundle  = 2,
-            Pet     = 3
+            Pet     = 5//Nexon uses TypeIndex instead of Type
     ;
 }

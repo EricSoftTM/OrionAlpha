@@ -21,6 +21,7 @@ import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
 import common.item.ItemSlotEquip;
+import common.item.ItemSlotPet;
 import common.item.ItemSlotType;
 import common.item.ItemType;
 import common.user.CharacterData;
@@ -440,7 +441,7 @@ public class User {
             return;
         }
         byte ti = packet.decodeByte();
-        if (ti < ItemType.NotDefine || ti > ItemType.Etc) {
+        if (ti < ItemType.NotDefine || ti > ItemType.Cash) {
             return;
         }
         this.price = 4800;
@@ -529,6 +530,8 @@ public class User {
                 item = (ItemSlotEquip) ItemSlotBase.createItem(ItemSlotType.Equip);
             } else if (ti == ItemType.Consume || ti == ItemType.Etc) {
                 item = (ItemSlotBundle) ItemSlotBase.createItem(ItemSlotType.Bundle);
+            } else if (ti == ItemType.Cash) {
+                item = (ItemSlotPet) ItemSlotBase.createItem(ItemSlotType.Pet);
             }
             if (item != null) {
                 for (Iterator<CashItemInfo> it = this.cashItemInfo.iterator(); it.hasNext();) {
@@ -548,7 +551,11 @@ public class User {
                 }
                 this.character.setItem(ti, pos, item);
                 sendPacket(ShopPacket.onMoveLToS(pos, item, ti));
-                this.modFlag |= ModFlag.ItemLocker | (ti == ItemType.Equip ? ModFlag.ItemSlotEquip : (ti == ItemType.Consume ? ModFlag.ItemSlotBundle : ModFlag.ItemSlotEtc));
+                this.modFlag |= ModFlag.ItemLocker |
+                        (ti == ItemType.Equip ? ModFlag.ItemSlotEquip
+                                : (ti == ItemType.Consume ? ModFlag.ItemSlotBundle
+                                : (ti == ItemType.Cash ? ModFlag.ItemSlotCash
+                                : ModFlag.ItemSlotEtc)));
             }
         }
     }
@@ -699,6 +706,7 @@ public class User {
         private static final byte ItemSlotEquip = 0x4;
         private static final byte ItemSlotBundle = 0x8;
         private static final byte ItemSlotEtc = 0x10;
-        private static final byte InventorySize = 0x20;
+        private static final byte ItemSlotCash = 0x20;
+        private static final byte InventorySize = 0x40;
     }
 }

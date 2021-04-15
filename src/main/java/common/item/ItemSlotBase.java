@@ -59,6 +59,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
                 item = new ItemSlotBundle(0);
                 break;
             case ItemSlotType.Pet:
+                item = new ItemSlotPet(0);
                 break;
         }
         return item;

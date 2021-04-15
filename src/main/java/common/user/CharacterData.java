@@ -79,7 +79,7 @@ public class CharacterData {
             }
         }
         
-        for (int ti = ItemType.Equip; ti <= ItemType.Etc; ti++) {
+        for (int ti = ItemType.Equip; ti <= ItemType.Cash; ti++) {
             for (int i = 0; i < itemSlot.get(ti).size(); i++) {
                 backupItem.get(ti).add(i, null);
                 
@@ -136,7 +136,7 @@ public class CharacterData {
             }
             packet.encodeByte(0);
         }
-        for (int ti = ItemType.Consume; ti <= ItemType.Etc; ti++) {
+        for (int ti = ItemType.Consume; ti <= ItemType.Cash; ti++) {
             if ((flag & ItemAccessor.getItemTypeFromTypeIndex(ti)) != 0) {
                 int slotCount = getItemSlotCount(ti);
                 packet.encodeByte(slotCount);
@@ -191,7 +191,7 @@ public class CharacterData {
     }
 
     public int findCashItemSlotPosition(int ti, long sn) {
-        if (ti >= ItemType.Equip && ti <= ItemType.Etc && sn != 0) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Cash && sn != 0) {
             int slotCount = getItemSlotCount(ti);
             for (int i = 1; i <= slotCount; i++) {
                 ItemSlotBase item = itemSlot.get(ti).get(i);
@@ -216,7 +216,7 @@ public class CharacterData {
     }
 
     public int findEmptySlotPosition(int ti) {
-        if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Cash) {
             int slotCount = getItemSlotCount(ti);
             for (int i = 1; i <= slotCount; i++) {
                 ItemSlotBase item = itemSlot.get(ti).get(i);
@@ -231,7 +231,7 @@ public class CharacterData {
     public int findItemSlotPosition(ItemSlotBase item) {
         if (item != null) {
             int ti = item.getItemID() / 1000000;
-            if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+            if (ti >= ItemType.Equip && ti <= ItemType.Cash) {
                 int slotCount = getItemSlotCount(ti);
                 for (int i = 1; i <= slotCount; i++) {
                     ItemSlotBase other = itemSlot.get(ti).get(i);
@@ -247,7 +247,7 @@ public class CharacterData {
     }
 
     public int getEmptySlotCount(int ti) {
-        if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Cash) {
             int emptySlotCount = 0;
             int slotCount = getItemSlotCount(ti);
             for (int i = 1; i <= slotCount; i++) {
@@ -262,7 +262,7 @@ public class CharacterData {
     }
 
     public ItemSlotBase getItem(byte ti, int pos) {
-        if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Cash) {
             if (ti == ItemType.Equip) {
                 if (pos != 0 && (pos >= -BodyPartCount || pos < -BodyPartCount) && pos <= getItemSlotCount(ItemType.Equip) && pos >= -BodyPartCount - BodyPartCount) {
                     if (pos >= -BodyPartCount) {
@@ -326,7 +326,7 @@ public class CharacterData {
     }
 
     public boolean setItem(byte ti, int pos, ItemSlotBase item) {
-        if (ti < ItemType.Equip || ti > ItemType.Etc) {
+        if (ti < ItemType.Equip || ti > ItemType.Cash) {
             return false;
         }
         if (ti == ItemType.Equip) {
@@ -352,7 +352,7 @@ public class CharacterData {
     }
 
     public void restoreItemSlot(List<List<ItemSlotBase>> backup, List<List<Integer>> backupItemTrading) {
-        for (int ti = ItemType.Equip; ti <= ItemType.Etc; ti++) {
+        for (int ti = ItemType.Equip; ti <= ItemType.Cash; ti++) {
             itemSlot.get(ti).clear();
             itemSlot.get(ti).addAll(backup.get(ti));
             if (backupItemTrading != null) {

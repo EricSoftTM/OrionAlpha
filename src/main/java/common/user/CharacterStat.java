@@ -33,6 +33,7 @@ public class CharacterStat {
     private int face;
     private int hair;
     private byte skin;
+    private long petLockerSN;
     private byte level;
     private short job;
     private short STR;
@@ -62,8 +63,7 @@ public class CharacterStat {
         packet.encodeByte(gender);
         packet.encodeInt(face);
         packet.encodeInt(hair);
-        packet.encodeByte(skin);
-        packet.encodeInt(0); //Unknown
+        packet.encodeLong(petLockerSN);
         packet.encodeByte(level);
         packet.encodeShort(job);
         packet.encodeShort(STR);
@@ -91,11 +91,8 @@ public class CharacterStat {
         if ((flag & CharacterStatType.Hair) > 0) {
             packet.encodeInt(this.hair);
         }
-        if ((flag & CharacterStatType.Skin) > 0) {
-            packet.encodeInt(this.skin);
-        }
         if ((flag & CharacterStatType.PetSN) > 0) {
-            packet.encodeInt(0);
+            packet.encodeLong(this.petLockerSN);
         }
         if ((flag & CharacterStatType.LEV) > 0) {
             packet.encodeByte(this.level);
@@ -166,6 +163,10 @@ public class CharacterStat {
 
     public byte getSkin() {
         return skin;
+    }
+    
+    public long getPetLockerSN() {
+        return petLockerSN;
     }
 
     public byte getLevel() {
@@ -241,6 +242,7 @@ public class CharacterStat {
         setName(rs.getString("CharacterName"));
         setGender(rs.getByte("Gender"));
         setSkin(rs.getByte("Skin"));
+        //setPetLockerSN(rs.getLong("PetLockerSN"));
         setFace(rs.getInt("Face"));
         setHair(rs.getInt("Hair"));
         setLevel(rs.getByte("Level"));
@@ -284,6 +286,10 @@ public class CharacterStat {
 
     public void setSkin(int skin) {
         this.skin = (byte) skin;
+    }
+    
+    public void setPetLockerSN(long sn) {
+        this.petLockerSN = sn;
     }
 
     public void setLevel(int level) {

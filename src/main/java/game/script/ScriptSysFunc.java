@@ -585,7 +585,7 @@ public class ScriptSysFunc {
     
     public int inventoryGetHoldCount(byte ti) {
         int count = 0;
-        if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Cash) {
             for (ItemSlotBase item : getUser().getCharacter().getItemSlot(ti)) {
                 if (item != null) {
                     ++count;
@@ -602,7 +602,7 @@ public class ScriptSysFunc {
     }
     
     public int inventoryGetSlotCount(byte ti) {
-        if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
+        if (ti >= ItemType.Equip && ti <= ItemType.Cash) {
             return getUser().getCharacter().getItemSlotCount(ti);
         }
         return 0;

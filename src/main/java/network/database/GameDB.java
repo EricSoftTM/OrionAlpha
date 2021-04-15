@@ -141,7 +141,7 @@ public class GameDB {
             }
             // Initialize New Bundle ItemSN/CashItemSN
             boolean updateBundle = false;
-            for (int ti = ItemType.Equip; ti <= ItemType.Etc; ti++) {
+            for (int ti = ItemType.Equip; ti <= ItemType.Cash; ti++) {
                 for (ItemSlotBase item : cd.getItemSlot(ti)) {
                     if (item != null) {
                         boolean changeSN = (item.getSN() < -1 || item.getCashItemSN() < -1);

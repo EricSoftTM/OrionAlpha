@@ -1042,7 +1042,7 @@ public class User extends Creature {
         Field field = FieldMan.getInstance(getChannelID()).getField(getPosMap(), false);
         setField(field);
         if (getHP() == 0) {
-            character.getCharacterStat().setHP((short) 50);
+            character.getCharacterStat().setHP(50);
         }
         if (getField() == null) {
             field = FieldMan.getInstance(getChannelID()).getField(Field.Basic, false);
@@ -1258,7 +1258,7 @@ public class User extends Creature {
                     case 0: {// Create Item
                         int itemID = packet.decodeInt();
                         byte ti = ItemAccessor.getItemTypeIndexFromID(itemID);
-                        if (ti < ItemType.Equip || ti > ItemType.Etc) {
+                        if (ti < ItemType.Equip || ti > ItemType.Cash) {
                             return;
                         }
 
@@ -1278,7 +1278,7 @@ public class User extends Creature {
                     }
                     case 1: {// Delete Inventory
                         byte ti = packet.decodeByte();
-                        if (ti < ItemType.Equip || ti > ItemType.Etc) {
+                        if (ti < ItemType.Equip || ti > ItemType.Cash) {
                             return;
                         }
                         for (int pos = 1; pos <= character.getItemSlotCount(ti); pos++) {

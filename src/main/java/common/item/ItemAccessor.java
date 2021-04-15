@@ -63,7 +63,10 @@ public class ItemAccessor {
     }
     
     public static boolean isWeatherItem(int itemID) {
-        return itemID / 10000 == 209;
+        if (itemID / 10000 == 211) {
+            return itemID % 10000 == 1;
+        }
+        return itemID / 10000 == 208 || itemID / 10000 == 209;
     }
 
     public static boolean isTreatSingly(ItemSlotBase p) {

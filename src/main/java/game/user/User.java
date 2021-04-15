@@ -1216,7 +1216,7 @@ public class User extends Creature {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
                 } else {
-                    Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+                    Logger.logReport("[Unidentified Packet] [" + type + "]: " + packet.dumpString());
                 }
             }
         }

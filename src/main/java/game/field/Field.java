@@ -425,7 +425,10 @@ public class Field {
         if (user.getMiniRoom() != null) {
             return;
         }
-        packet.decodeByte(); // Unknown -> v3 = *(_BYTE *)(dword_60423C + 180);
+        byte bFieldKey = packet.decodeByte();
+        if (user.getFieldKey() != bFieldKey) {
+            return;
+        }
 
         MovePath mp = new MovePath();
         mp.decode(packet);

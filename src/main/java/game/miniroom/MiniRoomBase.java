@@ -43,11 +43,11 @@ public abstract class MiniRoomBase {
     private int curUsers = 0;
     private final List<Integer> reserved;
     private final List<Long> reservedTime;
-
     private final List<Integer> leaveRequest;
     private final ReentrantLock lockMiniRoom;
     private final Lock lock;
-    private int maxUsers = 0;
+    private int maxUsers;
+    private String title;
     private final int miniRoomSN;
     private final List<User> users;
 
@@ -55,6 +55,7 @@ public abstract class MiniRoomBase {
         this.lockMiniRoom = new ReentrantLock();
         this.miniRoomSN = miniRoomSNCounter.incrementAndGet();
         this.maxUsers = maxUsers;
+        this.title = "";
         this.users = new ArrayList<>(maxUsers);
         this.leaveRequest = new ArrayList<>(maxUsers);
         this.reservedTime = new ArrayList<>(maxUsers);
@@ -262,6 +263,14 @@ public abstract class MiniRoomBase {
     public int getMaxUsers() {
         return maxUsers;
     }
+    
+    public int getMiniRoomSN() {
+        return miniRoomSN;
+    }
+    
+    public String getTitle() {
+        return title;
+    }
 
     public List<User> getUsers() {
         return users;
@@ -415,6 +424,10 @@ public abstract class MiniRoomBase {
     private void removeMiniRoom() {
         miniRoomEntry.remove(this.miniRoomSN);
         this.curUsers = 0;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public class MiniRoomEntry {

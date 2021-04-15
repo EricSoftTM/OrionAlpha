@@ -44,16 +44,30 @@ public class UserPool {
         user.getSecondaryStat().encodeForRemote(packet, SecondaryStat.FilterForRemote);
         
         packet.encodeInt(user.getCharacter().getCharacterStat().getFace());
-        packet.encodeInt(0); //AvatarLook.Unknown2 (unused int)
-        packet.encodeInt(0); //AvatarLook.Unknown3 (unused int)
         
         user.getAvatarLook().encode(packet);
-        packet.encodeInt(0); //Unknown (modifies *(v3 + 161) aka *(v1 + 644))
+        // Doesn't exist in the client anymore, just an empty decode.
+        packet.encodeInt(0);
         
         packet.encodeShort(user.getCurrentPosition().x);
         packet.encodeShort(user.getCurrentPosition().y);
         packet.encodeByte(user.getMoveAction());
         packet.encodeShort(user.getFootholdSN());
+        
+        if (user.getPet() != null) {
+            packet.encodeByte(1);
+            user.getPet().encodeEnterPacket(packet);
+        } else {
+            packet.encodeByte(0);
+        }
+        
+        if (user.getMiniRoom() != null && user.getMiniRoom().findUserSlot(user) == 0) {
+            packet.encodeByte(user.getMiniRoom().getTypeNumber());
+            packet.encodeInt(user.getMiniRoom().getMiniRoomSN());
+            packet.encodeString(user.getMiniRoom().getTitle());
+        } else {
+            packet.encodeByte(0);
+        }
         return packet;
     }
     

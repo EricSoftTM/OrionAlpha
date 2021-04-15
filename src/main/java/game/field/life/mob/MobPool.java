@@ -71,11 +71,11 @@ public class MobPool {
         return packet;
     }
     
-    public static OutPacket onMove(int mobID, boolean nextAttackPossible, byte left, int skillID, MovePath mp) {
+    public static OutPacket onMove(int mobID, boolean nextAttackPossible, byte action, int skillID, MovePath mp) {
         OutPacket packet = new OutPacket(LoopbackPacket.MobMove);
         packet.encodeInt(mobID);
         packet.encodeBool(nextAttackPossible);
-        packet.encodeByte(left);
+        packet.encodeByte(action);
         packet.encodeInt(skillID);
         mp.encode(packet);
         return packet;

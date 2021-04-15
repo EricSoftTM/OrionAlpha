@@ -55,6 +55,7 @@ public class Mob extends Creature {
     private MobGen mobGen;
     private MobStat stat;
     private byte mobType;
+    private byte summonType;
     private int templateID;
     private short homeFoothold;
     private boolean noDropPriority;
@@ -223,6 +224,7 @@ public class Mob extends Creature {
         packet.encodeByte(moveAction);
         packet.encodeShort(footholdSN);
         packet.encodeShort(homeFoothold);
+        packet.encodeByte(summonType);
         stat.encodeTemporary(packet, 0);
     }
     
@@ -273,6 +275,10 @@ public class Mob extends Creature {
     
     public int getMP() {
         return mp;
+    }
+    
+    public byte getSummonType() {
+        return summonType;
     }
     
     public MobTemplate getTemplate() {
@@ -608,6 +614,10 @@ public class Mob extends Creature {
                 }
             }
         }
+    }
+    
+    public void setSummonType(int type) {
+        this.summonType = (byte) type;
     }
     
     public void update(long time) {

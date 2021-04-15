@@ -60,57 +60,62 @@ OrionAlpha - A Nexon Replica Emulator Project
   ### Modifying IP
   If you intend to use OrionAlpha, you can change the IP in either our client or the clean client.
    * Our client's default IP is `127.0.0.1`
-   * Nexon's default IP's are `218.153.9.172` and `218.153.9.173`
+   * Nexon's default IP is `220.90.204.122`
   
+  ### Japanese OS CP Check Bypass
+  Allows you to run the game client without being on a Japanese OS.
+   * Change the instruction at address `005D14CA` to `je 005D15BA`
+   * Change the instruction at address `005D14D7` to `je 005D15BA`
+
   ### Enable Multi-Client
   Allow multiple clients to be open/executed simultaneously.
-   * Change the instruction at address `005872D9` to `jmp 0058732D`
+   * Change the instruction at address `005D14CA` to `jmp 005D15BA`
   
   ### Enable Window Mode
   Forces the client to execute only in Window Mode, and not Full Screen. 
-  * Change the instruction at address `00589F92` to `mov dword ptr [esp+0x84], 0x0`
+  * Change the instruction at address `005D47AE` to `mov dword ptr [esp+0x84], 0x0`
   
   ### Modifying Client Resolution
   Allows you to make the dimensions of the game bigger, for example 1024x768.
-  * Change the instruction at address `0058A05E` to `push 0x320` where `0x320` is the Width
-  * Change the instruction at address `0058A04F` to `push 0x258` where `0x258` is the Height
+  * Change the instruction at address `005D487C` to `push 0x320` where `0x320` is the Width
+  * Change the instruction at address `005D486D` to `push 0x258` where `0x258` is the Height
   
   ### Activate Chat Repeat Bypass
   Allows you to send the same message into the chat more than 3 times without any issue.
-  * Change the instruction at address `00444261` to `jmp 004442A4`
+  * Change the instruction at address `0044D376` to `jmp 0044D38A`
   
   ### Activate Chat Spam Bypass
   Allows you to spam messages constantly without having to wait 2 seconds.
-  * Change the instruction at address `004442C8` to `jmp 0044431B`
+  * Change the instruction at address `0044D401` to `jmp 0044D45D`
   
   ### Enable Infinite Text
   Allows you to type as many characters as you want into a single message, literally.
-  * Change the instruction at address `0051E38D` to `mov dword ptr [esp+0xC4], 0xFF` where `0xFF` is the maximum
+  * Change the instruction at address `0054DC2C` to `mov dword ptr [esp+0xC0], 0xFF` where `0xFF` is the maximum
   
   ### Enable Swear Filter
   Allows you to enter curse words without getting a pop-up and restricting your message from sending.
-  * Change the instruction at address `004441B8` to `jmp 004441ED`
-  
-  ### Remove Nexon ADs
-  Allows you to disable the ad balloons after closing the client because they're annoying.
-  * Change the instruction at address `005878A5` to `nop`
+  * Change the instruction at address `0044D2E2` to `jmp 0044D308`
   
   ### Enable Droppable NX
   Allows you to drop cash NX items like any other item.
-  * Change the instruction at address `0047965A` to `nop`
-  * Change the instruction at address `00479666` to `nop`
+  * Change the instruction at address `0048613B` to `nop`
+  * Change the instruction at address `00486147` to `nop`
   
   ### Re-Enable Admin Actions
   Restores the ability to allow GM/Admins to drop items, mesos, etc.
-  * Change the instruction at address `004795D2` to `jmp 004795E9`
-  * Change the instruction at address `005002E7` to `jmp 00500318`
+  * Change the instruction at address `004860AF` to `jmp 004860CA`
+  * Change the instruction at address `0052A0BC` to `jmp 0052A0F1`
+
+  ### Enable Cash Shop
+  Allows you to access the Cash Shop. This feature was forcefully disabled in the client for the beta.
+  * Change the instruction at address `0054D590` to `nop`
+  * Change the instruction at address `0054D591` to `nop`
   
   ### Modifying Damage Cap
   Allows you to extend the damage cap up to a maximum of `32,767`.
-  * Change the instruction at address `005C3E98` to `13337.0` where `13337.0` is the new cap
+  * Change the instruction at address `00617480` to `13337.0` where `13337.0` is the new cap
   
   ### Modifying Meso Cap
   Allows you to drop meso bags exceeding 50,000 by setting a new cap.
-  * Change the instruction at address `005003CE` to `cmp eax, 0xC350` where `0xC350` is the new max
-  * Change the instruction at address `005003D5` to `cmp eax, 0xC350` where `0xC350` is the new max
-  
+  * Change the instruction at address `0052A1A0` to `cmp eax, 0xC350` where `0xC350` is the new max
+  * Change the instruction at address `0052A1A7` to `cmp eax, 0xC350` where `0xC350` is the new max

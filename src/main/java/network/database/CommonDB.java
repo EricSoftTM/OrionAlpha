@@ -44,7 +44,7 @@ public class CommonDB {
                 ps.setInt(1, characterID);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        String[] types = { "Equip", "Consume", "Install", "Etc" };
+                        String[] types = { "Equip", "Consume", "Install", "Etc", "Cash" };
                         for (int i = 1; i <= types.length; i++) {
                             int count = rs.getInt(String.format("%sCount", types[i - 1]));
                             for (int j = 0; j <= count; j++) {

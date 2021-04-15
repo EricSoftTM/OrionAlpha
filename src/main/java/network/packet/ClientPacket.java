@@ -58,11 +58,13 @@ public class ClientPacket {
             UserChangeStatRequest = 32,
             UserSkillUpRequest = 33,
             UserSkillUseRequest = 34,
-            UserDropMoneyRequest = 35,//
+            UserDropMoneyRequest = 35,
             UserGivePopularityRequest = 36,
             UserPartyRequest = 37, 
             UserCharacterInfoRequest = 38,
-            BroadcastMsg = 41,//
+            UserPetInfoRequest = 39,
+            UserActivatePetRequest = 40,
+            BroadcastMsg = 41,
             Whisper = 42,
             Messenger = 43,
             MiniRoom = 44,

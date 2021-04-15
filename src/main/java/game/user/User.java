@@ -46,6 +46,7 @@ import game.script.ScriptVM;
 import game.user.command.CommandHandler;
 import game.user.command.UserGradeCode;
 import game.user.item.*;
+import game.user.pet.Pet;
 import game.user.skill.*;
 import game.user.skill.Skills.*;
 import game.user.stat.BasicStat;
@@ -151,6 +152,8 @@ public class User extends Creature {
     // private UserMiniRoom userMR;
     private MiniRoomBase miniRoom;
     private boolean miniRoomBalloon;
+    // Pets
+    private Pet pet;
     // MSMessenger
     private Messenger userMSM;
     private boolean msMessenger;
@@ -873,6 +876,10 @@ public class User extends Creature {
     public Messenger getMessenger() {
         return userMSM;
     }
+    
+    public Pet getPet() {
+        return pet;
+    }
 
     public int getPosMap() {
         return character.getCharacterStat().getPosMap();
@@ -1156,6 +1163,9 @@ public class User extends Creature {
                 break;
             case ClientPacket.UserCharacterInfoRequest:
                 onCharacterInfoRequest(packet);
+                break;
+            case ClientPacket.UserPetInfoRequest:
+                onPetInfoRequest(packet);
                 break;
             case ClientPacket.UserChangeSlotPositionRequest:
                 onChangeSlotPositionRequest(packet);
@@ -1567,12 +1577,27 @@ public class User extends Creature {
 
     public void onCharacterInfoRequest(InPacket packet) {
         User target = getField().findUser(packet.decodeInt());
-        if (target == null || target.isGM()) {
+        if (target == null || (target.isGM() && !isGM())) {
             sendCharacterStat(Request.Excl, 0);
         } else {
             if (target.lock()) {
                 try {
                     sendPacket(WvsContext.onCharacterInfo(target));
+                } finally {
+                    target.unlock();
+                }
+            }
+        }
+    }
+    
+    public void onPetInfoRequest(InPacket packet) {
+        User target = getField().findUser(packet.decodeInt());
+        if (target == null || target.getPet() == null || (target.isGM() && !isGM())) {
+            sendCharacterStat(Request.Excl, 0);
+        } else {
+            if (target.lock()) {
+                try {
+                    sendPacket(WvsContext.onPetInfo(target.getPet()));
                 } finally {
                     target.unlock();
                 }

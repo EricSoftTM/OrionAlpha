@@ -74,6 +74,10 @@ public class ItemSlotPet extends ItemSlotBase {
 		return ItemSlotType.Pet;
 	}
 	
+	public boolean isDead() {
+		return FileTime.compareFileTime(FileTime.systemTimeToFileTime(), dateDead) >= 0;
+	}
+	
 	@Override
 	public ItemSlotBase makeClone() {
 		ItemSlotPet item = (ItemSlotPet) createItem(ItemSlotType.Pet);

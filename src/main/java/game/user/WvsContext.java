@@ -18,10 +18,15 @@
 package game.user;
 
 import common.GivePopularityRes;
+import common.item.BodyPart;
+import common.item.ItemSlotBase;
+import common.item.ItemSlotPet;
+import common.item.ItemType;
 import common.user.CharacterStat;
 import game.field.drop.DropPickup;
 import game.user.item.ChangeLog;
 import game.user.item.InventoryManipulator;
+import game.user.pet.Pet;
 import game.user.skill.SkillRecord;
 import game.user.stat.SecondaryStat;
 import java.util.List;
@@ -112,6 +117,19 @@ public class WvsContext {
         packet.encodeShort(user.getCharacter().getCharacterStat().getJob());
         packet.encodeShort(user.getCharacter().getCharacterStat().getPOP());
         packet.encodeString(user.getCommunity());
+        return packet;
+    }
+    
+    public static OutPacket onPetInfo(Pet pet) {
+        OutPacket packet = new OutPacket(LoopbackPacket.PetInfo);
+        ItemSlotPet item = pet.getItemSlot();
+        ItemSlotBase petEquip = pet.getOwner().getCharacter().getItem(ItemType.Equip, -BodyPart.PetWear);
+        packet.encodeInt(item.getItemID());
+        packet.encodeString(item.getPetName());
+        packet.encodeByte(item.getLevel());
+        packet.encodeShort(item.getTameness());
+        packet.encodeByte(item.getRepleteness());
+        packet.encodeInt(petEquip != null ? petEquip.getItemID() : 0);
         return packet;
     }
     

@@ -68,7 +68,7 @@ public class InventoryManipulator {
     
     public static OutPacket makeInventoryOperation(byte onExclResult, List<ChangeLog> changeLog) {
         if (changeLog == null) {
-            changeLog = Collections.EMPTY_LIST;
+            changeLog = Collections.emptyList();
         }
         OutPacket packet = new OutPacket(LoopbackPacket.InventoryOperation);
         packet.encodeByte(onExclResult);

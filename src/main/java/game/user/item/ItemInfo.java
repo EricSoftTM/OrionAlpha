@@ -24,6 +24,7 @@ import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
 import common.item.ItemSlotEquip;
+import common.item.ItemSlotPet;
 import common.item.ItemType;
 import common.user.CharacterStat.CharacterStatType;
 import game.field.Field;
@@ -188,8 +189,14 @@ public class ItemInfo {
                     return item;
                 }
             }
+            if (ti == ItemType.Cash) {
+                BundleItem info = getBundleItem(itemID);
+                if (info != null) {
+                    ItemSlotPet item = new ItemSlotPet(itemID);
+                    return item;
+                }
+            }
         }
-        // Cash Items don't exist yet..
         return null;
     }
     
@@ -342,12 +349,16 @@ public class ItemInfo {
     private static void iterateBundleItem() {
         WzPackage itemDir = new WzFileSystem().init("Item").getPackage();
         if (itemDir != null) {
-            String[] category = {"Consume", "Etc"};
+            String[] category = {"Consume", "Etc", "Pet"};
             for (String cat : category) {
                 WzPackage pack = itemDir.getChildren().get(cat);
                 for (WzProperty itemSection : pack.getEntries().values()) {
-                    for (WzProperty itemData : itemSection.getChildNodes()) {
-                        loadBundleItem(itemData);
+                    if (cat.equals("Pet")) {
+                        loadBundleItem(itemSection);
+                    } else {
+                        for (WzProperty itemData : itemSection.getChildNodes()) {
+                            loadBundleItem(itemData);
+                        }
                     }
                 }
                 pack.release();

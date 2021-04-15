@@ -134,20 +134,20 @@ public class PortalMap {
         if (propPortal != null && field != null) {
             for (WzProperty prop : propPortal.getChildNodes()) {
                 Portal pt = new Portal();
-                pt.fieldID = field.getFieldID();
-                pt.idx = (byte) portal.size();
-                pt.name = WzUtil.getString(prop.getNode("pn"), "");
-                pt.type = WzUtil.getInt32(prop.getNode("pt"), 0);
-                pt.enable = !(pt.getPortalType() == PortalType.Changable || pt.getPortalType() == PortalType.Changable_Invisible);
-                pt.pos = new Point(WzUtil.getInt32(prop.getNode("x"), 0), WzUtil.getInt32(prop.getNode("y"), 0));
-                pt.tname = WzUtil.getString(prop.getNode("tn"), "");
-                pt.tmap = WzUtil.getInt32(prop.getNode("tm"), 0);
-                pt.script = null;
+                pt.setFieldID(field.getFieldID());
+                pt.setPortalIdx(portal.size());
+                pt.setPortalName(WzUtil.getString(prop.getNode("pn"), ""));
+                pt.setPortalType(WzUtil.getInt32(prop.getNode("pt"), 0));
+                pt.setEnable(pt.getPortalType() != PortalType.Changable && pt.getPortalType() != PortalType.Changable_Invisible);
+                pt.getPortalPos().setLocation(WzUtil.getInt32(prop.getNode("x"), 0), WzUtil.getInt32(prop.getNode("y"), 0));
+                pt.setTargetName(WzUtil.getString(prop.getNode("tn"), ""));
+                pt.setTargetMap(WzUtil.getInt32(prop.getNode("tm"), 0));
+                pt.setScript(null);
                 if (pt.getPortalType() == PortalType.Script || pt.getPortalType() == PortalType.Script_Invisible || pt.getPortalType() == PortalType.Collision_Script) {
-                    pt.script = WzUtil.getString(prop.getNode("script"), null);
+                    pt.setScript(WzUtil.getString(prop.getNode("script"), null));
                 }
                 if (pt.getPortalType() != PortalType.StartPoint) {
-                    pt.pos.y -= 40;
+                    pt.getPortalPos().y -= 40;
                 } else {
                     startPoint.add(pt.getPortalIdx());
                 }

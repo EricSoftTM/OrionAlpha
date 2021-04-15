@@ -53,4 +53,10 @@ public class UserLocal {
         }
         return packet;
     }
+    
+    public static OutPacket onTeleport(byte portal) {
+        OutPacket packet = new OutPacket(LoopbackPacket.UserTeleport);
+        packet.encodeByte(portal);
+        return packet;
+    }
 }

@@ -30,22 +30,23 @@ public class Portal implements GameObject {
     // baseclass_0
     private final int id;
     
-    public String name;
-    public String tname;
-    public String script;
-    public int fieldID;
-    public byte idx;
-    public boolean enable;
-    public int type;
+    private String name;
+    private String tname;
+    private String script;
+    private int fieldID;
+    private byte idx;
+    private boolean enable;
+    private int type;
     public Point pos; 
-    public int tmap;
+    private int tmap;
     
     public Portal() {
         super();
         
-        name = "";
-        tname = "";
-        script = "";
+        this.name = "";
+        this.tname = "";
+        this.script = "";
+        this.pos = new Point();
         
         GameObjectBase obj = construct();
         
@@ -60,6 +61,10 @@ public class Portal implements GameObject {
      */
     private GameObjectBase construct() {
         return GameObjectBase.registerGameObject(this);
+    }
+    
+    public int getFieldID() {
+        return fieldID;
     }
     
     @Override
@@ -92,6 +97,10 @@ public class Portal implements GameObject {
         return type;
     }
     
+    public int getTargetPortalMap() {
+        return tmap;
+    }
+    
     public String getTargetPortalName() {
         return tname;
     }
@@ -99,6 +108,10 @@ public class Portal implements GameObject {
     @Override
     public int getTemplateID() {
         return 0;
+    }
+    
+    public boolean isEnabled() {
+        return enable;
     }
     
     /**
@@ -114,5 +127,33 @@ public class Portal implements GameObject {
     
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+    
+    public void setPortalName(String name) {
+        this.name = name;
+    }
+    
+    public void setTargetName(String name) {
+        this.tname = name;
+    }
+    
+    public void setScript(String script) {
+        this.script = script;
+    }
+    
+    public void setFieldID(int fieldID) {
+        this.fieldID = fieldID;
+    }
+    
+    public void setPortalIdx(int idx) {
+        this.idx = (byte) idx;
+    }
+    
+    public void setPortalType(int type) {
+        this.type = type;
+    }
+    
+    public void setTargetMap(int map) {
+        this.tmap = map;
     }
 }

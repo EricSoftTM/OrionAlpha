@@ -2386,7 +2386,7 @@ public class User extends Creature {
                             portal = packet.decodeString();
                         }
                         boolean isDead = false;
-                        Portal pt = getField().getPortal().findPortal(portal);
+                        Portal pt;
                         if (getHP() == 0) {
                             if (getField().getForcedReturnFieldID() != Field.Invalid) {
                                 fieldID = getField().getReturnFieldID();
@@ -2419,19 +2419,20 @@ public class User extends Creature {
                         this.onTransferField = true;
                         if (fieldID == -1) {
                             pt = getField().getPortal().findPortal(portal);
-                            if (pt == null || pt.tmap == Field.Invalid) {
+                            if (pt == null || pt.getTargetPortalMap() == Field.Invalid) {
                                 Logger.logError("Incorrect portal");
                                 closeSocket();
                                 return;
                             }
-                            if (!pt.enable) {
+                            if (!pt.isEnabled()) {
                                 sendPacket(FieldPacket.onTransferFieldReqIgnored(TransferField.DisabledPortal));
                                 this.onTransferField = false;
                                 return;
                             }
-                            fieldID = pt.tmap;
-                            portal = pt.tname;
+                            fieldID = pt.getTargetPortalMap();
+                            portal = pt.getTargetPortalName();
                             if (fieldID == getField().getFieldID()) {
+                                sendPacket(UserLocal.onTeleport(pt.getPortalIdx()));
                                 this.onTransferField = false;
                                 return;
                             }

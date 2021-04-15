@@ -26,13 +26,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.concurrent.ScheduledFuture;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -263,11 +262,13 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     private void processPacket(InPacket packet) {
         final byte type = packet.decodeByte();
         if (OrionConfig.LOG_PACKETS) {
-            Logger.logReport("[Packet Logger] [0x%s]: %s", Integer.toHexString(type).toUpperCase(), packet.dumpString());
+            if (type != ClientPacket.UserMove && type != ClientPacket.MobMove && type != ClientPacket.NpcMove) {
+                Logger.logReport("[Packet Logger] [%d]: %s", type, packet.dumpString());
+            }
         }
         if (type == ClientPacket.AliveAck) {
             packet.decodeInt();//Acknowledged alive ack
-        } else if (type == ClientPacket.AliveReq) {
+        } else if (type == ClientPacket.CheckSecurityThreadUpdated) {
             packet.decodeInt();//Received client alive req
             
             sendPacket(onAliveReq((int)(System.currentTimeMillis() / 1000)), false);
@@ -275,7 +276,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             onMigrateIn(packet);
         } else {
             if (type < ClientPacket.BEGIN_USER) {
-                Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+                Logger.logReport("[Unidentified Packet] [" + type + "]: " + packet.dumpString());
                 return;
             }
             processUserPacket(type, packet);

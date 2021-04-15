@@ -30,7 +30,8 @@ public class Stage {
     
     public static OutPacket onSetField(User user, boolean characterData, int s1, int s2, int s3) {
         OutPacket packet = new OutPacket(LoopbackPacket.SetField);
-        packet.encodeByte(user.getChannelID());
+        packet.encodeInt(user.getChannelID());
+        packet.encodeByte(user.getFieldKey());
         packet.encodeBool(characterData);
         if (!characterData) {
             packet.encodeInt(user.getPosMap());

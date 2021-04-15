@@ -306,6 +306,10 @@ public class User {
     public int getNexonCash() {
         return nexonCash;
     }
+    
+    public String getNexonClubID() {
+    	return nexonClubID;
+    }
 
     private boolean isBlockedMachineID() {
         return ((authenCode & 8) != 0);

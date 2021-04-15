@@ -87,6 +87,7 @@ public class User extends Creature {
     private final Lock lockSocket;
     private Npc tradingNpc;
     private long lastSelectNPCTime;
+    private byte curFieldKey;
     private boolean onTransferField;
     private int incorrectFieldPositionCount;
     private long lastCharacterDataFlush;
@@ -170,8 +171,9 @@ public class User extends Creature {
         this.hide = false;
         this.onTransferField = false;
         this.closeSocketNextTime = false;
-
+        
         this.emotion = 0;
+        this.curFieldKey = 0;
         this.invalidHitPointCount = 0;
         this.invalidMobMoveCount = 0;
         this.skipWarpCount = 0;
@@ -848,6 +850,10 @@ public class User extends Creature {
 
     public String getCharacterName() {
         return characterName;
+    }
+    
+    public byte getFieldKey() {
+        return curFieldKey;
     }
 
     public int getGradeCode() {
@@ -2406,6 +2412,7 @@ public class User extends Creature {
     }
 
     public void sendSetFieldPacket(boolean characterData) {
+        curFieldKey++;
         if (characterData) {
             int s1 = Rand32.getInstance().random().intValue();
             int s2 = Rand32.getInstance().random().intValue();

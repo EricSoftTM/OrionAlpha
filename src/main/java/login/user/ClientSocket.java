@@ -421,7 +421,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             }
             
             this.loginState = 8;
-            sendPacket(LoginPacket.onSelectWorldResult(1, this.ssn, avatars), false);
+            sendPacket(LoginPacket.onSelectWorldResult(1, avatars), false);
         } else {
             Logger.logError("User %s attempting to connect to offline world %d", this.nexonClubID, this.worldID);
         }

@@ -38,29 +38,32 @@ public class LoginPacket {
             packet.encodeByte(socket.getGender());
             packet.encodeByte(socket.getGradeCode());
             packet.encodeString(socket.getNexonClubID());
+            packet.encodeString(socket.getNexonClubID());//Email?
             packet.encodeByte(LoginApp.getInstance().getWorlds().size());
             for (WorldEntry world : LoginApp.getInstance().getWorlds()) {
+                packet.encodeByte(world.getWorldID());
+                packet.encodeString(world.getName());
                 packet.encodeByte(world.getChannels().size());
                 for (ChannelEntry channel : world.getChannels()) {
                     packet.encodeString(world.getName() + "-" + (channel.getChannelID() + 1));
                     packet.encodeInt(channel.getUserNo());
                     packet.encodeByte(channel.getWorldID());
                     packet.encodeByte(channel.getChannelID());
+                    packet.encodeByte(0);//bAdultChannel
                 }
             }
         }
         return packet;
     }
     
-    public static OutPacket onSelectWorldResult(int msg, int ssn, List<CharacterData> characters) {
+    public static OutPacket onSelectWorldResult(int msg, List<CharacterData> characters) {
         OutPacket packet = new OutPacket(LoopbackPacket.SelectWorldResult);
         packet.encodeByte(msg);
         if (msg == 1) {
-            packet.encodeInt(ssn);
-            
+            packet.encodeString("");//Unknown
             packet.encodeByte(characters.size());
             for (CharacterData character : characters) {
-                character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip);
+                character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip | DBChar.ItemSlotCash);
             }
         }
         return packet;

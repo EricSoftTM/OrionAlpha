@@ -1613,9 +1613,6 @@ public class User extends Creature {
         if (Inventory.rawRemoveItem(this, ItemType.Consume, pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
             if (ItemAccessor.isWeatherItem(itemID)) {
                 getField().onWeather(itemID, message, 8000);
-            } else {
-                // idk if this is evan a megaphone packet or not, yolo it works
-                getField().broadcastPacket(FieldPacket.onGroupMessage(characterName, message), false);
             }
             Inventory.sendInventoryOperation(this, Request.Excl, changeLog);
         } else {

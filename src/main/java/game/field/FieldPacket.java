@@ -64,7 +64,7 @@ public class FieldPacket {
      * 
      * @param weatherItemID The ItemID of the weather item (type 209)
      * @param weatherMsg The message to display for the weather effect
-     * 
+     *
      * @return The weather packet
      */
     public static OutPacket onBlowWeather(int weatherItemID, String weatherMsg) {
@@ -73,26 +73,6 @@ public class FieldPacket {
         if (weatherItemID != 0) {//0 = DestroyWeather
             packet.encodeString(weatherMsg);
         }
-        return packet;
-    }
-    
-    /**
-     * The weird message packet - displays yellow in chat the Name:Message.
-     * Oh, and it also renders the same Name:Message above the chat window.
-     * 
-     * Since groups (buddy, party, guild, etc.) don't exist yet, and no types
-     * for BroadcastMsg exist for megaphones, my best guess is that Nexon uses
-     * this packet for megaphones in this client. 
-     * 
-     * @param characterName The name of the character
-     * @param message The message to display
-     * 
-     * @return The message/megaphone packet
-     */
-    public static OutPacket onGroupMessage(String characterName, String message) {
-        OutPacket packet = new OutPacket(LoopbackPacket.GroupMessage);
-        packet.encodeString(characterName);
-        packet.encodeString(message);
         return packet;
     }
     

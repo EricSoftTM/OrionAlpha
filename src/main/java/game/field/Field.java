@@ -80,6 +80,8 @@ public class Field {
     private int weatherItemID;
     private int weatherDuration;
     private long weatherBegin;
+    private int timerDuration;
+    private long timerBegin;
     private int splitRowCount;
     private int splitColCount;
     private double incRateEXP;
@@ -226,6 +228,14 @@ public class Field {
 
     public int getReturnFieldID() {
         return this.fieldReturn;
+    }
+    
+    public long getTimerBegin() {
+        return this.timerBegin;
+    }
+    
+    public int getTimerDuration() {
+        return this.timerDuration;
     }
 
     public Collection<User> getUsers() {
@@ -528,6 +538,14 @@ public class Field {
     public void setClock(boolean clock) {
         this.clock = clock;
     }
+    
+    public void setTimerBegin() {
+        this.timerBegin = System.currentTimeMillis();
+    }
+    
+    public void setTimerDuration(int duration) {
+        this.timerDuration = duration;
+    }
 
     public void setSwim(boolean swim) {
         this.swim = swim;
@@ -682,6 +700,31 @@ public class Field {
             }
         }
     }
+    
+    public String getNPCVariable(String npcName, String var) {
+        Npc npc = lifePool.getNpc(npcName);
+        if (npc != null) {
+            /*
+                Pointer<Integer> Value = new Pointer<>(0);
+                if (pNpc.GetIntReg(sVarName, Value)) {
+                    sValue.Set(String.valueOf(Value.Get()));
+                    return true;
+                } else {
+                    return pNpc.GetStrReg(sVarName, sValue);
+                }
+            */
+        }
+        return "";
+    }
+    
+    public void setNPCVariable(String npcName, String var, String val) {
+        Npc npc = lifePool.getNpc(npcName);
+        if (npc != null) {
+            /*if (!npc.setStrReg(var, val)) {
+                npc.setIntReg(var, Integer.valueOf(val));
+            }*/
+        }
+    }
 
     public void update(long time) {
         lifePool.update(time);
@@ -692,6 +735,10 @@ public class Field {
                 weatherItemID = 0;
                 broadcastPacket(FieldPacket.onBlowWeather(0, null), false);
             }
+        }
+        if (timerDuration != 0 && time - timerBegin > 1000 * timerDuration) {
+            timerDuration = 0;
+            timerBegin = 0;
         }
     }
 }

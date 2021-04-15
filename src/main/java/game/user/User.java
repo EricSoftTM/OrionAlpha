@@ -1262,7 +1262,7 @@ public class User extends Creature {
         if (lock()) {
             try {
                 switch (type) {
-                    case 0: {// Create Item
+                    case AdminRequest.Create: {// Create Item | /create
                         int itemID = packet.decodeInt();
                         byte ti = ItemAccessor.getItemTypeIndexFromID(itemID);
                         if (ti < ItemType.Equip || ti > ItemType.Cash) {
@@ -1283,7 +1283,7 @@ public class User extends Creature {
                         }
                         break;
                     }
-                    case 1: {// Delete Inventory
+                    case AdminRequest.Remove: {// Delete Inventory | /destroy
                         byte ti = packet.decodeByte();
                         if (ti < ItemType.Equip || ti > ItemType.Cash) {
                             return;
@@ -1301,20 +1301,75 @@ public class User extends Creature {
                         }
                         break;
                     }
-                    case 2: {// Inc Exp
+                    case AdminRequest.IncEXP: {// /exp
                         int flag = incEXP(packet.decodeInt(), false);
                         if (flag != 0) {
                             sendCharacterStat(Request.None, flag);
                         }
                         break;
                     }
-                    case 3: {// Block
+                    case AdminRequest.Ban: {// /ban
                         String characterName = packet.decodeString();
                         break;
                     }
-                    case 4: {// Send User? Temp Block?
+                    case AdminRequest.Block: {// /block
                         String characterName = packet.decodeString();
-                        int duration = packet.decodeInt();//or fieldID
+                        int duration = packet.decodeInt();
+                        break;
+                    }
+                    case AdminRequest.Portal: {// /pton | /ptoff
+                        boolean enable = packet.decodeBool();
+                        String portal = packet.decodeString();
+                        getField().getPortal().enablePortal(portal, enable);
+                        break;
+                    }
+                    case AdminRequest.NPCVar: {
+                        byte action = packet.decodeByte();
+                        String npc = packet.decodeString();
+                        String var = packet.decodeString();
+                        String val = "";
+                        if (action == AdminRequest.NPCVar_Set) {// /varset
+                            val = packet.decodeString();
+                            getField().setNPCVariable(npc, var, val);
+                        } else if (action == AdminRequest.NPCVar_Get) {// /varget
+                            val = getField().getNPCVariable(npc, var);
+                            if (val.isEmpty()) {
+                                npc = "";
+                                var = "";
+                            }
+                        }
+                        sendPacket(FieldPacket.onAdminResult(AdminRequest.NPCVar, npc, var, val));
+                        break;
+                    }
+                    case AdminRequest.BanishAll: {// /追放
+                        packet.decodeInt();//*(this + 172)
+                        break;
+                    }
+                    case AdminRequest.AdminEvent: {
+                        // TODO: Implement OXQuiz
+                        byte action = packet.decodeByte();
+                        if (action == AdminRequest.Quiz) {// /問題
+                            int problem = packet.decodeInt();
+                            getField().broadcastPacket(FieldPacket.onQuiz(true, problem), false);
+                        } else if (action == AdminRequest.Answer) {// /正解
+                            //getField().broadcastPacket(FieldPacket.onQuiz(false, problem), false);
+                        } else if (action == AdminRequest.Check) {// /採点
+                        
+                        }
+                        break;
+                    }
+                    case AdminRequest.Timer: {
+                        int duration = packet.decodeInt();
+                        if (duration != 0) {// /tmset
+                            getField().setTimerDuration(duration);
+                        } else {// /tmon
+                            getField().setTimerBegin();
+                            getField().broadcastPacket(FieldPacket.onClock(getField().getTimerDuration()), false);
+                        }
+                        break;
+                    }
+                    case AdminRequest.Desc: {// /説明
+                        getField().broadcastPacket(FieldPacket.onDesc(), true);
                         break;
                     }
                     default: {

@@ -17,6 +17,7 @@
  */
 package game.field;
 
+import common.AdminRequest;
 import common.WhisperFlags;
 import common.WhisperFlags.LocationResult;
 import network.packet.LoopbackPacket;
@@ -45,17 +46,47 @@ public class FieldPacket {
     }
     
     /**
-     * The admin "ban" result packet - displays if the ban succeeded/failed.
-     * 
-     * @param result The result of a ban (-1 for fail, 1 for success)
-     * 
+     * Gets a admin request packet (ie. hide, banned, etc.)
+     *
+     * @param type The result of a ban (-1 for fail, 1 for success)
+     *
      * @return The admin result packet
      */
-    public static OutPacket onAdminResult(int result) {
+    public static OutPacket onAdminResult(int type, boolean success) {
         OutPacket packet = new OutPacket(LoopbackPacket.AdminResult);
-        // if < 0: "The blocking failed"
-        // if >= 0: "You have successfully blocked access"
-        packet.encodeByte(result);
+        packet.encodeByte(type);
+        if (type == AdminRequest.Block) {
+            packet.encodeByte(success ? 1 : -1);
+        }
+        return packet;
+    }
+    
+    public static OutPacket onAdminResult(int type, String npc, String var, String value) {
+        OutPacket packet = new OutPacket(LoopbackPacket.AdminResult);
+        packet.encodeByte(type);
+        if (type == AdminRequest.NPCVar) {
+            packet.encodeString(npc);
+            packet.encodeString(var);
+            packet.encodeString(value);
+        }
+        return packet;
+    }
+    
+    public static OutPacket onQuiz(boolean question, int problem) {
+        OutPacket packet = new OutPacket(LoopbackPacket.Quiz);
+        packet.encodeBool(question);
+        packet.encodeInt(problem);
+        return packet;
+    }
+    
+    public static OutPacket onDesc() {
+        OutPacket packet = new OutPacket(LoopbackPacket.Desc);
+        return packet;
+    }
+    
+    public static OutPacket onClock(int duration) {
+        OutPacket packet = new OutPacket(LoopbackPacket.Clock);
+        packet.encodeInt(duration);
         return packet;
     }
     

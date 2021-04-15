@@ -32,16 +32,14 @@ import network.packet.OutPacket;
 public class AvatarLook {
     public static final int
             Face        = 0x1,
-            Look        = 0x2,//Hack mask
-            Unknown2    = 0x4,
-            Unknown3    = 0x8
+            Look        = 0x2//Hack mask
     ;
     
     private final List<Integer> hairEquip;
     
     public AvatarLook() {
         this.hairEquip = new ArrayList<>();
-        for (int i = 0; i < BodyPart.BP_Count + 1; i++) {
+        for (int i = 0; i <= BodyPart.BP_Count; i++) {
             this.hairEquip.add(i, 0);
         }
     }

@@ -2858,9 +2858,6 @@ public class User extends Creature {
                     //addCharacterDataMod(DBChar.Avatar);
                     flag = AvatarLook.Look;
                 }
-                if (speed != secondaryStat.speed) {
-                    flag |= AvatarLook.Unknown2;//idk, just a guess
-                }
                 postAvatarModified(flag);
             }
             // Max all skills on a user based on their current Job Race

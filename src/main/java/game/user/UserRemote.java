@@ -184,16 +184,6 @@ public class UserRemote {
         if ((avatarModFlag & AvatarLook.Face) != 0) {
             packet.encodeInt(user.getCharacter().getCharacterStat().getFace());
         }
-        if ((avatarModFlag & AvatarLook.Unknown2) != 0) {
-            // This int never gets used in the client.
-            // Could be for Speed, or it isn't even implemented yet.
-            packet.encodeInt(0);
-        }
-        if ((avatarModFlag & AvatarLook.Unknown3) != 0) {
-            // This int never gets used in the client either.
-            // My best guess is this isn't even implemented yet.
-            packet.encodeInt(0);
-        }
         if ((avatarModFlag & AvatarLook.Look) != 0) {
             packet.encodeBool(true);
             user.getAvatarLook().encode(packet);

@@ -18,6 +18,7 @@
 package game.field;
 
 import common.WhisperFlags;
+import common.WhisperFlags.LocationResult;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 
@@ -103,12 +104,13 @@ public class FieldPacket {
      * @param find The target you're Whispering or Finding
      * @param receiver Your character name
      * @param msg The message to be sent
+     * @param locationResult The targets server location (@see WhisperFlags.LocationResult)
      * @param location The targets location (only FieldID in this version)
      * @param success If the user exists and is online/able to receive messages
      * 
      * @return A whisper and/or find packet.
      */
-    public static OutPacket onWhisper(byte flag, String find, String receiver, String msg, int location, boolean success) {
+    public static OutPacket onWhisper(byte flag, String find, String receiver, String msg, byte locationResult, int location, boolean success) {
         OutPacket packet = new OutPacket(LoopbackPacket.Whisper);
         packet.encodeByte(flag);
         switch (flag) {
@@ -122,6 +124,7 @@ public class FieldPacket {
                 break;
             case WhisperFlags.FindResult:
                 packet.encodeString(find);
+                packet.encodeByte(locationResult);
                 packet.encodeInt(location);
                 break;
             case WhisperFlags.BlockedResult:

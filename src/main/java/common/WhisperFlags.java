@@ -32,6 +32,15 @@ public class WhisperFlags {
                 Blocked     = 0x20
         ;
     }
+    public class LocationResult {
+        public static final byte
+                None            = 0,
+                GameSvr         = 1,
+                ShopSvr         = 2,
+                OtherChannel    = 3,
+                Admin           = 4
+        ;
+    }
     
     public static final byte
             FindRequest       = WhisperFlag.Request | WhisperFlag.Location,

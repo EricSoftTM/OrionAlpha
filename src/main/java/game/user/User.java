@@ -18,6 +18,7 @@
 package game.user;
 
 import common.*;
+import common.WhisperFlags.LocationResult;
 import common.item.*;
 import common.user.CharacterData;
 import common.user.CharacterStat.CharacterStatType;
@@ -2171,27 +2172,30 @@ public class User extends Creature {
             User user = getChannel().findUserByName(target, true);
             boolean success = false;
             if (user != null && user.getField() != null && user.getField().getFieldID() != 0) {
-                user.sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyReceive, null, getCharacterName(), text, -1, false));
+                user.sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyReceive, null, getCharacterName(), text, LocationResult.None, -1, false));
 
                 target = user.getCharacterName();
                 success = true;
             }
-            sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyResult, target, null, null, -1, success));
+            sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyResult, target, null, null, LocationResult.None, -1, success));
         } else if (flag == WhisperFlags.FindRequest) {
             User user = getChannel().findUserByName(target, true);
-            int fieldID = 0;
+            byte location = LocationResult.None;
+            int fieldID = Field.Invalid;
             if (user != null && user.getField() != null) {
-                fieldID = user.getField().getFieldID();
                 if (user.isGM()) {
-                    fieldID = -1;
+                    location = LocationResult.Admin;
+                } else {
+                    location = LocationResult.GameSvr;
+                    fieldID = user.getField().getFieldID();
                 }
                 target = user.getCharacterName();
+            } else {
+                // TODO: Check Shop server and other channels.
             }
-            if (fieldID > 0) {
-                sendPacket(FieldPacket.onWhisper(WhisperFlags.FindResult, target, null, null, fieldID, false));
-            }
+            sendPacket(FieldPacket.onWhisper(WhisperFlags.FindResult, target, null, null, location, fieldID, false));
         } else if (flag == WhisperFlags.BlockedResult) {
-            sendPacket(FieldPacket.onWhisper(WhisperFlags.BlockedResult, target, null, null, -1, false));
+            sendPacket(FieldPacket.onWhisper(WhisperFlags.BlockedResult, target, null, null, LocationResult.None, -1, false));
         }
     }
 

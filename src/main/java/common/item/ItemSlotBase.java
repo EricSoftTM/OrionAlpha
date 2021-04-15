@@ -37,7 +37,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
     public ItemSlotBase(int itemID) {
         this.itemID = itemID;
         this.cashItemSN = 0;
-        this.dateExpire = FileTime.END;
+        this.dateExpire = FileTime.END.makeClone();
     }
 
     /**

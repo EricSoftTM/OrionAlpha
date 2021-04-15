@@ -22,14 +22,15 @@ package common.user;
  * @author Eric
  */
 public class DBChar {
-    public static final byte
+    public static final int
             Character       = 0x1,
             ItemSlotEquip   = 0x2,
             ItemSlotConsume = 0x4,
             ItemSlotInstall = 0x8,
             ItemSlotEtc     = 0x10,
-            SkillRecord     = 0x20,
-            QuestRecord     = 0x40,
-            All             = 0x7F
+            ItemSlotCash    = 0x20,
+            SkillRecord     = 0x40,
+            QuestRecord     = 0x80,
+            All             = 0xFF
     ;
 }

@@ -29,6 +29,7 @@ public class ItemType {
             Consume         = 2,
             Install         = 3,
             Etc             = 4,
-            NO              = 5
+            Cash            = 5,
+            NO              = 6
     ;
 }

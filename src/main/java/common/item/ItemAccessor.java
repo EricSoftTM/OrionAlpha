@@ -122,6 +122,8 @@ public class ItemAccessor {
             case ItemType.Install:
             case ItemType.Etc:
                 return ItemSlotType.Bundle;
+            case ItemType.Cash:
+                return ItemSlotType.Pet;
             default: {
                 return 0;
             }
@@ -138,6 +140,8 @@ public class ItemAccessor {
                 return DBChar.ItemSlotInstall;
             case ItemType.Etc:
                 return DBChar.ItemSlotEtc;
+            case ItemType.Cash:
+                return DBChar.ItemSlotCash;
             default: {
                 return 0;
             }

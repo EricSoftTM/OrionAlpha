@@ -308,7 +308,7 @@ public class CharacterData {
         return skillRecord;
     }
 
-    public void load(ResultSet rs, byte flag) throws SQLException {
+    public void load(ResultSet rs, int flag) throws SQLException {
         if ((flag & DBChar.Character) != 0) {
             characterStat.load(rs);
         }

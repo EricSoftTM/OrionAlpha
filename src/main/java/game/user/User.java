@@ -1689,6 +1689,11 @@ public class User extends Creature {
     }
 
     public void onHit(InPacket packet) {
+        // nexon japan debug code be like
+        int hitStart = packet.decodeInt();
+        if (hitStart != 0x123400) {
+            return;
+        }
         byte mobAttackIdx = packet.decodeByte();
         int obstacleData = 0;
         int clientDamage = 0;
@@ -1712,6 +1717,11 @@ public class User extends Creature {
                 hit.x = packet.decodeShort();
                 hit.y = packet.decodeShort();
             }
+        }
+        // nexon japan debug code be like
+        int hitEnd = packet.decodeInt();
+        if (hitEnd != 0xABCD00) {
+            return;
         }
         if (getField() == null) {
             return;

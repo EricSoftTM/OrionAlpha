@@ -38,8 +38,9 @@ public class FieldPacket {
      * 
      * @return The ignore field request packet
      */
-    public static OutPacket onTransferFieldReqIgnored() {
+    public static OutPacket onTransferFieldReqIgnored(byte type) {
         OutPacket packet = new OutPacket(LoopbackPacket.TransferFieldReqIgnored);
+        packet.encodeByte(type);
         return packet;
     }
     

@@ -1873,7 +1873,7 @@ public class User extends Creature {
                         closeSocket();
                         changeLog.clear();
                     } else {
-                        sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                        sendPacket(FieldPacket.onTransferFieldReqIgnored(TransferField.NotConnectedArea));
                     }
                 }
             } finally {
@@ -2249,7 +2249,7 @@ public class User extends Creature {
                 if (!onTransferField || force) {
                     if (fieldID != null && FieldMan.getInstance(getChannelID()).isBlockedMap(fieldID)) {
                         Logger.logError("User tried to enter the Blocked Map #3 (From:%d,To:%d)", getField().getFieldID(), fieldID);
-                        sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                        sendPacket(FieldPacket.onTransferFieldReqIgnored(TransferField.DisabledPortal));
                     } else {
                         if (getField() == null || socket == null) {
                             closeSocket();
@@ -2280,16 +2280,16 @@ public class User extends Creature {
                             isDead = true;
                         }
                         if (fieldID != -1 && !loopback && !isDead && !isGM()) {
-                            sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                            sendPacket(FieldPacket.onTransferFieldReqIgnored(TransferField.Done));
                             return;
                         }
                         if (!isDead && !loopback && !canAttachAdditionalProcess()) {
-                            sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                            sendPacket(FieldPacket.onTransferFieldReqIgnored(TransferField.Done));
                             return;
                         }
                         if (fieldID == -1 && (portal == null || portal.isEmpty())) {
                             if (!loopback) {
-                                sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                                sendPacket(FieldPacket.onTransferFieldReqIgnored(TransferField.Done));
                             }
                             return;
                         }
@@ -2302,7 +2302,7 @@ public class User extends Creature {
                                 return;
                             }
                             if (!pt.enable) {
-                                sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                                sendPacket(FieldPacket.onTransferFieldReqIgnored(TransferField.DisabledPortal));
                                 this.onTransferField = false;
                                 return;
                             }
@@ -2321,7 +2321,7 @@ public class User extends Creature {
                         }
                         if (FieldMan.getInstance(getChannelID()).isBlockedMap(fieldID)) {
                             Logger.logError("User tried to enter the Blocked Map #1 (From:%d,To:%d)", getField().getFieldID(), fieldID);
-                            sendPacket(FieldPacket.onTransferFieldReqIgnored());
+                            sendPacket(FieldPacket.onTransferFieldReqIgnored(TransferField.DisabledPortal));
                             this.onTransferField = false;
                             return;
                         }

@@ -92,57 +92,75 @@ public class SecondaryStat {
         List<Integer> data = new ArrayList<>();
         
         if ((flag & CharacterTemporaryStat.PAD) != 0 && getStatOption(CharacterTemporaryStat.PAD) != 0) {
+            toSend |= CharacterTemporaryStat.PAD;
             data.add(getStatReason(CharacterTemporaryStat.PAD));
         }
-        if ((flag & CharacterTemporaryStat.PDD) != 0  && getStatOption(CharacterTemporaryStat.PDD) != 0) {
+        if ((flag & CharacterTemporaryStat.PDD) != 0 && getStatOption(CharacterTemporaryStat.PDD) != 0) {
+            toSend |= CharacterTemporaryStat.PDD;
             data.add(getStatReason(CharacterTemporaryStat.PDD));
         }
-        if ((flag & CharacterTemporaryStat.MAD) != 0  && getStatOption(CharacterTemporaryStat.MAD) != 0) {
+        if ((flag & CharacterTemporaryStat.MAD) != 0 && getStatOption(CharacterTemporaryStat.MAD) != 0) {
+            toSend |= CharacterTemporaryStat.MAD;
             data.add(getStatReason(CharacterTemporaryStat.MAD));
         }
-        if ((flag & CharacterTemporaryStat.MDD) != 0  && getStatOption(CharacterTemporaryStat.MDD) != 0) {
+        if ((flag & CharacterTemporaryStat.MDD) != 0 && getStatOption(CharacterTemporaryStat.MDD) != 0) {
+            toSend |= CharacterTemporaryStat.MDD;
             data.add(getStatReason(CharacterTemporaryStat.MDD));
         }
-        if ((flag & CharacterTemporaryStat.ACC) != 0  && getStatOption(CharacterTemporaryStat.ACC) != 0) {
+        if ((flag & CharacterTemporaryStat.ACC) != 0 && getStatOption(CharacterTemporaryStat.ACC) != 0) {
+            toSend |= CharacterTemporaryStat.ACC;
             data.add(getStatReason(CharacterTemporaryStat.ACC));
         }
-        if ((flag & CharacterTemporaryStat.EVA) != 0  && getStatOption(CharacterTemporaryStat.EVA) != 0) {
+        if ((flag & CharacterTemporaryStat.EVA) != 0 && getStatOption(CharacterTemporaryStat.EVA) != 0) {
+            toSend |= CharacterTemporaryStat.EVA;
             data.add(getStatReason(CharacterTemporaryStat.EVA));
         }
-        if ((flag & CharacterTemporaryStat.Craft) != 0  && getStatOption(CharacterTemporaryStat.Craft) != 0) {
+        if ((flag & CharacterTemporaryStat.Craft) != 0 && getStatOption(CharacterTemporaryStat.Craft) != 0) {
+            toSend |= CharacterTemporaryStat.Craft;
             data.add(getStatReason(CharacterTemporaryStat.Craft));
         }
-        if ((flag & CharacterTemporaryStat.Speed) != 0  && getStatOption(CharacterTemporaryStat.Speed) != 0) {
+        if ((flag & CharacterTemporaryStat.Speed) != 0 && getStatOption(CharacterTemporaryStat.Speed) != 0) {
+            toSend |= CharacterTemporaryStat.Speed;
             data.add(getStatReason(CharacterTemporaryStat.Speed));
         }
-        if ((flag & CharacterTemporaryStat.Jump) != 0  && getStatOption(CharacterTemporaryStat.Jump) != 0) {
+        if ((flag & CharacterTemporaryStat.Jump) != 0 && getStatOption(CharacterTemporaryStat.Jump) != 0) {
+            toSend |= CharacterTemporaryStat.Jump;
             data.add(getStatReason(CharacterTemporaryStat.Jump));
         }
-        if ((flag & CharacterTemporaryStat.MagicGuard) != 0  && getStatOption(CharacterTemporaryStat.MagicGuard) != 0) {
+        if ((flag & CharacterTemporaryStat.MagicGuard) != 0 && getStatOption(CharacterTemporaryStat.MagicGuard) != 0) {
+            toSend |= CharacterTemporaryStat.MagicGuard;
             data.add(getStatReason(CharacterTemporaryStat.MagicGuard));
         }
-        if ((flag & CharacterTemporaryStat.DarkSight) != 0  && getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
+        if ((flag & CharacterTemporaryStat.DarkSight) != 0 && getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
+            toSend |= CharacterTemporaryStat.DarkSight;
             data.add(getStatReason(CharacterTemporaryStat.DarkSight));
         }
-        if ((flag & CharacterTemporaryStat.Booster) != 0  && getStatOption(CharacterTemporaryStat.Booster) != 0) {
+        if ((flag & CharacterTemporaryStat.Booster) != 0 && getStatOption(CharacterTemporaryStat.Booster) != 0) {
+            toSend |= CharacterTemporaryStat.Booster;
             data.add(getStatReason(CharacterTemporaryStat.Booster));
         }
-        if ((flag & CharacterTemporaryStat.Unknown) != 0  && getStatOption(CharacterTemporaryStat.Unknown) != 0) {
+        if ((flag & CharacterTemporaryStat.Unknown) != 0 && getStatOption(CharacterTemporaryStat.Unknown) != 0) {
+            toSend |= CharacterTemporaryStat.Unknown;
             data.add(getStatReason(CharacterTemporaryStat.Unknown));
         }
-        if ((flag & CharacterTemporaryStat.PowerGuard) != 0  && getStatOption(CharacterTemporaryStat.PowerGuard) != 0) {
+        if ((flag & CharacterTemporaryStat.PowerGuard) != 0 && getStatOption(CharacterTemporaryStat.PowerGuard) != 0) {
+            toSend |= CharacterTemporaryStat.PowerGuard;
             data.add(getStatReason(CharacterTemporaryStat.PowerGuard));
         }
-        if ((flag & CharacterTemporaryStat.MaxHP) != 0  && getStatOption(CharacterTemporaryStat.MaxHP) != 0) {
+        if ((flag & CharacterTemporaryStat.MaxHP) != 0 && getStatOption(CharacterTemporaryStat.MaxHP) != 0) {
+            toSend |= CharacterTemporaryStat.MaxHP;
             data.add(getStatReason(CharacterTemporaryStat.MaxHP));
         }
-        if ((flag & CharacterTemporaryStat.MaxMP) != 0  && getStatOption(CharacterTemporaryStat.MaxMP) != 0) {
+        if ((flag & CharacterTemporaryStat.MaxMP) != 0 && getStatOption(CharacterTemporaryStat.MaxMP) != 0) {
+            toSend |= CharacterTemporaryStat.MaxMP;
             data.add(getStatReason(CharacterTemporaryStat.MaxMP));
         }
-        if ((flag & CharacterTemporaryStat.Invincible) != 0  && getStatOption(CharacterTemporaryStat.Invincible) != 0) {
+        if ((flag & CharacterTemporaryStat.Invincible) != 0 && getStatOption(CharacterTemporaryStat.Invincible) != 0) {
+            toSend |= CharacterTemporaryStat.Invincible;
             data.add(getStatReason(CharacterTemporaryStat.Invincible));
         }
-        if ((flag & CharacterTemporaryStat.SoulArrow) != 0  && getStatOption(CharacterTemporaryStat.SoulArrow) != 0) {
+        if ((flag & CharacterTemporaryStat.SoulArrow) != 0 && getStatOption(CharacterTemporaryStat.SoulArrow) != 0) {
+            toSend |= CharacterTemporaryStat.SoulArrow;
             data.add(getStatReason(CharacterTemporaryStat.SoulArrow));
         }
         

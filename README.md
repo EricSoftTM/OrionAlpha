@@ -116,8 +116,12 @@ OrionAlpha - A Nexon Replica Emulator Project
   
   ### Re-Enable Admin Actions
   Restores the ability to allow GM/Admins to drop items, mesos, etc.
-  * Change the instruction at address `004860AF` to `jmp 004860CA`
-  * Change the instruction at address `0052A0BC` to `jmp 0052A0F1`
+  Action | Address | Instruction
+  ----------- | ------- | -----------
+  Drop Items | 004860AF | jmp 004860CA
+  Drop Mesos | 0052A0BC | jmp 0052A0F1
+  Create Player Store | 005E0681 | jmp 005E06B1
+  Enable Trade Requests | 00497604 | jmp 00497633
 
   ### Enable Cash Shop
   Allows you to access the Cash Shop. This feature was forcefully disabled in the client for the beta.

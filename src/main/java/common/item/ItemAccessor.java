@@ -68,6 +68,10 @@ public class ItemAccessor {
         }
         return itemID / 10000 == 208 || itemID / 10000 == 209;
     }
+    
+    public static boolean isPetFoodItem(int itemID) {
+        return itemID / 10000 == 212;
+    }
 
     public static boolean isTreatSingly(ItemSlotBase p) {
         if (ItemInfo.isCashItem(p.getItemID())) {
@@ -151,7 +155,7 @@ public class ItemAccessor {
         }
     }
     
-    public static void getRealEquip(CharacterData c, List<ItemSlotBase> realEquip, int excl1, int excl2) {
+    public static void getRealEquip(CharacterData c, ItemSlotPet petItem, List<ItemSlotBase> realEquip, int excl1, int excl2) {
         byte gender = c.getCharacterStat().getGender();
         byte level = c.getCharacterStat().getLevel();
         short job = c.getCharacterStat().getJob();
@@ -163,20 +167,19 @@ public class ItemAccessor {
         short incSTR = 0, incDEX = 0, incINT = 0, incLUK = 0;
         
         ItemSlotEquip equip;
-        for (int pos = -1; pos >= -BodyPart.BP_Count; pos--) {
-            //equip = (ItemSlotEquip) realEquip.get(-pos);
-            if (pos != excl1 && pos != excl2) {
-                equip = (ItemSlotEquip) c.getItem(ItemType.Equip, pos);
-                if (equip != null) {
-                    incSTR += equip.iSTR;
-                    incDEX += equip.iDEX;
-                    incINT += equip.iINT;
-                    incLUK += equip.iLUK;
-                }
-                realEquip.set(-pos, equip);
-            } else {
-                realEquip.set(-pos, null);
+        for (int pos = 1; pos <= BodyPart.BP_Count; pos++) {
+            if (-pos == excl1 || -pos == excl2) {
+                realEquip.set(pos, null);
+                continue;
             }
+            equip = (ItemSlotEquip) c.getItem(ItemType.Equip, -pos);
+            if (equip != null && pos != BodyPart.PetWear) {
+                incSTR += equip.iSTR;
+                incDEX += equip.iDEX;
+                incINT += equip.iINT;
+                incLUK += equip.iLUK;
+            }
+            realEquip.set(pos, equip);
         }
         
         int pos = 0;
@@ -184,11 +187,18 @@ public class ItemAccessor {
             for (pos = 1; pos <= BodyPart.BP_Count; pos++) {
                 equip = (ItemSlotEquip) realEquip.get(pos);
                 if (equip != null) {
-                    int totSTR = incSTR + STR - equip.iSTR;
-                    int totDEX = incDEX + DEX - equip.iDEX;
-                    int totINT = incINT + INT - equip.iINT;
-                    int totLUK = incLUK + LUK - equip.iLUK;
-                    if (!ItemInfo.isAbleToEquip(gender, level, job, totSTR, totDEX, totINT, totLUK, pop, equip.getItemID())) {
+                    int totSTR = incSTR + STR;
+                    int totDEX = incDEX + DEX;
+                    int totINT = incINT + INT;
+                    int totLUK = incLUK + LUK;
+                    if (pos != BodyPart.PetWear) {
+                        totSTR -= equip.iSTR;
+                        totDEX -= equip.iDEX;
+                        totINT -= equip.iINT;
+                        totLUK -= equip.iLUK;
+                    }
+                    
+                    if (!ItemInfo.isAbleToEquip(gender, level, job, totSTR, totDEX, totINT, totLUK, pop, petItem, equip.getItemID())) {
                         incSTR -= equip.iSTR;
                         incDEX -= equip.iDEX;
                         incINT -= equip.iINT;

@@ -21,6 +21,7 @@ import common.item.BodyPart;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
 import common.item.ItemSlotEquip;
+import common.item.ItemSlotPet;
 import common.item.ItemType;
 import common.user.CharacterData;
 import java.sql.Connection;
@@ -117,6 +118,32 @@ public class CommonDB {
                         item.setItemNumber(rs.getShort("Number"));
                         
                         cd.setItem(ti, pos, item);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public static void rawGetItemPet(int characterID, CharacterData cd) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `itemslotpet` WHERE `CharacterID` = ? ORDER BY `CashItemSN`")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int itemID = rs.getInt("ItemID");
+                        int pos = rs.getInt("POS");
+                        
+                        ItemSlotPet item = new ItemSlotPet(itemID);
+                        item.setDateDead(FileTime.longToFileTime(rs.getLong("DeadDate")));
+                        item.setCashItemSN(rs.getLong("CashItemSN"));
+                        item.setPetName(rs.getString("PetName"));
+                        item.setLevel(rs.getInt("PetLevel"));
+                        item.setTameness(rs.getInt("Tameness"));
+                        item.setRepleteness(rs.getInt("Repleteness"));
+                        
+                        cd.setItem(ItemType.Cash, pos, item);
                     }
                 }
             }
@@ -245,6 +272,31 @@ public class CommonDB {
                 query += String.format(" AND `CashItemSN` NOT IN (%s)", removeCashSN.substring(0, removeCashSN.length() - 2));
             }
             try (PreparedStatement ps = con.prepareStatement(query)) {
+                Database.execute(con, ps, characterID);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+    }
+    
+    public static void rawUpdateItemPet(int characterID, List<ItemSlotBase> itemSlot) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            String removeCashSN = "";
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `itemslotpet` SET `POS` = ?, `ItemID` = ?, `PetName` = ?, `PetLevel` = ?, `Tameness` = ?, `Repleteness` = ?, `DeadDate` = ? WHERE `CharacterID` = ? AND `CashItemSN` = ?")) {
+                for (int pos = 1; pos < itemSlot.size(); pos++) {
+                    ItemSlotPet item = (ItemSlotPet) itemSlot.get(pos);
+                    if (item != null) {
+                        if (item.getCashItemSN() != 0) {
+                            removeCashSN += item.getCashItemSN() + ", ";
+                        }
+                        Database.execute(con, ps, pos, item.getItemID(), item.getPetName(), item.getLevel(), item.getTameness(), item.getRepleteness(), item.getDateDead().fileTimeToLong(), characterID, item.getCashItemSN());
+                    }
+                }
+            }
+            if (removeCashSN.isEmpty()) {
+                return;//wouldn't want to kill their inventory ;)
+            }
+            try (PreparedStatement ps = con.prepareStatement(String.format("DELETE FROM `itemslotpet` WHERE `CharacterID` = ? AND `CashItemSN` NOT IN (%s)", removeCashSN.substring(0, removeCashSN.length() - 2)))) {
                 Database.execute(con, ps, characterID);
             }
         } catch (SQLException ex) {

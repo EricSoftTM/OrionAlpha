@@ -47,8 +47,9 @@ import util.Rand32;
 public class Inventory {
     
     public static boolean changeSlotPosition(User user, byte onExclRequest, byte ti, short pos1, short pos2, short count) {
-        if (user.getHP() == 0)
+        if (user.getHP() == 0) {
             return false;
+        }
         if (ti <= ItemType.NotDefine || ti >= ItemType.NO) {
             Logger.logError("Invalid Item Type Index %d from user %s", ti, user.getCharacterName());
             return false;
@@ -495,6 +496,19 @@ public class Inventory {
     
     public static void sendInventoryOperation(User user, byte onExclRequest, List<ChangeLog> changeLog) {
         user.sendPacket(InventoryManipulator.makeInventoryOperation(onExclRequest, changeLog));
+    }
+    
+    public static boolean updatePetItem(User user, short pos) {
+        ItemSlotBase item = user.getCharacter().getItem(ItemType.Cash, pos);
+        if (item != null) {
+            List<ChangeLog> changeLog = new ArrayList<>();
+            InventoryManipulator.insertChangeLog(changeLog, ChangeLog.DelItem, ItemType.Cash, pos, null, (short) 0, (short) 0);
+            InventoryManipulator.insertChangeLog(changeLog, ChangeLog.NewItem, ItemType.Cash, pos, item, (short) 0, (short) 0);
+            user.addCharacterDataMod(DBChar.ItemSlotCash);
+            Inventory.sendInventoryOperation(user, Request.None, changeLog);
+            changeLog.clear();
+        }
+        return true;
     }
     
     public static boolean upgradeEquip(User user, short upos, short epos) {

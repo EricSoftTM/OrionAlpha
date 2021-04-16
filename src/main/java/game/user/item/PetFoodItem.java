@@ -15,17 +15,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.field;
+package game.user.item;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Eric
  */
-public class TransferField {
-	public static final byte
-			Done                = 0,
-			DisabledPortal      = 1,
-			NotConnectedArea    = 2,
-			NotAllowedLevel     = 3
-	;
+public class PetFoodItem {
+	
+	private int itemID;
+	private int incRepleteness;
+	private final List<Integer> pets;
+	
+	public PetFoodItem() {
+		this.pets = new ArrayList<>();
+	}
+	
+	public int getItemID() {
+		return itemID;
+	}
+	
+	public void setItemID(int itemID) {
+		this.itemID = itemID;
+	}
+	
+	public int getIncRepleteness() {
+		return incRepleteness;
+	}
+	
+	public void setIncRepleteness(int repleteness) {
+		this.incRepleteness = repleteness;
+	}
+	
+	public List<Integer> getPets() {
+		return pets;
+	}
 }

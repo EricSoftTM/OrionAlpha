@@ -242,7 +242,7 @@ public class CharacterStat {
         setName(rs.getString("CharacterName"));
         setGender(rs.getByte("Gender"));
         setSkin(rs.getByte("Skin"));
-        //setPetLockerSN(rs.getLong("PetLockerSN"));
+        setPetLockerSN(rs.getLong("PetLockerSN"));
         setFace(rs.getInt("Face"));
         setHair(rs.getInt("Hair"));
         setLevel(rs.getByte("Level"));

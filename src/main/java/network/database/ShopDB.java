@@ -143,6 +143,7 @@ public class ShopDB {
             CommonDB.rawGetInventorySize(characterID, cd);
             CommonDB.rawGetItemEquip(characterID, cd);
             CommonDB.rawGetItemBundle(characterID, cd);
+            CommonDB.rawGetItemPet(characterID, cd);
 
             rawGetItemLocker(user);
             return cd;

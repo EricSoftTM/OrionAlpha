@@ -47,6 +47,7 @@ import game.user.command.CommandHandler;
 import game.user.command.UserGradeCode;
 import game.user.item.*;
 import game.user.pet.Pet;
+import game.user.pet.PetPacket;
 import game.user.skill.*;
 import game.user.skill.Skills.*;
 import game.user.stat.BasicStat;
@@ -96,6 +97,7 @@ public class User extends Creature {
     private long lastCharacterDataFlush;
     private long nextGeneralItemCheck;
     private long nextCheckCashItemExpire;
+    private long lastCheckPetDead;
     private long lastCharacterHPInc;
     private long lastCharacterMPInc;
     private int illegalHPIncTime;
@@ -197,6 +199,7 @@ public class User extends Creature {
         this.lastCharacterHPInc = time;
         this.lastCharacterMPInc = time;
         this.lastCharacterDataFlush = time;
+        this.lastCheckPetDead = time;
         this.nextCheckCashItemExpire = time;
         this.lastAttack = time;
         this.nexonClubID = "";
@@ -1090,9 +1093,19 @@ public class User extends Creature {
         footholdSN = 0;
         sendSetFieldPacket(true);
         if (getField().onEnter(this)) {
-            // I'm genuinely curious why Nexon has migration packets for messenger,
-            // when you can't "migrate" channels without logging out first?
-            // The only "migration" done is to the Shop, which can't access messenger.
+            long petLockerSN = character.getCharacterStat().getPetLockerSN();
+            if (petLockerSN != 0) {
+                short pos = (short) character.findCashItemSlotPosition(ItemType.Cash, petLockerSN);
+                if (pos == 0 || !activatePet(pos, (byte) 0, true)) {
+                    character.getCharacterStat().setPetLockerSN(0);
+                    addCharacterDataMod(DBChar.Character);
+                }
+            }
+            
+            if (msMessenger) {
+                // Channel changing isn't fully supported yet, so this may not exist.
+                // Will handle this once I look in to messengers.
+            }
         } else {
             Logger.logError("Failed in entering field");
             closeSocket();
@@ -1212,9 +1225,19 @@ public class User extends Creature {
             case ClientPacket.Admin:
                 onAdmin(packet);
                 break;
+            case ClientPacket.UserPetFoodItemUseRequest:
+                onPetFoodItemUseRequest(packet);
+                break;
+            case ClientPacket.UserActivatePetRequest:
+                onActivatePetRequest(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);
+                } else if (type >= ClientPacket.BEGIN_PET && type <= ClientPacket.END_PET) {
+                    if (pet != null) {
+                        pet.onPacket(type, packet);
+                    }
                 } else {
                     Logger.logReport("[Unidentified Packet] [" + type + "]: " + packet.dumpString());
                 }
@@ -1265,6 +1288,12 @@ public class User extends Creature {
                 unlock();
             }
         }
+    }
+    
+    public void onActivatePetRequest(InPacket packet) {
+        short pos = packet.decodeShort();
+        activatePet(pos, (byte) 0, false);
+        sendCharacterStat(Request.Excl, 0);
     }
 
     public void onAdmin(InPacket packet) {
@@ -1921,6 +1950,40 @@ public class User extends Creature {
             }
         }
     }
+    
+    public void onPetFoodItemUseRequest(InPacket packet) {
+        if (getField() == null) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        if (lock()) {
+            try {
+                short pos = packet.decodeShort();
+                int itemID = packet.decodeInt();
+                ItemSlotBase item = character.getItem(ItemType.Consume, pos);
+                PetFoodItem food = ItemInfo.getPetFoodItem(itemID);
+                if (item == null || item.getItemID() != itemID || food == null) {
+                    sendCharacterStat(Request.Excl, 0);
+                    return;
+                }
+                List<ChangeLog> changeLog = new ArrayList<>();
+                Pointer<Integer> decRet = new Pointer<>(0);
+                if (Inventory.rawRemoveItem(this, ItemType.Consume, pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
+                    if (pet != null) {
+                        if (food.getPets().contains(pet.getTemplateID())) {
+                            pet.onEatFood(food.getIncRepleteness());
+                        }
+                    }
+                    addCharacterDataMod(DBChar.ItemSlotConsume);
+                    Inventory.sendInventoryOperation(this, Request.None, changeLog);
+                }
+                sendCharacterStat(Request.Excl, 0);
+                changeLog.clear();
+            } finally {
+                unlock();
+            }
+        }
+    }
 
     public void onPortalScrollUseRequest(InPacket packet) {
         if (getField() == null) {
@@ -2549,6 +2612,10 @@ public class User extends Creature {
             sendPacket(Stage.onSetField(this, true, s1, s2, s3));
         } else {
             sendPacket(Stage.onSetField(this, false, -1, -1, -1));
+            if (pet != null) {
+                pet.onEnterField(getField());
+                sendPacket(PetPacket.onActivated(characterID, pet));
+            }
         }
     }
 
@@ -2687,15 +2754,62 @@ public class User extends Creature {
         flushCharacterData(time, false);
         checkCashItemExpire(time);
         checkGeneralItemExpire(time);
+        checkPetDead(time);
+        updateActivePet(time);
+    }
+    
+    private void updateActivePet(long time) {
+        if (getField() != null) {
+            if (lock()) {
+                try {
+                    if (pet != null) {
+                        if (pet.update(time)) {
+                            activatePet((short) 0, (byte) 1, false);
+                        }
+                    }
+                } finally {
+                    unlock();
+                }
+            }
+        }
     }
 
-    public void checkGeneralItemExpire(long time) {
+    private void checkGeneralItemExpire(long time) {
         // TODO: Item Expirations
     }
 
-    public void checkCashItemExpire(long time) {
+    private void checkCashItemExpire(long time) {
         if (time - nextCheckCashItemExpire >= 0) {
             // TODO: Cash Item Expiration
+        }
+    }
+    
+    private void checkPetDead(long time) {
+        if (time - lastCheckPetDead < 180000) {
+            return;
+        }
+        if (lock()) {
+            try {
+                lastCheckPetDead = time;
+                if (character.getItemSlot(ItemType.Cash).isEmpty()) {
+                    return;
+                }
+                int slotCount = character.getItemSlotCount(ItemType.Cash);
+                for (int i = 1; i <= slotCount; i++) {
+                    ItemSlotBase item = character.getItem(ItemType.Cash, i);
+                    if (item == null || item.getCashItemSN() == 0) {
+                        continue;
+                    }
+                    if (item.getType() == ItemSlotType.Pet) {
+                        ItemSlotPet petItem = (ItemSlotPet) item;
+                        if (petItem.isDead()) {
+                            activatePet((short) 0, (byte) 2, false);
+                        }
+                    }
+                }
+            } finally {
+                unlock();
+            }
         }
     }
 
@@ -2720,6 +2834,9 @@ public class User extends Creature {
                         if ((characterDataModFlag & DBChar.ItemSlotConsume) != 0 || (characterDataModFlag & DBChar.ItemSlotInstall) != 0
                                 || (characterDataModFlag & DBChar.ItemSlotEtc) != 0) {
                             CommonDB.rawUpdateItemBundle(characterID, character.getItemSlot());
+                        }
+                        if ((characterDataModFlag & DBChar.ItemSlotCash) != 0) {
+                            CommonDB.rawUpdateItemPet(characterID, character.getItemSlot(ItemType.Cash));
                         }
                         characterDataModFlag = 0;
                     }
@@ -2814,12 +2931,19 @@ public class User extends Creature {
         lock.lock();
         try {
             AvatarLook avatarOld = avatarLook.makeClone();
-            ItemAccessor.getRealEquip(character, realEquip, 0, 0);
-            avatarLook.load(character.getCharacterStat(), character.getEquipped(), character.getEquipped2());
+            ItemSlotPet petItem = null;
+            if (pet != null) {
+                petItem = pet.getItemSlot();
+            }
+            ItemAccessor.getRealEquip(character, petItem, realEquip, 0, 0);
+            avatarLook.load(character.getCharacterStat(), realEquip, character.getEquipped2());
+    
+            if (petItem != null) {
+                getField().splitSendPacket(getSplit(), PetPacket.onDataChanged(characterID, null, petItem.getLevel(), petItem.getTameness(), petItem.getRepleteness()), null);
+            }
 
             int maxHPIncRate = secondaryStat.getStatOption(CharacterTemporaryStat.MaxHP);
             int maxMPIncRate = secondaryStat.getStatOption(CharacterTemporaryStat.MaxMP);
-            int speed = secondaryStat.speed;
             int weaponID = 0;
             if (character.getItem(ItemType.Equip, -BodyPart.Weapon) != null) {
                 weaponID = character.getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
@@ -2900,5 +3024,44 @@ public class User extends Creature {
     public void setMSMessenger(boolean msMessenger) {
         this.msMessenger = msMessenger;
     }
-
+    
+    public void setActivePet(Pet pet) {
+        this.pet = pet;
+    }
+    
+    public boolean activatePet(short pos, byte reason, boolean onInitialize) {
+        if (getField() == null || getSecondaryStat().getStatOption(CharacterTemporaryStat.DarkSight) != 0 && !onInitialize || pos == 0 && reason == 0) {
+            return false;
+        }
+        if (lock()) {
+            try {
+                Pet newPet = null;
+                if (pos != 0) {
+                    if (getPet() == null || getPet().getItemSlotPos() != pos) {
+                        newPet = new Pet();
+                        if (!newPet.init(this, pos)) {
+                            return false;
+                        }
+                    }
+                }
+                setActivePet(newPet);
+                getField().splitSendPacket(getSplit(), PetPacket.onActivated(characterID, newPet), null);
+                validateStat(false);
+                long petSN = character.getCharacterStat().getPetLockerSN();
+                if (newPet != null) {
+                    character.getCharacterStat().setPetLockerSN(newPet.getPetLockerSN());
+                } else {
+                    character.getCharacterStat().setPetLockerSN(0);
+                }
+                if (onInitialize || petSN != character.getCharacterStat().getPetLockerSN()) {
+                    sendCharacterStat(Request.None, CharacterStatType.PetSN);
+                    addCharacterDataMod(DBChar.Character);
+                }
+                return true;
+            } finally {
+                unlock();
+            }
+        }
+        return false;
+    }
 }

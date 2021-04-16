@@ -18,7 +18,9 @@
 package game.user.item;
 
 /**
+ *
  * @author Arnah
+ * @author Eric
 */
 public class EquipItem {
 
@@ -33,6 +35,15 @@ public class EquipItem {
     private short incACC, incEVA, incCraft, incSpeed, incJump, incSwim;
     private int knockback, attackSpeed;
     private byte tuc;//Total Upgrade Count
+    private float recovery;
+    private int petTemplateFlag;
+    
+    public boolean isItemSuitedForPet(int petTemplateID) {
+        if (itemID / 10000 == 180 && petTemplateID / 10000 == 500) {
+            return ((1 << (petTemplateID % 100)) & petTemplateFlag) != 0;
+        }
+        return false;
+    }
 
     public int getItemID() {
         return itemID;
@@ -272,5 +283,17 @@ public class EquipItem {
 
     public void setTUC(int tuc) {
         this.tuc = (byte) tuc;
+    }
+    
+    public float getRecovery() {
+        return recovery;
+    }
+    
+    public void setRecovery(float recovery) {
+        this.recovery = recovery;
+    }
+    
+    public void addPetTemplateFlag(int flag) {
+        this.petTemplateFlag |= flag;
     }
 }

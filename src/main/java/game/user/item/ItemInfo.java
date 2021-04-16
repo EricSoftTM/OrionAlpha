@@ -51,6 +51,7 @@ public class ItemInfo {
     protected static final Map<Integer, StateChangeItem> statChangeItem;
     protected static final Map<Integer, PortalScrollItem> portalScrollItem;
     protected static final Map<Integer, UpgradeItem> upgradeItem;
+    protected static final Map<Integer, PetFoodItem> petFoodItem;
     //
     protected static final Map<Integer, String> mapString;
     protected static final Map<Integer, String> itemString;
@@ -62,6 +63,7 @@ public class ItemInfo {
         statChangeItem = new HashMap<>();
         portalScrollItem = new HashMap<>();
         upgradeItem = new HashMap<>();
+        petFoodItem = new HashMap<>();
         
         // Initialize Strings
         mapString = new HashMap<>();
@@ -78,6 +80,10 @@ public class ItemInfo {
 
     public static StateChangeItem getStateChangeItem(int itemID) {
         return statChangeItem.get(itemID);
+    }
+    
+    public static PetFoodItem getPetFoodItem(int itemID) {
+        return petFoodItem.get(itemID);
     }
 
     public static PortalScrollItem getPortalScrollItem(int itemID) {
@@ -193,6 +199,7 @@ public class ItemInfo {
                 BundleItem info = getBundleItem(itemID);
                 if (info != null) {
                     ItemSlotPet item = new ItemSlotPet(itemID);
+                    item.setPetName(getItemName(itemID));
                     return item;
                 }
             }
@@ -200,14 +207,15 @@ public class ItemInfo {
         return null;
     }
     
-    public static boolean isAbleToEquip(int gender, int level, int job, int STR, int DEX, int INT, int LUK, int pop, int itemID) {
+    public static boolean isAbleToEquip(int gender, int level, int job, int STR, int DEX, int INT, int LUK, int pop, ItemSlotPet petItem, int itemID) {
         EquipItem info = getEquipItem(itemID);
         if (info != null) {
             int jobCategory = JobAccessor.getJobCategory(job);
             if (ItemAccessor.isCorrectBodyPart(itemID, BodyPart.PetWear, gender)) {
-                // While the item slot seems to exist, Pets don't exist yet.
-                // For now we'll just disallow any pet slot until then.
-                return false;
+                if (petItem == null || !info.isItemSuitedForPet(petItem.getItemID())) {
+                    return false;
+                }
+                level = petItem.getLevel();
             }
             int jobBit = 0;
             if (jobCategory == JobCategory.Wizard) {
@@ -313,6 +321,9 @@ public class ItemInfo {
             item.setReqDEX(WzUtil.getInt32(info.getNode("reqDEX"), 0));
             item.setReqINT(WzUtil.getInt32(info.getNode("reqINT"), 0));
             item.setReqLUK(WzUtil.getInt32(info.getNode("reqLUK"), 0));
+            item.setReqPOP(WzUtil.getInt32(info.getNode("reqPOP"), 0));
+            item.setReqJob(WzUtil.getInt32(info.getNode("reqJob"), 0));
+            item.setReqLevel(WzUtil.getInt32(info.getNode("reqLevel"), 0));
 
             item.setSellPrice(WzUtil.getInt32(info.getNode("price"), 0));
             item.setCash(WzUtil.getBoolean(info.getNode("cash"), false));
@@ -339,8 +350,22 @@ public class ItemInfo {
             item.setKnockback(WzUtil.getInt32(info.getNode("knockback"), 0));
             item.setAttackSpeed(WzUtil.getInt32(info.getNode("attackSpeed"), 0));
             item.setTUC(WzUtil.getInt32(info.getNode("tuc"), 0));
+            item.setRecovery(WzUtil.getFloat(info.getNode("recovery"), 1.0f));
             // vslot, iconRaw, tuc, sfx, incMDD, icon, reqLUK, reqLevel, knockback, reqDEX, incJump, price, attack, incINT, islot, incSTR, incPDD, stand, cash, incMHP, reqPOP, afterImage, incACC, incLUK, nameTag, incMMD, incDEX, reqJob, chatBalloon, incSpeed, attackSpeed, name, incEVA, incMMP, incMAD, incPAD, reqINT, walk, reqSTR, desc
-
+    
+            if (item.getItemID() / 10000 == 180 && item.getItemID() % 1000 < 100) {
+                for (WzProperty prop : itemData.getChildNodes()) {
+                    if (prop.getNodeName().equals("info")) {
+                        continue;
+                    }
+                    int templateID = Integer.parseInt(prop.getNodeName());
+                    int flag = 1 << (templateID % 100);
+                    if (templateID / 10000 != 500 || item.isItemSuitedForPet(templateID)) {
+                        continue;
+                    }
+                    item.addPetTemplateFlag(flag);
+                }
+            }
         }
         //
         equipItem.put(item.getItemID(), item);
@@ -390,6 +415,8 @@ public class ItemInfo {
             registerUpgradeItem(item.getItemID(), itemData);
         } else if (ItemAccessor.isPortalScrollItem(item.getItemID())) {
             registerPortalScrollItem(item.getItemID(), itemData);
+        } else if (ItemAccessor.isPetFoodItem(item.getItemID())) {
+            registerPetFoodItem(item.getItemID(), itemData);
         } else if (ItemAccessor.isWeatherItem(item.getItemID())) {
             // wonder if 'CashItem' should add this and megaphone (208)..
         }
@@ -465,6 +492,23 @@ public class ItemInfo {
 
             sci.setTime(WzUtil.getInt32(spec.getNode("time"), 0));
         }
+    }
+    
+    private static void registerPetFoodItem(int itemID, WzProperty itemData) {
+        PetFoodItem item = new PetFoodItem();
+        item.setItemID(itemID);
+        WzProperty spec = itemData.getNode("spec");
+        if (spec != null) {
+            item.setIncRepleteness(WzUtil.getInt32(spec.getNode("inc"), 0));
+            for (int i = 0; ; i++) {
+                WzProperty pet = spec.getNode(String.valueOf(i));
+                if (pet == null) {
+                    break;
+                }
+                item.getPets().add(WzUtil.getInt32(pet, 0));
+            }
+        }
+        petFoodItem.put(item.getItemID(), item);
     }
 
     private static void registerPortalScrollItem(int itemID, WzProperty itemData) {

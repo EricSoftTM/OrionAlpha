@@ -30,6 +30,7 @@ import util.Pointer;
 public class ExpAccessor {
     public static final int MAX_LEVEL = 200;
     public static final int[] EXP_USER = new int[201];
+    public static final int[] EXP_PET = {1, 3, 6, 14, 31, 60, 108, 181, 287, 434, 632, 891, 1224, 1642, 2161, 2793, 3557, 4467, 5542, 6801, 8263, 9950, 11882, 14084, 16578, 19391, 22547, 26074, 30000, 0};
     
     static {
         // NEXTLEVEL::NEXTLEVEL

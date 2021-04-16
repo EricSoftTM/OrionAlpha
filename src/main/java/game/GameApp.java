@@ -33,6 +33,7 @@ import game.field.FieldMan;
 import game.field.life.mob.MobTemplate;
 import game.field.life.npc.NpcTemplate;
 import game.user.item.ItemInfo;
+import game.user.pet.PetTemplate;
 import game.user.skill.SkillInfo;
 import network.database.CommonDB;
 import network.database.Database;
@@ -240,6 +241,11 @@ public class GameApp {
         time = System.currentTimeMillis();
         NpcTemplate.load(true);
         Logger.logReport("Loaded Npc Attributes in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
+        
+        // Load Pets
+        time = System.currentTimeMillis();
+        PetTemplate.load(false);
+        Logger.logReport("Loaded Pet Attributes in " + ((System.currentTimeMillis() - time) / 1000.0) + " seconds.");
         
         // Load Maps
         time = System.currentTimeMillis();

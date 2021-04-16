@@ -134,9 +134,9 @@ public class LoopbackPacket {
             END_FIELD = 107,
             BEGIN_CASHSHOP = 108,
             CashShopChargeParamResult = 109,
-            CashShopQueryCashResult = 111,
-            CashShopCashItemResult = 112,
-            END_CASHSHOP = 113,
-            NO = 114
+            CashShopQueryCashResult = 110,
+            CashShopCashItemResult = 111,
+            END_CASHSHOP = 112,
+            NO = 113
     ;
 }

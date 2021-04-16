@@ -123,6 +123,10 @@ OrionAlpha - A Nexon Replica Emulator Project
   Allows you to access the Cash Shop. This feature was forcefully disabled in the client for the beta.
   * Change the instruction at address `0054D590` to `nop`
   * Change the instruction at address `0054D591` to `nop`
+
+  ### Fix Pets
+  Nexon has been a meme since 2003? Amazing. This fixes pet action rendering crashes due to path resolve failure.
+  * Change the ASCII at address `00648600` to `Item/Pet/%07d.img`
   
   ### Modifying Damage Cap
   Allows you to extend the damage cap up to a maximum of `32,767`.

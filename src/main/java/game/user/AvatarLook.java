@@ -49,10 +49,10 @@ public class AvatarLook {
         for (int i = 1; i <= BodyPart.BP_Count; i++) {
             if (equipped2.get(i) != null) {
                 this.hairEquip.set(i, equipped2.get(i).getItemID());
+            } else if (equipped.get(i) != null) {
+                this.hairEquip.set(i, equipped.get(i).getItemID());
             } else {
-                if (equipped.get(i) != null) {
-                    this.hairEquip.set(i, equipped.get(i).getItemID());
-                }
+                this.hairEquip.set(i, 0);
             }
         }
     }

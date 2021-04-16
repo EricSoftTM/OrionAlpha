@@ -17,6 +17,7 @@
  */
 package game.user;
 
+import game.miniroom.MiniRoomBase;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 
@@ -38,6 +39,19 @@ public class UserCommon {
         OutPacket packet = new OutPacket(LoopbackPacket.UserChat);
         packet.encodeInt(characterID);
         packet.encodeString(text);
+        return packet;
+    }
+    
+    public static OutPacket onMiniRoomBalloon(int characterID, MiniRoomBase miniRoom) {
+        OutPacket packet = new OutPacket(LoopbackPacket.UserMiniRoomBalloon);
+        packet.encodeInt(characterID);
+        if (miniRoom != null) {
+            packet.encodeByte(miniRoom.getTypeNumber());
+            packet.encodeInt(miniRoom.getMiniRoomSN());
+            packet.encodeString(miniRoom.getTitle());
+        } else {
+            packet.encodeByte(0);
+        }
         return packet;
     }
 }

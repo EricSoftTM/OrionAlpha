@@ -15,16 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.miniroom;
+package game.miniroom.shop;
 
 /**
  *
- * @author sunnyboy
+ * @author Eric
  */
-public class MiniRoomType {
-
-    public static final int 
-            TradingRoom = 1,
-            PersonalShop = 2
-    ;
+public class PersonalShopBuy {
+	public static final byte
+			Success = 0,
+			NoStock = 1,
+			NoMoney = 2,
+			OverPrice = 3,
+			HostTooMuchMoney = 4,
+			NoSlot = 5,
+			Unknown = 6;
 }

@@ -17,14 +17,26 @@
  */
 package game.miniroom;
 
+import java.awt.*;
+
 /**
  *
- * @author sunnyboy
+ * @author Eric
  */
-public class MiniRoomType {
-
-    public static final int 
-            TradingRoom = 1,
-            PersonalShop = 2
-    ;
+public class BalloonEntry {
+	private final int fieldID;
+	private final Point host;
+	
+	public BalloonEntry(int fieldID, Point host) {
+		this.fieldID = fieldID;
+		this.host = new Point(host.x, host.y);
+	}
+	
+	public int getFieldID() {
+		return fieldID;
+	}
+	
+	public Point getLocation() {
+		return host;
+	}
 }

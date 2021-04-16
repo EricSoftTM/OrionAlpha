@@ -20,26 +20,28 @@ package game.miniroom;
 /**
  *
  * @author sunnyboy
+ * @author Eric
  */
 public class MiniRoomPacket {
     public static final byte
             Create          = 0,
-            Invite          = 1,//0049CB90
-            InviteResult    = 2,//0049CEE0
-            Enter           = 3,//0049D1C0
-            EnterFailed     = 4,//004F8730
-            EnterResult     = 5,//0049CA90
-            Chat            = 6,//004F8BC0
-            Avatar          = 7,//0049D270
-            Leave           = 8,//0049C730
-            GameMessage     = 9,//004F8D60
-            Unknown10       = 10,//Can't find in client.
-            Unknown11       = 11,//Can't find in client.
-            PutItem         = 12,//004F8940
-            PutMoney        = 13,//004F8B20
-            Trade           = 14//004F8940
-            // MoveItemToInventory
-            // ItemCRC
-            // LimitFail
+            CreateResult    = 1,
+            Invite          = 2,//004AF450
+            InviteResult    = 3,//004AF6E0
+            Enter           = 4,//004AF9A0
+            EnterResult     = 5,//004AF1F0
+            Chat            = 6,//004AFC30
+            Avatar          = 7,//004AFB50
+            Leave           = 8,//004AFA60
+            Balloon         = 9,//004DCB20
+            // TradeRoomPacket
+            PutItem_TR      = 10,//00522EF0
+            PutMoney        = 11,//005230A0
+            Trade           = 12,//00523120
+            // PersonalShopPacket
+            PutItem_PS      = 13,//004DD500
+            BuyItem         = 14,//004DD0F0
+            BuyResult       = 15,//004DCF00
+            Refresh         = 16 //004DCCD0
     ;
 }

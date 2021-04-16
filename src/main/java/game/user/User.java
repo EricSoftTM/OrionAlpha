@@ -300,6 +300,18 @@ public class User extends Creature {
     public MiniRoomBase getMiniRoom() {
         return miniRoom;
     }
+    
+    public void setMiniRoomBalloon(boolean open) {
+        if (getField() != null) {
+            if (getMiniRoom() != null && open) {
+                getField().splitSendPacket(getSplit(), UserCommon.onMiniRoomBalloon(characterID, miniRoom), null);
+                miniRoomBalloon = true;
+            } else {
+                getField().splitSendPacket(getSplit(), UserCommon.onMiniRoomBalloon(characterID, null), null);
+                miniRoomBalloon = false;
+            }
+        }
+    }
 
     public boolean incAP(int inc, boolean onlyFull) {
         lock.lock();
@@ -782,7 +794,7 @@ public class User extends Creature {
         try {
             this.tradingNpc = null;
             if (miniRoom != null) {
-                //miniRoom.onUserLeave(this);
+                miniRoom.onUserLeave(this);
 	            miniRoom = null;
             }
             if (runningVM != null) {
@@ -792,6 +804,13 @@ public class User extends Creature {
         } finally {
             unlock();
         }
+    }
+    
+    public void encodeAvatar(OutPacket packet) {
+        packet.encodeByte(getCharacter().getCharacterStat().getGender());
+        packet.encodeInt(getCharacter().getCharacterStat().getFace());
+        getAvatarLook().encode(packet);
+        packet.encodeString(getCharacterName());
     }
 
     public void closeSocket() {
@@ -1594,7 +1613,7 @@ public class User extends Creature {
     }
 
     public void onChat(InPacket packet) {
-        if (getField() == null) {
+        if (getField() == null || miniRoomBalloon) {
             return;
         }
         String text = packet.decodeString();
@@ -2916,12 +2935,15 @@ public class User extends Creature {
     public void postAvatarModified(int flag) {
         if (((flag | avatarModFlag) != avatarModFlag) || flag == AvatarLook.Look) {
             avatarModFlag |= flag;
-            avatarLook.load(character.getCharacterStat(), character.getEquipped(), character.getEquipped2());
-            if (msMessenger)
+            if (msMessenger) {
                 userMSM.notifyAvatarChanged();
+            }
             getField().splitSendPacket(getSplit(), UserRemote.onAvatarModified(this, flag), this);
             if (miniRoom != null) {
-                //miniRoom.onAvatarChanged(this);
+                // NOTE: In JMS Beta, Nexon incorrectly checks the Avatar.
+                // Instead of making sure it exists, they make sure it doesn't.
+                // To fix this, change the instruction at 004AFBB0 from JE to JNE.
+                miniRoom.onAvatarChanged(this);
             }
             avatarModFlag = 0;
         }

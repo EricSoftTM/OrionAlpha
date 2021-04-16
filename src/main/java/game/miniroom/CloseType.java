@@ -19,12 +19,12 @@ package game.miniroom;
 
 /**
  *
- * @author sunnyboy
+ * @author Eric
  */
-public class MiniRoomType {
-
-    public static final int 
-            TradingRoom = 1,
-            PersonalShop = 2
-    ;
+public class CloseType {
+	public static final int
+			None = 0,
+			Host = 1,
+			Anyone = 2
+	;
 }

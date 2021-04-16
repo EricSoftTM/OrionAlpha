@@ -15,16 +15,54 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.miniroom;
+package game.miniroom.shop;
+
+import common.item.ItemSlotBase;
 
 /**
  *
- * @author sunnyboy
+ * @author Eric
  */
-public class MiniRoomType {
-
-    public static final int 
-            TradingRoom = 1,
-            PersonalShop = 2
-    ;
+public class Item {
+	private byte ti;
+	private short pos, number, set;
+	private int price;
+	private ItemSlotBase item;
+	
+	public Item(byte ti, short pos, short count, short set, int price, ItemSlotBase item) {
+		this.ti = ti;
+		this.pos = pos;
+		this.number = count;
+		this.set = set;
+		this.price = price;
+		this.item = item;
+	}
+	
+	public byte getTI() {
+		return ti;
+	}
+	
+	public short getPos() {
+		return pos;
+	}
+	
+	public short getNumber() {
+		return number;
+	}
+	
+	public short getSet() {
+		return set;
+	}
+	
+	public int getPrice() {
+		return price;
+	}
+	
+	public ItemSlotBase getItemSlot() {
+		return item;
+	}
+	
+	public void setNumber(int count) {
+		this.number = (short) count;
+	}
 }

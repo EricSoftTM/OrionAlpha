@@ -22,9 +22,19 @@ package game.miniroom;
  * @author sunnyboy
  */
 public class MiniRoomEnter {
-
-    public static final int Success = 0;
-    public static final int NoRoom = 1;
-    public static final int Full = 2;
-    public static final int Busy = 3;
+    public static final int
+            Success                         = 0,
+            NoRoom                          = 1,
+            Full                            = 2,
+            Busy                            = 3,
+            Dead                            = 4,
+            Event                           = 5,
+            PermissionDenied                = 6,
+            NoTrading                       = 7,
+            Etc                             = 8,
+            OnlyInSameField                 = 9,
+            NearPortal                      = 10,
+            ExistMiniRoom                   = 11
+    ;
 }
+

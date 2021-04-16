@@ -26,6 +26,7 @@ import game.field.life.mob.MobPool;
 import game.field.life.npc.Npc;
 import game.field.life.npc.NpcPool;
 import game.field.portal.PortalMap;
+import game.miniroom.BalloonEntry;
 import game.user.User;
 import game.user.UserRemote;
 import network.packet.ClientPacket;
@@ -94,6 +95,7 @@ public class Field {
     private FieldSplit splitEnd;
     private List<FieldSplit> fieldSplit;
     private final Map<Integer, User> users;
+    private final Map<Integer, BalloonEntry> balloonEntry;
 
     public Field(int fieldID) {
         this.fieldObjIdCounter = new AtomicInteger(30000);
@@ -106,6 +108,7 @@ public class Field {
         this.lifePool = new LifePool(this);
         this.dropPool = new DropPool(this);
         this.users = new ConcurrentHashMap<>();
+        this.balloonEntry = new ConcurrentHashMap<>();
     }
 
     public void broadcastPacket(OutPacket packet, List<Integer> characters) {
@@ -122,6 +125,27 @@ public class Field {
             if (user!= null && (!exceptAdmin || !user.isGM()))//!((pUser.nGradeCode & 1) > 0)
                 user.sendPacket(packet);
         }
+    }
+    
+    public boolean checkBalloonAvailable(Point host) {
+        int width = 120;
+        int height = 80;
+        
+        for (BalloonEntry entry : balloonEntry.values()) {
+            if (entry.getFieldID() == getFieldID()) {
+                if (Math.abs(host.x - entry.getLocation().x) < width + 10) {
+                    if (host.y - entry.getLocation().y >= 0) {
+                        if ((host.y - entry.getLocation().y) - height < 0) {
+                            return false;
+                        }
+                        if (entry.getLocation().y - host.y > 0 && entry.getLocation().y - host.y < height) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public void expireDrops(User user) {
@@ -488,6 +512,17 @@ public class Field {
         }
         broadcastPacket(FieldPacket.onBlowWeather(itemID, param), false);
         return true;
+    }
+    
+    public void removeBalloon(int balloonSN) {
+        this.balloonEntry.remove(balloonSN);
+    }
+    
+    public int setBalloon(Point host) {
+        final int balloonSN = incrementIdCounter();
+        
+        this.balloonEntry.put(balloonSN, new BalloonEntry(getFieldID(), host));
+        return balloonSN;
     }
 
     public void setLeftTop(Point pt) {

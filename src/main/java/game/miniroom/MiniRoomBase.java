@@ -17,8 +17,10 @@
  */
 package game.miniroom;
 
-import game.field.Field;
+import game.miniroom.shop.PersonalShop;
 import game.user.User;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,29 +35,35 @@ import util.Logger;
 /**
  *
  * @author sunnyboy
+ * @author Eric
  */
 public abstract class MiniRoomBase {
 
     private static final Map<Integer, MiniRoomEntry> miniRoomEntry = new HashMap<>();
     private static final AtomicInteger miniRoomSNCounter = new AtomicInteger(30000);
 
-    private boolean closeRequest = false;
-    private int curUsers = 0;
+    private boolean opened;
+    private boolean closeRequest;
+    private int curUsers;
     private final List<Integer> reserved;
     private final List<Long> reservedTime;
     private final List<Integer> leaveRequest;
-    private final ReentrantLock lockMiniRoom;
     private final Lock lock;
     private int maxUsers;
     private String title;
+    private int balloonSN;
     private final int miniRoomSN;
     private final List<User> users;
+    private Point host;
 
     public MiniRoomBase(int maxUsers) {
-        this.lockMiniRoom = new ReentrantLock();
         this.miniRoomSN = miniRoomSNCounter.incrementAndGet();
-        this.maxUsers = maxUsers;
         this.title = "";
+        this.maxUsers = maxUsers;
+        this.curUsers = 0;
+        this.opened = false;
+        this.closeRequest = false;
+        this.host = new Point();
         this.users = new ArrayList<>(maxUsers);
         this.leaveRequest = new ArrayList<>(maxUsers);
         this.reservedTime = new ArrayList<>(maxUsers);
@@ -68,12 +76,29 @@ public abstract class MiniRoomBase {
             this.reserved.add(i, 0);
         }
     }
-
-    public static void enter(User user, int sn) {
-        MiniRoomBase miniroom = getMiniRoom(sn);
-        if (miniroom != null) {
-            miniroom.onEnterBase(user, miniroom);
+    
+    private static MiniRoomBase miniRoomFactory(byte type) {
+        MiniRoomBase miniRoom = null;
+        if (type == MiniRoomType.TradingRoom) {
+            miniRoom = new TradingRoom();
+        } else if (type == MiniRoomType.PersonalShop) {
+            miniRoom = new PersonalShop();
         }
+        return miniRoom;
+    }
+
+    public static int enter(User user, int sn, InPacket packet) {
+        MiniRoomBase miniRoom = getMiniRoom(sn);
+        int enterResult = MiniRoomEnter.NoRoom;
+        if (miniRoom != null) {
+            int result = miniRoom.onEnterBase(user, packet);
+            if (result == MiniRoomEnter.Success) {
+                return result;
+            }
+            enterResult = result;
+        }
+        user.sendPacket(MiniRoomBaseDlg.onEnterResultStatic(user, null, enterResult));
+        return enterResult;
     }
 
     private static MiniRoomBase getMiniRoom(int sn) {
@@ -83,41 +108,26 @@ public abstract class MiniRoomBase {
         return null;
     }
 
-    public static void inviteResult(int sn, String character, int result) {
+    public static void inviteResult(User user, int sn, int result) {
         MiniRoomBase miniRoom = getMiniRoom(sn);
         if (miniRoom != null) {
-            miniRoom.onInviteResult(miniRoom, character, result);
+            miniRoom.onInviteResult(user, result);
         }
     }
 
-    private static MiniRoomBase miniRoomFactory(byte type) {
-        MiniRoomBase miniRoom = null;
-        if (type == MiniRoomType.TradingRoom) {
-            miniRoom = new TradingRoom();
-        }
-        return miniRoom;
-    }
-
-    public static int create(User userZero, byte type, InPacket packet, boolean tournament, int round) {
-        int characterID = packet.decodeInt();
-        User userOne = userZero.getChannel().findUser(characterID);
-        MiniRoomBase miniroom = miniRoomFactory(type);
-        if (miniroom == null) {
+    public static int create(User user, byte type, InPacket packet, boolean tournament, int round) {
+        MiniRoomBase miniRoom = miniRoomFactory(type);
+        if (miniRoom == null) {
             Logger.logError("Impossible MiniRoom created! New MiniRoomType found :: " + type);
-            return -1;
+            return MiniRoomEnter.Etc;
         }
-        if (userOne == null) {
-            userZero.sendPacket(MiniRoomBaseDlg.onInviteResultStatic(MiniRoomInvite.NoCharacter, null));
-            return 0;
+        int result = miniRoom.onCreateBase(user, packet, round);
+        if (result != MiniRoomEnter.Success) {
+            user.sendPacket(MiniRoomBaseDlg.onEnterResultStatic(user, null, result));
+        } else {
+            user.sendPacket(MiniRoomBaseDlg.onEnterResultStatic(user, miniRoom, result));
         }
-        int result = miniroom.onCreateBase(userZero, userOne);
-        if (result == 0) {
-            userZero.sendPacket(MiniRoomBaseDlg.onEnterResultStatic(userZero, miniroom));
-            userOne.sendPacket(MiniRoomBaseDlg.onInviteStatic(userZero.getCharacterName(), miniroom.miniRoomSN));
-        } else if (result == 1) {
-            userZero.sendPacket(MiniRoomBaseDlg.onInviteResultStatic(MiniRoomInvite.CannotInvite, userOne.getCharacterName()));
-        }
-        return 0;
+        return result;
     }
 
     public void broadCast(OutPacket packet, User except) {
@@ -139,16 +149,14 @@ public abstract class MiniRoomBase {
             User user = this.users.get(idx);
             if (user != null && user.getField() != null) {
                 onLeave(user, leaveType);
-                if (leaveType > 0) {
-                    user.sendPacket(MiniRoomBaseDlg.onLeave(idx, user, this)); // does this even do anything
+                if (leaveType != MiniRoomLeave.UserRequest) {
+                    user.sendPacket(MiniRoomBaseDlg.onLeaveBase(idx, leaveType));
                 }
                 user.setMiniRoom(null);
-                if (this.users.get(idx) != null) {
-                    this.users.set(idx, null);
-                }
+                this.users.set(idx, null);
                 --this.curUsers;
                 if (broadCast) {
-                    broadCast(MiniRoomBaseDlg.onLeave(0, user, this), user);// does this even do anything
+                    broadCast(MiniRoomBaseDlg.onLeave(idx, user, this), user);
                 }
                 if (this.curUsers == 0) {
                     removeMiniRoom();
@@ -185,7 +193,7 @@ public abstract class MiniRoomBase {
     }
 
     public void encodeEnterResult(User user, OutPacket packet) {
-
+    
     }
 
     public void encodeLeave(User user, OutPacket packet) {
@@ -219,7 +227,7 @@ public abstract class MiniRoomBase {
             if (maxUsers <= 1) {
                 idx = -1;
             } else {
-                while (users.get(idx) != null || reserved.get(idx) > 0 && characterID > 0 && reserved.get(idx) != characterID) {
+                while (users.get(idx) != null || reserved.get(idx) != 0 && characterID != 0 && reserved.get(idx) != characterID) {
                     ++idx;
                     if (idx >= maxUsers) {
                         idx = -1;
@@ -231,29 +239,26 @@ public abstract class MiniRoomBase {
         } finally {
             lock.unlock();
         }
-
     }
 
     public byte findUserSlot(User user) {
-        if (user == null) {
-            return -1;
-        }
-        lock.lock();
-        try {
-            byte slot = 0;
-            if (maxUsers <= 0) {
-                return -1;
-            }
-            while (users.get(slot) != user) {
-                ++slot;
-                if (slot >= maxUsers) {
-                    break;
+        if (user != null && maxUsers > 0) {
+            lock.lock();
+            try {
+                for (byte i = 0; i < maxUsers; i++) {
+                    if (users.get(i) == user) {
+                        return i;
+                    }
                 }
+            } finally {
+                lock.unlock();
             }
-            return slot;
-        } finally {
-            lock.unlock();
         }
+        return -1;
+    }
+    
+    public int getBalloonSN() {
+        return balloonSN;
     }
 
     public int getCurUsers() {
@@ -280,9 +285,32 @@ public abstract class MiniRoomBase {
 
     public abstract int getTypeNumber();
 
-    public int isAdmitted(User user, boolean onCreate) {
-        if (user.getCharacter().getCharacterStat().getHP() <= 0) {
-            return 4;//MiniRoomEnter.Dead
+    public int isAdmitted(User user, InPacket packet, boolean onCreate) {
+        if (user.getHP() <= 0) {
+            return MiniRoomEnter.Dead;
+        }
+        int fieldID = 0;
+        if (user.getField() != null) {
+            fieldID = user.getField().getFieldID();
+        }
+        if (fieldID / 1000000 % 100 == 9) {
+            return MiniRoomEnter.Event;
+        }
+        /*if (getTypeNumber() == MiniRoomType.PersonalShop && (fieldID == 0 || !user.getField().isPersonalShop())) {
+            return MiniRoomEnter.NotAvailableField_PersonalShop;
+        }*/
+        if (onCreate) {
+            if (getTypeNumber() == MiniRoomType.TradingRoom) {
+                int characterID = packet.decodeInt();
+                User target = user.getChannel().findUser(characterID);
+                if (target == null) {
+                    user.sendPacket(MiniRoomBaseDlg.onInviteResultStatic(MiniRoomInvite.NoCharacter, null));
+                    return MiniRoomEnter.Success;
+                }
+                target.sendPacket(MiniRoomBaseDlg.onInviteStatic(getTypeNumber(), user.getCharacterName(), getMiniRoomSN()));
+            } else if (getTypeNumber() == MiniRoomType.PersonalShop) {
+                setTitle(packet.decodeString());
+            }
         }
         return MiniRoomEnter.Success;
     }
@@ -290,7 +318,47 @@ public abstract class MiniRoomBase {
     private boolean isEntrusted() {
         return false;
     }
+    
+    public boolean isOpened() {
+        return opened;
+    }
+    
+    public void onAvatarChanged(User user) {
+        lock.lock();
+        try {
+            byte slot = findUserSlot(user);
+            if (getCurUsers() != 0 && slot >= 0) {
+                broadCast(MiniRoomBaseDlg.onAvatar(slot, user), user);
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
 
+    private void onBalloonBase(User user, InPacket packet) {
+        if (user.getField() == null) {
+            return;
+        }
+        lock.lock();
+        try {
+            if (findUserSlot(user) != 0) {
+                return;
+            }
+            if (user.getFootholdSN() > 0 && Math.abs(user.getCurrentPosition().x - host.x) <= 10 && Math.abs(user.getCurrentPosition().y - host.y) <= 10) {
+                this.opened = true;
+                user.setMiniRoomBalloon(packet.decodeBool());
+            } else {
+                onLeave(user, MiniRoomLeave.HostOut);
+                user.sendPacket(MiniRoomBaseDlg.onLeaveBase(0, MiniRoomLeave.Closed));//WrongPosition
+                user.setMiniRoom(null);
+                users.set(0, null);
+                removeMiniRoom();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+    
     private void onChat(User user, InPacket packet) {
         lock.lock();
         try {
@@ -305,106 +373,121 @@ public abstract class MiniRoomBase {
             lock.unlock();
         }
     }
-
-    private int onCreateBase(User userZero, User userOne) {
-        lockMiniRoom.lock();
-        try {
-            if (userZero.canAttachAdditionalProcess()) {
-                if (userOne.canAttachAdditionalProcess()) {
-                    userZero.setMiniRoom(this);
-                    int admitted = this.isAdmitted(userZero, true);
-                    if (admitted > 0) {
-                        userZero.setMiniRoom(null);
-                        return 2;
-                    } else {
-                        users.set(0, userZero);
-                        leaveRequest.set(0, -1);
-                        curUsers = 1;
-                        MiniRoomEntry roomEntry = new MiniRoomEntry();
-                        roomEntry.miniRoom = this;
-                        miniRoomEntry.put(this.miniRoomSN, roomEntry);
+    
+    private int onCreateBase(User user, InPacket packet, int round) {
+        if (user.lock()) {
+            try {
+                this.host = new Point(user.getCurrentPosition());
+                if (user.canAttachAdditionalProcess()) {
+                    int result = isAdmitted(user, packet, true);
+                    if (result == MiniRoomEnter.Success) {
+                        user.setMiniRoom(this);
+                        this.users.set(0, user);
+                        this.leaveRequest.set(0, -1);
+                        this.curUsers = 1;
+                        miniRoomEntry.put(getMiniRoomSN(), new MiniRoomEntry(this));
                     }
-                    return MiniRoomEnter.Success;
-                } else {
-                    return 1;
+                    return result;
                 }
+            } finally {
+                user.unlock();
             }
-            return 2;
-        } finally {
-            lockMiniRoom.unlock();
         }
+        return MiniRoomEnter.Busy;
     }
 
-    private int onEnterBase(User user, MiniRoomBase miniroom) {
+    private int onEnterBase(User user, InPacket packet) {
         int slot = findEmptySlot(user.getCharacterID());
-
         if (curUsers == 0 || users.get(0) == null) {
-            return 8;
+            return MiniRoomEnter.Etc;
         }
         if (slot < 0) {
             return MiniRoomEnter.Full;
         }
         if (findUser(slot) != null) {
-            return 8;
+            return MiniRoomEnter.Etc;
         }
-        if (!user.canAttachAdditionalProcess()) {
-            return MiniRoomEnter.Busy;
-        }
-        user.setMiniRoom(this);
-        int result = isAdmitted(user, false);
-        if (result > 0) {
-            user.setMiniRoom(null);
-            return result;
-        } else {
-            users.set(slot, user);
-            reserved.set(slot, 0);
-            leaveRequest.set(slot, -1);
-            ++curUsers;
-            User firstIndexUser = users.get(0);
-            if (firstIndexUser != null) {
-                firstIndexUser.sendPacket(MiniRoomBaseDlg.onEnterBase(user, miniroom));
+        if (user.canAttachAdditionalProcess()) {
+            int result = isAdmitted(user, packet, false);
+            if (result == MiniRoomEnter.Success) {
+                user.setMiniRoom(this);
+                users.set(slot, user);
+                reserved.set(slot, 0);
+                leaveRequest.set(slot, -1);
+                ++curUsers;
+                broadCast(MiniRoomBaseDlg.onEnterBase(user, this), user);
+                user.sendPacket(MiniRoomBaseDlg.onEnterResultStatic(user, this, 0));
+                if (getTypeNumber() == MiniRoomType.PersonalShop && getCurUsers() == getMaxUsers()) {
+                    setBalloon(true);
+                }
             }
-            user.sendPacket(MiniRoomBaseDlg.onEnterResultStatic(user, miniroom));
+            return result;
         }
-        return MiniRoomEnter.Success;
+        return MiniRoomEnter.Busy;
+    }
+    
+    private void onInviteBase(User user, InPacket packet) {
+    
     }
 
-    private void onInviteResult(MiniRoomBase miniRoom, String character, int result) {
-        User user;
-        if ((user = users.get(0)) != null) {
-            user.sendPacket(MiniRoomBaseDlg.onEnterDecline(miniRoom, character, result));
+    private void onInviteResult(User user, int result) {
+        User inviter;
+        if ((inviter = users.get(0)) != null) {
+            inviter.sendPacket(MiniRoomBaseDlg.onInviteResultStatic(result, user.getCharacterName()));
         }
     }
 
-    public abstract void onLeave(User user, int leaveType);
+    public void onLeave(User user, int leaveType) {
+    
+    }
 
     private void onLeaveBase(User user, InPacket packet) {
-        int slot = this.findUserSlot(user);
+        int slot = findUserSlot(user);
         int leaveType, leaveType2;
-        if (this.curUsers > 0 && slot >= 0) {
-            if (slot != 0) {
-                this.doLeave(slot, 0, true);
+        if (this.curUsers != 0 && slot >= 0) {
+            if (getCloseType() == CloseType.Anyone) {
+                leaveType = MiniRoomLeave.Closed;
+                leaveType2 = MiniRoomLeave.UserRequest;
+            } else {
+                if (getCloseType() != CloseType.Host || slot != 0) {
+                    doLeave(slot, MiniRoomLeave.UserRequest, true);
+                    if (isOpened() && (getTypeNumber() != MiniRoomType.PersonalShop || getCurUsers() == getMaxUsers() - 1)) {
+                        setBalloon(true);
+                    }
+                    return;
+                }
+                leaveType = leaveType2 = MiniRoomLeave.HostOut;
             }
-            leaveType2 = 3;
-            leaveType = 3;
             closeRequest(user, leaveType, leaveType2);
         }
     }
 
-    public abstract void onPacket(int type, User user, InPacket packet);
+    public void onPacket(int type, User user, InPacket packet) {
+    
+    }
 
     public void onPacketBase(int type, User user, InPacket packet) {
         switch (type) {
+            case MiniRoomPacket.Invite:
+                onInviteBase(user, packet);
+                break;
             case MiniRoomPacket.Chat:
                 onChat(user, packet);
                 break;
             case MiniRoomPacket.Leave:
                 onLeaveBase(user, packet);
                 break;
+            case MiniRoomPacket.Balloon:
+                onBalloonBase(user, packet);
+                break;
             default:
                 onPacket(type, user, packet);
         }
         processLeaveRequest();
+    }
+    
+    public void onUserLeave(User user) {
+        onPacketBase(MiniRoomPacket.Leave, user, null);
     }
 
     public void processLeaveRequest() {
@@ -412,8 +495,14 @@ public abstract class MiniRoomBase {
         try {
             for (int i = 0; i < this.maxUsers; ++i) {
                 if (this.users.get(i) != null && this.leaveRequest.get(i) >= 0) {
+                    if (this.closeRequest && i == 0) {
+                        setBalloon(false);
+                    }
                     boolean broadCast = !this.closeRequest;
                     doLeave(i, this.leaveRequest.get(i), broadCast);
+                    if (isOpened() && (getTypeNumber() != MiniRoomType.PersonalShop || getCurUsers() == getMaxUsers() - 1)) {
+                        setBalloon(true);
+                    }
                 }
             }
         } finally {
@@ -426,6 +515,18 @@ public abstract class MiniRoomBase {
         this.curUsers = 0;
     }
     
+    public void setBalloon(boolean open) {
+        User user = users.get(0);
+        if (user != null) {
+            this.opened = open;
+            user.setMiniRoomBalloon(open);
+        }
+    }
+    
+    public void setBalloonSN(int sn) {
+        this.balloonSN = sn;
+    }
+    
     public void setTitle(String title) {
         this.title = title;
     }
@@ -433,5 +534,9 @@ public abstract class MiniRoomBase {
     public class MiniRoomEntry {
 
         public MiniRoomBase miniRoom;
+        
+        public MiniRoomEntry(MiniRoomBase miniRoom) {
+            this.miniRoom = miniRoom;
+        }
     }
 }

@@ -27,10 +27,10 @@ import network.packet.InPacket;
  */
 public class MiniRoom {
 
-    private static void onMRInviteResult(InPacket packet) {
+    private static void onMRInviteResult(User user, InPacket packet) {
         int sn = packet.decodeInt();
         if (sn > 0) {
-            MiniRoomBase.inviteResult(sn, packet.decodeString(), packet.decodeByte());
+            MiniRoomBase.inviteResult(user, sn, packet.decodeByte());
         }
     }
 
@@ -44,7 +44,7 @@ public class MiniRoom {
     private static void onMREnter(User user, InPacket packet) {
         int sn = packet.decodeInt();
         if (sn > 0) {
-            MiniRoomBase.enter(user, sn);
+            MiniRoomBase.enter(user, sn, packet);
         }
     }
 
@@ -63,8 +63,8 @@ public class MiniRoom {
             case MiniRoomPacket.Create:
                 onMRCreate(user, packet);
                 break;
-            case MiniRoomPacket.EnterFailed:
-                onMRInviteResult(packet);
+            case MiniRoomPacket.InviteResult:
+                onMRInviteResult(user, packet);
                 break;
             case MiniRoomPacket.Enter:
                 onMREnter(user, packet);

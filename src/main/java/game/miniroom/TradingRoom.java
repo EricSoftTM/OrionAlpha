@@ -68,7 +68,7 @@ public class TradingRoom extends MiniRoomBase {
         User user = getUsers().get(1);
         if (owner == null || user == null) {
             Logger.logError("Cannot get a user information on trade with %s", owner != null ? owner.getCharacterName() : user != null ? user.getCharacterName() : "null");
-            return MiniRoomLeave.TradeFail.getType();
+            return MiniRoomLeave.TradeFail;
         }
         final int[] mesoTrading = new int[2];
         final List<List<ItemSlotBase>> backup = new ArrayList<>();
@@ -88,7 +88,7 @@ public class TradingRoom extends MiniRoomBase {
         List<ExchangeElem> exchange2 = new ArrayList<>();
         List<ChangeLog> logAdd = new ArrayList<>();
         List<ChangeLog> changeLog = new ArrayList<>();
-        MiniRoomLeave result = MiniRoomLeave.TradeDone;
+        byte result = MiniRoomLeave.TradeDone;
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 9; j++) {
                 Item tradeItem = item.get(i).get(j);
@@ -180,12 +180,12 @@ public class TradingRoom extends MiniRoomBase {
         exchange2.clear();
         logAdd.clear();
         changeLog.clear();
-        return result.getType();
+        return result;
     }
 
     @Override
     public int getCloseType() {
-        return 2;// verify
+        return CloseType.Anyone;
     }
 
     public int getItemPrice(int itemID) {
@@ -228,29 +228,29 @@ public class TradingRoom extends MiniRoomBase {
     }
 
     @Override
-    public int isAdmitted(User user, boolean onCreate) {
-        int admitted = super.isAdmitted(user, onCreate);
-        if (admitted == MiniRoomEnter.Success) {
+    public int isAdmitted(User user, InPacket packet, boolean onCreate) {
+        int result = super.isAdmitted(user, packet, onCreate);
+        if (result == MiniRoomEnter.Success) {
             if (!onCreate) {
                 if (user.getField() == null || this.getUsers().get(0).getField() == null) {
-                    return 8;//MiniRoomEnter.Etc
+                    return MiniRoomEnter.Etc;
                 }
                 if (user.getField() != this.getUsers().get(0).getField()) {
-                    closeRequest(null, 9, 0);//MiniRoomEnter.OnlyInSameField
+                    closeRequest(null, 9, MiniRoomLeave.UserRequest);//MiniRoomEnter.OnlyInSameField
                     processLeaveRequest();
-                    return 9;//MiniRoomEnter.OnlyInSameField
+                    return MiniRoomEnter.OnlyInSameField;
                 }
             }
             if (!user.getCharacter().setTrading(true)) {
-                return 7;//MiniRoomEnter.NoTrading, but this stuff doesn't exist
+                return MiniRoomEnter.NoTrading;
             }
         }
-        return admitted;
+        return result;
     }
 
     @Override
     public void onLeave(User user, int leaveType) {
-        if (leaveType != MiniRoomLeave.TradeDone.getType()) {
+        if (leaveType != MiniRoomLeave.TradeDone) {
             Inventory.restoreFromTemp(user);
         }
         user.getCharacter().setTrading(false);
@@ -259,7 +259,7 @@ public class TradingRoom extends MiniRoomBase {
     @Override
     public void onPacket(int type, User user, InPacket packet) {
         switch (type) {
-            case MiniRoomPacket.PutItem:
+            case MiniRoomPacket.PutItem_TR:
                 onPutItem(user, packet);
                 break;
             case MiniRoomPacket.PutMoney:

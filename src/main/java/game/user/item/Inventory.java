@@ -415,7 +415,7 @@ public class Inventory {
                     user.sendCharacterStat(Request.None, CharacterStatType.Money);
                 }
                 List<ChangeLog> changeLog = new ArrayList<>();
-                for (int ti = ItemType.Equip; ti <= ItemType.Etc; ti++) {
+                for (int ti = ItemType.Equip; ti <= ItemType.Cash; ti++) {
                     for (int i = 1; i <= user.getCharacter().getItemSlotCount(ti); i++) {
                         int number = user.getCharacter().getItemTrading().get(ti).get(i);
                         if (number > 0) {

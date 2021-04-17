@@ -187,8 +187,7 @@ public class UserRemote {
         if ((avatarModFlag & AvatarLook.Look) != 0) {
             packet.encodeBool(true);
             user.getAvatarLook().encode(packet);
-            // Doesn't exist in the client anymore, just an empty decode.
-            packet.encodeInt(0);
+            packet.encodeInt(user.getAvatarLook().getWeaponStickerID());
         } else {
             packet.encodeBool(false);
         }

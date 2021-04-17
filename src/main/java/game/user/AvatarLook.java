@@ -36,20 +36,25 @@ public class AvatarLook {
     ;
     
     private final List<Integer> hairEquip;
+    private int weaponStickerID;
     
     public AvatarLook() {
         this.hairEquip = new ArrayList<>();
         for (int i = 0; i <= BodyPart.BP_Count; i++) {
             this.hairEquip.add(i, 0);
         }
+        this.weaponStickerID = 0;
     }
     
     public void load(CharacterStat cs, List<ItemSlotBase> equipped, List<ItemSlotBase> equipped2) {
         this.hairEquip.set(0, cs.getHair());
         for (int i = 1; i <= BodyPart.BP_Count; i++) {
-            if (equipped2.get(i) != null) {
+            if (equipped2.get(i) != null && i != BodyPart.Weapon) {
                 this.hairEquip.set(i, equipped2.get(i).getItemID());
             } else if (equipped.get(i) != null) {
+                if (i == BodyPart.Weapon && equipped2.get(i) != null) {
+                    this.weaponStickerID = equipped2.get(i).getItemID();
+                }
                 this.hairEquip.set(i, equipped.get(i).getItemID());
             } else {
                 this.hairEquip.set(i, 0);
@@ -69,6 +74,10 @@ public class AvatarLook {
     
     public List<Integer> getEquipped() {
         return hairEquip;
+    }
+    
+    public int getWeaponStickerID() {
+        return weaponStickerID;
     }
     
     public final AvatarLook makeClone() {

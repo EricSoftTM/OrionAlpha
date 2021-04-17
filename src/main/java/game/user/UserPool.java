@@ -46,8 +46,7 @@ public class UserPool {
         packet.encodeInt(user.getCharacter().getCharacterStat().getFace());
         
         user.getAvatarLook().encode(packet);
-        // Doesn't exist in the client anymore, just an empty decode.
-        packet.encodeInt(0);
+        packet.encodeInt(user.getAvatarLook().getWeaponStickerID());
         
         packet.encodeShort(user.getCurrentPosition().x);
         packet.encodeShort(user.getCurrentPosition().y);

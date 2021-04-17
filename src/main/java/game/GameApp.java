@@ -32,6 +32,7 @@ import javax.json.JsonReader;
 import game.field.FieldMan;
 import game.field.life.mob.MobTemplate;
 import game.field.life.npc.NpcTemplate;
+import game.user.User;
 import game.user.item.ItemInfo;
 import game.user.pet.PetTemplate;
 import game.user.skill.SkillInfo;
@@ -131,6 +132,26 @@ public class GameApp {
             packet.encodeString(channel.getAddr());
             packet.encodeShort(channel.getPort());
         }
+    }
+    
+    public User findUser(int characterID) {
+        for (Channel channel : channels) {
+            User user = channel.findUser(characterID);
+            if (user != null) {
+                return user;
+            }
+        }
+        return null;
+    }
+    
+    public User findUserByName(String name, boolean makeLower) {
+        for (Channel channel : channels) {
+            User user = channel.findUserByName(name, makeLower);
+            if (user != null) {
+                return user;
+            }
+        }
+        return null;
     }
     
     public final Channel getChannel(int channel) {

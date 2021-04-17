@@ -2387,19 +2387,20 @@ public class User extends Creature {
             }
             sendPacket(FieldPacket.onWhisper(WhisperFlags.ReplyResult, target, null, null, LocationResult.None, -1, success));
         } else if (flag == WhisperFlags.FindRequest) {
-            User user = getChannel().findUserByName(target, true);
+            User user = GameApp.getInstance().findUserByName(target, true);
             byte location = LocationResult.None;
             int fieldID = Field.Invalid;
             if (user != null && user.getField() != null) {
                 if (user.isGM()) {
                     location = LocationResult.Admin;
+                } else if (user.getChannelID() != getChannelID()) {
+                    location = LocationResult.OtherChannel;
+                    fieldID = user.getChannelID();
                 } else {
                     location = LocationResult.GameSvr;
                     fieldID = user.getField().getFieldID();
                 }
                 target = user.getCharacterName();
-            } else {
-                // TODO: Check Shop server and other channels.
             }
             sendPacket(FieldPacket.onWhisper(WhisperFlags.FindResult, target, null, null, location, fieldID, false));
         } else if (flag == WhisperFlags.BlockedResult) {

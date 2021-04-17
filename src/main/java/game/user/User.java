@@ -39,6 +39,7 @@ import game.field.life.mob.MobTemplate;
 import game.field.life.npc.*;
 import game.field.portal.Portal;
 import game.field.portal.PortalMap;
+import game.friend.FriendMan;
 import game.messenger.Messenger;
 import game.miniroom.MiniRoom;
 import game.miniroom.MiniRoomBase;
@@ -1135,6 +1136,7 @@ public class User extends Creature {
             }
             
             PartyMan.getInstance().loadParty(this);
+            FriendMan.getInstance().loadFriend(this);
         } else {
             Logger.logError("Failed in entering field");
             closeSocket();
@@ -1267,6 +1269,9 @@ public class User extends Creature {
             case ClientPacket.PartyRequest:
             case ClientPacket.PartyResult:
                 PartyMan.getInstance().onPacket(this, type, packet);
+                break;
+            case ClientPacket.FriendRequest:
+                FriendMan.getInstance().onPacket(this, packet);
                 break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {

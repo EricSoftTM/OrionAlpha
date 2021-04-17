@@ -15,41 +15,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package game.user.pet;
-
-import util.Range;
+package game.friend;
 
 /**
  *
  * @author Eric
  */
-public class PetInteraction {
-	private Range level;
-	private int friendnessInc;
-	private int prob;
-	//private List<String> commands, actSuccess, actFail;
-	
-	public PetInteraction() {
-		this.level = new Range();
-	}
-	
-	public int getFriendnessInc() {
-		return friendnessInc;
-	}
-	
-	public Range getLevelRange() {
-		return level;
-	}
-	
-	public int getProb() {
-		return prob;
-	}
-	
-	public void setFriendnessInc(int inc) {
-		this.friendnessInc = inc;
-	}
-	
-	public void setProb(int prob) {
-		this.prob = prob;
-	}
+public class FriendResCode {
+	public static final byte
+			// FriendReq
+			LoadFriend                  = 0,
+			SetFriend                   = 1,
+			AcceptFriend                = 2,
+			DeleteFriend                = 3,
+			NotifyLogin                 = 4,
+			NotifyLogout                = 5,
+			// FriendRes
+			LoadFriend_Done             = 6,
+			Invite                      = 7,
+			SetFriend_Done              = 8,
+			SetFriend_FullMe            = 9,
+			SetFriend_FullOther         = 10,
+			SetFriend_AlreadySet        = 11,
+			SetFriend_UnknownUser       = 12,
+			SetFriend_Unknown           = 13,
+			AcceptFriend_Unknown        = 14,
+			DeleteFriend_Done           = 15,
+			DeleteFriend_Unknown        = 16,
+			Notify                      = 17
+	;
 }

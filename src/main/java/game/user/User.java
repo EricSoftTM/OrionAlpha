@@ -1250,6 +1250,9 @@ public class User extends Creature {
             case ClientPacket.UserActivatePetRequest:
                 onActivatePetRequest(packet);
                 break;
+            case ClientPacket.UserGivePopularityRequest:
+                onGivePopularityRequest(packet);
+                break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
                     onFieldPacket(type, packet);

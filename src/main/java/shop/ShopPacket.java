@@ -97,6 +97,38 @@ public class ShopPacket {
         }
         return packet;
     }
+    
+    public static OutPacket onLoadWishDone(List<Integer> wishList) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.LoadWishDone);
+        for (int wishSN : wishList) {
+            packet.encodeInt(wishSN);
+        }
+        return packet;
+    }
+    
+    public static OutPacket onLoadWishFailed(byte type) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.LoadWishFailed);
+        packet.encodeByte(type);
+        return packet;
+    }
+    
+    public static OutPacket onSetWishDone(List<Integer> wishList) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.SetWishDone);
+        for (int wishSN : wishList) {
+            packet.encodeInt(wishSN);
+        }
+        return packet;
+    }
+    
+    public static OutPacket onSetWishFailed(byte type) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
+        packet.encodeByte(CashItemRequest.SetWishFailed);
+        packet.encodeByte(type);
+        return packet;
+    }
 
     public static OutPacket onMoveLToS(short pos, ItemSlotBase item, byte ti) {
         OutPacket packet = new OutPacket(LoopbackPacket.CashShopCashItemResult);
@@ -133,10 +165,21 @@ public class ShopPacket {
         packet.encodeByte(type);
         return packet;
     }
-
+    
     public static OutPacket onQueryCash(User user) {
         OutPacket packet = new OutPacket(LoopbackPacket.CashShopQueryCashResult);
         packet.encodeInt(user.getNexonCash());
+        return packet;
+    }
+    
+    public static OutPacket onChargeParamResult(String nexonID, String gameID, byte domain, int netport, int key1, int key2) {
+        OutPacket packet = new OutPacket(LoopbackPacket.CashShopChargeParamResult);
+        packet.encodeString(nexonID);
+        packet.encodeString(gameID);
+        packet.encodeByte(domain);
+        packet.encodeShort(netport);
+        packet.encodeInt(key1);
+        packet.encodeInt(key2);
         return packet;
     }
 }

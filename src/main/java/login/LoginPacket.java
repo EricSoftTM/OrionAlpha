@@ -38,7 +38,7 @@ public class LoginPacket {
             packet.encodeByte(socket.getGender());
             packet.encodeByte(socket.getGradeCode());
             packet.encodeString(socket.getNexonClubID());
-            packet.encodeString(socket.getNexonClubID());//Email?
+            packet.encodeString(socket.getEmail());
             packet.encodeByte(LoginApp.getInstance().getWorlds().size());
             for (WorldEntry world : LoginApp.getInstance().getWorlds()) {
                 packet.encodeByte(world.getWorldID());

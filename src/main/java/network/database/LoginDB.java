@@ -90,6 +90,7 @@ public class LoginDB {
                                 retCode = 5; //Blocked
                             } else {
                                 socket.setNexonClubID(id);
+                                socket.setEmail(rs.getString("Email"));
                                 socket.setAccountID(rs.getInt("AccountID"));
                                 socket.setGender(rs.getByte("Gender"));
                                 socket.setGradeCode(rs.getByte("GradeCode"));

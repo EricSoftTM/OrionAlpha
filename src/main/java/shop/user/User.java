@@ -17,6 +17,8 @@
  */
 package shop.user;
 
+import common.JobCategory;
+import common.OrionConfig;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
@@ -62,6 +64,7 @@ public class User {
     private byte authenCode;
     private int birthDate;
     private List<CashItemInfo> cashItemInfo;
+    private List<Integer> wishList;
     private int cashKey;
     private boolean cashShopAuthorized;
     private final CharacterData character;
@@ -81,7 +84,7 @@ public class User {
     private int price;
     private byte delta;
     private int nexonCash;
-    private String nexonClubID;
+    private String nexonClubID, email;
 
     private long nextCheckCashItemExpire;
 
@@ -100,19 +103,24 @@ public class User {
         this.cashKey = 0;
 
         this.cashItemInfo = new ArrayList<>();
+        this.wishList = new ArrayList<>();
         this.nexonCash = 0;
         this.gender = -1;
         this.modFlag = 0;
-        ShopDB.rawLoadAccount(characterID, User.this);
-        this.character = ShopDB.rawLoadCharacter(characterID, User.this);
-
-        if (this.nexonClubID != null && !this.nexonClubID.isEmpty()) {
-            this.cashShopAuthorized = true;
-            Logger.logReport("User is cashShopAuthorized");
-        }
         this.cashKey = Rand32.getInstance().random().intValue();
         this.lock = new ReentrantLock();
         this.lockSocket = new ReentrantLock();
+        
+        for (int i = 0; i < 10; i++) {
+            this.wishList.add(0);
+        }
+    
+        ShopDB.rawLoadAccount(characterID, User.this);
+        this.character = ShopDB.rawLoadCharacter(characterID, User.this);
+    
+        if (this.nexonClubID != null && !this.nexonClubID.isEmpty()) {
+            this.cashShopAuthorized = true;
+        }
     }
 
     public User(ClientSocket socket) {
@@ -299,6 +307,10 @@ public class User {
         return characterID;
     }
 
+    public String getEmail() {
+        return email;
+    }
+    
     public int getKSSN() {
         return kssn;
     }
@@ -309,6 +321,10 @@ public class User {
     
     public String getNexonClubID() {
     	return nexonClubID;
+    }
+    
+    public List<Integer> getWishList() {
+        return wishList;
     }
 
     private boolean isBlockedMachineID() {
@@ -365,20 +381,23 @@ public class User {
     private void onCashItemRequest(InPacket packet) {
         byte type = packet.decodeByte();
         switch (type) {
-            case 1:
+            case CashItemRequest.Buy:
                 onBuy(packet);
                 break;
-            case 2:
+            case CashItemRequest.Gift:
                 onGift(packet);
                 break;
-            case 3:
+            case CashItemRequest.IncSlotCount:
                 onIncSlotCount(packet);
                 break;
-            case 6:
+            case CashItemRequest.MoveLtoS:
                 onMoveLToS(packet);
                 break;
-            case 7:
+            case CashItemRequest.MoveStoL:
                 onMoveSToL(packet);
+                break;
+            case CashItemRequest.SetWish:
+                onSetWish(packet);
                 break;
             default:
                 Logger.logReport("Unhandled CashItemRequest Type %d", type);
@@ -387,15 +406,15 @@ public class User {
     }
 
     private void onChargeParamRequest(InPacket packet) {
-        sendPacket(ShopPacket.onQueryCash(this));
+        sendPacket(ShopPacket.onChargeParamResult(getEmail(), getNexonClubID(), (byte) 1, ShopApp.getInstance().getPort(), 0x1337, 0xBADF00D));
     }
 
     private void onGift(InPacket packet) {
         int commoditySN = packet.decodeInt();
-        String reciever = packet.decodeString();
+        String receiver = packet.decodeString();
         Commodity comm = ShopApp.getInstance().findCommodity(commoditySN);
         if (comm != null && ItemInfo.isCashItem(comm.getItemID()) && this.getNexonCash() >= comm.getPrice()) {
-            this.rcvCharacterName = reciever;
+            this.rcvCharacterName = receiver;
             if (this.rcvCharacterName != null && rcvCharacterName.length() <= 12) {
                 ReceivedGift receivedGift = ShopDB.rawLoadAccountByNameForGift(rcvCharacterName);
                 if (receivedGift != null) {
@@ -471,18 +490,18 @@ public class User {
     public static int getIncreasedSlotCount(byte ti, short job) {
         int count = 0;
         switch (job / 100) {
-            case 1:
+            case JobCategory.Fighter:
                 count = 1;
                 if (job / 10 % 10 != 0 && (ti == ItemType.Consume || ti == ItemType.Etc)) {
                     ++count;
                 }
                 break;
-            case 2:
+            case JobCategory.Wizard:
                 if (job / 10 % 10 != 0 && ti == ItemType.Etc) {
                     count = 1;
                 }
                 break;
-            case 3:
+            case JobCategory.Archer:
                 if (ti == ItemType.Equip || ti == ItemType.Consume) {
                     count = 1;
                 }
@@ -490,7 +509,7 @@ public class User {
                     ++count;
                 }
                 break;
-            case 4:
+            case JobCategory.Thief:
                 if (ti == ItemType.Equip || ti == ItemType.Etc) {
                     count = 1;
                 }
@@ -508,6 +527,7 @@ public class User {
         Logger.logReport("User login from (%s)", this.characterName);
         sendPacket(Stage.onSetCashShop(this));
         sendPacket(ShopPacket.onLoadLockerDone(this.cashItemInfo));
+        sendPacket(ShopPacket.onLoadWishDone(this.wishList));
         sendPacket(ShopPacket.onQueryCash(this));
     }
 
@@ -584,8 +604,18 @@ public class User {
                 cashItem.setNumber(item.getItemNumber());
                 cashItem.setBuyCharacterName(item.getBuyCharacterName());
                 cashItem.setDateExpire(item.getDateExpire());
+                if (cashItem.getAccountID() == 0) {
+                    cashItem.setAccountID(getAccountID());
+                }
+                if (cashItem.getCharacterID() == 0) {
+                    cashItem.setCharacterID(getCharacterID());
+                }
                 this.cashItemInfo.add(cashItem);
-                this.modFlag |= ModFlag.ItemLocker | (ti == ItemType.Equip ? ModFlag.ItemSlotEquip : (ti == ItemType.Consume ? ModFlag.ItemSlotBundle : ModFlag.ItemSlotEtc));
+                this.modFlag |= ModFlag.ItemLocker |
+                        (ti == ItemType.Equip ? ModFlag.ItemSlotEquip
+                                : (ti == ItemType.Consume ? ModFlag.ItemSlotBundle
+                                : (ti == ItemType.Cash ? ModFlag.ItemSlotCash
+                                : ModFlag.ItemSlotEtc)));
                 this.character.setItem(ti, pos, null);
                 sendPacket(ShopPacket.onMoveSToL(cashItem));
             }
@@ -593,7 +623,9 @@ public class User {
     }
 
     public void onPacket(byte type, InPacket packet) {
-        Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+        if (OrionConfig.LOG_PACKETS) {
+            Logger.logReport("[Packet Logger] [" + type + "]: " + packet.dumpString());
+        }
         switch (type) {
             case ClientPacket.UserTransferFieldRequest:
                 onTransferFieldRequest();
@@ -607,6 +639,20 @@ public class User {
             case ClientPacket.CashShopCashItemRequest:
                 onCashItemRequest(packet);
                 break;
+        }
+    }
+    
+    private void onSetWish(InPacket packet) {
+        if (this.cashShopAuthorized) {
+            for (int i = 0; i < 10; i++) {
+                int sn = packet.decodeInt();
+                Commodity commodity = ShopApp.getInstance().findCommodity(sn);
+                if (commodity != null) {
+                    this.wishList.set(i, sn);
+                }
+            }
+            sendPacket(ShopPacket.onSetWishDone(this.wishList));
+            ShopDB.rawSetWishItem(this.characterID, this.wishList);
         }
     }
 
@@ -656,6 +702,10 @@ public class User {
     public void setBirthDate(int birthDate) {
         this.birthDate = birthDate;
     }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public void setGender(int gender) {
         this.gender = gender;
@@ -687,20 +737,40 @@ public class User {
 
     public class CashItemRequest {
 
-        public static final byte LoadLockerDone = 10;
-        public static final byte LoadLockerFailed = 11;
-        public static final byte BuyDone = 12;
-        public static final byte BuyFailed = 13;
-        public static final byte GiftDone = 14;
-        public static final byte GiftFailed = 15;
-        public static final byte IncSlotCountDone = 16;
-        public static final byte IncSlotCountFailed = 17;
-        public static final byte MoveLtoSDone = 18;
-        public static final byte MoveLToSFailed = 19 /*not sure if this is legit*/;
-        public static final byte MoveSToLDone = 20;
-        public static final byte MoveSToLFailed = 21;
-        public static final byte DestroyDone = 22;
-        public static final byte DestroyFailed = 23;
+        public static final byte
+                LoadLocker = 0,
+                LoadWish = 1,
+                Buy = 2,
+                Gift = 3,
+                SetWish = 4,
+                IncSlotCount = 5,
+                CancelPurchase = 6,
+                ConfirmPurchase = 7,
+                Destroy = 8,
+                MoveLtoS = 9,
+                MoveStoL = 10,
+                Expire = 11,
+                Use = 12,
+                Rebate = 13,
+                UseCoupon = 14,
+                LoadLockerDone = 15,
+                LoadLockerFailed = 16,
+                LoadWishDone = 17,
+                LoadWishFailed = 18,
+                SetWishDone = 19,
+                SetWishFailed = 20,
+                BuyDone = 21,
+                BuyFailed = 22,
+                GiftDone = 23,
+                GiftFailed = 24,
+                IncSlotCountDone = 25,
+                IncSlotCountFailed = 26,
+                MoveLtoSDone = 27,
+                MoveLToSFailed = 28,
+                MoveSToLDone = 29,
+                MoveSToLFailed = 30,
+                DestroyDone = 31,
+                DestroyFailed = 32;
     }
 
     public class ModFlag {

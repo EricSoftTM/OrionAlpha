@@ -30,7 +30,7 @@ public class Stage {
 
     public static OutPacket onSetCashShop(User user) {
         OutPacket packet = new OutPacket(LoopbackPacket.SetCashShop);
-        packet.encodeString(user.getNexonClubID());
+        packet.encodeString(user.getEmail());
         user.getCharacter().encode(packet, DBChar.All);
         return packet;
     }

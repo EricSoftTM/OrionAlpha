@@ -17,7 +17,6 @@
  */
 package network.database;
 
-import common.item.ItemType;
 import common.user.CharacterData;
 import common.user.DBChar;
 import java.sql.Connection;
@@ -93,12 +92,14 @@ public class ShopDB {
                         user.setAccountID(rs.getInt("AccountID"));
                         user.setGender(rs.getInt("Gender"));
                         user.setNexonClubID(rs.getString("LoginID"));
+                        user.setEmail(rs.getString("Email"));
                         user.setKSSN(rs.getInt("SSN1"));
                         user.setBirthDate(rs.getInt("BirthDate"));
                         // more will be added when I get there
                     }
                 }
             }
+            rawLoadWishItem(con, characterID, user.getWishList());
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
@@ -150,8 +151,35 @@ public class ShopDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-
         return null;
+    }
+    
+    private static void rawLoadWishItem(Connection con, int characterID, List<Integer> commodityID) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `wishlist` WHERE `CharacterID` = ?")) {
+            ps.setInt(1, characterID);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String[] commoditySN = rs.getString("CommoditySN").split(",");
+                    for (int i = 0; i < commoditySN.length; i++) {
+                        commodityID.set(i, Integer.parseInt(commoditySN[i]));
+                    }
+                }
+            }
+        }
+    }
+    
+    public static void rawSetWishItem(int characterID, List<Integer> commodityID) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `wishlist` SET `CommoditySN` = ? WHERE `CharacterID` = ?")) {
+                StringBuilder sCommoditySN = new StringBuilder();
+                for (int sn : commodityID) {
+                    sCommoditySN.append(sn).append(",");
+                }
+                Database.execute(con, ps, sCommoditySN.substring(0, sCommoditySN.length() - 1), characterID);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
     }
 
     public static void rawUpdateItemLocker(int characterID, List<CashItemInfo> cashItemInfo) {

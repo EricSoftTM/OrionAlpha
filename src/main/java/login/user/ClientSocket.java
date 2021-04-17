@@ -78,7 +78,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     public int characterID;
     private byte gender;
     private byte gradeCode;
-    private String nexonClubID;
+    private String nexonClubID, email;
     private int birthDate;//Doesn't exist, this is KSSN instead.
     private boolean closePosted;
     private final Map<Integer, String> characters;
@@ -194,6 +194,10 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     
     public byte getChannelID() {
         return channelID;
+    }
+    
+    public String getEmail() {
+        return email;
     }
     
     public byte getGender() {
@@ -531,6 +535,10 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     
     public void setAccountID(int accountID) {
         this.accountID = accountID;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
     }
     
     public void setGender(byte gender) {

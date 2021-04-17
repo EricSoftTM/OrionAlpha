@@ -44,6 +44,6 @@ public class PartyResCode {
             JoinParty_OverDesiredSize       = 16,
             JoinParty_UnknownUser           = 17,
             JoinParty_Unknown               = 18,
-            ServerMsg                       = 19
+            InviteParty_Rejected            = 19
     ;
 }

@@ -97,6 +97,13 @@ public class WvsContext {
         return packet;
     }
     
+    public static OutPacket onIncEXPMessage(boolean lastHit, int exp) {
+        OutPacket packet = new OutPacket(LoopbackPacket.IncEXPMessage);
+        packet.encodeBool(lastHit);
+        packet.encodeInt(exp);
+        return packet;
+    }
+    
     public static OutPacket onGivePopularityResult(byte type, String characterName, boolean raise) {
         OutPacket packet = new OutPacket(LoopbackPacket.GivePopularityResult);
         packet.encodeByte(type);

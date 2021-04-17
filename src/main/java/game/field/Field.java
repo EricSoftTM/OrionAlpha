@@ -27,6 +27,7 @@ import game.field.life.npc.Npc;
 import game.field.life.npc.NpcPool;
 import game.field.portal.PortalMap;
 import game.miniroom.BalloonEntry;
+import game.party.PartyMan;
 import game.user.User;
 import game.user.UserRemote;
 import network.packet.ClientPacket;
@@ -329,6 +330,7 @@ public class Field {
         }
         // Jukebox
         // Clock
+        PartyMan.getInstance().notifyTransferField(user.getCharacterID(), getFieldID());
         return true;
     }
 

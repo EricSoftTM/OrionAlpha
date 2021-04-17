@@ -80,7 +80,7 @@ public class PartyPacket {
     
     public static OutPacket onPartyResult(boolean accept, String name) {
         OutPacket packet = new OutPacket(LoopbackPacket.PartyResult);
-        packet.encodeByte(PartyResCode.ServerMsg);
+        packet.encodeByte(PartyResCode.InviteParty_Rejected);
         packet.encodeString(name);
         packet.encodeBool(accept);
         return packet;

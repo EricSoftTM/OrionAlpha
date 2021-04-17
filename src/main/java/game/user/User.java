@@ -42,6 +42,7 @@ import game.field.portal.PortalMap;
 import game.messenger.Messenger;
 import game.miniroom.MiniRoom;
 import game.miniroom.MiniRoomBase;
+import game.party.PartyMan;
 import game.script.ScriptVM;
 import game.user.command.CommandHandler;
 import game.user.command.UserGradeCode;
@@ -154,6 +155,8 @@ public class User extends Creature {
     // private UserMiniRoom userMR;
     private MiniRoomBase miniRoom;
     private boolean miniRoomBalloon;
+    // Party
+    private final List<Integer> partyInvitedCharacter;
     // Pets
     private Pet pet;
     // MSMessenger
@@ -219,6 +222,7 @@ public class User extends Creature {
         // TODO: Nexon-like user caching to avoid DB load upon each login/migrate.
         this.character = GameDB.rawLoadCharacter(characterID);
         this.realEquip = new ArrayList<>(BodyPart.BP_Count + 1);
+        this.partyInvitedCharacter = new ArrayList<>();
 
         for (int i = 0; i <= BodyPart.BP_Count; i++) {
             this.realEquip.add(i, null);
@@ -922,6 +926,10 @@ public class User extends Creature {
     public ClientSocket getSocket() {
         return socket;
     }
+    
+    public UserSkill getUserSkill() {
+        return userSkill;
+    }
 
     public byte getWorldID() {
         return GameApp.getInstance().getWorldID();
@@ -1125,6 +1133,8 @@ public class User extends Creature {
                 // Channel changing isn't fully supported yet, so this may not exist.
                 // Will handle this once I look in to messengers.
             }
+            
+            PartyMan.getInstance().loadParty(this);
         } else {
             Logger.logError("Failed in entering field");
             closeSocket();
@@ -1138,6 +1148,7 @@ public class User extends Creature {
                 leaveField();
                 GameObjectBase.unregisterGameObject(this);
                 getChannel().unregisterUser(this);
+                PartyMan.getInstance().notifyTransferField(getCharacterID(), Field.Invalid);
             } finally {
                 unlock();
             }
@@ -1252,6 +1263,10 @@ public class User extends Creature {
                 break;
             case ClientPacket.UserGivePopularityRequest:
                 onGivePopularityRequest(packet);
+                break;
+            case ClientPacket.PartyRequest:
+            case ClientPacket.PartyResult:
+                PartyMan.getInstance().onPacket(this, type, packet);
                 break;
             default: {
                 if (type >= ClientPacket.BEGIN_FIELD && type <= ClientPacket.END_FIELD) {
@@ -3089,5 +3104,20 @@ public class User extends Creature {
             }
         }
         return false;
+    }
+    
+    public void addPartyInvitedCharacter(int characterID) {
+        partyInvitedCharacter.add(characterID);
+        if (partyInvitedCharacter.size() > 10) {
+            partyInvitedCharacter.remove(0);
+        }
+    }
+    
+    public boolean isPartyInvitedCharacter(int characterID) {
+        return partyInvitedCharacter.contains(characterID);
+    }
+    
+    public void removePartyInvitedCharacter(int characterID) {
+        partyInvitedCharacter.removeIf(invited -> invited == characterID);
     }
 }

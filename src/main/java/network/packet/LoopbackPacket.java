@@ -45,6 +45,7 @@ public class LoopbackPacket {
             PartyResult = 17,
             DropPickUpMessage = 18,
             CashItemExpireMessage = 19,
+            IncEXPMessage = 20,
             GivePopularityResult = 21,
             BroadcastMsg = 22,
             CharacterInfo = 23,

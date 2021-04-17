@@ -19,6 +19,8 @@ package game.party;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import game.field.Field;
 import network.packet.OutPacket;
 
 /**
@@ -26,17 +28,19 @@ import network.packet.OutPacket;
  * @author Eric
  */
 public class PartyMember {
-    private final List<Integer> characterID;
+    private final List<Integer> characterID, fieldID;
     private final List<String> characterName;
-    //private int partyBossCharacterID;
+    private int partyBossCharacterID;
     
     public PartyMember() {
         this.characterID = new ArrayList<>(6);
         this.characterName = new ArrayList<>(6);
+        this.fieldID = new ArrayList<>(6);
         
         for (int i = 0; i < 6; i++) {
             characterID.add(i, 0);
             characterName.add(i, "");
+            fieldID.add(i, Field.Invalid);
         }
     }
     
@@ -47,6 +51,9 @@ public class PartyMember {
         for (String name : characterName) {
             packet.encodeString(name, 13);
         }
+        for (int field : fieldID) {
+            packet.encodeInt(field);
+        }
     }
     
     public int getCharacterID(String name) {
@@ -56,6 +63,10 @@ public class PartyMember {
         } else {
             return characterID.get(idx);
         }
+    }
+    
+    public List<Integer> getFieldID() {
+        return fieldID;
     }
     
     public List<Integer> getCharacterID() {
@@ -76,6 +87,10 @@ public class PartyMember {
         return count;
     }
     
+    public int getPartyBoss() {
+        return partyBossCharacterID;
+    }
+    
     public int findIndex(String name) {
         for (int i = 0; i < characterName.size(); i++) {
             if (characterName.get(i).toLowerCase().equals(name.toLowerCase())) {
@@ -83,5 +98,9 @@ public class PartyMember {
             }
         }
         return -1;
+    }
+    
+    public void setPartyBoss(int characterID) {
+        this.partyBossCharacterID = characterID;
     }
 }

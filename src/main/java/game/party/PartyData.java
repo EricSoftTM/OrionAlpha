@@ -32,7 +32,6 @@ public class PartyData {
     
     public void encode(OutPacket packet) {
         party.encode(packet);
-        //packet.encodePadding(102);
     }
     
     public PartyMember getParty() {

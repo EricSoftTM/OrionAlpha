@@ -25,6 +25,8 @@ import common.item.ItemAccessor;
 import common.item.ItemType;
 import common.user.CharacterStat.CharacterStatType;
 import common.user.UserEffect;
+import game.party.PartyData;
+import game.party.PartyMan;
 import game.user.User;
 import game.user.WvsContext;
 import game.user.skill.Skills.*;
@@ -110,9 +112,40 @@ public class UserSkill {
     public void doActiveSkill_PartyStatChange(SkillEntry skill, byte slv, InPacket packet) {
         int affectedMemberBitmap = packet.decodeByte(true);
         long duration = System.currentTimeMillis() + 1000 * skill.getLevelData(slv).getTime();
+        int partyID = PartyMan.getInstance().getPartyID(user.getCharacterID());
+        if (partyID == 0) {
+            if (affectedMemberBitmap != 128) {
+                Logger.logError("Invalid Party Skill Request");
+                sendFailPacket();
+                return;
+            }
+        }
+        
+        int partyCount = 0;
+        List<Integer> members = new ArrayList<>();
+        if (partyID != 0) {
+            PartyData pd = PartyMan.getInstance().getParty(partyID);
+            if (pd != null) {
+                for (int i = 6; i > 0; i--) {
+                    int characterID = pd.getParty().getCharacterID().get(i - 1);
+                    if ((affectedMemberBitmap & 1) != 0) {
+                        User member = user.getChannel().findUser(characterID);
+                        if (member != null && member.getField() != null && member.getField() == user.getField() && member.getHP() != 0 && member != user) {
+                            members.add(partyCount++, characterID);
+                        }
+                    }
+                    affectedMemberBitmap >>= 1;
+                }
+            }
+            if (partyCount >= 6) {
+                Logger.logError("Invalid Party Skill Request ( Invalid Party Member Count )");
+                sendFailPacket();
+                return;
+            }
+        }
+        members.add(partyCount++, user.getCharacterID());
         
         int hpRate = 0;
-        int partyCount = 1;
         if (skill.getLevelData(slv).getHP() != 0) {
             int baseInt = user.getBasicStat().getINT();
             int rand = 0;
@@ -125,25 +158,47 @@ public class UserSkill {
             hpRate = (int) ((double) rate * ((double) partyCount * 0.3d + 1.0d) * (double) skill.getLevelData(slv).getHP() * 0.01d);
         }
         
-        int skillFlag = processSkill(skill, slv, duration);
-        int statFlag = 0;
-        if (skill.getLevelData(slv).getHP() != 0) {
-            double inc = Math.ceil((double) ((int) hpRate / partyCount));
-            if (user.incHP((int) (long) inc, false)) {
-                statFlag |= CharacterStatType.HP;
-                if (skill.getSkillID() == Cleric.Heal) {
-                    if (affectedMemberBitmap != 0) {
-                        // Ignore because this only ever adjusts from other party members.
-                        // statFlag |= user.incEXP(affectedMemberBitmap, false);
+        if (partyCount > 0) {
+            int healPartyBonus = 0;
+            for (int characterID : members) {
+                User member = user.getChannel().findUser(characterID);
+                if (member != null) {
+                    if (member.lock()) {
+                        try {
+                            int skillFlag = member.getUserSkill().processSkill(skill, slv, duration);
+                            int statFlag = 0;
+                            if (skill.getLevelData(slv).getHP() != 0) {
+                                int hp = member.getHP();
+                                double inc = Math.ceil((double) (hpRate / partyCount));
+                                if (member.incHP((int) (long) inc, false)) {
+                                    statFlag |= CharacterStatType.HP;
+                                    if (skill.getSkillID() == Cleric.Heal) {
+                                        if (member == user) {
+                                            if (healPartyBonus != 0) {
+                                                statFlag |= user.incEXP(healPartyBonus, false);
+                                                user.sendPacket(WvsContext.onIncEXPMessage(true, healPartyBonus));
+                                            }
+                                        } else {
+                                            healPartyBonus += 20 * (member.getHP() - hp) / (8 * member.getLevel() + 190);
+                                        }
+                                    }
+                                }
+                            }
+                            member.validateStat(false);
+                            member.sendCharacterStat(member == user ? Request.Excl : Request.None, statFlag);
+                            member.sendTemporaryStatSet(skillFlag);
+                            if (member != user) {
+                                member.onUserEffect(true, true, UserEffect.SkillAffected, skill.getSkillID(), slv);
+                            }
+                        } finally {
+                            member.unlock();
+                        }
                     }
                 }
             }
-        }
-        user.validateStat(false);
-        user.sendCharacterStat(Request.Excl, statFlag);
-        user.sendTemporaryStatSet(skillFlag);
-        if (user.getField() != null) {
-            user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
+            if (user.getField() != null) {
+                user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
+            }
         }
     }
     

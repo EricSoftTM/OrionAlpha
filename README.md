@@ -3,9 +3,9 @@ OrionAlpha - A Nexon Replica Emulator Project
 
 ----------------------------------------------------------------------
 ## Resources
- * You can download the game and client [here](https://mega.nz/#!O9Vy3C7Q!0FsLIilRwzImzjUY_9MxOqtvA4wuMn0SDWE65BkGHZk)
- * To emulate a korean locale in the client, you can download LocaleEmulator [here](https://mega.nz/#!T5t00IwA!YByix3DVt-_Pi0IpU-OwUnvhCDyZEPz4JQ6S-kbYHks)
- * You can download the named client IDB [here](https://mega.nz/#!KgdRna6Q!T5Op7_b_JF62QEvHqeYFp2NJcEYeoigqFdOHpREf5pI)
+ * You can download the game and client [here](https://mega.nz/file/6llCTTIT#RJZ5SS98EKnW2N4EjdrOCt32vui6B9kUwsM6SfKRvt4)
+ * To emulate a japanese locale in the client, you can download LocaleEmulator [here](https://mega.nz/#!T5t00IwA!YByix3DVt-_Pi0IpU-OwUnvhCDyZEPz4JQ6S-kbYHks)
+ * You can download the named client IDB [here](https://mega.nz/file/jg1mHB4D#Q8LkkLupi1AaoRQoVmwKwulk0TzRvtMvGRqMC11Y1sk)
 ## Requirements/Dependencies
  * Java JDK (11 or higher)
  * javax.json (or Java EE)

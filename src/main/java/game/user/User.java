@@ -1147,6 +1147,9 @@ public class User extends Creature {
         if (lock()) {
             try {
                 destroyAdditionalProcess();
+                if (getMessenger().getMSM() != null) {//if (!migrate)
+                    getMessenger().getMSM().onLeave(this);
+                }
                 leaveField();
                 GameObjectBase.unregisterGameObject(this);
                 getChannel().unregisterUser(this);

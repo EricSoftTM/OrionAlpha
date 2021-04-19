@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import util.Logger;
 
 /**
  *
@@ -126,8 +125,6 @@ public class MSMessenger {
                     } finally {
                         lockMSM.unlock();
                     }
-                    
-                    //user.sendPacket(Messenger.onSelfEnterResult((byte) findIndex(user)));
                 } finally {
                     user.unlock();
                 }
@@ -154,9 +151,8 @@ public class MSMessenger {
                 for (int i = 0; i < MAX_CHARACTER; ++i) {
                     if (character.get(i).getUser() != null) {
                         if (i != emptyIdx) {
-                            // TODO: Figure out why isNew crashes. Temporarily disabled.
                             user.sendPacket(Messenger.onEnter((byte) i, character.get(i).getUser().getCharacter().getCharacterStat().getGender(), character.get(i).getUser().getCharacter().getCharacterStat().getFace(), character.get(i).getAvatarLook(), character.get(i).getID(), false));
-                            character.get(i).getUser().sendPacket(Messenger.onEnter((byte) emptyIdx, character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getGender(), character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getFace(), character.get(emptyIdx).getAvatarLook(), character.get(emptyIdx).getID(), false));
+                            character.get(i).getUser().sendPacket(Messenger.onEnter((byte) emptyIdx, character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getGender(), character.get(emptyIdx).getUser().getCharacter().getCharacterStat().getFace(), character.get(emptyIdx).getAvatarLook(), character.get(emptyIdx).getID(), true));
                         }
                     }
                 }

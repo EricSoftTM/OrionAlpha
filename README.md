@@ -3,7 +3,7 @@ OrionAlpha - A Nexon Replica Emulator Project
 
 ----------------------------------------------------------------------
 ## Resources
- * You can download the game and client [here](https://mega.nz/file/6llCTTIT#RJZ5SS98EKnW2N4EjdrOCt32vui6B9kUwsM6SfKRvt4)
+ * You can download the game and client [here](https://mega.nz/file/at1HWAJL#llOeHFj3DLTvdG4RgMQWvveil1_rZ1pjX9dxKwshOkg)
  * To emulate a japanese locale in the client, you can download LocaleEmulator [here](https://mega.nz/#!T5t00IwA!YByix3DVt-_Pi0IpU-OwUnvhCDyZEPz4JQ6S-kbYHks)
  * You can download the named client IDB [here](https://mega.nz/file/jg1mHB4D#Q8LkkLupi1AaoRQoVmwKwulk0TzRvtMvGRqMC11Y1sk)
 ## Requirements/Dependencies
@@ -134,7 +134,13 @@ OrionAlpha - A Nexon Replica Emulator Project
 
   ### Fix Messengers
   Nexon forgot to implement expansion for messengers, so it fails to render avatars. This fixes the UI for avatars.
-  * Change the instruction at address `0052DE67` to `mov byte ptr[esi+58], 1`
+  * Change the instruction at address `0052F830` to `nop`
+  * Change the instruction at address `00531326` to `nop`
+  * Change the instruction at address `00532849` to `nop`
+  * Change the instruction at address `0052FEEA` to `nop`
+  * Change the instruction at address `00531036` to `nop`
+  * Change the instruction at address `00530E2A` to `nop`
+  * Change the instruction at address `00530E2C` to `nop`
   
   ### Modifying Damage Cap
   Allows you to extend the damage cap up to a maximum of `32,767`.

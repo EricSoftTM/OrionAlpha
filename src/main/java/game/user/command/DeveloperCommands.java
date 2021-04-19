@@ -25,6 +25,7 @@ import game.field.drop.Drop;
 import game.field.drop.DropPool;
 import game.field.life.LifePool;
 import game.field.life.npc.Npc;
+import game.field.life.npc.NpcTemplate;
 import game.user.User;
 import java.util.Iterator;
 
@@ -65,12 +66,12 @@ public class DeveloperCommands {
     
     public static String npc(User user, LifePool lifePool, String[] args) {
         if (args.length > 0) {
-            Npc npc = lifePool.getNpc(Integer.parseInt(args[0]));
-            if (npc != null) {
+            NpcTemplate template = NpcTemplate.getNpcTemplate(Integer.parseInt(args[0]));
+            if (template != null) {
                 int x = user.getCurrentPosition().x;
                 int y = user.getCurrentPosition().y;
                 
-                lifePool.createNpc(null, npc.getTemplateID(), x, y);
+                lifePool.createNpc(null, template.getTemplateID(), x, y);
             } else {
                 user.sendSystemMessage("The Npc you have entered does not have an existing template.");
             }

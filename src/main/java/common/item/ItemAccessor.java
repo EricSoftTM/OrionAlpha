@@ -72,6 +72,10 @@ public class ItemAccessor {
     public static boolean isPetFoodItem(int itemID) {
         return itemID / 10000 == 212;
     }
+    
+    public static boolean isMobSummonItem(int itemID) {
+        return itemID / 10000 == 210;
+    }
 
     public static boolean isTreatSingly(ItemSlotBase p) {
         if (ItemInfo.isCashItem(p.getItemID())) {

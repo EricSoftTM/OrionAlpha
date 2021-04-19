@@ -52,6 +52,7 @@ public class ItemInfo {
     protected static final Map<Integer, PortalScrollItem> portalScrollItem;
     protected static final Map<Integer, UpgradeItem> upgradeItem;
     protected static final Map<Integer, PetFoodItem> petFoodItem;
+    protected static final Map<Integer, MobSummonItem> mobSummonItem;
     //
     protected static final Map<Integer, String> mapString;
     protected static final Map<Integer, String> itemString;
@@ -64,6 +65,7 @@ public class ItemInfo {
         portalScrollItem = new HashMap<>();
         upgradeItem = new HashMap<>();
         petFoodItem = new HashMap<>();
+        mobSummonItem = new HashMap<>();
         
         // Initialize Strings
         mapString = new HashMap<>();
@@ -80,6 +82,10 @@ public class ItemInfo {
 
     public static StateChangeItem getStateChangeItem(int itemID) {
         return statChangeItem.get(itemID);
+    }
+    
+    public static MobSummonItem getMobSummonItem(int itemID) {
+        return mobSummonItem.get(itemID);
     }
     
     public static PetFoodItem getPetFoodItem(int itemID) {
@@ -417,6 +423,8 @@ public class ItemInfo {
             registerPortalScrollItem(item.getItemID(), itemData);
         } else if (ItemAccessor.isPetFoodItem(item.getItemID())) {
             registerPetFoodItem(item.getItemID(), itemData);
+        } else if (ItemAccessor.isMobSummonItem(item.getItemID())) {
+            registerMobSummonItem(item.getItemID(), itemData);
         } else if (ItemAccessor.isWeatherItem(item.getItemID())) {
             // wonder if 'CashItem' should add this and megaphone (208)..
         }
@@ -492,6 +500,24 @@ public class ItemInfo {
 
             sci.setTime(WzUtil.getInt32(spec.getNode("time"), 0));
         }
+    }
+    
+    private static void registerMobSummonItem(int itemID, WzProperty itemData) {
+        MobSummonItem item = new MobSummonItem();
+        item.setItemID(itemID);
+        WzProperty info = itemData.getNode("info");
+        if (info != null) {
+            item.setType(WzUtil.getInt32(info.getNode("type"), 1));
+            WzProperty mobs = itemData.getNode("mob");
+            if (mobs != null) {
+                for (WzProperty mob : mobs.getChildNodes()) {
+                    int mobID = WzUtil.getInt32(mob.getNode("id"), 0);
+                    int prob = WzUtil.getInt32(mob.getNode("prob"), 0);
+                    item.getMobs().add(new MobEntry(mobID, prob));
+                }
+            }
+        }
+        mobSummonItem.put(item.getItemID(), item);
     }
     
     private static void registerPetFoodItem(int itemID, WzProperty itemData) {

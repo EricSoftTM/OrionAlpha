@@ -34,6 +34,8 @@ import game.field.life.mob.MobTemplate;
 import game.field.life.npc.Npc;
 import game.field.life.npc.NpcTemplate;
 import game.user.User;
+import game.user.item.MobEntry;
+import game.user.item.MobSummonItem;
 import game.user.skill.SkillAccessor;
 import game.user.skill.SkillEntry;
 import game.user.skill.SkillLevelData;
@@ -145,10 +147,10 @@ public class LifePool {
     }
     
     public boolean createMob(Mob mob, Point pt) {
-        return createMob(mob.getTemplateID(), mob.getMobGen(), pt.x, pt.y, (short) field.getSpace2D().getFootholdUnderneath(pt.x, pt.y).getSN(), false, (byte) 0, 0, null);
+        return createMob(mob.getTemplateID(), mob.getMobGen(), pt.x, pt.y, (short) field.getSpace2D().getFootholdUnderneath(pt.x, pt.y).getSN(), false, (byte) 0, (byte) 0, 0, null);
     }
     
-    public boolean createMob(int templateID, MobGen pmg, int x, int y, short fh, boolean noDropPriority, byte left, int mobType, Controller owner) {
+    public boolean createMob(int templateID, MobGen pmg, int x, int y, short fh, boolean noDropPriority, byte type, byte left, int mobType, Controller owner) {
         if (owner == null) {
             if (ctrlMin.getCount() != 0) {
                 owner = ctrlMin.getHeap().get(0);
@@ -181,8 +183,10 @@ public class LifePool {
                 ++subMobCount;
                 mob.setMobType(1);
             }
-            if (mobType == 2)
+            if (mobType == 2) {
                 mob.setMobType(2);
+            }
+            mob.setSummonType(type);
             
             Point pt = field.makePointInSplit(x, y);
             field.splitRegisterFieldObj(pt.x, pt.y, FieldSplit.Mob, mob);
@@ -419,6 +423,49 @@ public class LifePool {
                 mob.onMobStatChangeSkill(user, skill, slv, 0);
             }
         }
+    }
+    
+    public boolean onMobSummonItemUseRequest(User user, MobSummonItem info) {
+        return onMobSummonItemUseRequest(user.getCurrentPosition(), info, user.isGM());
+    }
+    
+    public boolean onMobSummonItemUseRequest(Point pt, MobSummonItem info, boolean noDropPriority) {
+        StaticFoothold fh = getField().getSpace2D().getFootholdUnderneath(pt.x, pt.y, null);
+        if (fh == null) {
+            return false;
+        }
+        List<Integer> templates = new ArrayList<>();
+        for (MobEntry entry : info.getMobs()) {
+            if (Rand32.getInstance().random() % 100 < entry.getProb()) {
+                templates.add(entry.getMobTemplateID());
+            }
+        }
+        int mobCount = templates.size();
+        boolean create = mobCount > 0;
+        if (ctrlMin.getCount() != 0) {
+            create = false;
+            for (Controller ctrl : ctrlMin.getHeap()) {
+                if (mobCount > 0) {
+                    if (ctrl != null && ctrl.getCtrlCount() < 50) {
+                        mobCount += ctrl.getCtrlCount() - 50;
+                    }
+                } else {
+                    create = true;
+                    break;
+                }
+            }
+        }
+        if (create) {
+            for (int templateID : templates) {
+                if (!createMob(templateID, null, pt.x, pt.y, (short) fh.getSN(), noDropPriority, info.getType(), (byte) 0, 0, null)) {
+                    templates.clear();
+                    return false;
+                }
+            }
+            templates.clear();
+            return true;
+        }
+        return false;
     }
     
     public void onNpcPacket(User user, byte type, InPacket packet) {
@@ -710,7 +757,7 @@ public class LifePool {
                     MobGen pmg = mobGens.remove(index);
                     if (pmg == null)
                         continue;
-                    if (createMob(pmg.templateID, pmg, pmg.x, pmg.y, pmg.fh, false, pmg.f, 0, null))
+                    if (createMob(pmg.templateID, pmg, pmg.x, pmg.y, pmg.fh, false, pmg.f, (byte) 0, 0, null))
                         --mobCount;
                     if (mobCount <= 0) {
                         break;

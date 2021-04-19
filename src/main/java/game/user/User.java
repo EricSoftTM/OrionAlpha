@@ -1260,8 +1260,8 @@ public class User extends Creature {
             case ClientPacket.Admin:
                 onAdmin(packet);
                 break;
-            case ClientPacket.UserPetFoodItemUseRequest:
-                onPetFoodItemUseRequest(packet);
+            case ClientPacket.UserMobSummonItemUseRequest:
+                onMobSummonItemUseRequest(packet);
                 break;
             case ClientPacket.UserActivatePetRequest:
                 onActivatePetRequest(packet);
@@ -1994,6 +1994,40 @@ public class User extends Creature {
                 unlock();
             }
         }
+    }
+    
+    public void onMobSummonItemUseRequest(InPacket packet) {
+        if (getField() == null || (getField().getOption() & FieldOpt.SummonLimit) != 0) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        if (getHP() == 0 || secondaryStat.getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        short pos = packet.decodeShort();
+        int itemID = packet.decodeInt();
+        ItemSlotBase item = character.getItem(ItemType.Consume, pos);
+        MobSummonItem summonItem = ItemInfo.getMobSummonItem(itemID);
+        if (item == null || item.getItemID() != itemID || summonItem == null) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        /*if (itemID == 2100000 && getField().isPersonalShop()) {
+            sendPacket(FieldPacket.onSummonItemInavailable(false));
+            return;
+        }*/
+        if (!getField().getLifePool().onMobSummonItemUseRequest(this, summonItem)) {
+            sendCharacterStat(Request.Excl, 0);
+            return;
+        }
+        List<ChangeLog> changeLog = new ArrayList<>();
+        Pointer<Integer> decRet = new Pointer<>(0);
+        if (Inventory.rawRemoveItem(this, ItemType.Consume, pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
+            addCharacterDataMod(DBChar.ItemSlotConsume);
+            Inventory.sendInventoryOperation(this, Request.Excl, changeLog);
+        }
+        changeLog.clear();
     }
     
     public void onPetFoodItemUseRequest(InPacket packet) {

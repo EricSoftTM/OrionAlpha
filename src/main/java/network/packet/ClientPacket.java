@@ -50,7 +50,7 @@ public class ClientPacket {
             UserShopRequest = 24,
             UserChangeSlotPositionRequest = 25,
             UserStatChangeItemUseRequest = 26,
-            UserPetFoodItemUseRequest = 27,
+            UserMobSummonItemUseRequest = 27,
             UserConsumeCashItemUseRequest = 28,
             UserPortalScrollUseRequest = 29,
             UserUpgradeItemUseRequest = 30,

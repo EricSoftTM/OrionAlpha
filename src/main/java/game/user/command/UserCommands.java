@@ -50,11 +50,19 @@ public class UserCommands {
             }
             user.sendSystemMessage(role.name());
             for (Method method : clazz.getMethods()) {
+            	if (!CommandHandler.isValidCommandMethod(method)) {
+            		continue;
+	            }
+            	
+            	StringBuilder sb = new StringBuilder("@");
+            	sb.append(method.getName());
+            	
                 CommandDesc desc = method.getAnnotation(CommandDesc.class);
-                if (desc == null) {
-                    continue;
+                if (desc != null) {
+                	sb.append(" - ").append(desc.value());
                 }
-                user.sendSystemMessage("@" + method.getName() + " - " + desc.value());
+                
+                user.sendSystemMessage(sb.toString());
             }
         }
         return null;

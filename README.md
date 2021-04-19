@@ -131,6 +131,10 @@ OrionAlpha - A Nexon Replica Emulator Project
   ### Fix Pets
   Nexon has been a meme since 2003? Amazing. This fixes pet action rendering crashes due to path resolve failure.
   * Change the ASCII at address `00648600` to `Item/Pet/%07d.img`
+
+  ### Fix Messengers
+  Nexon forgot to implement expansion for messengers, so it fails to render avatars. This fixes the UI for avatars.
+  * Change the instruction at address `0052DE67` to `mov byte ptr[esi+58], 1`
   
   ### Modifying Damage Cap
   Allows you to extend the damage cap up to a maximum of `32,767`.

@@ -23,7 +23,8 @@ package common;
  */
 public class BroadcastMsg {
     public static final byte
-            Notice  = 0,
-            Alert   = 1
+            Notice          = 0,
+            Alert           = 1,
+            SpeakerChannel  = 2
     ;
 }

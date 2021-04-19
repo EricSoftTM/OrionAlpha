@@ -63,14 +63,32 @@ public class ItemAccessor {
     }
     
     public static boolean isWeatherItem(int itemID) {
+        return isPetLifeItem(itemID) || itemID / 10000 == 208 || itemID / 10000 == 209;
+    }
+    
+    public static boolean isPetNamingItem(int itemID) {
+        if (itemID / 10000 == 211) {
+            return itemID % 10000 == 0;
+        }
+        return false;
+    }
+    
+    public static boolean isPetLifeItem(int itemID) {
         if (itemID / 10000 == 211) {
             return itemID % 10000 == 1;
         }
-        return itemID / 10000 == 208 || itemID / 10000 == 209;
+        return false;
     }
     
     public static boolean isPetFoodItem(int itemID) {
         return itemID / 10000 == 212;
+    }
+    
+    public static boolean isSpeakerChannelItem(int itemID) {
+        if (itemID / 10000 == 208) {
+            return itemID % 10000 == 1000;
+        }
+        return false;
     }
     
     public static boolean isMobSummonItem(int itemID) {

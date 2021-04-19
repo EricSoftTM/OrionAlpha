@@ -321,6 +321,10 @@ public class Pet {
 		this.footholdSN = sn;
 	}
 	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	public boolean update(long time) {
 		this.remainHungriness -= time - lastUpdated;
 		this.lastUpdated = time;

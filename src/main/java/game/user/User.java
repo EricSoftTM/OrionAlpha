@@ -1767,14 +1767,32 @@ public class User extends Creature {
     public void onConsumeCashItemUseRequest(InPacket packet) {
         short pos = packet.decodeShort();
         int itemID = packet.decodeInt();
-        String message = packet.decodeString();
-
         List<ChangeLog> changeLog = new ArrayList<>();
         Pointer<Integer> decRet = new Pointer<>(0);
         if (Inventory.rawRemoveItem(this, ItemType.Consume, pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
-            if (ItemAccessor.isWeatherItem(itemID)) {
+            if (ItemAccessor.isPetNamingItem(itemID)) {
+                String petName = packet.decodeString();
+                if (getPet() != null) {
+                    ItemSlotPet item = getPet().getItemSlot();
+                    if (item != null) {
+                        item.setPetName(petName);
+                        Inventory.updatePetItem(this, getPet().getItemSlotPos());
+    
+                        getPet().setName(petName);
+                        getField().splitSendPacket(getSplit(), PetPacket.onDataChanged(characterID, petName, item.getLevel(), item.getTameness(), item.getRepleteness()), null);
+                        addCharacterDataMod(DBChar.ItemSlotCash);
+                    }
+                }
+            } else if (ItemAccessor.isPetLifeItem(itemID)) {
+                // TODO: Water of Life
+            } else if (ItemAccessor.isSpeakerChannelItem(itemID)) {
+                String message = packet.decodeString();
+                getChannel().broadcast(WvsContext.onBroadcastMsg(BroadcastMsg.SpeakerChannel, message));
+            } else if (ItemAccessor.isWeatherItem(itemID)) {
+                String message = packet.decodeString();
                 getField().onWeather(itemID, message, 8000);
             }
+            addCharacterDataMod(DBChar.ItemSlotConsume);
             Inventory.sendInventoryOperation(this, Request.Excl, changeLog);
         } else {
             sendCharacterStat(Request.Excl, 0);

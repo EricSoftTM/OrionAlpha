@@ -21,6 +21,7 @@ import game.user.User;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,6 +57,10 @@ public class CommandHandler {
             Object[] methodArgs = null;
             try {
                 for (Method method : clazz.getMethods()) {
+	                if (!CommandHandler.isValidCommandMethod(method)) {
+		                continue;
+	                }
+	                
                     String usedAlias = null;
                     CommandAlias alias = method.getAnnotation(CommandAlias.class);
                     if (alias != null) {
@@ -147,7 +152,6 @@ public class CommandHandler {
                     if (ret instanceof String) {
                         user.sendSystemMessage(ret.toString());
                     }
-                    methodArgs = null;
                     return;
                 } catch (Exception ex) {
                     user.sendSystemMessage("Failed to execute the command.");
@@ -229,4 +233,14 @@ public class CommandHandler {
             return false;
         return input.indexOf("\"", index + 1) != -1;
     }
+	
+	/**
+	 * Attempts to determine if the method supplied is a valid command method.
+	 */
+	public static boolean isValidCommandMethod(Method method) {
+    	if (!Modifier.isStatic(method.getModifiers())) {
+    		return false;
+	    }
+		return method.getReturnType().isAssignableFrom(String.class);
+	}
 }

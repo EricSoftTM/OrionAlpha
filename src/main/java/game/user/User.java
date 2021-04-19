@@ -1434,15 +1434,17 @@ public class User extends Creature {
                         break;
                     }
                     case AdminRequest.AdminEvent: {
-                        // TODO: Implement OXQuiz
-                        byte action = packet.decodeByte();
-                        if (action == AdminRequest.Quiz) {// /問題
-                            int problem = packet.decodeInt();
-                            getField().broadcastPacket(FieldPacket.onQuiz(true, problem), false);
-                        } else if (action == AdminRequest.Answer) {// /正解
-                            //getField().broadcastPacket(FieldPacket.onQuiz(false, problem), false);
-                        } else if (action == AdminRequest.Check) {// /採点
-                        
+                        if (getField() instanceof OXQuiz) {
+                            OXQuiz field = (OXQuiz) getField();
+                            byte action = packet.decodeByte();
+                            if (action == AdminRequest.Quiz) {// /問題
+                                int problem = packet.decodeInt();
+                                field.setProblem(true, problem);
+                            } else if (action == AdminRequest.Answer) {// /正解
+                                field.setProblem(false, field.getQuizNumber());
+                            } else if (action == AdminRequest.Check) {// /採点
+                                field.banish();
+                            }
                         }
                         break;
                     }

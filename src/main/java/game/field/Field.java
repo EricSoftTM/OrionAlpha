@@ -97,6 +97,7 @@ public class Field {
     private List<FieldSplit> fieldSplit;
     private final Map<Integer, User> users;
     private final Map<Integer, BalloonEntry> balloonEntry;
+    private final Map<String, Rect> areaRect;
 
     public Field(int fieldID) {
         this.fieldObjIdCounter = new AtomicInteger(30000);
@@ -110,6 +111,7 @@ public class Field {
         this.dropPool = new DropPool(this);
         this.users = new ConcurrentHashMap<>();
         this.balloonEntry = new ConcurrentHashMap<>();
+        this.areaRect = new ConcurrentHashMap<>();
     }
 
     public void broadcastPacket(OutPacket packet, List<Integer> characters) {
@@ -159,6 +161,10 @@ public class Field {
 
     public User findUser(int characterID) {
         return users.get(characterID);
+    }
+    
+    public Map<String, Rect> getAreaRect() {
+        return areaRect;
     }
 
     public DropPool getDropPool() {

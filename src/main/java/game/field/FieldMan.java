@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
+import util.Rect;
 import util.Size;
 import util.TimerThread;
 import util.wz.WzFileSystem;
@@ -95,7 +96,8 @@ public class FieldMan {
     
     private Field registerField(int fieldID, WzProperty mapData) {
         if (mapData != null) {
-            final Field field = new Field(fieldID);
+            final Field field = fieldID == 109020001 ? new OXQuiz(fieldID)
+                            : new Field(fieldID);
     
             WzProperty info = mapData.getNode("info");
             if (info != null) {
@@ -116,6 +118,7 @@ public class FieldMan {
             }
     
             restoreFoothold(field, mapData.getNode("foothold"), mapData.getNode("ladderRope"), info);
+            restoreArea(field, mapData.getNode("area"));
             field.makeSplit();
             field.getPortal().restorePortal(mapData.getNode("portal"), field);
             field.getLifePool().init(field, mapData);
@@ -123,6 +126,18 @@ public class FieldMan {
             return field;
         }
         return null;
+    }
+    
+    private void restoreArea(Field field, WzProperty areaData) {
+        if (areaData != null) {
+            for (WzProperty area : areaData.getChildNodes()) {
+                int x1 = WzUtil.getInt32(area.getNode("x1"), 0);
+                int y1 = WzUtil.getInt32(area.getNode("y1"), 0);
+                int x2 = WzUtil.getInt32(area.getNode("x2"), 0);
+                int y2 = WzUtil.getInt32(area.getNode("y2"), 0);
+                field.getAreaRect().put(area.getNodeName(), new Rect(x1, y1, x2, y2));
+            }
+        }
     }
     
     private void restoreFoothold(Field field, WzProperty propFoothold, WzProperty ladderOrRope, WzProperty info) {

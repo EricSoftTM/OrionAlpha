@@ -182,7 +182,7 @@ public class User extends Creature {
         this.hide = false;
         this.onTransferField = false;
         this.closeSocketNextTime = false;
-        
+
         this.emotion = 0;
         this.curFieldKey = 0;
         this.invalidHitPointCount = 0;
@@ -305,7 +305,7 @@ public class User extends Creature {
     public MiniRoomBase getMiniRoom() {
         return miniRoom;
     }
-    
+
     public void setMiniRoomBalloon(boolean open) {
         if (getField() != null) {
             if (getMiniRoom() != null && open) {
@@ -810,7 +810,7 @@ public class User extends Creature {
             unlock();
         }
     }
-    
+
     public void encodeAvatar(OutPacket packet) {
         packet.encodeByte(getCharacter().getCharacterStat().getGender());
         packet.encodeInt(getCharacter().getCharacterStat().getFace());
@@ -883,7 +883,7 @@ public class User extends Creature {
     public String getCharacterName() {
         return characterName;
     }
-    
+
     public byte getFieldKey() {
         return curFieldKey;
     }
@@ -903,7 +903,7 @@ public class User extends Creature {
     public Messenger getMessenger() {
         return userMSM;
     }
-    
+
     public Pet getPet() {
         return pet;
     }
@@ -927,7 +927,7 @@ public class User extends Creature {
     public ClientSocket getSocket() {
         return socket;
     }
-    
+
     public UserSkill getUserSkill() {
         return userSkill;
     }
@@ -1129,14 +1129,15 @@ public class User extends Creature {
                     addCharacterDataMod(DBChar.Character);
                 }
             }
-            
+
             if (msMessenger) {
                 // Channel changing isn't fully supported yet, so this may not exist.
                 // Will handle this once I look in to messengers.
             }
-            
+
             PartyMan.getInstance().loadParty(this);
-            FriendMan.getInstance().loadFriend(this);
+            FriendMan.getInstance().loadFriend(getCharacterID(), null, true);
+            FriendMan.getInstance().notify(getCharacterID(), getChannelID());
         } else {
             Logger.logError("Failed in entering field");
             closeSocket();
@@ -1154,6 +1155,7 @@ public class User extends Creature {
                 GameObjectBase.unregisterGameObject(this);
                 getChannel().unregisterUser(this);
                 PartyMan.getInstance().notifyTransferField(getCharacterID(), Field.Invalid);
+                FriendMan.getInstance().notify(getCharacterID(), -1);
             } finally {
                 unlock();
             }
@@ -1334,7 +1336,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onActivatePetRequest(InPacket packet) {
         short pos = packet.decodeShort();
         activatePet(pos, (byte) 0, false);
@@ -1478,7 +1480,7 @@ public class User extends Creature {
             sendTemporaryStatReset(reset);
             return;
         }
-        
+
         //[11] [AC 95 21 00] [00] [1C] [03] [4A 00 00 00] [08] [F6 04] [D7 00] [C2 01] [99 05]
         byte attackInfo = packet.decodeByte();//nDamagePerMob | 16 * nMobCount
         byte damagePerMob = (byte) (attackInfo & 0xF);
@@ -1668,7 +1670,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onPetInfoRequest(InPacket packet) {
         User target = getField().findUser(packet.decodeInt());
         if (target == null || target.getPet() == null || (target.isGM() && !isGM())) {
@@ -1779,7 +1781,7 @@ public class User extends Creature {
                     if (item != null) {
                         item.setPetName(petName);
                         Inventory.updatePetItem(this, getPet().getItemSlotPos());
-    
+
                         getPet().setName(petName);
                         getField().splitSendPacket(getSplit(), PetPacket.onDataChanged(characterID, petName, item.getLevel(), item.getTameness(), item.getRepleteness()), null);
                         addCharacterDataMod(DBChar.ItemSlotCash);
@@ -2015,7 +2017,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onMobSummonItemUseRequest(InPacket packet) {
         if (getField() == null || (getField().getOption() & FieldOpt.SummonLimit) != 0) {
             sendCharacterStat(Request.Excl, 0);
@@ -2049,7 +2051,7 @@ public class User extends Creature {
         }
         changeLog.clear();
     }
-    
+
     public void onPetFoodItemUseRequest(InPacket packet) {
         if (getField() == null) {
             sendCharacterStat(Request.Excl, 0);
@@ -2159,7 +2161,7 @@ public class User extends Creature {
             return;
         }
         sendPacket(InventoryManipulator.makeInventoryOperation(Request.None, changeLog));
-    
+
         int flag = sci.getInfo().apply(this, sci.getItemID(), character, basicStat, secondaryStat, System.currentTimeMillis(), false);
         addCharacterDataMod(DBChar.ItemSlotConsume | DBChar.Character);
         sendCharacterStat(Request.Excl, sci.getInfo().getFlag());
@@ -2403,7 +2405,7 @@ public class User extends Creature {
             }
         }
     }
-    
+
     public void onTransferChannelRequest(InPacket packet) {
         byte channelID = packet.decodeByte();
         if (getHP() == 0 || (getField().getOption() & FieldOpt.MigrateLimit) != 0) {
@@ -2797,7 +2799,7 @@ public class User extends Creature {
             getChannel().broadcast(WvsContext.onBroadcastMsg(BroadcastMsg.Notice, notice));
         }
     }
-    
+
     public byte tryChangeHairOrFace(int couponItemID, int param) {
         if (ItemAccessor.getItemTypeIndexFromID(couponItemID) != ItemType.Etc) {
             return -1;
@@ -2857,7 +2859,7 @@ public class User extends Creature {
         checkPetDead(time);
         updateActivePet(time);
     }
-    
+
     private void updateActivePet(long time) {
         if (getField() != null) {
             if (lock()) {
@@ -2883,7 +2885,7 @@ public class User extends Creature {
             // TODO: Cash Item Expiration
         }
     }
-    
+
     private void checkPetDead(long time) {
         if (time - lastCheckPetDead < 180000) {
             return;
@@ -3040,7 +3042,7 @@ public class User extends Creature {
             }
             ItemAccessor.getRealEquip(character, petItem, realEquip, 0, 0);
             avatarLook.load(character.getCharacterStat(), realEquip, character.getEquipped2());
-    
+
             if (petItem != null) {
                 getField().splitSendPacket(getSplit(), PetPacket.onDataChanged(characterID, null, petItem.getLevel(), petItem.getTameness(), petItem.getRepleteness()), null);
             }
@@ -3127,11 +3129,11 @@ public class User extends Creature {
     public void setMSMessenger(boolean msMessenger) {
         this.msMessenger = msMessenger;
     }
-    
+
     public void setActivePet(Pet pet) {
         this.pet = pet;
     }
-    
+
     public boolean activatePet(short pos, byte reason, boolean onInitialize) {
         if (getField() == null || getSecondaryStat().getStatOption(CharacterTemporaryStat.DarkSight) != 0 && !onInitialize || pos == 0 && reason == 0) {
             return false;
@@ -3167,18 +3169,18 @@ public class User extends Creature {
         }
         return false;
     }
-    
+
     public void addPartyInvitedCharacter(int characterID) {
         partyInvitedCharacter.add(characterID);
         if (partyInvitedCharacter.size() > 10) {
             partyInvitedCharacter.remove(0);
         }
     }
-    
+
     public boolean isPartyInvitedCharacter(int characterID) {
         return partyInvitedCharacter.contains(characterID);
     }
-    
+
     public void removePartyInvitedCharacter(int characterID) {
         partyInvitedCharacter.removeIf(invited -> invited == characterID);
     }

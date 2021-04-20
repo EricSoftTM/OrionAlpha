@@ -28,48 +28,49 @@ public class FriendInfo {
 	private int friendID;
 	private String friendName;
 	private byte flag;
-	private int fieldID;
-	
+	private int channelID;
+
 	public FriendInfo() {
 		this.friendName = "";
+		this.channelID = -1;
 	}
-	
+
 	public void encode(OutPacket packet) {
 		packet.encodeInt(friendID);
 		packet.encodeString(friendName, 13);
 		packet.encodeByte(flag);
-		packet.encodeInt(fieldID);
+		packet.encodeInt(channelID);
 	}
-	
+
 	public int getFriendID() {
 		return friendID;
 	}
-	
+
 	public String getFriendName() {
 		return friendName;
 	}
-	
+
 	public byte getFlag() {
 		return flag;
 	}
-	
-	public int getFieldID() {
-		return fieldID;
+
+	public int getChannelID() {
+		return channelID;
 	}
-	
+
 	public void setFriendID(int characterID) {
 		this.friendID = characterID;
 	}
-	
+
 	public void setFriendName(String name) {
 		this.friendName = name;
 	}
-	
+
 	public void setFlag(int flag) {
 		this.flag = (byte) flag;
 	}
-	
-	public void setFieldID(int fieldID) {
-		this.fieldID = fieldID;
+
+	public void setChannelID(int channelID) {
+		this.channelID = channelID;
 	}
 }

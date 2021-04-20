@@ -24,22 +24,28 @@ import common.user.CharacterData;
 import common.user.CharacterStat;
 import common.user.DBChar;
 import game.field.drop.RewardInfo;
+import game.friend.Friend;
+import game.friend.FriendInfo;
+import game.friend.FriendStatus;
 import game.user.item.Inventory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+
+import util.Logger;
 import util.Pointer;
 
 /**
  * For DB queries only used in the Game JVM.
- * 
+ *
  * @author Eric
  */
 public class GameDB {
-    
+
     public static byte rawCheckGivePopularity(int characterID, int targetID) {
         byte retCode = GivePopularityRes.Success;
         try (Connection con = Database.getDB().poolConnection()) {
@@ -73,7 +79,7 @@ public class GameDB {
         }
         return retCode;
     }
-    
+
     public static void rawLoadAccount(int characterID, Pointer<Integer> accountID, Pointer<String> nexonClubID, Pointer<Integer> gradeCode) {
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `users` u JOIN `character` c ON u.AccountID = c.AccountID WHERE c.CharacterID = ?")) {
@@ -90,10 +96,10 @@ public class GameDB {
             ex.printStackTrace(System.err);
         }
     }
-    
+
     public static CharacterData rawLoadCharacter(int characterID) {
         CharacterData cd = null;
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             // Load Stats
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `character` WHERE `CharacterID` = ?")) {
@@ -160,13 +166,13 @@ public class GameDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-        
+
         return cd;
     }
-    
+
     public static int rawLoadReward(int templateID, List<RewardInfo> rewardInfo) {
         int count = 0;
-        
+
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("SELECT * FROM `reward` WHERE `TemplateID` = ?")) {
                 ps.setInt(1, templateID);
@@ -179,7 +185,7 @@ public class GameDB {
                         int min = rs.getInt("Min");
                         int max = rs.getInt("Max");
                         boolean premium = rs.getBoolean("premium");
-                        
+
                         rewardInfo.add(count++, new RewardInfo(money, itemId, prob, min, max, premium));
                     }
                 }
@@ -187,10 +193,10 @@ public class GameDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
-        
+
         return count;
     }
-    
+
     public static void rawSaveCharacter(CharacterStat cs) {
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE `character` SET `CharacterName` = ?, `Gender` = ?, `Skin` = ?, `Face` = ?, `Hair` = ?, `Level` = ?, `Job` = ?, `STR` = ?, `DEX` = ?, `INT` = ?, `LUK` = ?, `HP` = ?, `MP` = ?, `MaxHP` = ?, `MaxMP` = ?, `AP` = ?, `SP` = ?, `EXP` = ?, `POP` = ?, `Money` = ?, `Map` = ?, `Portal` = ?, `PetLockerSN` = ? WHERE `CharacterID` = ?")) {
@@ -200,7 +206,7 @@ public class GameDB {
             ex.printStackTrace(System.err);
         }
     }
-    
+
     public static void rawSaveSkillRecord(int characterID, Map<Integer, Integer> skillRecord) {
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE `skillrecord` SET `Info` = ? WHERE `CharacterID` = ? AND `SkillID` = ?")) {
@@ -212,7 +218,7 @@ public class GameDB {
             ex.printStackTrace(System.err);
         }
     }
-    
+
     public static void rawSetInventorySize(int characterID, List<Integer> inventorySize) {
         try (Connection con = Database.getDB().poolConnection()) {
             try (PreparedStatement ps = con.prepareStatement("UPDATE `inventorysize` SET `EquipCount` = ?, `ConsumeCount` = ?, `InstallCount` = ?, `EtcCount` = ? WHERE `CharacterID` = ?")) {
@@ -221,5 +227,130 @@ public class GameDB {
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
+    }
+
+    public static boolean getCharacterInfoByName(String characterName, Pointer<Integer> characterID) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `CharacterID` FROM `character` WHERE `CharacterName` = ?")) {
+                ps.setString(1, characterName);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        characterID.set(rs.getInt("CharacterID"));
+                        return true;
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        return false;
+    }
+
+    public static int getFriendCount(int characterID) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `FriendCount` FROM `character` WHERE `CharacterID` = ?")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt("FriendCount");
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        return 0;
+    }
+
+    public static boolean loadFriend(int characterID, List<FriendInfo> friends) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("SELECT `FriendID`, `FriendName`, `Flag` FROM `friend` WHERE `CharacterID` = ?")) {
+                ps.setInt(1, characterID);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        int flag = rs.getInt("Flag");
+                        //if (flag == FriendStatus.Refused) {
+                        //    continue;
+                        //}
+                        FriendInfo info = new FriendInfo();
+                        info.setFriendID(rs.getInt("FriendID"));
+                        info.setFriendName(rs.getString("FriendName"));
+                        info.setFlag(flag);
+                        friends.add(info);
+                    }
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        return false;
+    }
+
+    public static boolean setFriend(int characterID, int friendID, String characterName, String friendName) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            try (PreparedStatement ps = con.prepareStatement("INSERT INTO `friend` (CharacterID, FriendID, FriendName, Flag) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE Flag = VALUES(Flag)")) {
+                ps.setInt(1, characterID);
+                ps.setInt(2, friendID);
+                ps.setString(3, friendName);
+                ps.setInt(4, FriendStatus.Normal);
+                ps.executeUpdate();
+                ps.setInt(1, friendID);
+                ps.setInt(2, characterID);
+                ps.setString(3, characterName);
+                ps.setInt(4, FriendStatus.Request);
+                ps.executeUpdate();
+            }
+            return true;
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        return false;
+    }
+
+    public static int setAcceptFriend(int characterID, int friendID, String characterName) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            // Doesn't properly handle insta accepting a friend you previously deleted. Read notes in onSetFriend
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `friend` SET Flag = ? WHERE CharacterID = ? AND FriendID = ?")) {
+                ps.setInt(1, FriendStatus.Normal);
+                ps.setInt(2, characterID);
+                ps.setInt(3, friendID);
+                ps.executeUpdate();
+            }
+            try (PreparedStatement ps = con.prepareStatement("UPDATE `friend` SET Flag = ?, FriendName = ? WHERE CharacterID = ? AND FriendID = ?")) {
+                ps.setInt(1, FriendStatus.Normal);
+                ps.setString(2, characterName);
+                ps.setInt(3, friendID);
+                ps.setInt(4, characterID);
+                ps.executeUpdate();
+            }
+            return FriendStatus.Normal;
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        return -1;
+    }
+
+    public static boolean deleteFriend(int characterID, int friendID) {
+        try (Connection con = Database.getDB().poolConnection()) {
+            /*try (PreparedStatement ps = con.prepareStatement("UPDATE `friend` SET Flag = ? WHERE CharacterID = ? AND FriendID = ?")) {
+                ps.setInt(1, FriendStatus.Refused);
+                ps.setInt(2, friendID);
+                ps.setInt(3, characterID);
+                ps.executeUpdate();
+            }*/
+            try (PreparedStatement ps = con.prepareStatement("DELETE FROM `friend` WHERE CharacterID = ? AND FriendID = ?")) {
+                ps.setInt(1, characterID);
+                ps.setInt(2, friendID);
+                ps.executeUpdate();
+                ps.setInt(1, friendID);
+                ps.setInt(2, characterID);
+                ps.executeUpdate();
+            }
+            return true;
+        } catch (SQLException ex) {
+            ex.printStackTrace(System.err);
+        }
+        return false;
     }
 }

@@ -23,61 +23,76 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Eric
  */
 public class Friend {
+	private boolean logined;
+	private int characterID;
+	private int friendMax;
 	private final List<FriendInfo> friends;
-	
+	private long lastAccessed;
+
 	public Friend() {
 		this.friends = new ArrayList<>();
+		this.lastAccessed = System.currentTimeMillis();
 	}
-	
+
 	public void encode(OutPacket packet) {
 		packet.encodeByte(friends.size());
 		for (FriendInfo friend : friends) {
 			friend.encode(packet);
 		}
 	}
-	
-	public int findIndex(int friendID) {
-		for (int i = 0; i < friends.size(); i++) {
-			FriendInfo friend = friends.get(i);
-			if (friend != null && friend.getFriendID() == friendID) {
-				return i;
+
+	public FriendInfo find(int friendID, int flag) {
+		for (FriendInfo info : friends) {
+			if (info.getFriendID() == friendID && (flag < 0 || info.getFlag() == flag)) {
+				return info;
 			}
 		}
-		return -1;
+		return null;
 	}
-	
+
 	public List<FriendInfo> getFriends() {
 		return friends;
 	}
-	
+
 	public void remove(int friendID) {
-		int idx = findIndex(friendID);
-		if (idx >= 0) {
-			friends.remove(idx);
+		FriendInfo info = find(friendID, -1);
+		if (info != null) {
+			friends.remove(info);
 		}
 	}
-	
-	public void setFieldID(int friendID, int fieldID) {
-		int idx = findIndex(friendID);
-		if (idx >= 0) {
-			FriendInfo friend = friends.get(idx);
-			friend.setFieldID(fieldID);
-		}
+
+	public boolean isLogined() {
+		return logined;
 	}
-	
-	public void setFriend(int friendID, FriendInfo friend) {
-		for (int i = 0; i < friends.size(); i++) {
-			FriendInfo f = friends.get(i);
-			if (f.getFriendID() == friendID) {
-				f.setFieldID(friend.getFieldID());
-				f.setFriendName(friend.getFriendName());
-				f.setFlag(friend.getFlag());
-				break;
-			}
-		}
+
+	public void setLogined(boolean logined) {
+		this.logined = logined;
+	}
+
+	public int getCharacterID() {
+		return characterID;
+	}
+
+	public void setCharacterID(int characterID) {
+		this.characterID = characterID;
+	}
+
+	public int getFriendMax() {
+		return friendMax;
+	}
+
+	public void setFriendMax(int friendMax) {
+		this.friendMax = friendMax;
+	}
+
+	public long getLastAccessed() {
+		return lastAccessed;
+	}
+
+	public void setLastAccessed(long lastAccessed) {
+		this.lastAccessed = lastAccessed;
 	}
 }

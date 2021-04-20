@@ -36,7 +36,7 @@ import network.packet.OutPacket;
  */
 public class CharacterData {
 
-    static final int 
+    static final int
             BodyPartCount = BodyPart.BP_Count,
             ItemTypeCount = ItemType.NO
     ;
@@ -50,7 +50,8 @@ public class CharacterData {
     private final Map<String, String> questRecord;
     private int moneyTrading;
     private boolean onTrading;
-        
+    private final int friendMax;
+
     public CharacterData() {
         this.characterStat = new CharacterStat();
         this.equipped = new ArrayList<>(BodyPartCount + 1);
@@ -60,7 +61,8 @@ public class CharacterData {
         this.skillRecord = new HashMap<>();
         this.questRecord = new HashMap<>();
         this.onTrading = false;
-       
+        this.friendMax = 20;
+
         for (int i = 0; i <= BodyPartCount; i++) {
             equipped.add(i, null);
             equipped2.add(i, null);
@@ -78,11 +80,11 @@ public class CharacterData {
                 backupItemTrading.add(i, new ArrayList<>());
             }
         }
-        
+
         for (int ti = ItemType.Equip; ti <= ItemType.Cash; ti++) {
             for (int i = 0; i < itemSlot.get(ti).size(); i++) {
                 backupItem.get(ti).add(i, null);
-                
+
                 ItemSlotBase item = itemSlot.get(ti).get(i);
                 if (item != null) {
                     backupItem.get(ti).set(i, item.makeClone());
@@ -361,10 +363,10 @@ public class CharacterData {
             }
         }
     }
-    
+
     public static boolean CheckAdult(int nSSN1, int nSSN2, int nCriticalYear) {
         int nBirthYear; // [sp+0h] [bp-14h]@5
-        
+
         if (nSSN2 / 1000000 != 1 && nSSN2 / 1000000 != 2 && nSSN2 / 1000000 != 5 && nSSN2 / 1000000 != 6)
             nBirthYear = nSSN1 / 10000 + 2000;
         else
@@ -384,5 +386,9 @@ public class CharacterData {
             clearTradingInfo();
             return true;
         }
+    }
+
+    public int getFriendMax() {
+        return friendMax;
     }
 }

@@ -25,28 +25,28 @@ import network.packet.OutPacket;
  * @author Eric
  */
 public class FriendPacket {
-	
+
 	public static OutPacket onFriendResult(byte retCode) {
 		OutPacket packet = new OutPacket(LoopbackPacket.FriendResult);
 		packet.encodeByte(retCode);
 		return packet;
 	}
-	
+
 	public static OutPacket onFriendResult(byte retCode, Friend friend) {
 		OutPacket packet = new OutPacket(LoopbackPacket.FriendResult);
 		packet.encodeByte(retCode);//LoadFriend_Done, SetFriend_Done, DeleteFriend_Done
 		friend.encode(packet);
 		return packet;
 	}
-	
-	public static OutPacket onFriendResult(int friendID, int fieldID) {
+
+	public static OutPacket onFriendResult(int friendID, int channelID) {
 		OutPacket packet = new OutPacket(LoopbackPacket.FriendResult);
 		packet.encodeByte(FriendResCode.Notify);
 		packet.encodeInt(friendID);
-		packet.encodeInt(fieldID);
+		packet.encodeInt(channelID);
 		return packet;
 	}
-	
+
 	public static OutPacket onFriendResult(int friendID, String friendName, FriendInfo friend) {
 		OutPacket packet = new OutPacket(LoopbackPacket.FriendResult);
 		packet.encodeByte(FriendResCode.Invite);

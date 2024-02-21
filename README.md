@@ -85,7 +85,7 @@ OrionAlpha - A Nexon Replica Emulator Project
   
   ### Enable Infinite Text
   Allows you to type as many characters as you want into a single message, literally.
-  * Change the instruction at address `0051E38D` to `mov dword ptr [esp+0xC4], 0xFF` where `0xFF` is the maximum
+  * Change the instruction at address `0051E38D` to `mov dword ptr [esp+0xC8], 0xFF` where `0xFF` is the maximum
   
   ### Enable Swear Filter
   Allows you to enter curse words without getting a pop-up and restricting your message from sending.
@@ -112,5 +112,5 @@ OrionAlpha - A Nexon Replica Emulator Project
   ### Modifying Meso Cap
   Allows you to drop meso bags exceeding 50,000 by setting a new cap.
   * Change the instruction at address `005003CE` to `cmp eax, 0xC350` where `0xC350` is the new max
-  * Change the instruction at address `005003D5` to `cmp eax, 0xC350` where `0xC350` is the new max
+  * Change the instruction at address `005003D5` to `mov eax, 0xC350` where `0xC350` is the new max
   

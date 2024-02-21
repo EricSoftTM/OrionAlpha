@@ -43,21 +43,6 @@ public class FieldPacket {
     }
     
     /**
-     * The admin "ban" result packet - displays if the ban succeeded/failed.
-     * 
-     * @param result The result of a ban (-1 for fail, 1 for success)
-     * 
-     * @return The admin result packet
-     */
-    public static OutPacket onAdminResult(int result) {
-        OutPacket packet = new OutPacket(LoopbackPacket.AdminResult);
-        // if < 0: "The blocking failed"
-        // if >= 0: "You have successfully blocked access"
-        packet.encodeByte(result);
-        return packet;
-    }
-    
-    /**
      * The blow weather packet that rains snow and displays a message to the map.
      * 
      * @param weatherItemID The ItemID of the weather item (type 209)

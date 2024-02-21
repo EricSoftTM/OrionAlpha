@@ -86,12 +86,6 @@ public class WvsContext {
         return packet;
     }
     
-    public static OutPacket onCashItemExpireMessage(int itemID) {
-        OutPacket packet = new OutPacket(LoopbackPacket.CashItemExpireMessage);
-        packet.encodeInt(itemID);
-        return packet;
-    }
-    
     public static OutPacket onGivePopularityResult(byte type, String characterName, boolean raise) {
         OutPacket packet = new OutPacket(LoopbackPacket.GivePopularityResult);
         packet.encodeByte(type);

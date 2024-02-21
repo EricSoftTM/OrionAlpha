@@ -56,8 +56,6 @@ public class LoginPacket {
         OutPacket packet = new OutPacket(LoopbackPacket.SelectWorldResult);
         packet.encodeByte(msg);
         if (msg == 1) {
-            packet.encodeInt(ssn);
-            
             packet.encodeByte(characters.size());
             for (CharacterData character : characters) {
                 character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip);

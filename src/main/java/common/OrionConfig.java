@@ -24,7 +24,7 @@ package common;
  */
 public class OrionConfig {
     // Version Info
-    public static final int CLIENT_VER = 223;
+    public static final int CLIENT_VER = 221;
     public static final String CLIENT_PATCH = "\0";
     public static final int GAME_LOCALE = 1; //KR
 

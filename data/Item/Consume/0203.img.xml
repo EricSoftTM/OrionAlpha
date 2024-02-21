@@ -96,20 +96,4 @@
             <int name="moveTo" value="103000000"/>
         </imgdir>
     </imgdir>
-    <imgdir name="02030006">
-        <imgdir name="info">
-            <canvas name="icon" width="32" height="30">
-                <vector name="origin" x="0" y="30"/>
-            </canvas>
-            <canvas name="iconRaw" width="32" height="28">
-                <vector name="origin" x="0" y="30"/>
-            </canvas>
-            <string name="name" value="슬리피우드 귀환 주문서"/>
-            <int name="price" value="100"/>
-            <string name="desc" value="조용하고 어두운 숲 마을인 슬리피우드로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
-        </imgdir>
-        <imgdir name="spec">
-            <int name="moveTo" value="105040300"/>
-        </imgdir>
-    </imgdir>
 </imgdir>

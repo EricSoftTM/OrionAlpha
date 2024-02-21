@@ -2153,16 +2153,15 @@
                     <vector name="origin" x="319" y="360"/>
                     <int name="z" value="0"/>
                     <extended name="foothold">
-                        <vector name="foothold" x="-292" y="-291"/>
-                        <vector name="foothold" x="-257" y="-324"/>
-                        <vector name="foothold" x="-146" y="-330"/>
-                        <vector name="foothold" x="-119" y="-339"/>
-                        <vector name="foothold" x="-56" y="-341"/>
-                        <vector name="foothold" x="126" y="-345"/>
-                        <vector name="foothold" x="148" y="-352"/>
-                        <vector name="foothold" x="236" y="-354"/>
-                        <vector name="foothold" x="253" y="-357"/>
-                        <vector name="foothold" x="321" y="-357"/>
+                        <vector name="foothold" x="-294" y="-288"/>
+                        <vector name="foothold" x="-253" y="-327"/>
+                        <vector name="foothold" x="-150" y="-331"/>
+                        <vector name="foothold" x="1" y="-342"/>
+                        <vector name="foothold" x="196" y="-353"/>
+                        <vector name="foothold" x="235" y="-353"/>
+                        <vector name="foothold" x="255" y="-357"/>
+                        <vector name="foothold" x="309" y="-357"/>
+                        <vector name="foothold" x="323" y="-350"/>
                     </extended>
                 </canvas>
             </imgdir>
@@ -2234,7 +2233,7 @@
                             <vector name="5" x="279" y="-236"/>
                         </extended>
                         <extended name="6">
-                            <vector name="6" x="-66" y="-278"/>
+                            <vector name="6" x="-68" y="-271"/>
                             <vector name="6" x="-49" y="-285"/>
                             <vector name="6" x="-32" y="-288"/>
                             <vector name="6" x="57" y="-287"/>
@@ -2249,15 +2248,15 @@
                     <int name="z" value="0"/>
                     <imgdir name="foothold">
                         <extended name="0">
+                            <vector name="0" x="-285" y="-257"/>
                             <vector name="0" x="-280" y="-275"/>
                             <vector name="0" x="-255" y="-280"/>
-                            <vector name="0" x="-232" y="-280"/>
-                            <vector name="0" x="-220" y="-293"/>
-                            <vector name="0" x="-98" y="-287"/>
-                            <vector name="0" x="-86" y="-283"/>
+                            <vector name="0" x="-229" y="-280"/>
+                            <vector name="0" x="-214" y="-294"/>
+                            <vector name="0" x="-91" y="-285"/>
                             <vector name="0" x="-26" y="-283"/>
-                            <vector name="0" x="66" y="-283"/>
-                            <vector name="0" x="203" y="-263"/>
+                            <vector name="0" x="65" y="-283"/>
+                            <vector name="0" x="204" y="-261"/>
                         </extended>
                         <extended name="1">
                             <vector name="1" x="171" y="-246"/>

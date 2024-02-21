@@ -107,9 +107,7 @@
         </canvas>
         <canvas name="6" width="215" height="74">
             <vector name="origin" x="93" y="74"/>
-            <int name="delay" value="300"/>
-            <int name="a0" value="255"/>
-            <int name="a1" value="0"/>
+            <int name="delay" value="250"/>
         </canvas>
     </imgdir>
 </imgdir>

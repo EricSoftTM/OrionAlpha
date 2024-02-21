@@ -1303,7 +1303,7 @@
                     <int name="z" value="0"/>
                     <imgdir name="foothold">
                         <extended name="0">
-                            <vector name="0" x="-147" y="-170"/>
+                            <vector name="0" x="-152" y="-169"/>
                             <vector name="0" x="-115" y="-175"/>
                             <vector name="0" x="-100" y="-166"/>
                             <vector name="0" x="-75" y="-165"/>
@@ -1441,7 +1441,7 @@
                         <vector name="foothold" x="2" y="-154"/>
                         <vector name="foothold" x="17" y="-152"/>
                         <vector name="foothold" x="37" y="-155"/>
-                        <vector name="foothold" x="96" y="-154"/>
+                        <vector name="foothold" x="98" y="-154"/>
                     </extended>
                 </canvas>
             </imgdir>
@@ -1719,10 +1719,6 @@
                 <canvas name="0" width="88" height="49">
                     <vector name="origin" x="44" y="24"/>
                     <int name="z" value="0"/>
-                    <extended name="foothold">
-                        <vector name="foothold" x="-39" y="-24"/>
-                        <vector name="foothold" x="41" y="-24"/>
-                    </extended>
                 </canvas>
             </imgdir>
             <imgdir name="14">

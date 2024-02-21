@@ -51,24 +51,180 @@
         <imgdir name="5">
             <string name="bS" value="shineWood"/>
             <int name="no" value="6"/>
-            <int name="x" value="23"/>
-            <int name="y" value="350"/>
+            <int name="x" value="-183"/>
+            <int name="y" value="363"/>
             <int name="rx" value="-20"/>
             <int name="ry" value="-25"/>
             <int name="type" value="2"/>
-            <int name="cx" value="500"/>
+            <int name="cx" value="600"/>
             <int name="cy" value="0"/>
             <int name="a" value="255"/>
         </imgdir>
         <imgdir name="4">
             <string name="bS" value="shineWood"/>
             <int name="no" value="5"/>
-            <int name="x" value="-617"/>
-            <int name="y" value="-28"/>
+            <int name="x" value="-230"/>
+            <int name="y" value="-2"/>
             <int name="rx" value="-18"/>
             <int name="ry" value="-25"/>
             <int name="type" value="3"/>
-            <int name="cx" value="500"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="11">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="137"/>
+            <int name="y" value="137"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="14">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="411"/>
+            <int name="y" value="411"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="17">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="822"/>
+            <int name="y" value="822"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="19">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="12"/>
+            <int name="x" value="-587"/>
+            <int name="y" value="-873"/>
+            <int name="rx" value="-35"/>
+            <int name="ry" value="-35"/>
+            <int name="type" value="2"/>
+            <int name="cx" value="0"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="15">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="548"/>
+            <int name="y" value="548"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="20">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="14"/>
+            <int name="x" value="-1658"/>
+            <int name="y" value="-283"/>
+            <int name="rx" value="-100"/>
+            <int name="ry" value="-100"/>
+            <int name="type" value="2"/>
+            <int name="cx" value="0"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="21">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="15"/>
+            <int name="x" value="-1325"/>
+            <int name="y" value="18"/>
+            <int name="rx" value="-100"/>
+            <int name="ry" value="-100"/>
+            <int name="type" value="2"/>
+            <int name="cx" value="0"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="23">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="14"/>
+            <int name="x" value="-369"/>
+            <int name="y" value="-10"/>
+            <int name="rx" value="-100"/>
+            <int name="ry" value="-100"/>
+            <int name="type" value="2"/>
+            <int name="cx" value="0"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="24">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="15"/>
+            <int name="x" value="-535"/>
+            <int name="y" value="-35"/>
+            <int name="rx" value="-100"/>
+            <int name="ry" value="-100"/>
+            <int name="type" value="2"/>
+            <int name="cx" value="0"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="16">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="685"/>
+            <int name="y" value="685"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="12">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="-137"/>
+            <int name="y" value="-137"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="13">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="274"/>
+            <int name="y" value="274"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="18">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="959"/>
+            <int name="y" value="959"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
             <int name="cy" value="0"/>
             <int name="a" value="255"/>
         </imgdir>
@@ -76,7 +232,7 @@
             <string name="bS" value="shineWood"/>
             <int name="no" value="10"/>
             <int name="x" value="243"/>
-            <int name="y" value="87"/>
+            <int name="y" value="89"/>
             <int name="rx" value="-25"/>
             <int name="ry" value="-30"/>
             <int name="type" value="3"/>
@@ -87,12 +243,60 @@
         <imgdir name="7">
             <string name="bS" value="shineWood"/>
             <int name="no" value="10"/>
-            <int name="x" value="-558"/>
-            <int name="y" value="-230"/>
+            <int name="x" value="-507"/>
+            <int name="y" value="-224"/>
             <int name="rx" value="-23"/>
             <int name="ry" value="-28"/>
             <int name="type" value="3"/>
-            <int name="cx" value="300"/>
+            <int name="cx" value="500"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="9">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="-274"/>
+            <int name="y" value="-274"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="10">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="16"/>
+            <int name="x" value="0"/>
+            <int name="y" value="0"/>
+            <int name="rx" value="-31"/>
+            <int name="ry" value="-31"/>
+            <int name="type" value="1"/>
+            <int name="cx" value="800"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="8">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="8"/>
+            <int name="x" value="-126"/>
+            <int name="y" value="-710"/>
+            <int name="rx" value="-30"/>
+            <int name="ry" value="-30"/>
+            <int name="type" value="2"/>
+            <int name="cx" value="0"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="22">
+            <string name="bS" value="shineWood"/>
+            <int name="no" value="14"/>
+            <int name="x" value="-922"/>
+            <int name="y" value="-106"/>
+            <int name="rx" value="-100"/>
+            <int name="ry" value="-100"/>
+            <int name="type" value="2"/>
+            <int name="cx" value="0"/>
             <int name="cy" value="0"/>
             <int name="a" value="255"/>
         </imgdir>
@@ -105,126 +309,6 @@
             <int name="ry" value="-23"/>
             <int name="type" value="3"/>
             <int name="cx" value="600"/>
-            <int name="cy" value="0"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="13">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="14"/>
-            <int name="x" value="-1658"/>
-            <int name="y" value="-283"/>
-            <int name="rx" value="-100"/>
-            <int name="ry" value="-100"/>
-            <int name="type" value="2"/>
-            <int name="cx" value="0"/>
-            <int name="cy" value="0"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="12">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="12"/>
-            <int name="x" value="-587"/>
-            <int name="y" value="-873"/>
-            <int name="rx" value="-35"/>
-            <int name="ry" value="-35"/>
-            <int name="type" value="2"/>
-            <int name="cx" value="0"/>
-            <int name="cy" value="0"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="11">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="16"/>
-            <int name="x" value="274"/>
-            <int name="y" value="274"/>
-            <int name="rx" value="-31"/>
-            <int name="ry" value="-31"/>
-            <int name="type" value="3"/>
-            <int name="cx" value="548"/>
-            <int name="cy" value="548"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="10">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="16"/>
-            <int name="x" value="-137"/>
-            <int name="y" value="-137"/>
-            <int name="rx" value="-31"/>
-            <int name="ry" value="-31"/>
-            <int name="type" value="3"/>
-            <int name="cx" value="548"/>
-            <int name="cy" value="548"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="9">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="16"/>
-            <int name="x" value="137"/>
-            <int name="y" value="137"/>
-            <int name="rx" value="-31"/>
-            <int name="ry" value="-31"/>
-            <int name="type" value="3"/>
-            <int name="cx" value="548"/>
-            <int name="cy" value="548"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="8">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="16"/>
-            <int name="x" value="0"/>
-            <int name="y" value="0"/>
-            <int name="rx" value="-31"/>
-            <int name="ry" value="-31"/>
-            <int name="type" value="3"/>
-            <int name="cx" value="548"/>
-            <int name="cy" value="548"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="14">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="15"/>
-            <int name="x" value="-1325"/>
-            <int name="y" value="19"/>
-            <int name="rx" value="-100"/>
-            <int name="ry" value="-100"/>
-            <int name="type" value="2"/>
-            <int name="cx" value="0"/>
-            <int name="cy" value="0"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="15">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="14"/>
-            <int name="x" value="-922"/>
-            <int name="y" value="-106"/>
-            <int name="rx" value="-100"/>
-            <int name="ry" value="-100"/>
-            <int name="type" value="2"/>
-            <int name="cx" value="0"/>
-            <int name="cy" value="0"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="16">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="14"/>
-            <int name="x" value="-370"/>
-            <int name="y" value="-10"/>
-            <int name="rx" value="-100"/>
-            <int name="ry" value="-100"/>
-            <int name="type" value="2"/>
-            <int name="cx" value="0"/>
-            <int name="cy" value="0"/>
-            <int name="a" value="255"/>
-        </imgdir>
-        <imgdir name="17">
-            <string name="bS" value="shineWood"/>
-            <int name="no" value="15"/>
-            <int name="x" value="-535"/>
-            <int name="y" value="-35"/>
-            <int name="rx" value="-100"/>
-            <int name="ry" value="-100"/>
-            <int name="type" value="2"/>
-            <int name="cx" value="0"/>
             <int name="cy" value="0"/>
             <int name="a" value="255"/>
         </imgdir>
@@ -339,7 +423,7 @@
             <int name="pt" value="2"/>
             <int name="x" value="-1642"/>
             <int name="y" value="1561"/>
-            <int name="tm" value="101010100"/>
+            <int name="tm" value="101020000"/>
             <string name="tn" value="east00"/>
         </imgdir>
         <imgdir name="14">

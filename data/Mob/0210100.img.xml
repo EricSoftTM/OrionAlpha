@@ -113,21 +113,15 @@
     <imgdir name="die1">
         <canvas name="0" width="61" height="60">
             <vector name="origin" x="26" y="60"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="1" width="56" height="59">
             <vector name="origin" x="30" y="59"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="2" width="49" height="54">
             <vector name="origin" x="26" y="54"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="3" width="31" height="40">
             <vector name="origin" x="14" y="40"/>
-            <int name="delay" value="300"/>
-            <int name="a0" value="255"/>
-            <int name="a1" value="0"/>
         </canvas>
     </imgdir>
 </imgdir>

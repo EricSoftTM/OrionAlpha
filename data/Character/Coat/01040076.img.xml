@@ -10,7 +10,7 @@
         <string name="name" value="브라운 레골러"/>
         <string name="islot" value="Ma"/>
         <string name="vslot" value="Ma"/>
-        <int name="reqJob" value="4"/>
+        <int name="reqJob" value="1"/>
         <int name="reqLevel" value="35"/>
         <int name="reqSTR" value="0"/>
         <int name="reqDEX" value="115"/>

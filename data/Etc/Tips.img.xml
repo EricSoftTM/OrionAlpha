@@ -63,7 +63,7 @@
         <string name="13" value="레벨업을 하면 &apos;Stat&apos; 창을 통해서 레벨업시 얻은 포인트를 분배 할 수 있습니다."/>
         <string name="14" value="한 번 1차 전직을 하면 다른 직업으로 1차 전직할 수 없습니다."/>
         <string name="15" value="장비를 장착하려면 인벤토리 창에서 장비 창으로 드래그 하거나 더블 클릭하면 됩니다."/>
-        <null name="16 - 월드맵을 보려면 'W' 키를 누르면 됩니다."/>
+        <null name="16 - 월드맵을 보려면 &apos;W&apos; 키를 누르면 됩니다."/>
         <string name="17" value="장비창을 열려면 &apos;E&apos; 키를 누르면 됩니다."/>
         <string name="18" value="가지고 있는 아이템 목록을 볼려면 &apos;I&apos; 키를 눌러 아이템 창을 열면 됩니다."/>
         <string name="19" value="미니맵을 보려면 &apos;M&apos; 키를 누르면 됩니다."/>

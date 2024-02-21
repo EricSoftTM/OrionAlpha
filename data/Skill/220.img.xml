@@ -1092,240 +1092,240 @@
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="2"/>
                     <int name="mastery" value="1"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="2">
                     <string name="hs" value="MP 20 소비, 기본 공격력 4, 숙련도 15%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="4"/>
                     <int name="mastery" value="1"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="3">
                     <string name="hs" value="MP 20 소비, 기본 공격력 6, 숙련도 15%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="6"/>
                     <int name="mastery" value="1"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="4">
                     <string name="hs" value="MP 20 소비, 기본 공격력 8, 숙련도 20%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="8"/>
                     <int name="mastery" value="2"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="5">
                     <string name="hs" value="MP 20 소비, 기본 공격력 10, 숙련도 20%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="10"/>
                     <int name="mastery" value="2"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="6">
                     <string name="hs" value="MP 20 소비, 기본 공격력 12, 숙련도 20%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="12"/>
                     <int name="mastery" value="2"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="7">
                     <string name="hs" value="MP 20"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="14"/>
                     <int name="mastery" value="3"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="8">
                     <string name="hs" value="MP 20 소비, 기본 공격력 16, 숙련도 25%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="16"/>
                     <int name="mastery" value="3"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="9">
                     <string name="hs" value="MP 20 소비, 기본 공격력 18, 숙련도 25%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="18"/>
                     <int name="mastery" value="3"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="10">
                     <string name="hs" value="MP 20 소비, 기본 공격력 20, 숙련도 30%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="20"/>
                     <int name="mastery" value="4"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="11">
                     <string name="hs" value="MP 20 소비, 기본 공격력 22, 숙련도 30%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="22"/>
                     <int name="mastery" value="4"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="12">
                     <string name="hs" value="MP 20 소비, 기본 공격력 24, 숙련도 30%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="24"/>
                     <int name="mastery" value="4"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="13">
                     <string name="hs" value="MP 20 소비, 기본 공격력 26, 숙련도 35%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="26"/>
                     <int name="mastery" value="5"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="14">
                     <string name="hs" value="MP 20 소비, 기본 공격력 28, 숙련도 35%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="28"/>
                     <int name="mastery" value="5"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="15">
                     <string name="hs" value="MP 20 소비, 기본 공격력 30, 숙련도 35%"/>
                     <int name="mpCon" value="20"/>
                     <int name="mad" value="30"/>
                     <int name="mastery" value="5"/>
-                    <vector name="lt" x="-150" y="-50"/>
-                    <vector name="rb" x="150" y="50"/>
+                    <vector name="lt" x="-150" y="-100"/>
+                    <vector name="rb" x="150" y="100"/>
                 </imgdir>
                 <imgdir name="16">
                     <string name="hs" value="MP 40 소비, 기본 공격력 32, 숙련도 40%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="32"/>
                     <int name="mastery" value="6"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="17">
                     <string name="hs" value="MP 40 소비, 기본 공격력 34, 숙련도 40%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="34"/>
                     <int name="mastery" value="6"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="18">
                     <string name="hs" value="MP 40 소비, 기본 공격력 36, 숙련도 40%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="36"/>
                     <int name="mastery" value="6"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="19">
                     <string name="hs" value="MP 40 소비, 기본 공격력 38, 숙련도 45%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="38"/>
                     <int name="mastery" value="7"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="20">
                     <string name="hs" value="MP 40 소비, 기본 공격력 40, 숙련도 45%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="40"/>
                     <int name="mastery" value="7"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="21">
                     <string name="hs" value="MP 40 소비, 기본 공격력 42, 숙련도 45%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="42"/>
                     <int name="mastery" value="7"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="22">
                     <string name="hs" value="MP 40 소비, 기본 공격력 44, 숙련도 50%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="44"/>
                     <int name="mastery" value="8"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="23">
                     <string name="hs" value="MP 40 소비, 기본 공격력 46, 숙련도 50%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="46"/>
                     <int name="mastery" value="8"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="24">
                     <string name="hs" value="MP 40 소비, 기본 공격력 48, 숙련도 50%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="48"/>
                     <int name="mastery" value="8"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="25">
                     <string name="hs" value="MP 40 소비, 기본 공격력 50, 숙련도 55%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="50"/>
                     <int name="mastery" value="9"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="26">
                     <string name="hs" value="MP 40 소비, 기본 공격력 52, 숙련도 55%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="52"/>
                     <int name="mastery" value="9"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="27">
                     <string name="hs" value="MP 40 소비, 기본 공격력 54, 숙련도 55%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="54"/>
                     <int name="mastery" value="9"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="28">
                     <string name="hs" value="MP 40 소비, 기본 공격력 56, 숙련도 60%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="56"/>
                     <int name="mastery" value="10"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="29">
                     <string name="hs" value="MP 40 소비, 기본 공격력 58, 숙련도 60%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="58"/>
                     <int name="mastery" value="10"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
                 <imgdir name="30">
                     <string name="hs" value="MP 40 소비, 기본 공격력 60, 숙련도 60%"/>
                     <int name="mpCon" value="40"/>
                     <int name="mad" value="60"/>
                     <int name="mastery" value="10"/>
-                    <vector name="lt" x="-170" y="-70"/>
-                    <vector name="rb" x="170" y="70"/>
+                    <vector name="lt" x="-170" y="-100"/>
+                    <vector name="rb" x="170" y="100"/>
                 </imgdir>
             </imgdir>
             <imgdir name="effect">

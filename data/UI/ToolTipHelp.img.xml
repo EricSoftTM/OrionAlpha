@@ -184,19 +184,19 @@
             </imgdir>
             <imgdir name="ExEquip">
                 <string name="Title" value="장비창 늘리기"/>
-                <string name="Desc" value="장비 아이템 창의 슬롯을  4개(1줄) 늘리기\n4800캐시"/>
+                <string name="Desc" value="장비 아이템창의 아이템 슬롯을  4개 (1줄) 늘리기\n(아직 판매하지 않습니다)"/>
             </imgdir>
             <imgdir name="ExConsume">
                 <string name="Title" value="소비창 늘리기"/>
-                <string name="Desc" value="소비 아이템 창의 슬롯을 4개(1줄) 늘리기\n4800캐시"/>
+                <string name="Desc" value="소비 아이템창의 아이템 슬롯을 4개 (1줄) 늘리기\n(아직 판매하지 않습니다)"/>
             </imgdir>
             <imgdir name="ExInstall">
                 <string name="Title" value="설치창 늘리기"/>
-                <string name="Desc" value="설치 아이템 창의 슬롯을 4개(1줄) 늘리기\n4800캐시"/>
+                <string name="Desc" value="설치 아이템창의 아이템 슬롯을 4개 (1줄) 늘리기\n(아직 판매하지 않습니다)"/>
             </imgdir>
             <imgdir name="ExEtc">
                 <string name="Title" value="기타창 늘리기"/>
-                <string name="Desc" value="기타 아이템 창의 슬롯을 4개(1줄) 늘리기\n4800캐시"/>
+                <string name="Desc" value="기타 아이템창의 아이템 슬롯을 4개 (1줄) 늘리기\n(아직 판매하지 않습니다)"/>
             </imgdir>
             <imgdir name="Charge">
                 <string name="Title" value="캐시 충전하기"/>

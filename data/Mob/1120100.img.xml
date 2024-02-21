@@ -31,35 +31,30 @@
             <vector name="lt" x="-31" y="-69"/>
             <vector name="rb" x="31" y="0"/>
             <vector name="head" x="-4" y="-64"/>
-            <int name="delay" value="120"/>
         </canvas>
         <canvas name="1" width="62" height="69">
             <vector name="origin" x="33" y="69"/>
             <vector name="lt" x="-33" y="-69"/>
             <vector name="rb" x="29" y="0"/>
             <vector name="head" x="-4" y="-64"/>
-            <int name="delay" value="120"/>
         </canvas>
         <canvas name="2" width="65" height="70">
             <vector name="origin" x="34" y="70"/>
             <vector name="lt" x="-34" y="-70"/>
             <vector name="rb" x="31" y="0"/>
             <vector name="head" x="-4" y="-64"/>
-            <int name="delay" value="120"/>
         </canvas>
         <canvas name="3" width="66" height="69">
             <vector name="origin" x="36" y="69"/>
             <vector name="lt" x="-36" y="-69"/>
             <vector name="rb" x="30" y="0"/>
             <vector name="head" x="-4" y="-64"/>
-            <int name="delay" value="120"/>
         </canvas>
         <canvas name="4" width="64" height="70">
             <vector name="origin" x="35" y="69"/>
             <vector name="lt" x="-35" y="-69"/>
             <vector name="rb" x="29" y="1"/>
             <vector name="head" x="-4" y="-64"/>
-            <int name="delay" value="120"/>
         </canvas>
     </imgdir>
     <imgdir name="hit1">
@@ -74,21 +69,15 @@
     <imgdir name="die1">
         <canvas name="0" width="66" height="70">
             <vector name="origin" x="36" y="72"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="1" width="65" height="72">
             <vector name="origin" x="36" y="72"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="2" width="67" height="68">
             <vector name="origin" x="38" y="68"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="3" width="89" height="57">
             <vector name="origin" x="49" y="57"/>
-            <int name="delay" value="300"/>
-            <int name="a0" value="255"/>
-            <int name="a1" value="0"/>
         </canvas>
     </imgdir>
 </imgdir>

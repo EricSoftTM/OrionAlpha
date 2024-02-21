@@ -114,11 +114,6 @@
         <sound name="Damage"/>
         <sound name="Die"/>
     </imgdir>
-    <imgdir name="7130100">
-        <sound name="Attack1"/>
-        <uol name="Damage" value="../0100100/Damage"/>
-        <sound name="Die"/>
-    </imgdir>
     <imgdir name="8130100">
         <sound name="Attack1"/>
         <sound name="Attack2"/>

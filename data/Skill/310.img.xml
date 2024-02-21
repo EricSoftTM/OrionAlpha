@@ -996,7 +996,7 @@
                     <int name="x" value="72"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="2">
                     <string name="hs" value="MP 14 소비하여 32% 확률로 스턴, 데미지 74%"/>
@@ -1005,7 +1005,7 @@
                     <int name="x" value="74"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="3">
                     <string name="hs" value="MP 14 소비하여 33% 확률로 스턴, 데미지 76%"/>
@@ -1014,7 +1014,7 @@
                     <int name="x" value="76"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="4">
                     <string name="hs" value="MP 14 소비하여 34% 확률로 스턴, 데미지 78%"/>
@@ -1023,7 +1023,7 @@
                     <int name="x" value="78"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="5">
                     <string name="hs" value="MP 14 소비하여 35% 확률로 스턴, 데미지 80%"/>
@@ -1032,7 +1032,7 @@
                     <int name="x" value="80"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="6">
                     <string name="hs" value="MP 14 소비하여 36% 확률로 스턴, 데미지 82%"/>
@@ -1041,7 +1041,7 @@
                     <int name="x" value="82"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="7">
                     <string name="hs" value="MP 14 소비하여 37% 확률로 스턴, 데미지 84%"/>
@@ -1050,7 +1050,7 @@
                     <int name="x" value="84"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="8">
                     <string name="hs" value="MP 14 소비하여 38% 확률로 스턴, 데미지 86%"/>
@@ -1059,7 +1059,7 @@
                     <int name="x" value="86"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="9">
                     <string name="hs" value="MP 14 소비하여 39% 확률로 스턴, 데미지 88%"/>
@@ -1068,7 +1068,7 @@
                     <int name="x" value="88"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="10">
                     <string name="hs" value="MP 14 소비하여 40% 확률로 스턴, 데미지 90%"/>
@@ -1077,7 +1077,7 @@
                     <int name="x" value="90"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="2"/>
+                    <int name="time" value="3"/>
                 </imgdir>
                 <imgdir name="11">
                     <string name="hs" value="MP 14 소비하여 41% 확률로 스턴, 데미지 92%"/>
@@ -1086,7 +1086,7 @@
                     <int name="x" value="92"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="12">
                     <string name="hs" value="MP 14 소비하여 42% 확률로 스턴, 데미지 94%"/>
@@ -1095,7 +1095,7 @@
                     <int name="x" value="94"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="13">
                     <string name="hs" value="MP 14 소비하여 43% 확률로 스턴, 데미지 96%"/>
@@ -1104,7 +1104,7 @@
                     <int name="x" value="96"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="14">
                     <string name="hs" value="MP 14 소비하여 44% 확률로 스턴, 데미지 98%"/>
@@ -1113,7 +1113,7 @@
                     <int name="x" value="98"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="15">
                     <string name="hs" value="MP 14 소비하여 45% 확률로 스턴, 데미지 100%"/>
@@ -1122,7 +1122,7 @@
                     <int name="x" value="100"/>
                     <vector name="lt" x="-130" y="-100"/>
                     <vector name="rb" x="130" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="16">
                     <string name="hs" value="MP 28 소비하여 46% 확률로 스턴, 데미지 102%"/>
@@ -1131,7 +1131,7 @@
                     <int name="x" value="102"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="17">
                     <string name="hs" value="MP 28 소비하여 47% 확률로 스턴, 데미지 104%"/>
@@ -1140,7 +1140,7 @@
                     <int name="x" value="104"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="18">
                     <string name="hs" value="MP 28 소비하여 48% 확률로 스턴, 데미지 106%"/>
@@ -1149,7 +1149,7 @@
                     <int name="x" value="106"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="19">
                     <string name="hs" value="MP 28 소비하여 49% 확률로 스턴, 데미지 108%"/>
@@ -1158,7 +1158,7 @@
                     <int name="x" value="108"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="20">
                     <string name="hs" value="MP 28 소비하여 50% 확률로 스턴, 데미지 110%"/>
@@ -1167,7 +1167,7 @@
                     <int name="x" value="110"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="4"/>
+                    <int name="time" value="6"/>
                 </imgdir>
                 <imgdir name="21">
                     <string name="hs" value="MP 28 소비하여 51% 확률로 스턴, 데미지 112%"/>
@@ -1176,7 +1176,7 @@
                     <int name="x" value="112"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
                 <imgdir name="22">
                     <string name="hs" value="MP 28 소비하여 52% 확률로 스턴, 데미지 114%"/>
@@ -1185,7 +1185,7 @@
                     <int name="x" value="114"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
                 <imgdir name="23">
                     <string name="hs" value="MP 28 소비하여 53% 확률로 스턴, 데미지 116%"/>
@@ -1194,7 +1194,7 @@
                     <int name="x" value="116"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
                 <imgdir name="24">
                     <string name="hs" value="MP 28 소비하여 54% 확률로 스턴, 데미지 118%"/>
@@ -1203,7 +1203,7 @@
                     <int name="x" value="118"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
                 <imgdir name="25">
                     <string name="hs" value="MP 28 소비하여 55% 확률로 스턴, 데미지 120%"/>
@@ -1212,7 +1212,7 @@
                     <int name="x" value="120"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
                 <imgdir name="26">
                     <string name="hs" value="MP 28 소비하여 56% 확률로 스턴, 데미지 122%"/>
@@ -1221,7 +1221,7 @@
                     <int name="x" value="122"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
                 <imgdir name="27">
                     <string name="hs" value="MP 28 소비하여 57% 확률로 스턴, 데미지 124%"/>
@@ -1230,7 +1230,7 @@
                     <int name="x" value="124"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
                 <imgdir name="28">
                     <string name="hs" value="MP 28 소비하여 58% 확률로 스턴, 데미지 126%"/>
@@ -1239,7 +1239,7 @@
                     <int name="x" value="126"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
                 <imgdir name="29">
                     <string name="hs" value="MP 28 소비하여 59% 확률로 스턴, 데미지 128%"/>
@@ -1248,7 +1248,7 @@
                     <int name="x" value="128"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
                 <imgdir name="30">
                     <string name="hs" value="MP 28 소비하여 60% 확률로 스턴, 데미지 130%"/>
@@ -1257,7 +1257,7 @@
                     <int name="x" value="130"/>
                     <vector name="lt" x="-150" y="-100"/>
                     <vector name="rb" x="150" y="100"/>
-                    <int name="time" value="6"/>
+                    <int name="time" value="9"/>
                 </imgdir>
             </imgdir>
             <imgdir name="hit">

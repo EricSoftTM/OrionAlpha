@@ -72,7 +72,7 @@
         <imgdir name="5">
             <int name="x" value="248"/>
             <int name="y" value="191"/>
-            <int name="type" value="0"/>
+            <int name="type" value="2"/>
             <string name="title" value="빅토리아아일랜드 중앙던전"/>
             <imgdir name="mapNo">
                 <int name="0" value="105030000"/>
@@ -88,9 +88,6 @@
                 <int name="10" value="105050100"/>
                 <int name="11" value="105050200"/>
                 <int name="12" value="105050300"/>
-                <int name="28" value="105040400"/>
-                <int name="29" value="105040401"/>
-                <int name="30" value="105040402"/>
                 <int name="13" value="105060000"/>
                 <int name="14" value="105060100"/>
                 <int name="15" value="105070000"/>
@@ -102,11 +99,8 @@
                 <int name="21" value="105090100"/>
                 <int name="22" value="105090200"/>
                 <int name="23" value="105090300"/>
-                <int name="31" value="105090301"/>
                 <int name="24" value="105090400"/>
                 <int name="25" value="105090500"/>
-                <int name="26" value="105090600"/>
-                <int name="27" value="105090700"/>
             </imgdir>
         </imgdir>
         <imgdir name="6">
@@ -162,17 +156,6 @@
             </imgdir>
         </imgdir>
         <imgdir name="12">
-            <int name="x" value="324"/>
-            <int name="y" value="154"/>
-            <int name="type" value="1"/>
-            <string name="title" value="솟아오른나무"/>
-            <imgdir name="mapNo">
-                <int name="0" value="101010100"/>
-                <int name="1" value="101010101"/>
-                <int name="2" value="101010102"/>
-            </imgdir>
-        </imgdir>
-        <imgdir name="13">
             <int name="x" value="320"/>
             <int name="y" value="143"/>
             <int name="type" value="1"/>
@@ -190,7 +173,7 @@
                 <string name="10" value="101020010"/>
             </imgdir>
         </imgdir>
-        <imgdir name="14">
+        <imgdir name="13">
             <int name="x" value="293"/>
             <int name="y" value="143"/>
             <int name="type" value="1"/>
@@ -198,7 +181,7 @@
                 <int name="0" value="101030000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="15">
+        <imgdir name="14">
             <int name="x" value="278"/>
             <int name="y" value="131"/>
             <int name="type" value="1"/>
@@ -206,7 +189,7 @@
                 <int name="0" value="101030100"/>
             </imgdir>
         </imgdir>
-        <imgdir name="16">
+        <imgdir name="15">
             <int name="x" value="267"/>
             <int name="y" value="123"/>
             <int name="type" value="1"/>
@@ -214,7 +197,7 @@
                 <int name="0" value="101030200"/>
             </imgdir>
         </imgdir>
-        <imgdir name="17">
+        <imgdir name="16">
             <int name="x" value="255"/>
             <int name="y" value="121"/>
             <int name="type" value="1"/>
@@ -222,7 +205,7 @@
                 <int name="0" value="101030300"/>
             </imgdir>
         </imgdir>
-        <imgdir name="18">
+        <imgdir name="17">
             <int name="x" value="251"/>
             <int name="y" value="107"/>
             <int name="type" value="1"/>
@@ -237,7 +220,7 @@
                 <int name="6" value="101030406"/>
             </imgdir>
         </imgdir>
-        <imgdir name="19">
+        <imgdir name="18">
             <int name="x" value="244"/>
             <int name="y" value="95"/>
             <int name="type" value="1"/>
@@ -245,7 +228,7 @@
                 <int name="0" value="101040000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="20">
+        <imgdir name="19">
             <int name="x" value="139"/>
             <int name="y" value="102"/>
             <int name="type" value="1"/>
@@ -253,7 +236,7 @@
                 <int name="0" value="102010000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="21">
+        <imgdir name="20">
             <int name="x" value="144"/>
             <int name="y" value="114"/>
             <int name="type" value="1"/>
@@ -265,7 +248,7 @@
                 <int name="3" value="102020300"/>
             </imgdir>
         </imgdir>
-        <imgdir name="22">
+        <imgdir name="21">
             <int name="x" value="130"/>
             <int name="y" value="127"/>
             <int name="type" value="1"/>
@@ -273,7 +256,7 @@
                 <int name="0" value="102030000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="23">
+        <imgdir name="22">
             <int name="x" value="134"/>
             <int name="y" value="144"/>
             <int name="type" value="1"/>
@@ -281,7 +264,7 @@
                 <int name="0" value="102040000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="24">
+        <imgdir name="23">
             <int name="x" value="131"/>
             <int name="y" value="154"/>
             <int name="type" value="1"/>
@@ -289,7 +272,7 @@
                 <int name="0" value="102050000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="25">
+        <imgdir name="24">
             <int name="x" value="136"/>
             <int name="y" value="196"/>
             <int name="type" value="1"/>
@@ -297,7 +280,7 @@
                 <int name="0" value="103010000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="26">
+        <imgdir name="25">
             <int name="x" value="132"/>
             <int name="y" value="209"/>
             <int name="type" value="1"/>
@@ -305,7 +288,7 @@
                 <int name="0" value="103020000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="27">
+        <imgdir name="26">
             <int name="x" value="135"/>
             <int name="y" value="220"/>
             <int name="type" value="1"/>
@@ -313,7 +296,7 @@
                 <int name="0" value="103020100"/>
             </imgdir>
         </imgdir>
-        <imgdir name="28">
+        <imgdir name="27">
             <int name="x" value="142"/>
             <int name="y" value="230"/>
             <int name="type" value="1"/>
@@ -321,7 +304,7 @@
                 <int name="0" value="103020200"/>
             </imgdir>
         </imgdir>
-        <imgdir name="29">
+        <imgdir name="28">
             <int name="x" value="149"/>
             <int name="y" value="237"/>
             <int name="type" value="1"/>
@@ -332,7 +315,7 @@
                 <int name="2" value="103030200"/>
             </imgdir>
         </imgdir>
-        <imgdir name="30">
+        <imgdir name="29">
             <int name="x" value="151"/>
             <int name="y" value="247"/>
             <int name="type" value="1"/>
@@ -340,7 +323,7 @@
                 <int name="0" value="104010000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="31">
+        <imgdir name="30">
             <int name="x" value="164"/>
             <int name="y" value="268"/>
             <int name="type" value="1"/>
@@ -348,7 +331,7 @@
                 <int name="0" value="104020000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="32">
+        <imgdir name="31">
             <int name="x" value="177"/>
             <int name="y" value="296"/>
             <int name="type" value="1"/>
@@ -356,7 +339,7 @@
                 <int name="0" value="104030000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="33">
+        <imgdir name="32">
             <int name="x" value="201"/>
             <int name="y" value="329"/>
             <int name="type" value="1"/>
@@ -366,7 +349,7 @@
                 <int name="2" value="104040002"/>
             </imgdir>
         </imgdir>
-        <imgdir name="34">
+        <imgdir name="33">
             <int name="x" value="121"/>
             <int name="y" value="307"/>
             <int name="type" value="1"/>
@@ -374,7 +357,7 @@
                 <int name="0" value="104000100"/>
             </imgdir>
         </imgdir>
-        <imgdir name="35">
+        <imgdir name="34">
             <int name="x" value="108"/>
             <int name="y" value="283"/>
             <int name="type" value="1"/>
@@ -382,7 +365,7 @@
                 <int name="0" value="104000200"/>
             </imgdir>
         </imgdir>
-        <imgdir name="36">
+        <imgdir name="35">
             <int name="x" value="126"/>
             <int name="y" value="268"/>
             <int name="type" value="1"/>
@@ -390,7 +373,7 @@
                 <int name="0" value="104000300"/>
             </imgdir>
         </imgdir>
-        <imgdir name="37">
+        <imgdir name="36">
             <int name="x" value="143"/>
             <int name="y" value="260"/>
             <int name="type" value="1"/>
@@ -398,7 +381,7 @@
                 <int name="0" value="104000400"/>
             </imgdir>
         </imgdir>
-        <imgdir name="38">
+        <imgdir name="37">
             <int name="x" value="206"/>
             <int name="y" value="108"/>
             <int name="type" value="1"/>
@@ -406,7 +389,7 @@
                 <int name="0" value="106000000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="39">
+        <imgdir name="38">
             <int name="x" value="225"/>
             <int name="y" value="118"/>
             <int name="type" value="1"/>
@@ -414,7 +397,7 @@
                 <int name="0" value="106000100"/>
             </imgdir>
         </imgdir>
-        <imgdir name="40">
+        <imgdir name="39">
             <int name="x" value="275"/>
             <int name="y" value="307"/>
             <int name="type" value="1"/>
@@ -422,7 +405,7 @@
                 <int name="0" value="106010000"/>
             </imgdir>
         </imgdir>
-        <imgdir name="41">
+        <imgdir name="40">
             <int name="x" value="297"/>
             <int name="y" value="285"/>
             <int name="type" value="1"/>

@@ -11,7 +11,7 @@
         <string name="islot" value="Ma"/>
         <string name="vslot" value="Ma"/>
         <int name="reqJob" value="0"/>
-        <int name="reqLevel" value="5"/>
+        <int name="reqLevel" value="31"/>
         <int name="reqSTR" value="0"/>
         <int name="reqDEX" value="0"/>
         <int name="reqINT" value="0"/>

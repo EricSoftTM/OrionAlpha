@@ -125,7 +125,7 @@
         <canvas name="backgrnd" width="800" height="600">
             <vector name="origin" x="0" y="0"/>
         </canvas>
-        <canvas name="menu" width="567" height="473">
+        <canvas name="menu" width="432" height="473">
             <vector name="origin" x="0" y="0"/>
         </canvas>
         <canvas name="wsItem" width="125" height="25">

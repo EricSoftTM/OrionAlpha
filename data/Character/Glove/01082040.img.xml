@@ -16,6 +16,7 @@
         <int name="reqDEX" value="0"/>
         <int name="reqINT" value="0"/>
         <int name="reqLUK" value="0"/>
+        <int name="reqPOP" value="5"/>
         <int name="cash" value="1"/>
     </imgdir>
     <imgdir name="walk1">

@@ -311,6 +311,8 @@
         </canvas>
         <canvas name="NoItem" width="406" height="242">
         </canvas>
+        <canvas name="Event" width="406" height="161">
+        </canvas>
     </imgdir>
     <imgdir name="CashItem">
         <canvas name="0" width="13" height="13">

@@ -3,14 +3,15 @@
     <imgdir name="info">
         <int name="version" value="10"/>
         <int name="cloud" value="0"/>
+        <int name="snow" value="0"/>
+        <int name="rain" value="0"/>
         <string name="streetName" value="빅토리아로드"/>
         <string name="mapName" value="해안가풀숲Ⅲ"/>
         <int name="town" value="0"/>
-        <float name="mobRate" value="1.2"/>
+        <float name="mobRate" value="1.0"/>
         <string name="bgm" value="Bgm00/GoPicnic"/>
         <int name="returnMap" value="104000000"/>
         <string name="mapMark" value="리스항구"/>
-        <string name="mapDesc" value=""/>
     </imgdir>
     <imgdir name="back">
         <imgdir name="0">

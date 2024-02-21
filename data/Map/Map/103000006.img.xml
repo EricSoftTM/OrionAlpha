@@ -11,10 +11,6 @@
         <float name="mobRate" value="1.0"/>
         <string name="bgm" value="Bgm01/BadGuys"/>
         <string name="mapMark" value="커닝시티"/>
-        <int name="VRTop" value="-490"/>
-        <int name="VRLeft" value="-400"/>
-        <int name="VRBottom" value="300"/>
-        <int name="VRRight" value="400"/>
     </imgdir>
     <imgdir name="back">
         <imgdir name="0">

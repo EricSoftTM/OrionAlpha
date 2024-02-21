@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <imgdir name="9000101.img">
     <imgdir name="info">
-        <string name="name" value="루팡2"/>
+        <string name="name" value="루팡"/>
         <int name="bodyAttack" value="1"/>
         <int name="level" value="35"/>
         <int name="maxHP" value="800"/>
@@ -191,9 +191,7 @@
         </canvas>
         <canvas name="2" width="58" height="36">
             <vector name="origin" x="24" y="34"/>
-            <int name="delay" value="300"/>
-            <int name="a0" value="255"/>
-            <int name="a1" value="0"/>
+            <int name="delay" value="220"/>
         </canvas>
     </imgdir>
 </imgdir>

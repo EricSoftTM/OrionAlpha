@@ -312,43 +312,4 @@
             <string name="desc" value="몬스터의 검고 추악한 마음이 담겨있는 신비로운 구슬이다."/>
         </imgdir>
     </imgdir>
-    <imgdir name="04031014">
-        <imgdir name="info">
-            <canvas name="icon" width="31" height="22">
-                <vector name="origin" x="-1" y="22"/>
-            </canvas>
-            <canvas name="iconRaw" width="31" height="17">
-                <vector name="origin" x="-1" y="22"/>
-            </canvas>
-            <string name="name" value="리나의 특제 장어구이"/>
-            <int name="price" value="550"/>
-            <string name="desc" value="커즈 아이의 꼬리... 와 돼지의 머리가 첨가된 리나의 특제 장어구이이다. 로니에게 가져다 주어야 한다."/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="04031015">
-        <imgdir name="info">
-            <canvas name="icon" width="27" height="30">
-                <vector name="origin" x="-3" y="30"/>
-            </canvas>
-            <canvas name="iconRaw" width="27" height="27">
-                <vector name="origin" x="-3" y="30"/>
-            </canvas>
-            <string name="name" value="신선한 우유"/>
-            <int name="price" value="500"/>
-            <string name="desc" value="요정족들에게서 받은 신선한 우유이다. 로니에게 가져다 주어야 한다."/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="04031016">
-        <imgdir name="info">
-            <canvas name="icon" width="29" height="30">
-                <vector name="origin" x="-1" y="30"/>
-            </canvas>
-            <canvas name="iconRaw" width="29" height="28">
-                <vector name="origin" x="-1" y="30"/>
-            </canvas>
-            <string name="name" value="비밀의 책"/>
-            <int name="price" value="150"/>
-            <string name="desc" value="어떤 내용이 들어가 있는지 알 수 없는 책이다."/>
-        </imgdir>
-    </imgdir>
 </imgdir>

@@ -5,7 +5,7 @@
         <string name="quest" value="hair_kerning1"/>
         <imgdir name="speak">
             <string name="0" value="내 머리스타일 멋지지? 원래 미용사들은 최신 유행을 제일 먼저 따르니까 당연하지... 오호호~"/>
-            <string name="1" value="그 머리가 지겨워졌지? 내가 예쁘고 멋지게 다듬어 줄테니까 맡겨만 줘!"/>
+            <string name="1" value="그 머리가 지겨워졌지? 내가 예쁘고 멋지게 다듬에 줄테니까 맡겨만 줘!"/>
         </imgdir>
     </imgdir>
     <imgdir name="stand">

@@ -24,28 +24,24 @@
             <vector name="lt" x="-31" y="-51"/>
             <vector name="rb" x="31" y="0"/>
             <vector name="head" x="-8" y="-56"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="1" width="66" height="54">
             <vector name="origin" x="32" y="54"/>
             <vector name="lt" x="-32" y="-54"/>
             <vector name="rb" x="34" y="0"/>
             <vector name="head" x="-12" y="-59"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="2" width="61" height="51">
             <vector name="origin" x="31" y="51"/>
             <vector name="lt" x="-31" y="-51"/>
             <vector name="rb" x="30" y="0"/>
             <vector name="head" x="-15" y="-56"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="3" width="64" height="54">
             <vector name="origin" x="33" y="54"/>
             <vector name="lt" x="-34" y="-54"/>
             <vector name="rb" x="31" y="0"/>
             <vector name="head" x="-12" y="-56"/>
-            <int name="delay" value="180"/>
         </canvas>
     </imgdir>
     <imgdir name="stand">
@@ -68,17 +64,12 @@
     <imgdir name="die1">
         <canvas name="0" width="61" height="52">
             <vector name="origin" x="30" y="52"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="1" width="58" height="53">
             <vector name="origin" x="32" y="53"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="2" width="61" height="45">
             <vector name="origin" x="35" y="45"/>
-            <int name="delay" value="300"/>
-            <int name="a0" value="255"/>
-            <int name="a1" value="0"/>
         </canvas>
     </imgdir>
 </imgdir>

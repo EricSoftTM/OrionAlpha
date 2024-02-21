@@ -18,7 +18,7 @@
         <int name="reqLUK" value="0"/>
         <int name="incPDD" value="54"/>
         <int name="incMDD" value="24"/>
-        <int name="incSTR" value="2"/>
+        <int name="incDEX" value="2"/>
         <int name="tuc" value="7"/>
         <int name="price" value="100000"/>
         <int name="cash" value="0"/>

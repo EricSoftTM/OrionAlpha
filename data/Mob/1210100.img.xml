@@ -46,21 +46,18 @@
             <vector name="lt" x="-34" y="-40"/>
             <vector name="rb" x="34" y="0"/>
             <vector name="head" x="-20" y="-40"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="1" width="68" height="40">
             <vector name="origin" x="34" y="40"/>
             <vector name="lt" x="-34" y="-40"/>
             <vector name="rb" x="34" y="0"/>
             <vector name="head" x="-20" y="-40"/>
-            <int name="delay" value="150"/>
         </canvas>
         <canvas name="2" width="69" height="38">
             <vector name="origin" x="34" y="38"/>
             <vector name="lt" x="-34" y="-38"/>
             <vector name="rb" x="35" y="0"/>
             <vector name="head" x="-20" y="-40"/>
-            <int name="delay" value="180"/>
         </canvas>
     </imgdir>
     <imgdir name="jump">
@@ -83,17 +80,12 @@
     <imgdir name="die1">
         <canvas name="0" width="69" height="56">
             <vector name="origin" x="34" y="56"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="1" width="68" height="51">
             <vector name="origin" x="42" y="53"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="2" width="66" height="49">
             <vector name="origin" x="43" y="49"/>
-            <int name="delay" value="300"/>
-            <int name="a0" value="255"/>
-            <int name="a1" value="0"/>
         </canvas>
     </imgdir>
 </imgdir>

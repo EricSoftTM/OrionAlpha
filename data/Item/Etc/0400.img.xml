@@ -428,48 +428,6 @@
             <int name="slotMax" value="200"/>
         </imgdir>
     </imgdir>
-    <imgdir name="04000028">
-        <imgdir name="info">
-            <canvas name="icon" width="28" height="30">
-                <vector name="origin" x="-2" y="30"/>
-            </canvas>
-            <canvas name="iconRaw" width="28" height="28">
-                <vector name="origin" x="-2" y="30"/>
-            </canvas>
-            <string name="name" value="타우로마시스의 뿔"/>
-            <int name="price" value="200"/>
-            <string name="desc" value="타우로마시스의 뿔을 잘라온 것이다. 매우 단단하고 무겁다."/>
-            <int name="slotMax" value="200"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="04000029">
-        <imgdir name="info">
-            <canvas name="icon" width="31" height="31">
-                <vector name="origin" x="-1" y="31"/>
-            </canvas>
-            <canvas name="iconRaw" width="31" height="30">
-                <vector name="origin" x="-1" y="31"/>
-            </canvas>
-            <string name="name" value="루팡의 바나나"/>
-            <int name="price" value="75"/>
-            <string name="desc" value="루팡이 좋아하는 맛있는 바나나이다."/>
-            <int name="slotMax" value="200"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="04000030">
-        <imgdir name="info">
-            <canvas name="icon" width="32" height="30">
-                <vector name="origin" x="0" y="30"/>
-            </canvas>
-            <canvas name="iconRaw" width="32" height="29">
-                <vector name="origin" x="0" y="30"/>
-            </canvas>
-            <string name="name" value="용의 가죽"/>
-            <int name="price" value="200"/>
-            <string name="desc" value="신비한 빛을 내는 단단한 용의 가죽이다."/>
-            <int name="slotMax" value="200"/>
-        </imgdir>
-    </imgdir>
     <imgdir name="04001000">
         <imgdir name="info">
             <canvas name="icon" width="26" height="27">

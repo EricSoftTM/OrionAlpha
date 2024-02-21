@@ -7,9 +7,9 @@
         <int name="maxHP" value="50000"/>
         <int name="maxMP" value="500"/>
         <int name="speed" value="-20"/>
-        <int name="PADamage" value="420"/>
+        <int name="PADamage" value="550"/>
         <int name="PDDamage" value="400"/>
-        <int name="MADamage" value="580"/>
+        <int name="MADamage" value="550"/>
         <int name="MDDamage" value="400"/>
         <int name="acc" value="130"/>
         <int name="eva" value="30"/>
@@ -19,38 +19,32 @@
         <int name="hpRecovery" value="50"/>
         <int name="mpRecovery" value="5"/>
         <string name="elemAttr" value="S1"/>
-        <int name="boss" value="1"/>
     </imgdir>
     <imgdir name="move">
         <canvas name="0" width="171" height="162">
             <vector name="origin" x="85" y="162"/>
             <vector name="lt" x="-85" y="-162"/>
             <vector name="rb" x="86" y="0"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="1" width="158" height="156">
             <vector name="origin" x="90" y="156"/>
             <vector name="lt" x="-90" y="-156"/>
             <vector name="rb" x="68" y="0"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="2" width="177" height="166">
             <vector name="origin" x="95" y="166"/>
             <vector name="lt" x="-95" y="-166"/>
             <vector name="rb" x="82" y="0"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="3" width="169" height="158">
             <vector name="origin" x="99" y="158"/>
             <vector name="lt" x="-99" y="-158"/>
             <vector name="rb" x="70" y="0"/>
-            <int name="delay" value="180"/>
         </canvas>
         <canvas name="4" width="177" height="170">
             <vector name="origin" x="95" y="170"/>
             <vector name="lt" x="-95" y="-170"/>
             <vector name="rb" x="82" y="0"/>
-            <int name="delay" value="180"/>
         </canvas>
     </imgdir>
     <imgdir name="stand">
@@ -58,13 +52,11 @@
             <vector name="origin" x="80" y="156"/>
             <vector name="lt" x="-80" y="-156"/>
             <vector name="rb" x="80" y="0"/>
-            <int name="delay" value="150"/>
         </canvas>
         <canvas name="1" width="160" height="156">
             <vector name="origin" x="80" y="156"/>
             <vector name="lt" x="-80" y="-156"/>
             <vector name="rb" x="80" y="0"/>
-            <int name="delay" value="150"/>
         </canvas>
     </imgdir>
     <imgdir name="attack1">
@@ -285,7 +277,7 @@
     <imgdir name="attackF">
         <imgdir name="info">
             <imgdir name="range">
-                <vector name="lt" x="-330" y="-160"/>
+                <vector name="lt" x="-368" y="-160"/>
                 <vector name="rb" x="105" y="0"/>
             </imgdir>
             <imgdir name="effect">
@@ -364,7 +356,6 @@
             <vector name="origin" x="86" y="160"/>
             <vector name="lt" x="-86" y="-160"/>
             <vector name="rb" x="86" y="-1"/>
-            <int name="delay" value="600"/>
         </canvas>
     </imgdir>
     <imgdir name="die1">
@@ -378,9 +369,7 @@
         </canvas>
         <canvas name="2" width="240" height="120">
             <vector name="origin" x="120" y="116"/>
-            <int name="delay" value="300"/>
-            <int name="a0" value="255"/>
-            <int name="a1" value="0"/>
+            <int name="delay" value="200"/>
         </canvas>
     </imgdir>
 </imgdir>

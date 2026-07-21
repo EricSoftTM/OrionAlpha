@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<imgdir name="WorldMap0.img">
-    <imgdir name="BaseImg">
-        <canvas name="0" width="480" height="410">
-        </canvas>
-    </imgdir>
-    <imgdir name="MapList">
-    </imgdir>
-</imgdir>

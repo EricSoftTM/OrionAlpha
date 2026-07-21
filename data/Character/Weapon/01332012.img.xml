@@ -20,7 +20,7 @@
         <int name="reqSTR" value="0"/>
         <int name="reqDEX" value="80"/>
         <int name="reqINT" value="0"/>
-        <int name="reqLUK" value="60"/>
+        <int name="reqLUK" value="30"/>
         <int name="incPAD" value="45"/>
         <int name="tuc" value="7"/>
         <int name="price" value="20000"/>

@@ -4,16 +4,16 @@
         <string name="name" value="카파 드레이크"/>
         <int name="bodyAttack" value="1"/>
         <int name="level" value="45"/>
-        <int name="maxHP" value="2700"/>
+        <int name="maxHP" value="2000"/>
         <int name="maxMP" value="150"/>
         <int name="speed" value="10"/>
-        <int name="PADamage" value="150"/>
-        <int name="PDDamage" value="50"/>
+        <int name="PADamage" value="160"/>
+        <int name="PDDamage" value="70"/>
         <int name="MADamage" value="0"/>
-        <int name="MDDamage" value="50"/>
-        <int name="acc" value="70"/>
+        <int name="MDDamage" value="70"/>
+        <int name="acc" value="65"/>
         <int name="eva" value="18"/>
-        <int name="exp" value="105"/>
+        <int name="exp" value="200"/>
         <int name="undead" value="0"/>
         <int name="pushed" value="200"/>
     </imgdir>
@@ -22,25 +22,21 @@
             <vector name="origin" x="66" y="74"/>
             <vector name="lt" x="-66" y="-69"/>
             <vector name="rb" x="48" y="0"/>
-            <vector name="head" x="-40" y="-72"/>
         </canvas>
         <canvas name="1" width="127" height="82">
             <vector name="origin" x="70" y="81"/>
             <vector name="lt" x="-70" y="-73"/>
             <vector name="rb" x="51" y="0"/>
-            <vector name="head" x="-44" y="-75"/>
         </canvas>
         <canvas name="2" width="124" height="76">
             <vector name="origin" x="73" y="75"/>
             <vector name="lt" x="-73" y="-69"/>
             <vector name="rb" x="39" y="0"/>
-            <vector name="head" x="-49" y="-71"/>
         </canvas>
         <canvas name="3" width="126" height="82">
             <vector name="origin" x="75" y="81"/>
             <vector name="lt" x="-75" y="-73"/>
             <vector name="rb" x="37" y="0"/>
-            <vector name="head" x="-48" y="-76"/>
         </canvas>
     </imgdir>
     <imgdir name="stand">
@@ -48,7 +44,6 @@
             <vector name="origin" x="64" y="82"/>
             <vector name="lt" x="-64" y="-73"/>
             <vector name="rb" x="48" y="0"/>
-            <vector name="head" x="-37" y="-76"/>
         </canvas>
     </imgdir>
     <imgdir name="hit1">
@@ -57,7 +52,6 @@
             <vector name="lt" x="-62" y="-91"/>
             <vector name="rb" x="48" y="0"/>
             <int name="delay" value="600"/>
-            <vector name="head" x="-32" y="-92"/>
         </canvas>
     </imgdir>
     <imgdir name="die1">

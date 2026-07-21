@@ -78,7 +78,7 @@
             <int name="x" value="-167"/>
             <int name="y" value="244"/>
             <int name="tm" value="20000"/>
-            <string name="tn" value="in01"/>
+            <string name="tn" value="in00"/>
         </imgdir>
     </imgdir>
     <imgdir name="life">

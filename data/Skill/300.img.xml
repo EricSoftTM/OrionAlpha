@@ -21,7 +21,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="아마존의 축복"/>
-            <string name="desc" value="[마스터 레벨 : 16]\n명중률을 증가시켜 준다."/>
+            <string name="desc" value="명중률을 증가시켜 준다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="명중률 1 증가"/>
@@ -89,7 +89,7 @@
                 </imgdir>
             </imgdir>
         </imgdir>
-        <imgdir name="3000001">
+        <imgdir name="3000501">
             <canvas name="icon" width="32" height="32">
                 <vector name="origin" x="0" y="32"/>
                 <int name="z" value="0"/>
@@ -103,7 +103,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="크리티컬 샷"/>
-            <string name="desc" value="[마스터 레벨 : 20]\n일정 확률로 크리티컬 공격이 가능해진다."/>
+            <string name="desc" value="일정 확률로 크리티컬 공격이 가능해진다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="2%의 확률, 크리티컬 데미지 105%"/>
@@ -206,37 +206,6 @@
                     <int name="damage" value="200"/>
                 </imgdir>
             </imgdir>
-            <imgdir name="damage">
-                <canvas name="0" width="86" height="14">
-                    <vector name="origin" x="-10" y="7"/>
-                    <int name="delay" value="120"/>
-                </canvas>
-                <canvas name="1" width="83" height="14">
-                    <vector name="origin" x="16" y="7"/>
-                    <int name="z" value="100"/>
-                    <int name="delay" value="120"/>
-                </canvas>
-                <canvas name="2" width="66" height="16">
-                    <vector name="origin" x="32" y="8"/>
-                    <int name="delay" value="120"/>
-                </canvas>
-                <canvas name="3" width="65" height="14">
-                    <vector name="origin" x="32" y="7"/>
-                    <int name="delay" value="300"/>
-                </canvas>
-                <canvas name="4" width="66" height="16">
-                    <vector name="origin" x="26" y="8"/>
-                    <int name="delay" value="150"/>
-                </canvas>
-                <canvas name="5" width="86" height="14">
-                    <vector name="origin" x="60" y="7"/>
-                    <int name="delay" value="120"/>
-                </canvas>
-                <canvas name="6" width="86" height="14">
-                    <vector name="origin" x="91" y="7"/>
-                    <int name="delay" value="120"/>
-                </canvas>
-            </imgdir>
         </imgdir>
         <imgdir name="3000002">
             <canvas name="icon" width="32" height="33">
@@ -252,7 +221,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="아마존의 눈"/>
-            <string name="desc" value="[마스터 레벨 : 8]\n활과 석궁의 사정 거리를 늘려준다."/>
+            <string name="desc" value="활과 석궁의 사정 거리를 늘려준다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="활과 석궁의 사정 거리 25 증가"/>
@@ -305,10 +274,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="포커스"/>
-            <string name="desc" value="[마스터 레벨 : 20]\n집중하여 일정 시간동안 명중률과 회피율을 상승시킨다."/>
-            <imgdir name="action">
-                <string name="0" value="alert2"/>
-            </imgdir>
+            <string name="desc" value="집중하여 일정 시간동안 명중률과 회피율을 상승시킨다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="15초간 MP 8 소비하여 명중률 1, 회피율 1 향상"/>
@@ -497,7 +463,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="에로우 블로우"/>
-            <string name="desc" value="[마스터 레벨 : 20]\n강하게 화살을 발사한다. 평소보다 많은 피해를 줄 수 있다."/>
+            <string name="desc" value="강하게 화살을 발사한다. 평소보다 많은 피해를 줄 수 있다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="MP 7 소비, 데미지 108%"/>
@@ -600,14 +566,6 @@
                     <int name="damage" value="260"/>
                 </imgdir>
             </imgdir>
-            <imgdir name="finalAttack">
-                <imgdir name="3100001">
-                    <int name="0" value="45"/>
-                </imgdir>
-                <imgdir name="3200001">
-                    <int name="0" value="46"/>
-                </imgdir>
-            </imgdir>
             <imgdir name="hit">
                 <imgdir name="0">
                     <canvas name="0" width="84" height="82">
@@ -652,7 +610,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="더블 샷"/>
-            <string name="desc" value="[마스터 레벨 : 20]\n두개의 화살을 소비하여 두 번 적을 공격한다."/>
+            <string name="desc" value="두개의 화살을 소비하여 두 번 적을 공격한다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="MP 8 소비, 데미지 56%"/>
@@ -777,14 +735,6 @@
             </imgdir>
             <imgdir name="req">
                 <int name="3001004" value="1"/>
-            </imgdir>
-            <imgdir name="finalAttack">
-                <imgdir name="3100001">
-                    <int name="0" value="45"/>
-                </imgdir>
-                <imgdir name="3200001">
-                    <int name="0" value="46"/>
-                </imgdir>
             </imgdir>
             <imgdir name="hit">
                 <imgdir name="0">

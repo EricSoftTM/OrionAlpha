@@ -3,22 +3,23 @@
     <imgdir name="info">
         <int name="version" value="10"/>
         <int name="cloud" value="0"/>
+        <int name="snow" value="0"/>
+        <int name="rain" value="0"/>
         <string name="streetName" value="빅토리아로드"/>
         <string name="mapName" value="도둑의아지트"/>
         <int name="town" value="1"/>
-        <int name="returnMap" value="103000000"/>
+        <int name="returnMap" value="999999999"/>
         <float name="mobRate" value="1.0"/>
-        <string name="bgm" value="Bgm01/BadGuys"/>
+        <string name="bgm" value="Bgm01/NothingLeft"/>
         <string name="mapMark" value="커닝시티"/>
         <int name="VRTop" value="-660"/>
         <int name="VRLeft" value="-400"/>
         <int name="VRBottom" value="300"/>
         <int name="VRRight" value="400"/>
-        <string name="mapDesc" value=""/>
     </imgdir>
     <imgdir name="back">
         <imgdir name="0">
-            <string name="bS" value=""/>
+            <string name="bS" value="metroCity"/>
             <int name="no" value="1"/>
             <int name="x" value="38"/>
             <int name="y" value="-302"/>
@@ -70,6 +71,7 @@
             <string name="id" value="1052001"/>
             <int name="x" value="128"/>
             <int name="y" value="122"/>
+            <int name="info" value="5"/>
             <int name="f" value="0"/>
             <int name="fh" value="39"/>
             <int name="cy" value="128"/>
@@ -921,7 +923,7 @@
     </imgdir>
     <imgdir name="ladderRope">
         <imgdir name="1">
-            <int name="l" value="1"/>
+            <int name="l" value="0"/>
             <int name="uf" value="1"/>
             <int name="x" value="213"/>
             <int name="y1" value="98"/>
@@ -929,7 +931,7 @@
             <int name="page" value="2"/>
         </imgdir>
         <imgdir name="2">
-            <int name="l" value="1"/>
+            <int name="l" value="0"/>
             <int name="uf" value="1"/>
             <int name="x" value="-304"/>
             <int name="y1" value="-156"/>

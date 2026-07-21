@@ -26,7 +26,6 @@
         <int name="price" value="1500"/>
         <int name="attackSpeed" value="3"/>
         <int name="cash" value="0"/>
-        <int name="knockback" value="10"/>
     </imgdir>
     <imgdir name="walk1">
         <imgdir name="0">

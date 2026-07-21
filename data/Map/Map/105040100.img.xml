@@ -3,13 +3,13 @@
     <imgdir name="info">
         <int name="version" value="10"/>
         <int name="cloud" value="0"/>
-        <int name="snow" value="0"/>
+        <int name="snow" value="1"/>
         <int name="rain" value="0"/>
         <string name="streetName" value="던전"/>
         <string name="mapName" value="깊은숲사냥터"/>
         <int name="town" value="0"/>
         <int name="returnMap" value="100000000"/>
-        <float name="mobRate" value="0.7999982"/>
+        <float name="mobRate" value="0.79999816"/>
         <string name="bgm" value="Bgm00/SleepyWood"/>
         <string name="mapMark" value="던전"/>
     </imgdir>

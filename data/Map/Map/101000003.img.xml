@@ -3,6 +3,8 @@
     <imgdir name="info">
         <int name="version" value="10"/>
         <int name="cloud" value="0"/>
+        <int name="snow" value="0"/>
+        <int name="rain" value="0"/>
         <string name="streetName" value="빅토리아로드"/>
         <string name="mapName" value="마법 도서관"/>
         <int name="town" value="1"/>
@@ -109,6 +111,7 @@
             <string name="id" value="1032001"/>
             <int name="x" value="-7"/>
             <int name="y" value="-77"/>
+            <int name="info" value="5"/>
             <int name="fh" value="17"/>
             <int name="cy" value="-77"/>
             <int name="rx0" value="-57"/>
@@ -522,7 +525,7 @@
     </imgdir>
     <imgdir name="ladderRope">
         <imgdir name="1">
-            <int name="l" value="1"/>
+            <int name="l" value="0"/>
             <int name="uf" value="1"/>
             <int name="x" value="251"/>
             <int name="y1" value="-253"/>

@@ -2,7 +2,6 @@
 <imgdir name="1052000.img">
     <imgdir name="info">
         <string name="name" value="알렉스"/>
-        <string name="quest" value="alex"/>
         <imgdir name="speak">
             <string name="0" value="아~ 따분해~"/>
         </imgdir>

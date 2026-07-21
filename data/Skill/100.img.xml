@@ -21,7 +21,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="HP 회복력 향상"/>
-            <string name="desc" value="[마스터 레벨 : 16]\n움직이지 않을 경우 10초마다 더욱 많은 양의 HP를 회복할 수 있다."/>
+            <string name="desc" value="움직이지 않을 경우 10초마다 더욱 많은 양의 HP를 회복할 수 있다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="HP 3 추가 회복"/>
@@ -103,7 +103,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="HP 증가량 향상"/>
-            <string name="desc" value="[마스터 레벨 : 10]\nLevel UP 할 때, Max HP에 AP를 사용할 때 Max HP의 증가량을 향상시킨다."/>
+            <string name="desc" value="Level UP 할 때, Max HP에 AP를 사용할 때 Max HP의 증가량을 향상시킨다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="MaxHP LevelUP시 4, AP 부여시 3 추가 향상"/>
@@ -174,7 +174,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="인듀어"/>
-            <string name="desc" value="[마스터 레벨 : 8]\n사다리나 로프에 가만히 매달려 있는 상태에서도 일정 시간마다 HP를 회복할 수 있다."/>
+            <string name="desc" value="사다리나 로프에 가만히 매달려 있는 상태에서도 일정 시간마다 HP를 회복할 수 있다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="31초 마다 HP를 회복"/>
@@ -227,10 +227,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="아이언 바디"/>
-            <string name="desc" value="[마스터 레벨 : 20]\n일정 시간동안 물리 방어력을 증가시켜 준다."/>
-            <imgdir name="action">
-                <string name="0" value="alert2"/>
-            </imgdir>
+            <string name="desc" value="일정 시간동안 물리 방어력을 증가시켜 준다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="15초간 MP 5 소비, 물리 방어력 2 증가"/>
@@ -371,7 +368,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="파워 스트라이크"/>
-            <string name="desc" value="[마스터 레벨 : 20]\nMP를 소비하여 검으로 적에게 일격을 가한다."/>
+            <string name="desc" value="MP를 소비하여 검으로 적에게 일격을 가한다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="MP 6 소비, 검 데미지 108%"/>
@@ -561,7 +558,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="슬래시 블러스트"/>
-            <string name="desc" value="[마스터 레벨 : 20]\nHP, MP를 소비하여 검으로 주위의 적에게 전체 공격을 가한다."/>
+            <string name="desc" value="HP, MP를 소비하여 검으로 주위의 적에게 전체 공격을 가한다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="HP 8, MP 7 소비, 데미지 56%"/>

@@ -42,7 +42,7 @@
             </canvas>
             <string name="name" value="엘리니아 귀환 주문서"/>
             <int name="price" value="90"/>
-            <string name="desc" value="신비한 숲속 마을인 엘리니아로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+            <string name="desc" value="신비한 숲속 마을인 엘리니아 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
         </imgdir>
         <imgdir name="spec">
             <int name="moveTo" value="101000000"/>
@@ -58,7 +58,7 @@
             </canvas>
             <string name="name" value="페리온 귀환 주문서"/>
             <int name="price" value="90"/>
-            <string name="desc" value="황량한 고원 마을인 페리온으로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+            <string name="desc" value="황량한 고원 마을인 페리온 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
         </imgdir>
         <imgdir name="spec">
             <int name="moveTo" value="102000000"/>
@@ -74,7 +74,7 @@
             </canvas>
             <string name="name" value="헤네시스 귀환 주문서"/>
             <int name="price" value="90"/>
-            <string name="desc" value="평화로운 초원 마을인 헤네시스로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+            <string name="desc" value="평화로운 초원 마을인 헤네시스 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
         </imgdir>
         <imgdir name="spec">
             <int name="moveTo" value="100000000"/>
@@ -90,10 +90,10 @@
             </canvas>
             <string name="name" value="커닝시티 귀환 주문서"/>
             <int name="price" value="90"/>
-            <string name="desc" value="어두운 분위기의 도시인 커닝시티로 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
+            <string name="desc" value="어두운 분위기의 도시인 커닝시티 귀환할 수 있는 주문서이다. 한 번 사용하면 사라진다."/>
         </imgdir>
         <imgdir name="spec">
-            <int name="moveTo" value="103000000"/>
+            <int name="moveTo" value="103010000"/>
         </imgdir>
     </imgdir>
 </imgdir>

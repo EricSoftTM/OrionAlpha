@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <imgdir name="shineWood.img">
     <imgdir name="back">
-        <canvas name="0" width="303" height="180">
+        <canvas name="0" width="400" height="300">
             <vector name="origin" x="200" y="150"/>
             <int name="z" value="0"/>
         </canvas>
-        <canvas name="1" width="469" height="647">
+        <canvas name="1" width="425" height="990">
             <vector name="origin" x="212" y="495"/>
             <int name="z" value="0"/>
         </canvas>
-        <canvas name="2" width="392" height="600">
+        <canvas name="2" width="453" height="978">
             <vector name="origin" x="226" y="489"/>
             <int name="z" value="0"/>
         </canvas>
@@ -85,11 +85,11 @@
             <vector name="origin" x="122" y="122"/>
             <int name="z" value="0"/>
         </canvas>
-        <canvas name="21" width="276" height="400">
+        <canvas name="21" width="276" height="801">
             <vector name="origin" x="138" y="400"/>
             <int name="z" value="0"/>
         </canvas>
-        <canvas name="22" width="146" height="209">
+        <canvas name="22" width="145" height="412">
             <vector name="origin" x="72" y="206"/>
             <int name="z" value="0"/>
         </canvas>

@@ -15,7 +15,7 @@
         <int name="reqSTR" value="0"/>
         <int name="reqDEX" value="40"/>
         <int name="reqINT" value="0"/>
-        <int name="reqLUK" value="50"/>
+        <int name="reqLUK" value="20"/>
         <int name="incPDD" value="15"/>
         <int name="incMHP" value="5"/>
         <int name="tuc" value="7"/>

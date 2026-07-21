@@ -220,9 +220,6 @@
                 <canvas name="reqLUK" width="45" height="7">
                     <vector name="origin" x="0" y="0"/>
                 </canvas>
-                <canvas name="reqPOP" width="45" height="7">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
                 <canvas name="0" width="5" height="7">
                     <vector name="origin" x="0" y="0"/>
                 </canvas>
@@ -252,9 +249,6 @@
                 </canvas>
                 <canvas name="9" width="5" height="7">
                     <vector name="origin" x="0" y="0"/>
-                </canvas>
-                <canvas name="none" width="5" height="1">
-                    <vector name="origin" x="0" y="-3"/>
                 </canvas>
             </imgdir>
             <imgdir name="Cannot">
@@ -273,9 +267,6 @@
                 <canvas name="reqLUK" width="45" height="7">
                     <vector name="origin" x="0" y="0"/>
                 </canvas>
-                <canvas name="reqPOP" width="45" height="7">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
                 <canvas name="0" width="5" height="7">
                     <vector name="origin" x="0" y="0"/>
                 </canvas>
@@ -305,9 +296,6 @@
                 </canvas>
                 <canvas name="9" width="5" height="7">
                     <vector name="origin" x="0" y="0"/>
-                </canvas>
-                <canvas name="none" width="5" height="1">
-                    <vector name="origin" x="0" y="-3"/>
                 </canvas>
             </imgdir>
         </imgdir>
@@ -770,56 +758,6 @@
             </imgdir>
         </imgdir>
     </imgdir>
-    <imgdir name="UtilDlgEx_Avatar">
-        <imgdir name="BtPrev">
-            <imgdir name="normal">
-                <canvas name="0" width="31" height="89">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
-            </imgdir>
-            <imgdir name="pressed">
-                <canvas name="0" width="31" height="89">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
-            </imgdir>
-            <imgdir name="disabled">
-                <canvas name="0" width="31" height="89">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
-            </imgdir>
-            <imgdir name="mouseOver">
-                <canvas name="0" width="31" height="89">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
-            </imgdir>
-        </imgdir>
-        <imgdir name="BtNext">
-            <imgdir name="normal">
-                <canvas name="0" width="31" height="89">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
-            </imgdir>
-            <imgdir name="pressed">
-                <canvas name="0" width="31" height="89">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
-            </imgdir>
-            <imgdir name="disabled">
-                <canvas name="0" width="31" height="89">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
-            </imgdir>
-            <imgdir name="mouseOver">
-                <canvas name="0" width="31" height="89">
-                    <vector name="origin" x="0" y="0"/>
-                </canvas>
-            </imgdir>
-        </imgdir>
-        <canvas name="backgrnd" width="322" height="101">
-        </canvas>
-        <canvas name="nameTag" width="174" height="36">
-        </canvas>
-    </imgdir>
     <imgdir name="Trade">
         <canvas name="backgrnd" width="367" height="295">
             <vector name="origin" x="0" y="0"/>
@@ -1136,47 +1074,5 @@
         <canvas name="3" width="89" height="18">
             <vector name="origin" x="0" y="0"/>
         </canvas>
-    </imgdir>
-    <imgdir name="FloatNotice">
-        <canvas name="0" width="12" height="54">
-        </canvas>
-        <canvas name="1" width="4" height="54">
-        </canvas>
-        <canvas name="2" width="12" height="54">
-        </canvas>
-    </imgdir>
-    <imgdir name="UserInfo">
-        <canvas name="backgrnd" width="240" height="145">
-        </canvas>
-        <canvas name="backgrnd2" width="169" height="132">
-        </canvas>
-    </imgdir>
-    <imgdir name="WorldMap">
-        <imgdir name="Border">
-            <canvas name="0" width="60" height="45">
-                <vector name="origin" x="0" y="0"/>
-            </canvas>
-            <canvas name="1" width="4" height="45">
-                <vector name="origin" x="0" y="0"/>
-            </canvas>
-            <canvas name="2" width="54" height="58">
-                <vector name="origin" x="0" y="0"/>
-            </canvas>
-            <canvas name="3" width="59" height="4">
-                <vector name="origin" x="0" y="0"/>
-            </canvas>
-            <canvas name="4" width="54" height="4">
-                <vector name="origin" x="0" y="0"/>
-            </canvas>
-            <canvas name="5" width="60" height="18">
-                <vector name="origin" x="0" y="0"/>
-            </canvas>
-            <canvas name="6" width="4" height="18">
-                <vector name="origin" x="0" y="0"/>
-            </canvas>
-            <canvas name="7" width="54" height="18">
-                <vector name="origin" x="0" y="0"/>
-            </canvas>
-        </imgdir>
     </imgdir>
 </imgdir>

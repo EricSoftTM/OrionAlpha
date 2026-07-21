@@ -3,7 +3,7 @@
     <imgdir name="info">
         <string name="name" value="소문난"/>
         <imgdir name="speak">
-            <string name="0" value="물약이 필요한가? 자... 여기 잔뜩 준비해 두었네."/>
+            <string name="0" value="무기가 필요한가? 우리 가게는 도둑을 위한 무기를 전문적으로 취급하고 있지."/>
             <string name="1" value="자! 골라 보라구!"/>
         </imgdir>
         <imgdir name="shop">

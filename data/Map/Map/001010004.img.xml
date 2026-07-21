@@ -9,7 +9,7 @@
         <string name="mapName" value="달팽이꽃밭"/>
         <int name="town" value="0"/>
         <int name="returnMap" value="1010000"/>
-        <float name="mobRate" value="1.2"/>
+        <float name="mobRate" value="1.0000002"/>
         <string name="bgm" value="Bgm00/FloralLife"/>
         <string name="mapMark" value="암허스트"/>
     </imgdir>

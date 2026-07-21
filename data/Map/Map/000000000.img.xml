@@ -120,14 +120,6 @@
             <int name="tm" value="999999999"/>
             <string name="tn" value=""/>
         </imgdir>
-        <imgdir name="4">
-            <string name="pn" value="out00"/>
-            <int name="pt" value="2"/>
-            <int name="x" value="1052"/>
-            <int name="y" value="365"/>
-            <int name="tm" value="10000"/>
-            <string name="tn" value="in00"/>
-        </imgdir>
     </imgdir>
     <imgdir name="life">
         <imgdir name="0">
@@ -135,6 +127,7 @@
             <string name="id" value="0002101"/>
             <int name="x" value="-48"/>
             <int name="y" value="61"/>
+            <int name="info" value="5"/>
             <int name="fh" value="66"/>
             <int name="cy" value="65"/>
             <int name="rx0" value="-64"/>
@@ -146,6 +139,7 @@
             <string name="id" value="0002100"/>
             <int name="x" value="833"/>
             <int name="y" value="125"/>
+            <int name="info" value="5"/>
             <int name="fh" value="8"/>
             <int name="cy" value="125"/>
             <int name="rx0" value="783"/>
@@ -1614,7 +1608,7 @@
                 <string name="l0" value="grassySoil"/>
                 <string name="l1" value="nature"/>
                 <string name="l2" value="17"/>
-                <int name="x" value="870"/>
+                <int name="x" value="1091"/>
                 <int name="y" value="337"/>
                 <int name="z" value="3"/>
                 <int name="f" value="0"/>

@@ -8,6 +8,4 @@
     <sound name="Jump"/>
     <sound name="Tombstone"/>
     <sound name="DropItem"/>
-    <sound name="Portal2"/>
-    <sound name="UseShopItem"/>
 </imgdir>

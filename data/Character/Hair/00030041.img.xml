@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <imgdir name="00030041.img">
     <imgdir name="info">
-        <string name="name" value="빨간색 단발 머리"/>
+        <string name="name" value="금색 단발 머리"/>
         <string name="islot" value="Hr"/>
         <string name="vslot" value="H1H2H3H4H5H6HfHsHb"/>
         <int name="cash" value="1"/>

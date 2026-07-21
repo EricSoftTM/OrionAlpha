@@ -21,55 +21,71 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="MP 회복력 향상"/>
-            <string name="desc" value="[마스터 레벨 : 16]\n10초마다 더욱 많은 양의 MP를 회복할 수 있다. 캐릭터의 레벨이 높고 스킬 레벨이 높을수록 한 번에 회복되는 양이 많다."/>
+            <string name="desc" value="10초마다 더욱 많은 양의 MP를 회복할 수 있다."/>
             <imgdir name="level">
                 <imgdir name="1">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 2 추가 회복"/>
+                    <int name="mp" value="2"/>
                 </imgdir>
                 <imgdir name="2">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 4 추가 회복"/>
+                    <int name="mp" value="4"/>
                 </imgdir>
                 <imgdir name="3">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 6 추가 회복"/>
+                    <int name="mp" value="6"/>
                 </imgdir>
                 <imgdir name="4">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 8 추가 회복"/>
+                    <int name="mp" value="8"/>
                 </imgdir>
                 <imgdir name="5">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 10 추가 회복"/>
+                    <int name="mp" value="10"/>
                 </imgdir>
                 <imgdir name="6">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 12 추가 회복"/>
+                    <int name="mp" value="12"/>
                 </imgdir>
                 <imgdir name="7">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 14 추가 회복"/>
+                    <int name="mp" value="14"/>
                 </imgdir>
                 <imgdir name="8">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 16 추가 회복"/>
+                    <int name="mp" value="16"/>
                 </imgdir>
                 <imgdir name="9">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 18 추가 회복"/>
+                    <int name="mp" value="18"/>
                 </imgdir>
                 <imgdir name="10">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 20 추가 회복"/>
+                    <int name="mp" value="20"/>
                 </imgdir>
                 <imgdir name="11">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 22 추가 회복"/>
+                    <int name="mp" value="22"/>
                 </imgdir>
                 <imgdir name="12">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 24 추가 회복"/>
+                    <int name="mp" value="24"/>
                 </imgdir>
                 <imgdir name="13">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 26 추가 회복"/>
+                    <int name="mp" value="26"/>
                 </imgdir>
                 <imgdir name="14">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 28 추가 회복"/>
+                    <int name="mp" value="28"/>
                 </imgdir>
                 <imgdir name="15">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 30 추가 회복"/>
+                    <int name="mp" value="30"/>
                 </imgdir>
                 <imgdir name="16">
-                    <string name="hs" value="현재 MP 일정량 추가 회복"/>
+                    <string name="hs" value="현재 MP 32 추가 회복"/>
+                    <int name="mp" value="32"/>
                 </imgdir>
             </imgdir>
         </imgdir>
@@ -87,7 +103,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="MP 증가량 향상"/>
-            <string name="desc" value="[마스터 레벨 : 10]\nLevel UP 할 때, Max MP에 AP를 사용할 때 Max MP의 증가량을 향상시킨다."/>
+            <string name="desc" value="Level UP 할 때, Max MP에 AP를 사용할 때 Max MP의 증가량을 향상시킨다."/>
             <string name="helpFormat" value="MaxMP LevelUP시 %d, AP 부여시 %d 추가 향상"/>
             <imgdir name="level">
                 <imgdir name="1">
@@ -159,10 +175,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="매직 가드"/>
-            <string name="desc" value="[마스터 레벨 : 20]\n일정 시간동안 받는 데미지의 일정 수치를 MP로 대신한다. 다만 MP가 0일 경우에는 그대로 HP를 소비하게 된다."/>
-            <imgdir name="action">
-                <string name="0" value="alert2"/>
-            </imgdir>
+            <string name="desc" value="일정 시간동안 받는 데미지의 일정 수치를 MP로 대신한다. 다만 MP가 0일 경우에는 그대로 HP를 소비하게 된다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="30초간 MP 6 소비, 데미지의 4%를 MP로 대신함"/>
@@ -364,10 +377,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="매직 아머"/>
-            <string name="desc" value="[마스터 레벨 : 20]\n일정 시간 갑옷에 마력을 응집시켜 물리 방어력을 상승시킨다."/>
-            <imgdir name="action">
-                <string name="0" value="alert2"/>
-            </imgdir>
+            <string name="desc" value="일정 시간 갑옷에 마력을 응집시켜 물리 방어력을 상승시킨다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="20초간 MP 8 소비, 물리 방어력 2 증가"/>
@@ -508,126 +518,126 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="에너지 볼트"/>
-            <string name="desc" value="[마스터 레벨 : 20]\nMP를 소비하여 적 하나를 공격한다."/>
+            <string name="desc" value="MP를 소비하여 적 하나를 공격한다."/>
             <imgdir name="level">
                 <imgdir name="1">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 17, 숙련도 15%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 12, 숙련도 15%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="17"/>
+                    <int name="mad" value="12"/>
                     <int name="mastery" value="1"/>
                 </imgdir>
                 <imgdir name="2">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 19, 숙련도 15%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 14, 숙련도 15%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="19"/>
+                    <int name="mad" value="14"/>
                     <int name="mastery" value="1"/>
                 </imgdir>
                 <imgdir name="3">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 21, 숙련도 20%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 16, 숙련도 20%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="21"/>
+                    <int name="mad" value="16"/>
                     <int name="mastery" value="2"/>
                 </imgdir>
                 <imgdir name="4">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 23, 숙련도 20%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 18, 숙련도 20%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="23"/>
+                    <int name="mad" value="18"/>
                     <int name="mastery" value="2"/>
                 </imgdir>
                 <imgdir name="5">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 25, 숙련도 25%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 20, 숙련도 25%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="25"/>
+                    <int name="mad" value="20"/>
                     <int name="mastery" value="3"/>
                 </imgdir>
                 <imgdir name="6">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 27, 숙련도 25%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 22, 숙련도 25%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="27"/>
+                    <int name="mad" value="22"/>
                     <int name="mastery" value="3"/>
                 </imgdir>
                 <imgdir name="7">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 29, 숙련도 30%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 24, 숙련도 30%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="29"/>
+                    <int name="mad" value="24"/>
                     <int name="mastery" value="4"/>
                 </imgdir>
                 <imgdir name="8">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 31, 숙련도 30%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 26, 숙련도 30%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="31"/>
+                    <int name="mad" value="26"/>
                     <int name="mastery" value="4"/>
                 </imgdir>
                 <imgdir name="9">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 33, 숙련도 35%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 28, 숙련도 35%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="33"/>
+                    <int name="mad" value="28"/>
                     <int name="mastery" value="5"/>
                 </imgdir>
                 <imgdir name="10">
-                    <string name="hs" value="MP 7 소비, 기본 공격력 35, 숙련도 35%"/>
+                    <string name="hs" value="MP 7 소비, 기본 공격력 30, 숙련도 35%"/>
                     <int name="mpCon" value="7"/>
-                    <int name="mad" value="35"/>
+                    <int name="mad" value="30"/>
                     <int name="mastery" value="5"/>
                 </imgdir>
                 <imgdir name="11">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 37, 숙련도 40%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 32, 숙련도 40%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="37"/>
+                    <int name="mad" value="32"/>
                     <int name="mastery" value="6"/>
                 </imgdir>
                 <imgdir name="12">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 39, 숙련도 40%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 34, 숙련도 40%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="39"/>
+                    <int name="mad" value="34"/>
                     <int name="mastery" value="6"/>
                 </imgdir>
                 <imgdir name="13">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 41, 숙련도 45%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 36, 숙련도 45%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="41"/>
+                    <int name="mad" value="36"/>
                     <int name="mastery" value="7"/>
                 </imgdir>
                 <imgdir name="14">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 43, 숙련도 45%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 38, 숙련도 45%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="43"/>
+                    <int name="mad" value="38"/>
                     <int name="mastery" value="7"/>
                 </imgdir>
                 <imgdir name="15">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 45, 숙련도 50%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 40, 숙련도 50%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="45"/>
+                    <int name="mad" value="40"/>
                     <int name="mastery" value="8"/>
                 </imgdir>
                 <imgdir name="16">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 47, 숙련도 50%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 42, 숙련도 50%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="47"/>
+                    <int name="mad" value="42"/>
                     <int name="mastery" value="8"/>
                 </imgdir>
                 <imgdir name="17">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 49, 숙련도 55%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 44, 숙련도 55%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="49"/>
+                    <int name="mad" value="44"/>
                     <int name="mastery" value="9"/>
                 </imgdir>
                 <imgdir name="18">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 51, 숙련도 55%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 46, 숙련도 55%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="51"/>
+                    <int name="mad" value="46"/>
                     <int name="mastery" value="9"/>
                 </imgdir>
                 <imgdir name="19">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 53, 숙련도 60%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 48, 숙련도 60%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="53"/>
+                    <int name="mad" value="48"/>
                     <int name="mastery" value="10"/>
                 </imgdir>
                 <imgdir name="20">
-                    <string name="hs" value="MP 14 소비, 기본 공격력 55, 숙련도 60%"/>
+                    <string name="hs" value="MP 14 소비, 기본 공격력 50, 숙련도 60%"/>
                     <int name="mpCon" value="14"/>
-                    <int name="mad" value="55"/>
+                    <int name="mad" value="50"/>
                     <int name="mastery" value="10"/>
                 </imgdir>
             </imgdir>
@@ -701,7 +711,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="매직 클로"/>
-            <string name="desc" value="[마스터 레벨 : 20]\nMP를 소비하여 적 하나를 두 번 공격한다."/>
+            <string name="desc" value="MP를 소비하여 적 하나를 두 번 공격한다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="MP 10 소비, 기본 공격력 6, 숙련도 15%"/>
@@ -739,107 +749,107 @@
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="6">
-                    <string name="hs" value="MP 10 소비, 기본 공격력 12, 숙련도 25%"/>
+                    <string name="hs" value="MP 10 소비, 기본 공격력 11, 숙련도 25%"/>
                     <int name="mpCon" value="10"/>
-                    <int name="mad" value="12"/>
+                    <int name="mad" value="11"/>
                     <int name="mastery" value="3"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="7">
-                    <string name="hs" value="MP 10 소비, 기본 공격력 14, 숙련도 30%"/>
+                    <string name="hs" value="MP 10 소비, 기본 공격력 12, 숙련도 30%"/>
                     <int name="mpCon" value="10"/>
-                    <int name="mad" value="14"/>
+                    <int name="mad" value="12"/>
                     <int name="mastery" value="4"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="8">
-                    <string name="hs" value="MP 10 소비, 기본 공격력 16, 숙련도 30%"/>
+                    <string name="hs" value="MP 10 소비, 기본 공격력 13, 숙련도 30%"/>
                     <int name="mpCon" value="10"/>
-                    <int name="mad" value="16"/>
+                    <int name="mad" value="13"/>
                     <int name="mastery" value="4"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="9">
-                    <string name="hs" value="MP 10 소비, 기본 공격력 18, 숙련도 35%"/>
+                    <string name="hs" value="MP 10 소비, 기본 공격력 14, 숙련도 35%"/>
                     <int name="mpCon" value="10"/>
-                    <int name="mad" value="18"/>
+                    <int name="mad" value="14"/>
                     <int name="mastery" value="5"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="10">
-                    <string name="hs" value="MP 10 소비, 기본 공격력 20, 숙련도 35%"/>
+                    <string name="hs" value="MP 10 소비, 기본 공격력 15, 숙련도 35%"/>
                     <int name="mpCon" value="10"/>
-                    <int name="mad" value="20"/>
+                    <int name="mad" value="15"/>
                     <int name="mastery" value="5"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="11">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 22, 숙련도 40%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 17, 숙련도 40%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="22"/>
+                    <int name="mad" value="17"/>
                     <int name="mastery" value="6"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="12">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 24, 숙련도 40%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 19, 숙련도 40%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="24"/>
+                    <int name="mad" value="19"/>
                     <int name="mastery" value="6"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="13">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 26, 숙련도 45%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 21, 숙련도 45%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="26"/>
+                    <int name="mad" value="21"/>
                     <int name="mastery" value="7"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="14">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 28, 숙련도 45%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 23, 숙련도 45%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="28"/>
+                    <int name="mad" value="23"/>
                     <int name="mastery" value="7"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="15">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 30, 숙련도 50%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 25, 숙련도 50%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="30"/>
+                    <int name="mad" value="25"/>
                     <int name="mastery" value="8"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="16">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 32, 숙련도 50%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 27, 숙련도 50%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="32"/>
+                    <int name="mad" value="27"/>
                     <int name="mastery" value="8"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="17">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 34, 숙련도 55%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 29, 숙련도 55%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="34"/>
+                    <int name="mad" value="29"/>
                     <int name="mastery" value="9"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="18">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 36, 숙련도 55%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 31, 숙련도 55%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="36"/>
+                    <int name="mad" value="31"/>
                     <int name="mastery" value="9"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="19">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 38, 숙련도 60%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 33, 숙련도 60%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="38"/>
+                    <int name="mad" value="33"/>
                     <int name="mastery" value="10"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>
                 <imgdir name="20">
-                    <string name="hs" value="MP 20 소비, 기본 공격력 40, 숙련도 60%"/>
+                    <string name="hs" value="MP 20 소비, 기본 공격력 35, 숙련도 60%"/>
                     <int name="mpCon" value="20"/>
-                    <int name="mad" value="40"/>
+                    <int name="mad" value="35"/>
                     <int name="mastery" value="10"/>
                     <int name="attackCount" value="2"/>
                 </imgdir>

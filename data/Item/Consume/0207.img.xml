@@ -133,7 +133,7 @@
             <string name="name" value="토비 표창"/>
             <int name="price" value="2500"/>
             <string name="desc" value="강철로 만든 표창이다. 여러 개가 들어있으며 모두 사용했다면 다시 충전해야 한다. \r\n공격력 + 23"/>
-            <int name="slotMax" value="1000"/>
+            <int name="slotMax" value="400"/>
             <double name="unitPrice" value="0.6"/>
             <int name="incPAD" value="23"/>
         </imgdir>
@@ -161,11 +161,11 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="뇌전 수리검"/>
-            <int name="price" value="10000"/>
-            <string name="desc" value="강철로 만든 수리검이다. 여러 개가 들어있으며 모두 사용했다면 다시 충전해야 한다. \r\n공격력 + 25"/>
-            <int name="slotMax" value="1000"/>
+            <int name="price" value="2500"/>
+            <string name="desc" value="강철로 만든 수리검이다. 여러 개가 들어있으며 모두 사용했다면 다시 충전해야 한다. \r\n공격력 + 23"/>
+            <int name="slotMax" value="600"/>
             <double name="unitPrice" value="0.7"/>
-            <int name="incPAD" value="25"/>
+            <int name="incPAD" value="23"/>
         </imgdir>
         <imgdir name="bullet">
             <canvas name="0" width="48" height="9">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <imgdir name="00030000.img">
     <imgdir name="info">
-        <string name="name" value="검은색 토벤 머리"/>
+        <string name="name" value="토벤 머리"/>
         <string name="islot" value="Hr"/>
         <string name="vslot" value="H1H2H3H4H5H6HfHsHb"/>
         <int name="cash" value="1"/>
@@ -31,14 +31,14 @@
         </canvas>
     </imgdir>
     <imgdir name="backDefault">
-        <canvas name="backHair" width="38" height="33">
+        <canvas name="backHair" width="38" height="31">
             <vector name="origin" x="17" y="16"/>
             <imgdir name="map">
                 <vector name="brow" x="-3" y="-3"/>
             </imgdir>
             <string name="z" value="backHair"/>
         </canvas>
-        <canvas name="backHairBelowCap" width="35" height="32">
+        <canvas name="backHairBelowCap" width="35" height="30">
             <vector name="origin" x="13" y="7"/>
             <imgdir name="map">
                 <vector name="brow" x="0" y="5"/>

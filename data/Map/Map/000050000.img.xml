@@ -8,9 +8,9 @@
         <string name="streetName" value="메이플로드"/>
         <string name="mapName" value="두갈래길"/>
         <int name="town" value="0"/>
-        <float name="mobRate" value="1.5"/>
+        <float name="mobRate" value="1.0000002"/>
         <string name="bgm" value="Bgm00/RestNPeace"/>
-        <int name="returnMap" value="60000"/>
+        <int name="returnMap" value="40000"/>
         <string name="mapMark" value="버섯마을"/>
     </imgdir>
     <imgdir name="back">
@@ -89,7 +89,7 @@
             <int name="pt" value="2"/>
             <int name="x" value="-505"/>
             <int name="y" value="246"/>
-            <int name="tm" value="40002"/>
+            <int name="tm" value="40000"/>
             <string name="tn" value="east00"/>
         </imgdir>
         <imgdir name="2">
@@ -2731,9 +2731,9 @@
                 <string name="l0" value="grassySoil"/>
                 <string name="l1" value="nature"/>
                 <string name="l2" value="9"/>
-                <int name="x" value="2875"/>
-                <int name="y" value="-28"/>
-                <int name="z" value="7"/>
+                <int name="x" value="2822"/>
+                <int name="y" value="-29"/>
+                <int name="z" value="5"/>
                 <int name="f" value="0"/>
                 <int name="zM" value="1"/>
             </imgdir>
@@ -2742,22 +2742,11 @@
                 <string name="l0" value="grassySoil"/>
                 <string name="l1" value="nature"/>
                 <string name="l2" value="9"/>
-                <int name="x" value="2833"/>
+                <int name="x" value="2800"/>
                 <int name="y" value="-26"/>
                 <int name="z" value="3"/>
                 <int name="f" value="0"/>
                 <int name="zM" value="1"/>
-            </imgdir>
-            <imgdir name="19">
-                <string name="oS" value="signboard"/>
-                <string name="l0" value="maypleIsland"/>
-                <string name="l1" value="board"/>
-                <string name="l2" value="1"/>
-                <int name="x" value="2932"/>
-                <int name="y" value="-82"/>
-                <int name="z" value="6"/>
-                <int name="f" value="0"/>
-                <int name="zM" value="0"/>
             </imgdir>
         </imgdir>
     </imgdir>
@@ -5063,9 +5052,9 @@
                 <string name="l0" value="midForest"/>
                 <string name="l1" value="nature"/>
                 <string name="l2" value="5"/>
-                <int name="x" value="2976"/>
-                <int name="y" value="214"/>
-                <int name="z" value="6"/>
+                <int name="x" value="2970"/>
+                <int name="y" value="208"/>
+                <int name="z" value="5"/>
                 <int name="f" value="0"/>
                 <int name="zM" value="0"/>
             </imgdir>
@@ -5088,17 +5077,6 @@
                 <int name="x" value="2992"/>
                 <int name="y" value="334"/>
                 <int name="z" value="3"/>
-                <int name="f" value="0"/>
-                <int name="zM" value="0"/>
-            </imgdir>
-            <imgdir name="37">
-                <string name="oS" value="signboard"/>
-                <string name="l0" value="maypleIsland"/>
-                <string name="l1" value="board"/>
-                <string name="l2" value="0"/>
-                <int name="x" value="2819"/>
-                <int name="y" value="280"/>
-                <int name="z" value="5"/>
                 <int name="f" value="0"/>
                 <int name="zM" value="0"/>
             </imgdir>

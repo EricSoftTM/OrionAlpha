@@ -9,7 +9,7 @@
         <string name="mapName" value="북쪽숲나무던전Ⅲ"/>
         <int name="town" value="0"/>
         <int name="returnMap" value="101000000"/>
-        <float name="mobRate" value="0.6999981"/>
+        <float name="mobRate" value="0.69999814"/>
         <string name="bgm" value="Bgm02/MissingYou"/>
         <string name="mapMark" value="엘리니아"/>
         <int name="VRTop" value="-1430"/>

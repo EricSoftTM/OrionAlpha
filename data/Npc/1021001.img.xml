@@ -103,11 +103,6 @@
                 <int name="stock" value="100"/>
                 <int name="period" value="6"/>
             </imgdir>
-            <imgdir name="01041064">
-                <int name="price" value="3200"/>
-                <int name="stock" value="100"/>
-                <int name="period" value="6"/>
-            </imgdir>
             <imgdir name="01041019">
                 <int name="price" value="9000"/>
                 <int name="stock" value="100"/>
@@ -223,11 +218,6 @@
                 <int name="stock" value="100"/>
                 <int name="period" value="6"/>
             </imgdir>
-            <imgdir name="01060060">
-                <int name="price" value="14000"/>
-                <int name="stock" value="100"/>
-                <int name="period" value="6"/>
-            </imgdir>
             <imgdir name="01060016">
                 <int name="price" value="38000"/>
                 <int name="stock" value="100"/>
@@ -249,12 +239,12 @@
                 <int name="period" value="6"/>
             </imgdir>
             <imgdir name="01061014">
-                <int name="price" value="3000"/>
+                <int name="price" value="5000"/>
                 <int name="stock" value="100"/>
                 <int name="period" value="6"/>
             </imgdir>
             <imgdir name="01061023">
-                <int name="price" value="3000"/>
+                <int name="price" value="5000"/>
                 <int name="stock" value="100"/>
                 <int name="period" value="6"/>
             </imgdir>
@@ -289,37 +279,22 @@
                 <int name="period" value="6"/>
             </imgdir>
             <imgdir name="01072009">
-                <int name="price" value="5000"/>
-                <int name="stock" value="100"/>
-                <int name="period" value="6"/>
-            </imgdir>
-            <imgdir name="01072050">
-                <int name="price" value="5000"/>
-                <int name="stock" value="100"/>
-                <int name="period" value="6"/>
-            </imgdir>
-            <imgdir name="01072007">
-                <int name="price" value="10000"/>
-                <int name="stock" value="100"/>
-                <int name="period" value="6"/>
-            </imgdir>
-            <imgdir name="01072046">
-                <int name="price" value="10000"/>
-                <int name="stock" value="100"/>
-                <int name="period" value="6"/>
-            </imgdir>
-            <imgdir name="01072047">
-                <int name="price" value="10000"/>
+                <int name="price" value="4000"/>
                 <int name="stock" value="100"/>
                 <int name="period" value="6"/>
             </imgdir>
             <imgdir name="01072011">
-                <int name="price" value="15000"/>
+                <int name="price" value="9500"/>
                 <int name="stock" value="100"/>
                 <int name="period" value="6"/>
             </imgdir>
-            <imgdir name="01092005">
-                <int name="price" value="4000"/>
+            <imgdir name="01082000">
+                <int name="price" value="10000"/>
+                <int name="stock" value="100"/>
+                <int name="period" value="6"/>
+            </imgdir>
+            <imgdir name="01082001">
+                <int name="price" value="30000"/>
                 <int name="stock" value="100"/>
                 <int name="period" value="6"/>
             </imgdir>

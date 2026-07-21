@@ -29,15 +29,6 @@
             <string name="z" value="accessoryEar"/>
         </canvas>
     </imgdir>
-    <imgdir name="backDefault">
-        <canvas name="default" width="36" height="6">
-            <vector name="origin" x="15" y="3"/>
-            <imgdir name="map">
-                <vector name="brow" x="-2" y="-19"/>
-            </imgdir>
-            <string name="z" value="backAccessoryEar"/>
-        </canvas>
-    </imgdir>
     <imgdir name="walk1">
         <imgdir name="0">
             <uol name="default" value="../../default/default"/>
@@ -365,22 +356,6 @@
     <imgdir name="sit">
         <imgdir name="0">
             <uol name="default" value="../../default/default"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="ladder">
-        <imgdir name="0">
-            <uol name="default" value="../../backDefault/default"/>
-        </imgdir>
-        <imgdir name="1">
-            <uol name="default" value="../../backDefault/default"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="rope">
-        <imgdir name="0">
-            <uol name="default" value="../../backDefault/default"/>
-        </imgdir>
-        <imgdir name="1">
-            <uol name="default" value="../../backDefault/default"/>
         </imgdir>
     </imgdir>
 </imgdir>

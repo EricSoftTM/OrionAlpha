@@ -210,7 +210,7 @@
             </canvas>
             <string name="name" value="명사수의 물약"/>
             <int name="price" value="250"/>
-            <string name="desc" value="명중률을 증가시켜 준다.\n5분간 명중률이 5 증가한다."/>
+            <string name="desc" value="명중률을 증가시켜 준다.\n5분간 명중률이 10 증가한다."/>
         </imgdir>
         <imgdir name="spec">
             <int name="acc" value="5"/>

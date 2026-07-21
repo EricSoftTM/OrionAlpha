@@ -59,7 +59,7 @@
                     <vector name="origin" x="255" y="78"/>
                     <int name="z" value="0"/>
                     <extended name="foothold">
-                        <vector name="foothold" x="-57" y="44"/>
+                        <vector name="foothold" x="-82" y="63"/>
                         <vector name="foothold" x="-6" y="3"/>
                         <vector name="foothold" x="12" y="3"/>
                         <vector name="foothold" x="79" y="-54"/>

@@ -2,7 +2,6 @@
 <imgdir name="1061000.img">
     <imgdir name="info">
         <string name="name" value="크리슈라마"/>
-        <string name="quest" value="refine_sleepy"/>
         <imgdir name="speak">
             <string name="0" value="뭔가 필요한 물건이라도 있는가..."/>
         </imgdir>

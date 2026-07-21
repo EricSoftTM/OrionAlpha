@@ -618,9 +618,7 @@
                             <vector name="12" x="142" y="-223"/>
                         </extended>
                         <extended name="13">
-                            <vector name="13" x="-244" y="-281"/>
-                            <vector name="13" x="34" y="-281"/>
-                            <vector name="13" x="49" y="-294"/>
+                            <vector name="13" x="37" y="-294"/>
                             <vector name="13" x="127" y="-294"/>
                             <vector name="13" x="132" y="-286"/>
                             <vector name="13" x="147" y="-285"/>
@@ -631,6 +629,14 @@
                             <vector name="13" x="277" y="-295"/>
                             <vector name="13" x="292" y="-287"/>
                             <vector name="13" x="302" y="-271"/>
+                        </extended>
+                        <extended name="14">
+                            <vector name="14" x="-246" y="-281"/>
+                            <vector name="14" x="35" y="-281"/>
+                        </extended>
+                        <extended name="15">
+                            <vector name="15" x="-37" y="-294"/>
+                            <vector name="15" x="34" y="-294"/>
                         </extended>
                     </imgdir>
                 </canvas>
@@ -697,7 +703,7 @@
                         <vector name="foothold" x="-5" y="-62"/>
                         <vector name="foothold" x="67" y="-95"/>
                         <vector name="foothold" x="98" y="-95"/>
-                        <vector name="foothold" x="112" y="-85"/>
+                        <vector name="foothold" x="98" y="-80"/>
                     </extended>
                     <extended name="rope">
                         <vector name="rope" x="1" y="-66"/>

@@ -7,19 +7,18 @@
         <canvas name="iconRaw" width="23" height="29">
             <vector name="origin" x="-5" y="30"/>
         </canvas>
-        <string name="name" value="브라운 잭부츠"/>
+        <string name="name" value="빨간 가죽 부츠"/>
         <string name="islot" value="So"/>
         <string name="vslot" value="So"/>
-        <int name="reqJob" value="4"/>
-        <int name="reqLevel" value="25"/>
-        <int name="reqSTR" value="25"/>
-        <int name="reqDEX" value="55"/>
+        <int name="reqJob" value="0"/>
+        <int name="reqLevel" value="0"/>
+        <int name="reqSTR" value="0"/>
+        <int name="reqDEX" value="0"/>
         <int name="reqINT" value="0"/>
         <int name="reqLUK" value="0"/>
-        <int name="incPDD" value="13"/>
-        <int name="incDEX" value="1"/>
+        <int name="incPDD" value="2"/>
         <int name="tuc" value="5"/>
-        <int name="price" value="7000"/>
+        <int name="price" value="25"/>
         <int name="cash" value="0"/>
     </imgdir>
     <imgdir name="walk1">

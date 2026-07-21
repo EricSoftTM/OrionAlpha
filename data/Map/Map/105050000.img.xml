@@ -3,6 +3,8 @@
     <imgdir name="info">
         <int name="version" value="10"/>
         <int name="cloud" value="0"/>
+        <int name="snow" value="0"/>
+        <int name="rain" value="0"/>
         <string name="streetName" value="던전"/>
         <string name="mapName" value="개미굴"/>
         <int name="town" value="0"/>
@@ -38,6 +40,18 @@
         </imgdir>
         <imgdir name="2">
             <string name="bS" value="darkCave"/>
+            <int name="no" value="2"/>
+            <int name="x" value="0"/>
+            <int name="y" value="0"/>
+            <int name="rx" value="-15"/>
+            <int name="ry" value="-15"/>
+            <int name="type" value="3"/>
+            <int name="cx" value="0"/>
+            <int name="cy" value="0"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="3">
+            <string name="bS" value="darkCave"/>
             <int name="no" value="3"/>
             <int name="x" value="-15"/>
             <int name="y" value="10"/>
@@ -48,7 +62,19 @@
             <int name="cy" value="0"/>
             <int name="a" value="255"/>
         </imgdir>
-        <imgdir name="3">
+        <imgdir name="4">
+            <string name="bS" value="darkCave"/>
+            <int name="no" value="4"/>
+            <int name="x" value="-16"/>
+            <int name="y" value="-22"/>
+            <int name="rx" value="-20"/>
+            <int name="ry" value="-20"/>
+            <int name="type" value="3"/>
+            <int name="cx" value="1600"/>
+            <int name="cy" value="600"/>
+            <int name="a" value="255"/>
+        </imgdir>
+        <imgdir name="5">
             <string name="bS" value="darkCave"/>
             <int name="no" value="5"/>
             <int name="x" value="784"/>
@@ -56,8 +82,8 @@
             <int name="rx" value="-20"/>
             <int name="ry" value="-20"/>
             <int name="type" value="3"/>
-            <int name="cx" value="0"/>
-            <int name="cy" value="0"/>
+            <int name="cx" value="1600"/>
+            <int name="cy" value="600"/>
             <int name="a" value="255"/>
         </imgdir>
     </imgdir>
@@ -125,6 +151,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="380"/>
             <int name="y" value="134"/>
+            <int name="info" value="8"/>
             <int name="fh" value="341"/>
             <int name="cy" value="157"/>
             <int name="rx0" value="-640"/>
@@ -135,6 +162,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="320"/>
             <int name="y" value="330"/>
+            <int name="info" value="10"/>
             <int name="fh" value="75"/>
             <int name="cy" value="395"/>
             <int name="rx0" value="-640"/>
@@ -145,6 +173,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="831"/>
             <int name="y" value="763"/>
+            <int name="info" value="10"/>
             <int name="fh" value="570"/>
             <int name="cy" value="813"/>
             <int name="rx0" value="729"/>
@@ -155,6 +184,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="1089"/>
             <int name="y" value="749"/>
+            <int name="info" value="10"/>
             <int name="fh" value="587"/>
             <int name="cy" value="816"/>
             <int name="rx0" value="729"/>
@@ -165,6 +195,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="982"/>
             <int name="y" value="1117"/>
+            <int name="info" value="10"/>
             <int name="fh" value="159"/>
             <int name="cy" value="1189"/>
             <int name="rx0" value="-640"/>
@@ -175,6 +206,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="1722"/>
             <int name="y" value="1530"/>
+            <int name="info" value="10"/>
             <int name="fh" value="623"/>
             <int name="cy" value="1554"/>
             <int name="rx0" value="1651"/>
@@ -185,6 +217,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="1915"/>
             <int name="y" value="1523"/>
+            <int name="info" value="8"/>
             <int name="fh" value="615"/>
             <int name="cy" value="1550"/>
             <int name="rx0" value="1651"/>
@@ -195,6 +228,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="1766"/>
             <int name="y" value="1706"/>
+            <int name="info" value="10"/>
             <int name="fh" value="671"/>
             <int name="cy" value="1712"/>
             <int name="rx0" value="1710"/>
@@ -205,6 +239,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="2002"/>
             <int name="y" value="1685"/>
+            <int name="info" value="10"/>
             <int name="fh" value="659"/>
             <int name="cy" value="1696"/>
             <int name="rx0" value="1710"/>
@@ -215,6 +250,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="2301"/>
             <int name="y" value="1687"/>
+            <int name="info" value="8"/>
             <int name="fh" value="639"/>
             <int name="cy" value="1693"/>
             <int name="rx0" value="2057"/>
@@ -225,6 +261,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="1894"/>
             <int name="y" value="1859"/>
+            <int name="info" value="10"/>
             <int name="fh" value="254"/>
             <int name="cy" value="1910"/>
             <int name="rx0" value="-640"/>
@@ -235,6 +272,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="2312"/>
             <int name="y" value="1853"/>
+            <int name="info" value="8"/>
             <int name="fh" value="127"/>
             <int name="cy" value="1902"/>
             <int name="rx0" value="-640"/>
@@ -245,6 +283,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="1521"/>
             <int name="y" value="884"/>
+            <int name="info" value="10"/>
             <int name="fh" value="543"/>
             <int name="cy" value="897"/>
             <int name="rx0" value="1425"/>
@@ -255,6 +294,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="1598"/>
             <int name="y" value="885"/>
+            <int name="info" value="10"/>
             <int name="fh" value="557"/>
             <int name="cy" value="897"/>
             <int name="rx0" value="1425"/>
@@ -265,6 +305,7 @@
             <string name="id" value="2230101"/>
             <int name="x" value="1350"/>
             <int name="y" value="1102"/>
+            <int name="info" value="8"/>
             <int name="fh" value="197"/>
             <int name="cy" value="1190"/>
             <int name="rx0" value="-640"/>
@@ -275,6 +316,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="88"/>
             <int name="y" value="337"/>
+            <int name="info" value="10"/>
             <int name="fh" value="66"/>
             <int name="cy" value="409"/>
             <int name="rx0" value="-640"/>
@@ -285,6 +327,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="893"/>
             <int name="y" value="193"/>
+            <int name="info" value="10"/>
             <int name="fh" value="364"/>
             <int name="cy" value="215"/>
             <int name="rx0" value="-640"/>
@@ -295,6 +338,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="1689"/>
             <int name="y" value="1292"/>
+            <int name="info" value="8"/>
             <int name="fh" value="610"/>
             <int name="cy" value="1316"/>
             <int name="rx0" value="1622"/>
@@ -305,6 +349,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="1310"/>
             <int name="y" value="840"/>
+            <int name="info" value="8"/>
             <int name="fh" value="595"/>
             <int name="cy" value="856"/>
             <int name="rx0" value="1264"/>
@@ -315,6 +360,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="478"/>
             <int name="y" value="328"/>
+            <int name="info" value="5"/>
             <int name="fh" value="95"/>
             <int name="cy" value="401"/>
             <int name="rx0" value="-640"/>
@@ -325,6 +371,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="152"/>
             <int name="y" value="106"/>
+            <int name="info" value="5"/>
             <int name="fh" value="325"/>
             <int name="cy" value="158"/>
             <int name="rx0" value="-640"/>
@@ -335,6 +382,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="1803"/>
             <int name="y" value="917"/>
+            <int name="info" value="5"/>
             <int name="fh" value="602"/>
             <int name="cy" value="938"/>
             <int name="rx0" value="1729"/>
@@ -345,6 +393,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="895"/>
             <int name="y" value="374"/>
+            <int name="info" value="5"/>
             <int name="fh" value="522"/>
             <int name="cy" value="396"/>
             <int name="rx0" value="819"/>
@@ -355,6 +404,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="979"/>
             <int name="y" value="772"/>
+            <int name="info" value="5"/>
             <int name="fh" value="579"/>
             <int name="cy" value="809"/>
             <int name="rx0" value="729"/>
@@ -365,6 +415,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="1142"/>
             <int name="y" value="1114"/>
+            <int name="info" value="5"/>
             <int name="fh" value="176"/>
             <int name="cy" value="1182"/>
             <int name="rx0" value="-640"/>
@@ -375,6 +426,7 @@
             <string name="id" value="2110200"/>
             <int name="x" value="2096"/>
             <int name="y" value="1860"/>
+            <int name="info" value="5"/>
             <int name="fh" value="249"/>
             <int name="cy" value="1903"/>
             <int name="rx0" value="-640"/>

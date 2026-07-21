@@ -360,44 +360,4 @@
             </canvas>
         </imgdir>
     </imgdir>
-    <imgdir name="ladder">
-        <imgdir name="0">
-            <canvas name="shield" width="29" height="30">
-                <vector name="origin" x="10" y="6"/>
-                <imgdir name="map">
-                    <vector name="navel" x="4" y="13"/>
-                </imgdir>
-                <string name="z" value="backShield"/>
-            </canvas>
-        </imgdir>
-        <imgdir name="1">
-            <canvas name="shield" width="29" height="30">
-                <vector name="origin" x="10" y="6"/>
-                <imgdir name="map">
-                    <vector name="navel" x="3" y="13"/>
-                </imgdir>
-                <string name="z" value="backShield"/>
-            </canvas>
-        </imgdir>
-    </imgdir>
-    <imgdir name="rope">
-        <imgdir name="0">
-            <canvas name="shield" width="29" height="30">
-                <vector name="origin" x="10" y="6"/>
-                <imgdir name="map">
-                    <vector name="navel" x="4" y="13"/>
-                </imgdir>
-                <string name="z" value="backShield"/>
-            </canvas>
-        </imgdir>
-        <imgdir name="1">
-            <canvas name="shield" width="29" height="30">
-                <vector name="origin" x="10" y="6"/>
-                <imgdir name="map">
-                    <vector name="navel" x="3" y="14"/>
-                </imgdir>
-                <string name="z" value="backShield"/>
-            </canvas>
-        </imgdir>
-    </imgdir>
 </imgdir>

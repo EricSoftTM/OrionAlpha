@@ -3557,14 +3557,6 @@
             <int name="y2" value="1056"/>
             <int name="page" value="2"/>
         </imgdir>
-        <imgdir name="4">
-            <int name="l" value="0"/>
-            <int name="uf" value="1"/>
-            <int name="x" value="687"/>
-            <int name="y1" value="457"/>
-            <int name="y2" value="1042"/>
-            <int name="page" value="2"/>
-        </imgdir>
     </imgdir>
     <imgdir name="miniMap">
         <canvas name="canvas" width="161" height="68">

@@ -2,10 +2,6 @@
 <imgdir name="ToolTipHelp.img">
     <imgdir name="Game">
         <imgdir name="Button">
-            <imgdir name="Shop">
-                <string name="Title" value="캐시 샵"/>
-                <string name="Desc" value="넥슨캐시를 이용하여 귀엽고 예쁜 치장 아이템, 메신저 아이템, 헤어샵 이용쿠폰, 성형외과 이용쿠폰 등 다양한 아이템을 살 수 있는 곳"/>
-            </imgdir>
             <imgdir name="Item">
                 <string name="Title" value="아이템 창"/>
                 <string name="Desc" value="소유하고 있는 아이템의 목록을 보는 창\n아이템은 장비, 소비, 설치, 기타 아이템이 있음"/>
@@ -38,6 +34,9 @@
         <imgdir name="UIWnd">
             <imgdir name="Stat">
                 <imgdir name="0">
+                    <canvas name="backgrnd" width="176" height="315">
+                        <vector name="origin" x="0" y="0"/>
+                    </canvas>
                     <vector name="lt" x="10" y="58"/>
                     <vector name="rb" x="38" y="73"/>
                     <string name="Title" value="캐릭터 이름"/>
@@ -112,6 +111,9 @@
             </imgdir>
             <imgdir name="StatDetail">
                 <imgdir name="0">
+                    <canvas name="backgrnd2" width="176" height="192">
+                        <vector name="origin" x="0" y="0"/>
+                    </canvas>
                     <vector name="lt" x="10" y="11"/>
                     <vector name="rb" x="74" y="27"/>
                     <string name="Title" value="공격력"/>
@@ -165,50 +167,6 @@
                     <string name="Title" value="점프력"/>
                     <string name="Desc" value="최대로 점프 가능한 수치\n장비 아이템의 옵션이나 스킬로 변동가능"/>
                 </imgdir>
-            </imgdir>
-        </imgdir>
-    </imgdir>
-    <imgdir name="Shop">
-        <imgdir name="Button">
-            <imgdir name="BuyAvatar">
-                <string name="Title" value="입고있는 물건 사기"/>
-                <string name="Desc" value="캐릭터가 입고 있는 아이템 사기\n원래 가지고 있는 아이템은 포함되지 않음"/>
-            </imgdir>
-            <imgdir name="DefaultAvatar">
-                <string name="Title" value="원래대로 돌리기"/>
-                <string name="Desc" value="캐릭터가 캐시샵에 들어올 때의 상태로 복귀"/>
-            </imgdir>
-            <imgdir name="Remove">
-                <string name="Title" value="아이템 없애기"/>
-                <string name="Desc" value="가지고 있는 캐시 아이템 목록에서 선택된 캐시 아이템 영구적으로 없애기"/>
-            </imgdir>
-            <imgdir name="ExEquip">
-                <string name="Title" value="장비창 늘리기"/>
-                <string name="Desc" value="장비 아이템창의 아이템 슬롯을  4개 (1줄) 늘리기\n(아직 판매하지 않습니다)"/>
-            </imgdir>
-            <imgdir name="ExConsume">
-                <string name="Title" value="소비창 늘리기"/>
-                <string name="Desc" value="소비 아이템창의 아이템 슬롯을 4개 (1줄) 늘리기\n(아직 판매하지 않습니다)"/>
-            </imgdir>
-            <imgdir name="ExInstall">
-                <string name="Title" value="설치창 늘리기"/>
-                <string name="Desc" value="설치 아이템창의 아이템 슬롯을 4개 (1줄) 늘리기\n(아직 판매하지 않습니다)"/>
-            </imgdir>
-            <imgdir name="ExEtc">
-                <string name="Title" value="기타창 늘리기"/>
-                <string name="Desc" value="기타 아이템창의 아이템 슬롯을 4개 (1줄) 늘리기\n(아직 판매하지 않습니다)"/>
-            </imgdir>
-            <imgdir name="Charge">
-                <string name="Title" value="캐시 충전하기"/>
-                <string name="Desc" value="핸드폰 결제, OK 캐쉬백 포인트 결제 등 다양한 방식으로 넥슨 캐시 충전 가능\n캐시가 부족할 경우, 먼저 충전을 한 후 아이템 구입 가능"/>
-            </imgdir>
-            <imgdir name="Check">
-                <string name="Title" value="캐시 확인하기"/>
-                <string name="Desc" value="현재 남아있는 넥슨캐시를 확인"/>
-            </imgdir>
-            <imgdir name="Coupon">
-                <string name="Title" value="쿠폰 사용하기"/>
-                <string name="Desc" value="가지고 있는 아이템 쿠폰을 아이템으로 바꾸기"/>
             </imgdir>
         </imgdir>
     </imgdir>

@@ -21,7 +21,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="님블 바디"/>
-            <string name="desc" value="[마스터 레벨 : 20]\n명중률과 회피율을 증가시켜 준다."/>
+            <string name="desc" value="명중률과 회피율을 증가시켜 준다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="명중률 1, 회피율 1 증가"/>
@@ -139,7 +139,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="킨 아이즈"/>
-            <string name="desc" value="[마스터 레벨 : 8]\n수리검, 표창 등 투척 무기의 사정 거리를 증가시켜 준다."/>
+            <string name="desc" value="수리검, 표창 등 투척 무기의 사정 거리를 증가시켜 준다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="투척 무기의 사정 거리 25 증가"/>
@@ -192,7 +192,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="디스오더"/>
-            <string name="desc" value="[마스터 레벨 : 20]\n일정 시간동안 적의 물리 방어력, 공격력이 낮아지며 자신을 공격하지 않는 상태가 된다. 다만 같은 적에게 중복해서 사용할 수 없다."/>
+            <string name="desc" value="일정 시간동안 적의 물리 방어력, 공격력이 낮아지며 자신을 공격하지 않는 상태가 된다. 다만 디스오더 상태인 적에게 중복해서 사용할 수 없다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="MP 5 소비하여 3 초간 적의 물리 공격력 -1, 물리 방어력 -1"/>
@@ -394,150 +394,107 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="다크 사이트"/>
-            <string name="desc" value="[마스터 레벨 : 20]\nMP를 소비하여 그림자 속에 몸을 숨긴다. 적의 공격을 받지 않으며 공격할 수도 없다."/>
-            <imgdir name="action">
-                <string name="0" value="alert2"/>
-            </imgdir>
+            <string name="desc" value="MP를 소비하여 그림자 속에 몸을 숨긴다. 적의 공격을 받지 않으며 공격할 수도 없다. 공격 이외의 모든 행동은 가능하다."/>
             <imgdir name="level">
                 <imgdir name="1">
-                    <string name="hs" value="MP 10 소비하여 10초간 몸을 숨김, 이동속도 -76"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 10초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="10"/>
-                    <int name="speed" value="-76"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="2">
-                    <string name="hs" value="MP 10 소비하여 20초간 몸을 숨김, 이동속도 -72"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 20초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="20"/>
-                    <int name="speed" value="-72"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="3">
-                    <string name="hs" value="MP 10 소비하여 30초간 몸을 숨김, 이동속도 -68"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 30초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="30"/>
-                    <int name="speed" value="-68"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="4">
-                    <string name="hs" value="MP 10 소비하여 40초간 몸을 숨김, 이동속도 -64"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 40초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="40"/>
-                    <int name="speed" value="-64"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="5">
-                    <string name="hs" value="MP 10 소비하여 50초간 몸을 숨김, 이동속도 -60"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 50초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="50"/>
-                    <int name="speed" value="-60"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="6">
-                    <string name="hs" value="MP 10 소비하여 60초간 몸을 숨김, 이동속도 -56"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 60초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="60"/>
-                    <int name="speed" value="-56"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="7">
-                    <string name="hs" value="MP 10 소비하여 70초간 몸을 숨김, 이동속도 -52"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 70초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="70"/>
-                    <int name="speed" value="-52"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="8">
-                    <string name="hs" value="MP 10 소비하여 80초간 몸을 숨김, 이동속도 -48"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 80초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="80"/>
-                    <int name="speed" value="-48"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="9">
-                    <string name="hs" value="MP 10 소비하여 90초간 몸을 숨김, 이동속도 -44"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 90초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="90"/>
-                    <int name="speed" value="-44"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="10">
-                    <string name="hs" value="MP 10 소비하여 100초간 몸을 숨김, 이동속도 -40"/>
-                    <int name="mpCon" value="10"/>
+                    <string name="hs" value="MP 7 소비하여 100초간 몸을 숨김"/>
+                    <int name="mpCon" value="7"/>
                     <int name="time" value="100"/>
-                    <int name="speed" value="-40"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="11">
-                    <string name="hs" value="MP 20 소비하여 110초간 몸을 숨김, 이동속도 -36"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 110초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="110"/>
-                    <int name="speed" value="-36"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="12">
-                    <string name="hs" value="MP 20 소비하여 120초간 몸을 숨김, 이동속도 -32"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 120초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="120"/>
-                    <int name="speed" value="-32"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="13">
-                    <string name="hs" value="MP 20 소비하여 130초간 몸을 숨김, 이동속도 -28"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 130초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="130"/>
-                    <int name="speed" value="-28"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="14">
-                    <string name="hs" value="MP 20 소비하여 140초간 몸을 숨김, 이동속도 -24"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 140초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="140"/>
-                    <int name="speed" value="-24"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="15">
-                    <string name="hs" value="MP 20 소비하여 150초간 몸을 숨김, 이동속도 -20"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 150초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="150"/>
-                    <int name="speed" value="-20"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="16">
-                    <string name="hs" value="MP 20 소비하여 160초간 몸을 숨김, 이동속도 -16"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 160초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="160"/>
-                    <int name="speed" value="-16"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="17">
-                    <string name="hs" value="MP 20 소비하여 170초간 몸을 숨김, 이동속도 -12"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 170초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="170"/>
-                    <int name="speed" value="-12"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="18">
-                    <string name="hs" value="MP 20 소비하여 180초간 몸을 숨김, 이동속도 -8"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 180초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="180"/>
-                    <int name="speed" value="-8"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="19">
-                    <string name="hs" value="MP 20 소비하여 190초간 몸을 숨김, 이동속도 -4"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 190초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="190"/>
-                    <int name="speed" value="-4"/>
-                    <int name="x" value="1"/>
                 </imgdir>
                 <imgdir name="20">
-                    <string name="hs" value="MP 20 소비하여 200초간 몸을 숨김, 이동속도 정상"/>
-                    <int name="mpCon" value="20"/>
+                    <string name="hs" value="MP 14 소비하여 200초간 몸을 숨김"/>
+                    <int name="mpCon" value="14"/>
                     <int name="time" value="200"/>
-                    <int name="speed" value="0"/>
-                    <int name="x" value="1"/>
                 </imgdir>
             </imgdir>
             <imgdir name="req">
@@ -576,12 +533,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="더블 스탭"/>
-            <string name="desc" value="[마스터 레벨 : 20]\nMP를 소비하여 단 시간에 단검으로 한 번에 2번 적을 찌른다."/>
-            <int name="weapon" value="33"/>
-            <imgdir name="action">
-                <string name="0" value="stabO1"/>
-                <string name="1" value="stabO2"/>
-            </imgdir>
+            <string name="desc" value="MP를 소비하여 단 시간에 단검으로 한 번에 2번 적을 찌른다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="MP 7 소비, 데미지 35%"/>
@@ -749,8 +701,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="럭키 세븐"/>
-            <string name="desc" value="[마스터 레벨 : 20]\nMP를 소비하여 2개의 표창을 날려 LUK에 따른 강한 공격을 가한다. 자벨린 마스터리에 관계 없이 정해진 식에 따라 공격한다."/>
-            <int name="weapon" value="47"/>
+            <string name="desc" value="MP를 소비하여 2개의 표창을 날려 LUK에 따른 강한 공격을 가한다. 자벨린 마스터리에 관계 없이 정해진 식에 따라 공격한다."/>
             <imgdir name="level">
                 <imgdir name="1">
                     <string name="hs" value="MP 8 소비, 데미지 55%"/>

@@ -8,7 +8,7 @@
         <string name="streetName" value="히든스트리트"/>
         <string name="mapName" value="돼지의 해안가"/>
         <int name="town" value="0"/>
-        <float name="mobRate" value="1.499998"/>
+        <float name="mobRate" value="1.4999983"/>
         <string name="bgm" value="Bgm00/RestNPeace"/>
         <int name="returnMap" value="104000000"/>
         <string name="mapMark" value="리스항구"/>

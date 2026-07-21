@@ -11,15 +11,14 @@
         <string name="islot" value="So"/>
         <string name="vslot" value="So"/>
         <int name="reqJob" value="8"/>
-        <int name="reqLevel" value="30"/>
+        <int name="reqLevel" value="0"/>
         <int name="reqSTR" value="0"/>
-        <int name="reqDEX" value="60"/>
+        <int name="reqDEX" value="0"/>
         <int name="reqINT" value="0"/>
-        <int name="reqLUK" value="80"/>
-        <int name="incPDD" value="17"/>
+        <int name="reqLUK" value="0"/>
+        <int name="incPDD" value="2"/>
         <int name="tuc" value="5"/>
-        <int name="price" value="14500"/>
-        <int name="incDEX" value="2"/>
+        <int name="price" value="25"/>
         <int name="cash" value="0"/>
     </imgdir>
     <imgdir name="walk1">

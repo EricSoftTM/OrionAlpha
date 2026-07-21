@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <imgdir name="1001000.img">
     <imgdir name="info">
-        <string name="name" value="실버"/>
+        <string name="name" value="알"/>
         <imgdir name="speak">
             <string name="0" value="쌉니다! 싸요~!"/>
             <string name="1" value="어서 오라구~! 하하하~"/>
@@ -40,9 +40,34 @@
         </imgdir>
     </imgdir>
     <imgdir name="stand">
-        <canvas name="0" width="55" height="83">
-            <vector name="origin" x="27" y="83"/>
+        <canvas name="0" width="40" height="79">
+            <vector name="origin" x="22" y="79"/>
             <int name="z" value="0"/>
+            <int name="delay" value="1200"/>
+        </canvas>
+        <canvas name="1" width="40" height="79">
+            <vector name="origin" x="22" y="79"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="100"/>
+        </canvas>
+        <canvas name="2" width="40" height="79">
+            <vector name="origin" x="22" y="79"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="150"/>
+        </canvas>
+    </imgdir>
+    <imgdir name="side">
+        <canvas name="0" width="39" height="79">
+            <vector name="origin" x="22" y="79"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="5000"/>
+        </canvas>
+    </imgdir>
+    <imgdir name="arm">
+        <canvas name="0" width="57" height="79">
+            <vector name="origin" x="30" y="79"/>
+            <int name="z" value="0"/>
+            <int name="delay" value="5000"/>
         </canvas>
     </imgdir>
 </imgdir>

@@ -3,6 +3,8 @@
     <imgdir name="info">
         <int name="version" value="10"/>
         <int name="cloud" value="0"/>
+        <int name="snow" value="0"/>
+        <int name="rain" value="0"/>
         <string name="streetName" value="빅토리아로드"/>
         <string name="mapName" value="헤네시스"/>
         <int name="town" value="1"/>
@@ -10,7 +12,6 @@
         <string name="bgm" value="Bgm00/FloralLife"/>
         <int name="returnMap" value="100000000"/>
         <string name="mapMark" value="헤네시스"/>
-        <string name="mapDesc" value="넓은 초원 위에 자리잡은 궁수마을로 궁수전직이 가능합니다."/>
     </imgdir>
     <imgdir name="back">
         <imgdir name="0">
@@ -270,6 +271,7 @@
             <string name="id" value="1012000"/>
             <int name="x" value="158"/>
             <int name="y" value="273"/>
+            <int name="info" value="5"/>
             <int name="fh" value="142"/>
             <int name="cy" value="274"/>
             <int name="rx0" value="108"/>
@@ -280,21 +282,11 @@
             <string name="id" value="1010100"/>
             <int name="x" value="3924"/>
             <int name="y" value="120"/>
+            <int name="info" value="5"/>
             <int name="fh" value="30"/>
             <int name="cy" value="124"/>
             <int name="rx0" value="3874"/>
             <int name="rx1" value="3974"/>
-        </imgdir>
-        <imgdir name="2">
-            <string name="type" value="n"/>
-            <string name="id" value="1012003"/>
-            <int name="x" value="3520"/>
-            <int name="y" value="117"/>
-            <int name="f" value="0"/>
-            <int name="fh" value="27"/>
-            <int name="cy" value="124"/>
-            <int name="rx0" value="3470"/>
-            <int name="rx1" value="3570"/>
         </imgdir>
     </imgdir>
     <imgdir name="0">

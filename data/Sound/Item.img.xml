@@ -18,9 +18,6 @@
     <imgdir name="02000005">
         <uol name="Use" value="../02000000/Use"/>
     </imgdir>
-    <imgdir name="02000006">
-        <uol name="Use" value="../02000000/Use"/>
-    </imgdir>
     <imgdir name="02001000">
         <uol name="Use" value="../02000000/Use"/>
     </imgdir>

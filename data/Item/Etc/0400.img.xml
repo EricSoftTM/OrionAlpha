@@ -327,7 +327,7 @@
                 <int name="z" value="0"/>
             </canvas>
             <string name="name" value="동물의 가죽"/>
-            <int name="price" value="100"/>
+            <int name="price" value="10"/>
             <string name="desc" value="동물의 가죽을 잘라온 것이다."/>
             <int name="slotMax" value="200"/>
         </imgdir>
@@ -361,70 +361,6 @@
             <string name="name" value="콜드아이의 꼬리"/>
             <int name="price" value="70"/>
             <string name="desc" value="도마뱀의 꼬리를 자른 것이다."/>
-            <int name="slotMax" value="200"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="04000024">
-        <imgdir name="info">
-            <canvas name="icon" width="26" height="26">
-                <vector name="origin" x="-4" y="26"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <canvas name="iconRaw" width="18" height="19">
-                <vector name="origin" x="-7" y="26"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <string name="name" value="파이어보어의 송곳니"/>
-            <int name="price" value="40"/>
-            <string name="desc" value="파이어보어의 송곳니를 잘라온 것이다."/>
-            <int name="slotMax" value="200"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="04000025">
-        <imgdir name="info">
-            <canvas name="icon" width="30" height="30">
-                <vector name="origin" x="-1" y="30"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <canvas name="iconRaw" width="30" height="28">
-                <vector name="origin" x="-1" y="30"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <string name="name" value="다크 스톤골렘의 돌조각"/>
-            <int name="price" value="150"/>
-            <string name="desc" value="다크 스톤골렘의 몸의 일부분을 이루고 있던 신비로운 돌조각이다."/>
-            <int name="slotMax" value="200"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="04000026">
-        <imgdir name="info">
-            <canvas name="icon" width="30" height="32">
-                <vector name="origin" x="-1" y="32"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <canvas name="iconRaw" width="30" height="32">
-                <vector name="origin" x="-1" y="32"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <string name="name" value="루팡 인형"/>
-            <int name="price" value="100"/>
-            <string name="desc" value="루팡의 모습을 쏙 빼닮은 작은 인형이다."/>
-            <int name="slotMax" value="200"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="04000027">
-        <imgdir name="info">
-            <canvas name="icon" width="26" height="28">
-                <vector name="origin" x="-4" y="28"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <canvas name="iconRaw" width="24" height="25">
-                <vector name="origin" x="-5" y="28"/>
-                <int name="z" value="0"/>
-            </canvas>
-            <string name="name" value="와일드카고의 눈동자"/>
-            <int name="price" value="170"/>
-            <string name="desc" value="와일드카고의 눈동자를 떼어온 것이다."/>
             <int name="slotMax" value="200"/>
         </imgdir>
     </imgdir>
@@ -475,9 +411,9 @@
             <canvas name="iconRaw" width="32" height="28">
                 <vector name="origin" x="0" y="30"/>
             </canvas>
-            <string name="name" value="오래된 금시계"/>
-            <int name="price" value="1"/>
-            <string name="desc" value="황금으로 만들어진 오래된 금시계이다. 알렉스의 어머니의 유품이다."/>
+            <string name="name" value="금시계"/>
+            <int name="price" value="750"/>
+            <string name="desc" value="황금으로 만들어진 오래된 시계이다."/>
         </imgdir>
     </imgdir>
     <imgdir name="04002000">
@@ -555,7 +491,7 @@
             </canvas>
             <string name="name" value="가공된 나무"/>
             <int name="price" value="20"/>
-            <string name="desc" value="나뭇가지를 가공한 나무이다. 무기나 방어구를 만들때 재료로 쓰인다."/>
+            <string name="desc" value="나뭇가지나 장작을 가공한 나무이다. 무기나 방어구를 만들때 재료로 쓰인다."/>
         </imgdir>
     </imgdir>
     <imgdir name="04003002">

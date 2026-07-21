@@ -7,7 +7,7 @@
         <canvas name="iconRaw" width="22" height="22">
             <vector name="origin" x="-6" y="25"/>
         </canvas>
-        <string name="name" value="블러드 메사나"/>
+        <string name="name" value="블러드 메사라"/>
         <string name="islot" value="Gv"/>
         <string name="vslot" value="GlGw"/>
         <int name="reqJob" value="2"/>

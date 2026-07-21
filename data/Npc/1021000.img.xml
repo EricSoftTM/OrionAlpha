@@ -137,16 +137,6 @@
                 <int name="stock" value="100"/>
                 <int name="period" value="6"/>
             </imgdir>
-            <imgdir name="01442006">
-                <int name="price" value="8000"/>
-                <int name="stock" value="100"/>
-                <int name="period" value="6"/>
-            </imgdir>
-            <imgdir name="01442007">
-                <int name="price" value="12000"/>
-                <int name="stock" value="100"/>
-                <int name="period" value="6"/>
-            </imgdir>
             <imgdir name="01442004">
                 <int name="price" value="24000"/>
                 <int name="stock" value="100"/>

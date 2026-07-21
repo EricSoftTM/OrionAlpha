@@ -96,22 +96,6 @@
             <int name="tm" value="999999999"/>
             <string name="tn" value=""/>
         </imgdir>
-        <imgdir name="1">
-            <string name="pn" value="in00"/>
-            <int name="pt" value="1"/>
-            <int name="x" value="-218"/>
-            <int name="y" value="217"/>
-            <int name="tm" value="999999999"/>
-            <string name="tn" value=""/>
-        </imgdir>
-        <imgdir name="2">
-            <string name="pn" value="out00"/>
-            <int name="pt" value="2"/>
-            <int name="x" value="1433"/>
-            <int name="y" value="-924"/>
-            <int name="tm" value="40000"/>
-            <string name="tn" value="in00"/>
-        </imgdir>
     </imgdir>
     <imgdir name="life">
         <imgdir name="0">

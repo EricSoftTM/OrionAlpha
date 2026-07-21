@@ -765,7 +765,7 @@
                     <vector name="navel" x="8" y="-1"/>
                     <vector name="hand" x="28" y="-14"/>
                 </imgdir>
-                <string name="z" value="armBelowHeadOverMailChest"/>
+                <string name="z" value="arm"/>
                 <string name="group" value="skin"/>
             </canvas>
             <short name="face" value="1"/>
@@ -1273,10 +1273,10 @@
         </imgdir>
         <imgdir name="2">
             <canvas name="body" width="21" height="43">
-                <vector name="origin" x="30" y="59"/>
+                <vector name="origin" x="30" y="48"/>
                 <imgdir name="map">
-                    <vector name="neck" x="-21" y="-58"/>
-                    <vector name="navel" x="-18" y="-46"/>
+                    <vector name="neck" x="-21" y="-47"/>
+                    <vector name="navel" x="-18" y="-35"/>
                 </imgdir>
                 <string name="z" value="body"/>
                 <string name="group" value="skin"/>
@@ -1321,7 +1321,7 @@
                 <string name="group" value="skin"/>
             </canvas>
             <short name="face" value="1"/>
-            <int name="delay" value="200"/>
+            <int name="delay" value="300"/>
         </imgdir>
     </imgdir>
     <imgdir name="stabO1">
@@ -1543,7 +1543,7 @@
                 <string name="group" value="skin"/>
             </canvas>
             <short name="face" value="1"/>
-            <int name="delay" value="100"/>
+            <int name="delay" value="150"/>
         </imgdir>
         <imgdir name="2">
             <canvas name="body" width="57" height="25">
@@ -1635,7 +1635,7 @@
                 <string name="group" value="skin"/>
             </canvas>
             <short name="face" value="1"/>
-            <int name="delay" value="100"/>
+            <int name="delay" value="150"/>
         </imgdir>
         <imgdir name="2">
             <canvas name="body" width="52" height="26">
@@ -1685,10 +1685,10 @@
         </imgdir>
         <imgdir name="2">
             <canvas name="body" width="21" height="43">
-                <vector name="origin" x="30" y="59"/>
+                <vector name="origin" x="30" y="48"/>
                 <imgdir name="map">
-                    <vector name="neck" x="-21" y="-58"/>
-                    <vector name="navel" x="-18" y="-46"/>
+                    <vector name="neck" x="-21" y="-47"/>
+                    <vector name="navel" x="-18" y="-35"/>
                 </imgdir>
                 <string name="z" value="body"/>
                 <string name="group" value="skin"/>
@@ -1718,7 +1718,7 @@
             <uol name="arm" value="../../stabT1/2/arm"/>
             <uol name="hand" value="../../stabT1/2/hand"/>
             <short name="face" value="1"/>
-            <int name="delay" value="200"/>
+            <int name="delay" value="300"/>
         </imgdir>
     </imgdir>
     <imgdir name="shoot1">
@@ -2238,65 +2238,6 @@
                 <string name="z" value="body"/>
             </canvas>
             <short name="face" value="1"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="savage">
-        <imgdir name="0">
-            <string name="action" value="stabO1"/>
-            <int name="frame" value="0"/>
-            <int name="delay" value="-120"/>
-        </imgdir>
-        <imgdir name="1">
-            <string name="action" value="swingOF"/>
-            <int name="frame" value="3"/>
-            <int name="delay" value="-120"/>
-        </imgdir>
-        <imgdir name="2">
-            <string name="action" value="proneStab"/>
-            <int name="frame" value="0"/>
-            <int name="delay" value="-120"/>
-        </imgdir>
-        <imgdir name="3">
-            <string name="action" value="swingO1"/>
-            <int name="frame" value="2"/>
-            <int name="delay" value="120"/>
-        </imgdir>
-        <imgdir name="4">
-            <string name="action" value="swingO2"/>
-            <int name="frame" value="0"/>
-            <int name="delay" value="120"/>
-        </imgdir>
-        <imgdir name="5">
-            <string name="action" value="stabOF"/>
-            <int name="frame" value="2"/>
-            <int name="delay" value="120"/>
-        </imgdir>
-        <imgdir name="6">
-            <string name="action" value="alert"/>
-            <int name="frame" value="1"/>
-            <int name="delay" value="120"/>
-        </imgdir>
-        <imgdir name="7">
-            <string name="action" value="swingO3"/>
-            <int name="frame" value="2"/>
-            <int name="delay" value="120"/>
-        </imgdir>
-    </imgdir>
-    <imgdir name="alert2">
-        <imgdir name="0">
-            <string name="action" value="alert"/>
-            <int name="frame" value="0"/>
-            <int name="delay" value="200"/>
-        </imgdir>
-        <imgdir name="1">
-            <string name="action" value="alert"/>
-            <int name="frame" value="1"/>
-            <int name="delay" value="200"/>
-        </imgdir>
-        <imgdir name="2">
-            <string name="action" value="alert"/>
-            <int name="frame" value="2"/>
-            <int name="delay" value="200"/>
         </imgdir>
     </imgdir>
 </imgdir>

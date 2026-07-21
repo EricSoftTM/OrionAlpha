@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<imgdir name="9999998.img">
+    <imgdir name="info">
+        <string name="name" value="스몰 뱃"/>
+        <int name="bodyAttack" value="1"/>
+        <int name="level" value="15"/>
+        <int name="maxHP" value="150"/>
+        <int name="maxMP" value="30"/>
+        <int name="speed" value="10"/>
+        <int name="PADamage" value="30"/>
+        <int name="PDDamage" value="20"/>
+        <int name="MADamage" value="0"/>
+        <int name="MDDamage" value="20"/>
+        <int name="acc" value="30"/>
+        <int name="eva" value="30"/>
+        <int name="exp" value="30"/>
+        <int name="undead" value="0"/>
+    </imgdir>
+    <imgdir name="fly">
+        <canvas name="0" width="46" height="30">
+            <vector name="origin" x="23" y="30"/>
+            <vector name="lt" x="-23" y="-30"/>
+            <vector name="rb" x="23" y="0"/>
+        </canvas>
+        <canvas name="1" width="32" height="43">
+            <vector name="origin" x="19" y="38"/>
+            <vector name="lt" x="-19" y="-38"/>
+            <vector name="rb" x="13" y="5"/>
+        </canvas>
+    </imgdir>
+    <imgdir name="hit1">
+        <canvas name="0" width="34" height="44">
+            <vector name="origin" x="17" y="44"/>
+            <vector name="lt" x="-17" y="-44"/>
+            <vector name="rb" x="17" y="0"/>
+            <int name="delay" value="600"/>
+        </canvas>
+    </imgdir>
+    <imgdir name="die1">
+        <canvas name="0" width="24" height="47">
+            <vector name="origin" x="12" y="47"/>
+        </canvas>
+        <canvas name="1" width="21" height="47">
+            <vector name="origin" x="12" y="47"/>
+        </canvas>
+        <canvas name="2" width="24" height="47">
+            <vector name="origin" x="12" y="47"/>
+        </canvas>
+        <canvas name="3" width="21" height="47">
+            <vector name="origin" x="12" y="47"/>
+        </canvas>
+    </imgdir>
+</imgdir>

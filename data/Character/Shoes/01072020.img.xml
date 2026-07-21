@@ -7,20 +7,18 @@
         <canvas name="iconRaw" width="24" height="28">
             <vector name="origin" x="-3" y="29"/>
         </canvas>
-        <string name="name" value="퍼플 쥬얼리 슈즈"/>
+        <string name="name" value="가죽 샌들"/>
         <string name="islot" value="So"/>
         <string name="vslot" value="So"/>
         <int name="reqJob" value="2"/>
-        <int name="reqLevel" value="20"/>
+        <int name="reqLevel" value="0"/>
         <int name="reqSTR" value="0"/>
         <int name="reqDEX" value="0"/>
-        <int name="reqINT" value="62"/>
-        <int name="reqLUK" value="23"/>
-        <int name="incPDD" value="7"/>
-        <int name="incMDD" value="3"/>
-        <int name="incINT" value="1"/>
+        <int name="reqINT" value="0"/>
+        <int name="reqLUK" value="0"/>
+        <int name="incPDD" value="2"/>
         <int name="tuc" value="5"/>
-        <int name="price" value="4000"/>
+        <int name="price" value="25"/>
         <int name="cash" value="0"/>
     </imgdir>
     <imgdir name="walk1">

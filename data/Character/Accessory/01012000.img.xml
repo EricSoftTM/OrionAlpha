@@ -7,7 +7,7 @@
         <canvas name="iconRaw" width="23" height="29">
             <vector name="origin" x="-4" y="30"/>
         </canvas>
-        <string name="name" value="바람의 흉터"/>
+        <string name="name" value="흉터"/>
         <string name="islot" value="Af"/>
         <string name="vslot" value="Af"/>
         <int name="reqJob" value="0"/>
@@ -16,7 +16,6 @@
         <int name="reqDEX" value="0"/>
         <int name="reqINT" value="0"/>
         <int name="reqLUK" value="0"/>
-        <int name="reqPOP" value="5"/>
         <int name="cash" value="1"/>
     </imgdir>
     <imgdir name="default">

@@ -91,6 +91,15 @@ public class OutPacket {
     }
     
     /**
+     * Retrieve the current LoopbackPacket value of this packet.
+     *
+     * @return The type (or 'opcode') of the packet
+     */
+    public byte getType() {
+        return sendBuff.getByte(0);
+    }
+    
+    /**
      * Using the raw <code>seqBase</code> and the crypter's <code>seqKey</code>,
      * this method will perform bitwise operation which will result in encoding
      * the final sequence base containing both the version of the game, and the

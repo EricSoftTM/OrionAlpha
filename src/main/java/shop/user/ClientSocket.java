@@ -25,13 +25,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.concurrent.ScheduledFuture;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -282,7 +281,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             case ClientPacket.AliveAck:
                 sendPacket(onAliveReq(packet.decodeInt()), false);
                 break;
-            case ClientPacket.AliveReq:
+            case ClientPacket.InspectFileCrc:
                 break;
             case ClientPacket.MigrateIn:
                 onMigrateIn(packet);

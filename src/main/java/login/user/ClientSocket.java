@@ -375,6 +375,14 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         }
     }
     
+    public void onInspectFileCrc(InPacket packet) {
+        int crc = packet.decodeInt();//note: unsigned CRC32 value
+        
+        // don't even remember why this was here, but whatever
+        this.aliveReqSent = System.currentTimeMillis() / 1000;
+        sendPacket(onAliveReq((int) this.aliveReqSent), false);
+    }
+    
     public void onExceptionLog(InPacket packet) {
         String log = packet.decodeString();
         int time = packet.decodeInt();
@@ -452,11 +460,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         if (type == ClientPacket.AliveAck) {
             this.aliveReqSent = 0;
             this.lastAliveAck = packet.decodeInt();
-        } else if (type == ClientPacket.AliveReq) {
-            packet.decodeInt();
-            
-            this.aliveReqSent = System.currentTimeMillis() / 1000;
-            sendPacket(onAliveReq((int) this.aliveReqSent), false);
+        } else if (type == ClientPacket.InspectFileCrc) {
+            onInspectFileCrc(packet);
         } else if (type >= ClientPacket.BEGIN_SOCKET && type <= ClientPacket.END_SOCKET) {
             switch (type) {
                 case ClientPacket.CheckPassword:

@@ -31,10 +31,8 @@ public class ClientPacket {
             CheckDuplicatedID = 5,
             CreateNewCharacter = 6,
             DeleteCharacter = 7,
-            // Both 0x8 and 0x9 are their own "AliveAck".. 
-            // Maybe one is an acknowledge and the other is a request? idk
             AliveAck = 8,
-            AliveReq = 9, // 0058B285
+            InspectFileCrc = 9, // 00554661
             ExceptionLog = 10,
             END_SOCKET = 11,
             BEGIN_USER = 12,

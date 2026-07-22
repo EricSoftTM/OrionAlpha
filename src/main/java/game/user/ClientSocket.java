@@ -26,13 +26,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.util.concurrent.ScheduledFuture;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -240,6 +239,13 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         postClose();
     }
     
+    private void onInspectFileCrc(InPacket packet) {
+        int crc = packet.decodeInt();//note: unsigned CRC32 value
+        
+        // don't even remember why this was here, but whatever
+        sendPacket(onAliveReq((int)(System.currentTimeMillis() / 1000)), false);
+    }
+    
     public void onUpdate(long time) {
         if (migrateState == MigrateState.WaitMigrateIn && time - acceptTime >= GameApp.getInstance().getWaitingFirstPacket()) {
             Logger.logError("Disconnect dummy connection - %d(ms) : %s", (time - acceptTime), addr);
@@ -267,10 +273,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         }
         if (type == ClientPacket.AliveAck) {
             packet.decodeInt();//Acknowledged alive ack
-        } else if (type == ClientPacket.AliveReq) {
-            packet.decodeInt();//Received client alive req
-            
-            sendPacket(onAliveReq((int)(System.currentTimeMillis() / 1000)), false);
+        } else if (type == ClientPacket.InspectFileCrc) {
+            onInspectFileCrc(packet);
         } else if (type == ClientPacket.MigrateIn) {
             onMigrateIn(packet);
         } else {

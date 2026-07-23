@@ -53,6 +53,7 @@ public class ItemSlotBundle extends ItemSlotBase {
         ItemSlotBundle item = (ItemSlotBundle) createItem(ItemSlotType.Bundle);
         item.setItemID(this.getItemID());
         item.setItemSN(this.getSN());
+        item.setPos(this.getPos());
         item.setItemNumber(this.getItemNumber());
         item.setDateExpire(this.getDateExpire());
         return item;

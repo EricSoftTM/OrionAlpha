@@ -76,6 +76,7 @@ public class ItemSlotEquip extends ItemSlotBase {
         ItemSlotEquip item = (ItemSlotEquip) createItem(ItemSlotType.Equip);
         item.setItemID(this.getItemID());
         item.setCashItemSN(this.getCashItemSN());
+        item.setPos(this.getPos());
         item.setItemSN(this.getSN());
         item.setDateExpire(this.getDateExpire());
         

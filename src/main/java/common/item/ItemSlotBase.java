@@ -28,15 +28,18 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
 
     private int itemID;
     private long cashItemSN;
+    private short pos;
+    private FileTime dateExpire;
+    // shop stuff (custom)
     private int accountID;
     private int characterID;
     private int commodityID;
     private String buyCharacterName = "";
-    private FileTime dateExpire;
 
     public ItemSlotBase(int itemID) {
         this.itemID = itemID;
         this.cashItemSN = 0;
+        this.pos = 0;
         this.dateExpire = FileTime.END;
     }
 
@@ -81,6 +84,10 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
     public long getCashItemSN() {
         return cashItemSN;
     }
+    
+    public short getPos() {
+        return pos;
+    }
 
     public FileTime getDateExpire() {
         return dateExpire;
@@ -109,7 +116,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
      * @return If the two items are the same
      */
     public boolean isSameItem(ItemSlotBase src) {
-        if (this.itemID != src.itemID || this.cashItemSN != src.cashItemSN || this.dateExpire != src.dateExpire) {
+        if (this.itemID != src.itemID || this.cashItemSN != src.cashItemSN || this.pos != src.pos || this.dateExpire != src.dateExpire) {
             return false;
         } else {
             if (src.getType() == ItemSlotType.Equip) {
@@ -134,6 +141,7 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
         if (cashItemSN != 0) {
             packet.encodeBool(true);
             packet.encodeLong(cashItemSN);
+            packet.encodeShort(pos); // CashItem position for backward updating
             packet.encodeFileTime(dateExpire);
         } else {
             packet.encodeBool(false);
@@ -178,6 +186,10 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
 
     public void setCashItemSN(long sn) {
         this.cashItemSN = sn;
+    }
+    
+    public void setPos(int pos) {
+        this.pos = (short) pos;
     }
 
     public void setDateExpire(FileTime ft) {

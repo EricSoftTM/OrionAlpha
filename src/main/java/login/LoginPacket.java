@@ -52,7 +52,7 @@ public class LoginPacket {
         if (msg == 1) {
             packet.encodeByte(characters.size());
             for (CharacterData character : characters) {
-                character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip);
+                character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip, false);
             }
         }
         return packet;
@@ -69,7 +69,7 @@ public class LoginPacket {
         OutPacket packet = new OutPacket(LoopbackPacket.CreateNewCharacterResult);
         packet.encodeByte(msg);
         if (msg == 0) {
-            character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip);
+            character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip, false);
         }
         return packet;
     }

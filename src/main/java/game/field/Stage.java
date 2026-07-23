@@ -40,7 +40,7 @@ public class Stage {
             packet.encodeInt(s1);
             packet.encodeInt(s2);
             packet.encodeInt(s3);
-            user.getCharacter().encode(packet, DBChar.All);
+            user.getCharacter().encode(packet, DBChar.All, false);
         }
         return packet;
     }

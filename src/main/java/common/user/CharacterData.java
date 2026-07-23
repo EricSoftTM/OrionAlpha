@@ -46,6 +46,7 @@ public class CharacterData {
     private final List<ItemSlotBase> equipped2;
     private final List<List<ItemSlotBase>> itemSlot;
     private final List<List<Integer>> itemTrading;
+    private final List<List<Long>> cashItem;
     private final Map<Integer, Integer> skillRecord;
     private final Map<String, String> questRecord;
     private int moneyTrading;
@@ -57,6 +58,7 @@ public class CharacterData {
         this.equipped2 = new ArrayList<>(BodyPartCount + 1);
         this.itemSlot = new ArrayList<>(ItemType.NO);
         this.itemTrading = new ArrayList<>(ItemType.NO);
+        this.cashItem = new ArrayList<>(ItemType.NO);
         this.skillRecord = new HashMap<>();
         this.questRecord = new HashMap<>();
         this.onTrading = false;
@@ -68,6 +70,7 @@ public class CharacterData {
         for (int i = 0; i < ItemTypeCount; i++) {
             itemSlot.add(i, new ArrayList<>());
             itemTrading.add(i, new ArrayList<>());
+            cashItem.add(i, new ArrayList<>());
         }
     }
 
@@ -103,7 +106,7 @@ public class CharacterData {
         }
     }
 
-    public void encode(OutPacket packet, int flag) {
+    public void encode(OutPacket packet, int flag, boolean backwardUpdate) {
         packet.encodeByte(flag);
         if ((flag & DBChar.Character) != 0) {
             characterStat.encode(packet);
@@ -135,6 +138,14 @@ public class CharacterData {
                 }
             }
             packet.encodeByte(0);
+            if (backwardUpdate) {
+                packet.encodeByte(cashItem.get(ItemType.Equip).size());
+                for (long cashItemSN : cashItem.get(ItemType.Equip)) {
+                    packet.encodeLong(cashItemSN);
+                }
+            } else {
+                packet.encodeByte(0);
+            }
         }
         for (int ti = ItemType.Consume; ti <= ItemType.Etc; ti++) {
             if ((flag & ItemAccessor.getItemTypeFromTypeIndex(ti)) != 0) {
@@ -148,6 +159,14 @@ public class CharacterData {
                     }
                 }
                 packet.encodeByte(0);
+                if (backwardUpdate) {
+                    packet.encodeByte(cashItem.get(ti).size());
+                    for (long cashItemSN : cashItem.get(ti)) {
+                        packet.encodeLong(cashItemSN);
+                    }
+                } else {
+                    packet.encodeByte(0);
+                }
             }
         }
         if ((flag & DBChar.SkillRecord) != 0) {

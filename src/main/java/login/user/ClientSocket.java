@@ -428,6 +428,12 @@ public class ClientSocket extends SimpleChannelInboundHandler {
                 this.characters.put(characterId.get(i), avatars.get(i).getCharacterStat().getName());
             }
             
+            // while 1.11 doesn't natively support channels, we'll use them behind the scenes.
+            // this will only take effect when configured for more than a single channel.
+            if (world.getChannels().size() > 1) {
+                this.channelID = Rand32.getRand(world.getChannels().size(), 0).byteValue();
+            }
+            
             this.loginState = 8;
             sendPacket(LoginPacket.onSelectWorldResult(1, this.ssn, avatars), false);
         } else {

@@ -62,6 +62,14 @@ public class WorldEntry {
         return worldID;
     }
     
+    public int getUserNo() {
+        int userNo = 0;
+        for (ChannelEntry channel : channels) {
+            userNo += channel.getUserNo();
+        }
+        return userNo;
+    }
+    
     public void removeChannel(ChannelEntry ch) {
         channels.remove(ch);
     }

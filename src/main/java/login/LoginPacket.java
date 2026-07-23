@@ -37,16 +37,10 @@ public class LoginPacket {
             packet.encodeInt(socket.getAccountID());
             packet.encodeByte(socket.getGender());
             packet.encodeByte(socket.getGradeCode());
-            packet.encodeString(socket.getNexonClubID());
             packet.encodeByte(LoginApp.getInstance().getWorlds().size());
             for (WorldEntry world : LoginApp.getInstance().getWorlds()) {
-                packet.encodeByte(world.getChannels().size());
-                for (ChannelEntry channel : world.getChannels()) {
-                    packet.encodeString(world.getName() + "-" + (channel.getChannelID() + 1));
-                    packet.encodeInt(channel.getUserNo());
-                    packet.encodeByte(channel.getWorldID());
-                    packet.encodeByte(channel.getChannelID());
-                }
+                packet.encodeString(world.getName());
+                packet.encodeInt(world.getUserNo());
             }
         }
         return packet;

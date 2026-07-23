@@ -415,10 +415,10 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     
     public void onSelectWorld(InPacket packet) {
         this.worldID = packet.decodeByte();
-        this.channelID = packet.decodeByte();
+        this.channelID = 0;
         
-        WorldEntry pWorld = LoginApp.getInstance().getWorld(this.worldID);
-        if (pWorld != null) {
+        WorldEntry world = LoginApp.getInstance().getWorld(this.worldID);
+        if (world != null) {
             List<Integer> characterId = new ArrayList<>();
             int count = LoginDB.rawGetWorldCharList(this.accountID, this.worldID, characterId);
             

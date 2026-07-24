@@ -43,26 +43,6 @@ public class FieldPacket {
     }
     
     /**
-     * The weird message packet - displays yellow in chat the Name:Message.
-     * Oh, and it also renders the same Name:Message above the chat window.
-     * 
-     * Since groups (buddy, party, guild, etc.) don't exist yet, and no types
-     * for BroadcastMsg exist for megaphones, my best guess is that Nexon uses
-     * this packet for megaphones in this client. 
-     * 
-     * @param characterName The name of the character
-     * @param message The message to display
-     * 
-     * @return The message/megaphone packet
-     */
-    public static OutPacket onGroupMessage(String characterName, String message) {
-        OutPacket packet = new OutPacket(LoopbackPacket.GroupMessage);
-        packet.encodeString(characterName);
-        packet.encodeString(message);
-        return packet;
-    }
-    
-    /**
      * The OnWhisper Packet for /find and Whispering purposes.
      * Refer to WhisperFlags for the list of results that are used within
      * this packet.

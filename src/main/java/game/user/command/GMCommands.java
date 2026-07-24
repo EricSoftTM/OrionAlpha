@@ -17,6 +17,7 @@
  */
 package game.user.command;
 
+import common.BroadcastMsg;
 import common.Request;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
@@ -25,11 +26,11 @@ import common.user.CharacterData;
 import common.user.CharacterStat;
 import common.user.CharacterStat.CharacterStatType;
 import game.field.Field;
-import game.field.FieldPacket;
 import game.field.drop.DropPool;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.user.User;
+import game.user.WvsContext;
 import game.user.item.ChangeLog;
 import game.user.item.InventoryManipulator;
 import game.user.item.ItemInfo;
@@ -117,8 +118,7 @@ public class GMCommands {
     public static String say(User user, String[] args) {
         if (args.length > 0) {
             String text = Utilities.joinStringFrom(args, 0);
-
-            user.getChannel().broadcast(FieldPacket.onGroupMessage(user.getCharacterName(), text));
+            user.getChannel().broadcast(WvsContext.onBroadcastMsg(BroadcastMsg.Notice, String.format("%s : %s", user.getCharacterName(), text)));
             return null;
         }
         return "!say <message>";

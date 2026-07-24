@@ -41,7 +41,7 @@ public class UserRemote {
      * 
      * @return The remote user effect packet
      */
-    public static OutPacket onEffect(int characterID, int userEffect, int... args) {
+    public static OutPacket onEffect(int characterID, byte userEffect, int... args) {
         OutPacket packet = new OutPacket(LoopbackPacket.UserEffectRemote);
         packet.encodeInt(characterID);
         packet.encodeByte(userEffect);
@@ -49,10 +49,6 @@ public class UserRemote {
             case UserEffect.LevelUp:
                 break;
             case UserEffect.SkillUse:
-                packet.encodeInt(args[0]);
-                packet.encodeByte(args[1]);
-                break;
-            case UserEffect.SkillAffected:
                 packet.encodeInt(args[0]);
                 packet.encodeByte(args[1]);
                 break;

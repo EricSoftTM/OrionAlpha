@@ -2444,7 +2444,7 @@ public class User extends Creature {
     }
 
     public void onLevelUp() {
-        onUserEffect(true, true, UserEffect.LevelUp);
+        onUserEffect(UserEffect.LevelUp);
     }
 
     public void setMaxLevelReach() {
@@ -2602,21 +2602,15 @@ public class User extends Creature {
         }
     }
 
-    public void onUserEffect(boolean local, boolean remote, byte effect, int... args) {
-        int skillID = 0;
-        int slv = 0;
+    public void onUserEffect(byte effect, int... args) {
+        int skillID = 0, slv = 0;
         if (args.length > 0) {
             skillID = args[0];
             if (args.length > 1) {
                 slv = args[1];
             }
         }
-        if (remote) {
-            getField().splitSendPacket(getSplit(), UserRemote.onEffect(getCharacterID(), effect, skillID, slv), this);
-        }
-        if (local) {
-            sendPacket(UserLocal.onEffect(effect, skillID, slv));
-        }
+        getField().splitSendPacket(getSplit(), UserRemote.onEffect(getCharacterID(), effect, skillID, slv), this);
     }
 
     public void postAvatarModified(int flag) {

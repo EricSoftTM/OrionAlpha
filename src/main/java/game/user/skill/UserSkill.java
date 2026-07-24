@@ -143,7 +143,7 @@ public class UserSkill {
         user.sendCharacterStat(Request.Excl, statFlag);
         user.sendTemporaryStatSet(skillFlag);
         if (user.getField() != null) {
-            user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
+            user.onUserEffect(UserEffect.SkillUse, skill.getSkillID(), slv);
         }
     }
     
@@ -181,7 +181,7 @@ public class UserSkill {
         user.sendCharacterStat(Request.Excl, statFlag);
         user.sendTemporaryStatSet(skillFlag);
         if (user.getField() != null) {
-            user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
+            user.onUserEffect(UserEffect.SkillUse, skill.getSkillID(), slv);
         }
     }
     
@@ -197,7 +197,7 @@ public class UserSkill {
             user.getField().getLifePool().onMobStatChangeSkill(user, mobID, skill, slv);
         }
         if (sendResult) {
-            user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
+            user.onUserEffect(UserEffect.SkillUse, skill.getSkillID(), slv);
         }
         user.sendCharacterStat(Request.Excl, 0);
     }
@@ -206,12 +206,12 @@ public class UserSkill {
         SkillLevelData levelData = skill.getLevelData(slv);
         int wt = ItemAccessor.getWeaponType(user.getCharacter().getItem(ItemType.Equip, -BodyPart.Weapon).getItemID());
         if (wt > 0 && SkillAccessor.isCorrectItemForBooster(wt, user.getCharacter().getCharacterStat().getJob()) && levelData.getTime() > 0) {
-            long duration = System.currentTimeMillis() + 1000 * levelData.getTime();
+            long duration = System.currentTimeMillis() + 1000L * levelData.getTime();
             user.getSecondaryStat().setStat(CharacterTemporaryStat.Booster, new SecondaryStatOption(1, skill.getSkillID(), duration));
             user.sendCharacterStat(Request.Excl, 0);
             user.sendTemporaryStatSet(CharacterTemporaryStat.Booster);
             if (user.getField() != null) {
-                user.onUserEffect(false, true, UserEffect.SkillUse, skill.getSkillID(), slv);
+                user.onUserEffect(UserEffect.SkillUse, skill.getSkillID(), slv);
             }
         } else {
             user.sendCharacterStat(Request.Excl, 0);

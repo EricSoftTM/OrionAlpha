@@ -73,7 +73,6 @@ public class LoopbackPacket {
             UserTemporaryStatReset = -1, // TODO: Remove
             END_USERREMOTE = 42,
             BEGIN_USERLOCAL = 43,
-            UserEffectLocal = -1, // TODO: Remove
             END_USERLOCAL = 44,
             END_USERPOOL = 45,
             BEGIN_MOBPOOL = 46,

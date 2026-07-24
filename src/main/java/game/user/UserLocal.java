@@ -17,40 +17,10 @@
  */
 package game.user;
 
-import common.user.UserEffect;
-import network.packet.LoopbackPacket;
-import network.packet.OutPacket;
-
 /**
  *
  * @author Eric
  */
 public class UserLocal {
-    
-    /**
-     * The (local) user effect packet. 
-     * This sends both skill and level-up effects to the user using them.
-     * 
-     * @param userEffect The type of user effect (@see game.user.User.UserEffect)
-     * @param args The optional arguments (nSkillID and nSLV for skill effects)
-     * 
-     * @return The local user effect packet
-     */
-    public static OutPacket onEffect(byte userEffect, int... args) {
-        OutPacket packet = new OutPacket(LoopbackPacket.UserEffectLocal);
-        packet.encodeByte(userEffect);
-        switch (userEffect) {
-            case UserEffect.LevelUp:
-                break;
-            case UserEffect.SkillUse:
-                packet.encodeInt(args[0]);
-                packet.encodeByte(args[1]);
-                break;
-            case UserEffect.SkillAffected:
-                packet.encodeInt(args[0]);
-                packet.encodeByte(args[1]);
-                break;
-        }
-        return packet;
-    }
+
 }

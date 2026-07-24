@@ -845,7 +845,7 @@ public class LifePool {
                 }
             
                 if (mpSteal != 0) {
-                    user.onUserEffect(true, false, UserEffect.SkillUse, mpStealSkill, 1);
+                    user.onUserEffect(UserEffect.SkillUse, mpStealSkill, 1);
                     user.incMP(mpSteal, false);
                     user.sendCharacterStat(Request.None, CharacterStatType.MP);
                 }

@@ -51,6 +51,10 @@ public class ChannelEntry {
         return userNo;
     }
     
+    public void setUserNo(int userNo) {
+        this.userNo = userNo;
+    }
+    
     public byte getWorldID() {
         return worldID;
     }

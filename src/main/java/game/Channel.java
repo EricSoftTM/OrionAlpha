@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import network.GameAcceptor;
+import network.packet.CenterPacket;
 import network.packet.OutPacket;
 
 /**
@@ -143,6 +144,7 @@ public class Channel {
             } else {
                 users.put(user.getCharacterID(), user);
                 userByName.put(user.getCharacterName().toLowerCase(), user);
+                sendUserNo();
                 return true;
             }
         } finally {
@@ -155,8 +157,16 @@ public class Channel {
         try {
             users.remove(user.getCharacterID());
             userByName.remove(user.getCharacterName().toLowerCase());
+            sendUserNo();
         } finally {
             lockUser.unlock();
         }
+    }
+    
+    private void sendUserNo() {
+        OutPacket packet = new OutPacket(CenterPacket.UserNoResult);
+        packet.encodeByte(channelID);
+        packet.encodeInt(users.size());
+        getCenter().sendPacket(packet);
     }
 }

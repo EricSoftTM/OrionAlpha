@@ -141,6 +141,19 @@ public class GameSocket extends SimpleChannelInboundHandler {
         sendPacket(packet, false);
     }
     
+    public void onUserNoChanged(InPacket packet) {
+        byte channelID = packet.decodeByte();
+        int userNo = packet.decodeInt();
+        
+        WorldEntry world = LoginApp.getInstance().getWorld(worldID);
+        if (world != null) {
+            ChannelEntry channel = world.getChannel(channelID);
+            if (channel != null) {
+                channel.setUserNo(userNo);
+            }
+        }
+    }
+    
     public void onShopConnected(InPacket packet) {
         ShopEntry shop = new ShopEntry(this, packet.decodeString(), packet.decodeShort());
             
@@ -189,6 +202,9 @@ public class GameSocket extends SimpleChannelInboundHandler {
                 break;
             case CenterPacket.GameMigrateReq:
                 onGameMigrateRequest(packet.decodeInt());
+                break;
+            case CenterPacket.UserNoResult:
+                onUserNoChanged(packet);
                 break;
             default: {
                 Logger.logReport("Unidentified Center Packet [%d] : %s", type, packet.dumpString());

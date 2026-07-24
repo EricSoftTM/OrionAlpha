@@ -30,10 +30,11 @@ public class CenterPacket {
             BEGIN_GAME      = 4,
             ShopMigrateReq  = 5,
             ShopMigrateRes  = 6,
-            END_GAME        = 7,
-            BEGIN_SHOP      = 8,
-            GameMigrateReq  = 9,
-            GameMigrateRes  = 10,
-            END_SHOP        = 11
+            UserNoResult    = 7,
+            END_GAME        = 8,
+            BEGIN_SHOP      = 9,
+            GameMigrateReq  = 10,
+            GameMigrateRes  = 11,
+            END_SHOP        = 12
     ;
 }

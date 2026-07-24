@@ -134,33 +134,13 @@ public class UserRemote {
      * When a user is hit or takes damage, this displays the damage dealt.
      * 
      * @param characterID The ID of the user who received damage
-     * @param mobAttackIdx The mob attack index (@see game.field.life.AttackIndex)
      * @param clientDamage The damage dealt (as received from the client)
-     * @param mobTemplateID The TemplateID of the mob who attacked the user
-     * @param left The direction the user was facing
-     * @param reflect If power guard is enabled and damage was reflected
-     * @param mobID The ObjectID of the mob to deal reflective damage to
-     * @param hitAction The hit action towards the mob
-     * @param hit The coordinates of the hit reflection
      * 
      * @return The user hit packet
      */
-    public static OutPacket onHit(int characterID, byte mobAttackIdx, int clientDamage, int mobTemplateID, byte left, byte reflect, int mobID, byte hitAction, Point hit) {
+    public static OutPacket onHit(int characterID, int clientDamage) {
         OutPacket packet = new OutPacket(LoopbackPacket.UserHit);
         packet.encodeInt(characterID);
-        packet.encodeByte(mobAttackIdx);
-        packet.encodeInt(clientDamage);
-        if (mobAttackIdx > AttackIndex.Counter) {
-            packet.encodeInt(mobTemplateID);
-            packet.encodeByte(left);
-            packet.encodeByte(reflect);
-            if (reflect > 0) {
-                packet.encodeInt(mobID);
-                packet.encodeByte(hitAction);
-                packet.encodeShort(hit.x);
-                packet.encodeShort(hit.y);
-            }
-        }
         return packet;
     }
     

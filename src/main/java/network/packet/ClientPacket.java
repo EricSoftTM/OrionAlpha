@@ -42,8 +42,6 @@ public class ClientPacket {
             UserMeleeAttack = 15,
             UserShootAttack = 16,
             UserMagicAttack = 17,
-            Unknown = -19, // TODO: Remove
-            UserHit = -20, // TODO: Remove
             UserChat = 18,
             UserEmotion = 19,
             UserSelectNpc = 20,

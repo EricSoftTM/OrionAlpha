@@ -1132,9 +1132,6 @@ public class User extends Creature {
             case ClientPacket.UserSkillUpRequest:
                 userSkill.onSkillUpRequest(packet);
                 break;
-            case ClientPacket.UserHit:
-                onHit(packet);
-                break;
             case ClientPacket.UserMeleeAttack:
             case ClientPacket.UserShootAttack:
             case ClientPacket.UserMagicAttack:
@@ -1550,6 +1547,29 @@ public class User extends Creature {
                     }
                     incHP(hpInc, false);
                     lastCharacterHPInc = time;
+                } else {
+                    // interesting... in 1.11, the UserHit handling was implemented here instead.
+                    int clientDamage = -hpDelta;
+                    if (clientDamage > 0) {
+                        int mp = 0;
+                        if (mpDelta == 0) {
+                            int magicGuard = secondaryStat.getStatOption(CharacterTemporaryStat.MagicGuard);
+                            if (magicGuard != 0) {
+                                mp = (short) (clientDamage * (double) magicGuard / 100.0);
+                                if (character.getCharacterStat().getMP() < mp) {
+                                    mp = character.getCharacterStat().getMP();
+                                }
+                                clientDamage -= mp;
+                            }
+                        }
+                        if (incHP(-clientDamage, false)) {
+                            flagOutput |= CharacterStatType.HP;
+                        }
+                        if (mp != 0 && incMP(-mp, false)) {
+                            flagOutput |= CharacterStatType.MP;
+                        }
+                        getField().splitSendPacket(getSplit(), UserRemote.onHit(this.characterID, clientDamage), this);
+                    }
                 }
                 if (mpDelta > 0) {
                     flagOutput |= CharacterStatType.MP;
@@ -1648,120 +1668,6 @@ public class User extends Creature {
                     sendPacket(WvsContext.onGivePopularityResult(ret, null, false));
                 }
             }
-        }
-    }
-
-    public void onHit(InPacket packet) {
-        byte mobAttackIdx = packet.decodeByte();
-        int obstacleData = 0;
-        int clientDamage = 0;
-        int mobTemplateID = 0;
-        byte left = 0;
-        byte reflect = 0;
-        int mobID = 0;
-        byte hitAction = 0;
-        int damage = 0;
-        Point hit = new Point(0, 0);
-        if (mobAttackIdx <= AttackIndex.Counter) {
-            obstacleData = packet.decodeInt();
-        } else {
-            clientDamage = packet.decodeInt();
-            mobTemplateID = packet.decodeInt();
-            left = packet.decodeByte();
-            reflect = packet.decodeByte();
-            if (reflect != 0) {
-                mobID = packet.decodeInt();
-                hitAction = packet.decodeByte();
-                hit.x = packet.decodeShort();
-                hit.y = packet.decodeShort();
-            }
-        }
-        if (getField() == null) {
-            return;
-        }
-        if (lock()) {
-            try {
-                if (getHP() > 0) {
-                    if (clientDamage > 0) {
-                        if (mobAttackIdx > AttackIndex.Counter) {
-                            this.invalidDamageMissCount = 0;
-                        }
-                        int mp = 0;
-                        int magicGuard = secondaryStat.getStatOption(CharacterTemporaryStat.MagicGuard);
-                        if (magicGuard > 0) {
-                            int inc = (int) (clientDamage * (double) magicGuard / 100.0d);
-                            if (character.getCharacterStat().getMP() < inc) {
-                                inc = character.getCharacterStat().getMP();
-                            }
-                            clientDamage -= inc;
-                            mp = inc;
-                        }
-                        MobTemplate template = MobTemplate.getMobTemplate(mobTemplateID);
-                        if (template != null) {
-                            MobAttackInfo info = null;
-                            if (mobAttackIdx >= AttackIndex.Mob_Physical && !template.getAttackInfo().isEmpty() && mobAttackIdx < template.getAttackInfo().size()) {
-                                info = template.getAttackInfo().get(mobAttackIdx);
-                            }
-                            if (info != null) {
-                                // deadlyAttack
-                                // mpBurn
-                            }
-                            int powerGuard = secondaryStat.getStatOption(CharacterTemporaryStat.PowerGuard);
-                            if (reflect != 0 && powerGuard != 0) {
-                                if (powerGuard < reflect) {
-                                    reflect = (byte) powerGuard;
-                                }
-                                int hpDealt = clientDamage;
-                                if (hpDealt >= getHP()) {
-                                    hpDealt = getHP();
-                                }
-                                damage = Math.min(reflect * hpDealt / 100, (int) (template.getMaxHP() / 10.0d));
-                                if (template.isBoss()) {
-                                    damage /= 2;
-                                }
-                                if (damage > 0) {
-                                    // if fixedDamage > 0
-                                    //  damage = fixedDamage
-                                    // if invincible
-                                    //  damage = 0
-                                }
-                                clientDamage -= damage;
-                            }
-                        }
-                        incHP(-clientDamage, false);
-                        int flag = CharacterStatType.HP;
-                        if (mp != 0) {
-                            incMP(-mp, false);
-                            flag |= CharacterStatType.MP;
-                        }
-                        if (flag != 0) {
-                            sendCharacterStat(Request.None, flag);
-                        }
-                    }
-                    if (getHP() == 0) {
-                        // This is where Nexon handles onUserDead, we call it in incHP.
-                    } else {
-                        // TODO: Look into this. ObstacleData might be ObstacleDamage.
-                        if (clientDamage > 0) {
-                            if (obstacleData > 0) {
-                                int slv = obstacleData & 0xFF;
-                                int skillID = (obstacleData >> 8) & 0xFF;
-
-                                // Can't continue because MobSkills don't exist yet?
-                                // Unless they do, but aren't in Skill.wz? o.O
-                            } else if (mobTemplateID != 0) {
-                                //onStatChangedByMobAttack(mobTemplateID, mobAttackIdx);
-                            }
-                        }
-                    }
-                }
-            } finally {
-                unlock();
-            }
-        }
-        getField().splitSendPacket(getSplit(), UserRemote.onHit(this.characterID, mobAttackIdx, clientDamage, mobTemplateID, left, reflect, mobID, hitAction, hit), this);
-        if (damage != 0) {
-            getField().getLifePool().onUserAttack(this, mobID, damage, hit, (short) 100);
         }
     }
 

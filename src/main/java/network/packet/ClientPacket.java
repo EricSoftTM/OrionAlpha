@@ -61,7 +61,6 @@ public class ClientPacket {
             UserDropMoneyRequest = 31,
             UserGivePopularityRequest = 32,
             UserPartyRequest = 33,
-            UserCharacterInfoRequest = -38, // TODO: Remove
             BroadcastMsg = 34,
             Whisper = 35,
             Messenger = 36,

@@ -46,7 +46,6 @@ public class LoopbackPacket {
             DropPickUpMessage = 17,
             GivePopularityResult = 18,
             BroadcastMsg = 19,
-            CharacterInfo = -1, // TODO: Remove
             END_CHARACTERDATA = 20,
             BEGIN_STAGE = 21,
             SetField = 22,

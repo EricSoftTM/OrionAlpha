@@ -99,16 +99,6 @@ public class WvsContext {
         return packet;
     }
     
-    public static OutPacket onCharacterInfo(User user) {
-        OutPacket packet = new OutPacket(LoopbackPacket.CharacterInfo);
-        packet.encodeInt(user.getCharacterID());
-        packet.encodeByte(user.getCharacter().getCharacterStat().getLevel());
-        packet.encodeShort(user.getCharacter().getCharacterStat().getJob());
-        packet.encodeShort(user.getCharacter().getCharacterStat().getPOP());
-        packet.encodeString(user.getCommunity());
-        return packet;
-    }
-    
     public static OutPacket onChangeSkillRecordResult(byte onExclRequest, List<SkillRecord> change) {
         OutPacket packet = new OutPacket(LoopbackPacket.ChangeSkillRecordResult);
         packet.encodeByte(onExclRequest);

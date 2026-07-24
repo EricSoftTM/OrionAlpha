@@ -1143,9 +1143,6 @@ public class User extends Creature {
             case ClientPacket.UserSkillUseRequest:
                 userSkill.onSkillUseRequest(packet);
                 break;
-            case ClientPacket.UserCharacterInfoRequest:
-                onCharacterInfoRequest(packet);
-                break;
             case ClientPacket.UserChangeSlotPositionRequest:
                 onChangeSlotPositionRequest(packet);
                 break;
@@ -1497,21 +1494,6 @@ public class User extends Creature {
         }
 
         getField().splitSendPacket(getSplit(), UserCommon.onChat(characterID, text), null);
-    }
-
-    public void onCharacterInfoRequest(InPacket packet) {
-        User target = getField().findUser(packet.decodeInt());
-        if (target == null || target.isGM()) {
-            sendCharacterStat(Request.Excl, 0);
-        } else {
-            if (target.lock()) {
-                try {
-                    sendPacket(WvsContext.onCharacterInfo(target));
-                } finally {
-                    target.unlock();
-                }
-            }
-        }
     }
 
     public void onChangeSlotPositionRequest(InPacket packet) {

@@ -116,7 +116,7 @@ public class CharacterData {
                 ItemSlotBase item = equipped.get(i);
                 if (item != null) {
                     packet.encodeByte(i);
-                    item.encode(packet);
+                    item.encode(packet, false);
                 }
             }
             packet.encodeByte(0);
@@ -124,7 +124,7 @@ public class CharacterData {
                 ItemSlotBase item = equipped2.get(i);
                 if (item != null) {
                     packet.encodeByte(i);
-                    item.encode(packet);
+                    item.encode(packet, false);
                 }
             }
             packet.encodeByte(0);
@@ -134,7 +134,7 @@ public class CharacterData {
                 ItemSlotBase item = itemSlot.get(ItemType.Equip).get(i);
                 if (item != null) {
                     packet.encodeByte(i);
-                    item.encode(packet);
+                    item.encode(packet, false);
                 }
             }
             packet.encodeByte(0);
@@ -155,7 +155,7 @@ public class CharacterData {
                     ItemSlotBase item = itemSlot.get(ti).get(i);
                     if (item != null) {
                         packet.encodeByte(i);
-                        item.encode(packet);
+                        item.encode(packet, false);
                     }
                 }
                 packet.encodeByte(0);
@@ -281,26 +281,24 @@ public class CharacterData {
     }
 
     public ItemSlotBase getItem(byte ti, int pos) {
-        if (ti >= ItemType.Equip && ti <= ItemType.Etc) {
-            if (ti == ItemType.Equip) {
-                if (pos != 0 && (pos >= -BodyPartCount || pos < -BodyPartCount) && pos <= getItemSlotCount(ItemType.Equip) && pos >= -BodyPartCount - BodyPartCount) {
-                    if (pos >= -BodyPartCount) {
-                        if (pos >= 0) {
-                            return itemSlot.get(ItemType.Equip).get(pos);
-                        } else {
-                            return equipped.get(-pos);
-                        }
-                    } else {
-                        return equipped2.get(-BodyPartCount - pos);
-                    }
-                }
-            } else {
-                if (pos > 0 && pos <= getItemSlotCount(ti)) {
-                    return itemSlot.get(ti).get(pos);
-                }
-            }
+        if (ti < 1 || ti > ItemType.NO) {
+            return null;
         }
-        return null;
+        if (ti == ItemType.Equip) {
+            if (pos == 0 || pos > getItemSlotCount(ItemType.Equip) || pos < -BodyPartCount) {
+                return null;
+            }
+            if (pos < 0) {
+                return equipped.get(-pos);
+            } else {
+                return itemSlot.get(ItemType.Equip).get(pos);
+            }
+        } else {
+            if (pos <= 0 || pos > getItemSlotCount(ti)) {
+                return null;
+            }
+            return itemSlot.get(ti).get(pos);
+        }
     }
 
     public int getItemCount(byte ti, int itemID) {
@@ -345,21 +343,17 @@ public class CharacterData {
     }
 
     public boolean setItem(byte ti, int pos, ItemSlotBase item) {
-        if (ti < ItemType.Equip || ti > ItemType.Etc) {
+        if (ti < 1 || ti > ItemType.NO) {
             return false;
         }
         if (ti == ItemType.Equip) {
-            if (pos == 0 || pos < -BodyPartCount && pos >= -BodyPartCount || pos > getItemSlotCount(ItemType.Equip) || pos < -BodyPartCount - BodyPartCount) {
+            if (pos == 0 || pos > getItemSlotCount(ItemType.Equip) || pos < -BodyPartCount) {
                 return false;
             }
-            if (pos >= -BodyPartCount) {
-                if (pos >= 0) {
-                    itemSlot.get(ti).set(pos, item);
-                } else {
-                    equipped.set(-pos, item);
-                }
+            if (pos < 0) {
+                equipped.set(-pos, item);
             } else {
-                equipped2.set(-BodyPartCount - pos, item);
+                itemSlot.get(ti).set(pos, item);
             }
         } else {
             if (pos <= 0 || pos > getItemSlotCount(ti)) {

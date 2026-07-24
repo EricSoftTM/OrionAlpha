@@ -118,8 +118,7 @@ public class MiniRoomBaseDlg {
         packet.encodeByte(MiniRoomPacket.PutItem);
         packet.encodeByte(slot);
         packet.encodeByte(pos);
-        packet.encodeByte(item.getType());
-        item.encode(packet);
+        item.encode(packet, true);
         return packet;
     }
 

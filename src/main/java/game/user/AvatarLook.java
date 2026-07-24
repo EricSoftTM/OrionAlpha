@@ -60,13 +60,12 @@ public class AvatarLook {
     }
     
     public void encode(OutPacket packet) {
-        for (int pos = 0; pos < hairEquip.size(); pos++) {
-            if (hairEquip.get(pos) > 0) {
-                packet.encodeByte(pos);
-                packet.encodeInt(hairEquip.get(pos));
+        for (int itemID : hairEquip) {
+            if (itemID != 0) {
+                packet.encodeInt(itemID);
             }
         }
-        packet.encodeByte(-1);
+        packet.encodeInt(0);
     }
     
     public List<Integer> getEquipped() {

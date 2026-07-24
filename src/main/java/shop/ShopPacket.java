@@ -103,7 +103,7 @@ public class ShopPacket {
         packet.encodeByte(CashItemRequest.MoveLtoSDone);
         packet.encodeShort(pos);
         packet.encodeByte(ti);
-        item.encode(packet);
+        item.encode(packet, false);
         return packet;
     }
 

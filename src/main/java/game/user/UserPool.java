@@ -37,19 +37,13 @@ public class UserPool {
     public static OutPacket onUserEnterField(User user) {
         OutPacket packet = new OutPacket(LoopbackPacket.UserEnterField);
         packet.encodeInt(user.getCharacterID());
-        
         packet.encodeString(user.getCharacterName());
         packet.encodeByte(user.getCharacter().getCharacterStat().getGender());
-        
         user.getSecondaryStat().encodeForRemote(packet, SecondaryStat.FilterForRemote);
-        
         packet.encodeInt(user.getCharacter().getCharacterStat().getFace());
         packet.encodeInt(0); //AvatarLook.Unknown2 (unused int)
         packet.encodeInt(0); //AvatarLook.Unknown3 (unused int)
-        
         user.getAvatarLook().encode(packet);
-        packet.encodeInt(0); //Unknown (modifies *(v3 + 161) aka *(v1 + 644))
-        
         packet.encodeShort(user.getCurrentPosition().x);
         packet.encodeShort(user.getCurrentPosition().y);
         packet.encodeByte(user.getMoveAction());

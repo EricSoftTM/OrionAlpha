@@ -79,7 +79,7 @@ public class InventoryManipulator {
             packet.encodeShort(change.getPOS());
             switch (change.getChange()) {
                 case ChangeLog.NewItem:
-                    change.getItem().encode(packet);
+                    change.getItem().encode(packet, false);
                     break;
                 case ChangeLog.ItemNumber:
                     packet.encodeShort(change.getNumber());

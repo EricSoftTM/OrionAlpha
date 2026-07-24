@@ -76,9 +76,15 @@ public abstract class ItemSlotBase implements Comparable<ItemSlotBase> {
      * buffer.
      *
      * @param packet The OutPacket buffer
+     * @param sendType Determines whether to encode the item slot type
      */
-    public void encode(OutPacket packet) {
-        rawEncode(packet);
+    public void encode(OutPacket packet, boolean sendType) {
+        if (sendType) {
+            packet.encodeByte(ItemAccessor.getItemTypeIndexFromID(itemID));
+            rawEncode(packet);
+        } else {
+            rawEncode(packet);
+        }
     }
 
     public long getCashItemSN() {

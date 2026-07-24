@@ -197,9 +197,6 @@ public class UserRemote {
         if ((avatarModFlag & AvatarLook.Look) != 0) {
             packet.encodeBool(true);
             user.getAvatarLook().encode(packet);
-            // This int does get used and updates something in CUserRemote.
-            // Currently unknown still, however. MIGHT be hair?
-            packet.encodeInt(0);
         } else {
             packet.encodeBool(false);
         }

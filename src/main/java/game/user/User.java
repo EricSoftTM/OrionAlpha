@@ -1505,14 +1505,15 @@ public class User extends Creature {
         if (getField() == null) {
             return;
         }
-        short hp = 0;
-        short mp = 0;
         int flag = packet.decodeInt();
+        int flagOutput = 0;
+        short hpDelta = 0, mpDelta = 0;
+        long time = System.currentTimeMillis();
         if ((flag & CharacterStatType.HP) != 0) {
-            hp = packet.decodeShort();
+            hpDelta = packet.decodeShort();
         }
         if ((flag & CharacterStatType.MP) != 0) {
-            mp = packet.decodeShort();
+            mpDelta = packet.decodeShort();
         }
         byte option = packet.decodeByte();
         double recoveryRate = getField().getRecoveryRate();
@@ -1521,54 +1522,62 @@ public class User extends Creature {
                 if (getHP() == 0) {
                     return;
                 }
-                long time = System.currentTimeMillis();
-                if (hp > 0) {
-                    int restForHPDuration = 10000;
-                    if (JobAccessor.getJobCategory(character.getCharacterStat().getJob()) == JobCategory.Fighter
-                            && SkillInfo.getInstance().getSkillLevel(character, Warrior.ImproveBasic) > 0) {
-                        restForHPDuration = 5000;
-                    }
+                if (hpDelta > 0) {
+                    flagOutput |= CharacterStatType.HP;
+                    int duration = 10 * 1000;
                     if ((option & 1) != 0) {
-                        restForHPDuration = SkillAccessor.getEndureDuration(character);
+                        duration = SkillAccessor.getEndureDuration(character);
                     }
-                    if ((time - this.lastCharacterHPInc) < restForHPDuration - 2000) {
-                        ++illegalHPIncTime;
+                    long elapsed = time - lastCharacterHPInc;
+                    if (elapsed < duration - 2 * 1000) {
+                        illegalHPIncTime++;
+                    } else {
+                        illegalHPIncTime = 0;
                     }
                     if (illegalHPIncTime > 9) {
                         Logger.logError("Illegal HP recovery time : %d", characterID);
                         return;
                     }
-                    int recoveryHP = (int) ((double) (SkillAccessor.getHPRecoveryUpgrade(character) + 10.0d) * recoveryRate);
-                    if (recoveryHP < hp) {
-                        ++illegalHPIncSize;
+                    int hpInc = (int) ((10 + SkillAccessor.getHPRecoveryUpgrade(character)) * recoveryRate);
+                    if (hpInc < hpDelta) {
+                        illegalHPIncSize++;
+                    } else {
+                        illegalHPIncSize = 0;
                     }
                     if (illegalHPIncSize > 9) {
                         Logger.logError("Illegal HP recovery size : %d", characterID);
                         return;
                     }
-                    incHP(recoveryHP, false);
+                    incHP(hpInc, false);
                     lastCharacterHPInc = time;
                 }
-                if (mp > 0) {
-                    if ((time - lastCharacterMPInc) < 8000) {
-                        ++illegalMPIncTime;
+                if (mpDelta > 0) {
+                    flagOutput |= CharacterStatType.MP;
+                    int duration = 10 * 1000;
+                    long elapsed = time - lastCharacterMPInc;
+                    if (elapsed < duration - 2 * 1000) {
+                        illegalMPIncTime++;
+                    } else {
+                        illegalMPIncTime = 0;
                     }
                     if (illegalMPIncTime > 7) {
                         Logger.logError("Illegal MP recovery time : %d", characterID);
                         return;
                     }
-                    int recoveryMP = (int) ((double) (SkillAccessor.getMPRecoveryUpgrade(character) + 3.0d) * recoveryRate);
-                    if (recoveryMP < mp) {
-                        ++illegalMPIncSize;
+                    int mpInc = (int) ((3 + SkillAccessor.getMPRecoveryUpgrade(character)) * recoveryRate);
+                    if (mpInc < mpDelta) {
+                        illegalMPIncSize++;
+                    } else {
+                        illegalMPIncSize = 0;
                     }
                     if (illegalMPIncSize > 7) {
-                        Logger.logError("Illegal MP recovery size : %d (nMP : %d)", recoveryMP, mp);
+                        Logger.logError("Illegal MP recovery size : %d (nMP : %d)", mpInc, mpDelta);
                         return;
                     }
-                    incMP(recoveryMP, false);
+                    incMP(mpInc, false);
                     lastCharacterMPInc = time;
                 }
-                sendCharacterStat(Request.None, flag);
+                sendCharacterStat(Request.None, flagOutput);
             } finally {
                 unlock();
             }

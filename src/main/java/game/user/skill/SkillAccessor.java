@@ -115,46 +115,19 @@ public class SkillAccessor {
     }
     
     public static int getHPRecoveryUpgrade(CharacterData cd) {
-        int jobCategory = JobAccessor.getJobCategory(cd.getCharacterStat().getJob());
         Pointer<SkillEntry> skillEntry = new Pointer<>();
-        if (jobCategory == JobCategory.Fighter) {
-            int slv = SkillInfo.getInstance().getSkillLevel(cd, Warrior.ImproveBasic, skillEntry);
-            if (slv > 0) {
-                return skillEntry.get().getLevelData(slv).getHP();
-            }
-        } else if (jobCategory == JobCategory.Thief) {
-            if (JobAccessor.isCorrectJobForSkillRoot(cd.getCharacterStat().getJob(), JobAccessor.Assassin.getJob())) {
-                int slv = SkillInfo.getInstance().getSkillLevel(cd, Assassin.Endure, skillEntry);
-                if (slv > 0) {
-                    return skillEntry.get().getLevelData(slv).getHP();
-                }
-            } else if (JobAccessor.isCorrectJobForSkillRoot(cd.getCharacterStat().getJob(), JobAccessor.Thief.getJob())) {
-                int slv = SkillInfo.getInstance().getSkillLevel(cd, Thief.Endure, skillEntry);
-                if (slv > 0) {
-                    return skillEntry.get().getLevelData(slv).getHP();
-                }
-            }
+        int slv = SkillInfo.getInstance().getSkillLevel(cd, Warrior.ImproveBasic, skillEntry);
+        if (slv > 0) {
+            return skillEntry.get().getLevelData(slv).getHP();
         }
         return 0;
     }
     
     public static int getMPRecoveryUpgrade(CharacterData cd) {
-        int jobCategory = JobAccessor.getJobCategory(cd.getCharacterStat().getJob());
         Pointer<SkillEntry> skillEntry = new Pointer<>();
-        if (jobCategory == JobCategory.Wizard) {
-            return (int) ((double) SkillInfo.getInstance().getSkillLevel(cd, Magician.ImproveBasic, null) * (double) cd.getCharacterStat().getLevel() * 0.1d);
-        } else if (jobCategory == JobCategory.Thief) {
-            if (JobAccessor.isCorrectJobForSkillRoot(cd.getCharacterStat().getJob(), JobAccessor.Assassin.getJob())) {
-                int slv = SkillInfo.getInstance().getSkillLevel(cd, Assassin.Endure, skillEntry);
-                if (slv > 0) {
-                    return skillEntry.get().getLevelData(slv).getMP();
-                }
-            } else if (JobAccessor.isCorrectJobForSkillRoot(cd.getCharacterStat().getJob(), JobAccessor.Thief.getJob())) {
-                int slv = SkillInfo.getInstance().getSkillLevel(cd, Thief.Endure, skillEntry);
-                if (slv > 0) {
-                    return skillEntry.get().getLevelData(slv).getMP();
-                }
-            }
+        int slv = SkillInfo.getInstance().getSkillLevel(cd, Magician.ImproveBasic, skillEntry);
+        if (slv > 0) {
+            return skillEntry.get().getLevelData(slv).getMP();
         }
         return 0;
     }

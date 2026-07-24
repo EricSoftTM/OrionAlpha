@@ -17,6 +17,7 @@
  */
 package shop.user;
 
+import common.OrionConfig;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotBundle;
@@ -582,7 +583,9 @@ public class User {
     }
 
     public void onPacket(byte type, InPacket packet) {
-        Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+        if (OrionConfig.LOG_PACKETS && ClientPacket.filterForLog(type)) {
+            Logger.logReport("[Packet Logger] Type: %d %s", type, packet.dumpString());
+        }
         switch (type) {
             case ClientPacket.UserTransferFieldRequest:
                 onTransferFieldRequest();

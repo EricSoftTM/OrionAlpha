@@ -87,4 +87,15 @@ public class ClientPacket {
             END_CASHSHOP = -64, // TODO: Remove
             NO = 54
     ;
+    
+    public static boolean filterForLog(byte type) {
+        switch (type) {
+            case AliveAck:
+            case UserMove:
+            case NpcMove:
+            case MobMove:
+                return false;
+        }
+        return true;
+    }
 }

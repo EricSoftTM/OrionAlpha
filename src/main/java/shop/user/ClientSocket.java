@@ -273,10 +273,9 @@ public class ClientSocket extends SimpleChannelInboundHandler {
 
     private void processPacket(InPacket packet) {
         final byte type = packet.decodeByte();
-        if (OrionConfig.LOG_PACKETS) {
-            Logger.logReport("[Packet Logger] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+        if (OrionConfig.LOG_PACKETS && ClientPacket.filterForLog(type)) {
+            Logger.logReport("[Packet Logger] Type: %d %s", type, packet.dumpString());
         }
-        Logger.logReport("Recieved " + "[0x" + Integer.toHexString(type).toUpperCase() + "]");
         switch (type) {
             case ClientPacket.AliveAck:
                 sendPacket(onAliveReq(packet.decodeInt()), false);

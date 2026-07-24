@@ -250,6 +250,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         if (migrateState == MigrateState.WaitMigrateIn && time - acceptTime >= GameApp.getInstance().getWaitingFirstPacket()) {
             Logger.logError("Disconnect dummy connection - %d(ms) : %s", (time - acceptTime), addr);
             postClose();
+            return;
         }
         time = System.currentTimeMillis();
         if (user != null) {
@@ -268,8 +269,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     
     private void processPacket(InPacket packet) {
         final byte type = packet.decodeByte();
-        if (OrionConfig.LOG_PACKETS) {
-            Logger.logReport("[Packet Logger] [0x%s]: %s", Integer.toHexString(type).toUpperCase(), packet.dumpString());
+        if (OrionConfig.LOG_PACKETS && ClientPacket.filterForLog(type)) {
+            Logger.logReport("[Packet Logger] Type: %d %s", type, packet.dumpString());
         }
         if (type == ClientPacket.AliveAck) {
             packet.decodeInt();//Acknowledged alive ack
@@ -279,7 +280,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             onMigrateIn(packet);
         } else {
             if (type < ClientPacket.BEGIN_USER) {
-                Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+                Logger.logReport("[Unhandled Packet] Type: %d %s", type, packet.dumpString());
                 return;
             }
             processUserPacket(type, packet);

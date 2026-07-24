@@ -121,4 +121,15 @@ public class LoopbackPacket {
             END_CASHSHOP = -1, // TODO: Remove
             NO = 84
     ;
+    
+    public static boolean filterForLog(byte type) {
+        switch (type) {
+            case AliveReq:
+            case UserMove:
+            case NpcMove:
+            case MobMove:
+                return false;
+        }
+        return true;
+    }
 }

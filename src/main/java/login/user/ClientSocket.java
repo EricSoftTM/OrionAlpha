@@ -461,8 +461,8 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             return;
         }
         final byte type = packet.decodeByte();
-        if (OrionConfig.LOG_PACKETS) {
-            Logger.logReport("[Packet Logger] [0x%s]: %s", Integer.toHexString(type).toUpperCase(), packet.dumpString());
+        if (OrionConfig.LOG_PACKETS && ClientPacket.filterForLog(type)) {
+            Logger.logReport("[Packet Logger] Type: %d %s", type, packet.dumpString());
         }
         if (type == ClientPacket.AliveAck) {
             this.aliveReqSent = 0;
@@ -493,7 +493,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
                     onExceptionLog(packet);
                     break;
                 default: {
-                    Logger.logReport("[Unidentified Packet] [0x" + Integer.toHexString(type).toUpperCase() + "]: " + packet.dumpString());
+                    Logger.logReport("[Unhandled Packet] Type: %d %s", type, packet.dumpString());
                 }
             }
         }

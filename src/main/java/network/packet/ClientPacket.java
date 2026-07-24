@@ -51,7 +51,6 @@ public class ClientPacket {
             UserShopRequest = 22,
             UserChangeSlotPositionRequest = 23,
             UserStatChangeItemUseRequest = 24,
-            UserConsumeCashItemUseRequest = -28, // TODO: Remove
             UserPortalScrollUseRequest = 25,
             UserUpgradeItemUseRequest = 26,
             UserAbilityUpRequest = 27,

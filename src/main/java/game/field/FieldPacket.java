@@ -43,23 +43,6 @@ public class FieldPacket {
     }
     
     /**
-     * The blow weather packet that rains snow and displays a message to the map.
-     * 
-     * @param weatherItemID The ItemID of the weather item (type 209)
-     * @param weatherMsg The message to display for the weather effect
-     * 
-     * @return The weather packet
-     */
-    public static OutPacket onBlowWeather(int weatherItemID, String weatherMsg) {
-        OutPacket packet = new OutPacket(LoopbackPacket.BlowWeather);
-        packet.encodeInt(weatherItemID);
-        if (weatherItemID != 0) {//0 = DestroyWeather
-            packet.encodeString(weatherMsg);
-        }
-        return packet;
-    }
-    
-    /**
      * The weird message packet - displays yellow in chat the Name:Message.
      * Oh, and it also renders the same Name:Message above the chat window.
      * 

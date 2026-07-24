@@ -1167,9 +1167,6 @@ public class User extends Creature {
             case ClientPacket.Messenger:
                 getMessenger().onMessenger(packet);
                 break;
-            case ClientPacket.UserConsumeCashItemUseRequest:
-                onConsumeCashItemUseRequest(packet);
-                break;
             case ClientPacket.UserScriptMessageAnswer:
                 onScriptMessageAnswer(packet);
                 break;
@@ -1576,27 +1573,6 @@ public class User extends Creature {
                 unlock();
             }
         }
-    }
-
-    public void onConsumeCashItemUseRequest(InPacket packet) {
-        short pos = packet.decodeShort();
-        int itemID = packet.decodeInt();
-        String message = packet.decodeString();
-
-        List<ChangeLog> changeLog = new ArrayList<>();
-        Pointer<Integer> decRet = new Pointer<>(0);
-        if (Inventory.rawRemoveItem(this, ItemType.Consume, pos, (short) 1, changeLog, decRet, null) && decRet.get() == 1) {
-            if (ItemAccessor.isWeatherItem(itemID)) {
-                getField().onWeather(itemID, message, 8000);
-            } else {
-                // idk if this is evan a megaphone packet or not, yolo it works
-                getField().broadcastPacket(FieldPacket.onGroupMessage(characterName, message), false);
-            }
-            Inventory.sendInventoryOperation(this, Request.Excl, changeLog);
-        } else {
-            sendCharacterStat(Request.Excl, 0);
-        }
-        changeLog.clear();
     }
 
     public void onUpgradeItemRequest(InPacket packet) {

@@ -76,10 +76,6 @@ public class Field {
     private boolean town;
     private boolean clock;
     private boolean swim;
-    private String weatherMsg;
-    private int weatherItemID;
-    private int weatherDuration;
-    private long weatherBegin;
     private int splitRowCount;
     private int splitColCount;
     private double incRateEXP;
@@ -98,7 +94,6 @@ public class Field {
         this.field = fieldID;
         this.space2D = new WvsPhysicalSpace2D();
         this.portal = new PortalMap();
-        this.weatherItemID = 0;
         this.incRateEXP = 1.0d;
         this.incRateDrop = 1.0d;
         this.lifePool = new LifePool(this);
@@ -290,11 +285,6 @@ public class Field {
         user.setPosMap(this.field);
         users.put(user.getCharacterID(), user);
         lifePool.insertController(user);
-        if (weatherItemID != 0) {
-            user.sendPacket(FieldPacket.onBlowWeather(weatherItemID, weatherMsg));
-        }
-        // Jukebox
-        // Clock
         return true;
     }
 
@@ -461,20 +451,6 @@ public class Field {
         }
         splitSendPacket(user.getSplit(), UserRemote.onMove(user.getCharacterID(), mp), user);
         mp.getElem().clear();
-    }
-
-    public boolean onWeather(int itemID, String param, int duration) {
-        if (!ItemAccessor.isWeatherItem(itemID) || weatherItemID != 0) {
-            return false;
-        }
-        this.weatherItemID = itemID;
-        this.weatherMsg = param;
-        this.weatherBegin = System.currentTimeMillis();
-        if (duration != 0) {
-            this.weatherDuration = duration;
-        }
-        broadcastPacket(FieldPacket.onBlowWeather(itemID, param), false);
-        return true;
     }
 
     public void setLeftTop(Point pt) {
@@ -686,12 +662,5 @@ public class Field {
     public void update(long time) {
         lifePool.update(time);
         dropPool.tryExpire(false);
-        if (weatherItemID != 0 && ItemAccessor.isWeatherItem(weatherItemID)) {
-            if (weatherDuration != 0 && time - weatherBegin > 1000 * weatherDuration
-                    || weatherDuration == 0 && time - weatherBegin > 30000) {
-                weatherItemID = 0;
-                broadcastPacket(FieldPacket.onBlowWeather(0, null), false);
-            }
-        }
     }
 }

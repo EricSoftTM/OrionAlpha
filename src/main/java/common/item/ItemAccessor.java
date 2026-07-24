@@ -61,10 +61,6 @@ public class ItemAccessor {
     public static boolean isPortalScrollItem(int itemID) {
         return itemID / 10000 == 203;
     }
-    
-    public static boolean isWeatherItem(int itemID) {
-        return itemID / 10000 == 209;
-    }
 
     public static boolean isTreatSingly(ItemSlotBase p) {
         if (ItemInfo.isCashItem(p.getItemID())) {

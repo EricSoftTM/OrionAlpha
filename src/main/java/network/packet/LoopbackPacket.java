@@ -54,7 +54,6 @@ public class LoopbackPacket {
             BEGIN_FIELD = 24,
             TransferFieldReqIgnored = 25,
             Whisper = 26,
-            BlowWeather = -1, // TODO: Remove
             GroupMessage = -1, // TODO: Remove
             BEGIN_USERPOOL = 27,
             UserEnterField = 28,

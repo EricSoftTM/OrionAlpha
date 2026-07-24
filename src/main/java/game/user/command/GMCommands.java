@@ -113,16 +113,6 @@ public class GMCommands {
         return null;
     }
 
-    @CommandDesc("Broadcasts snowing weather with a message to the map")
-    public static String weather(User user, Field field, String[] args) {
-        if (args.length > 0) {
-            String text = Utilities.joinStringFrom(args, 0);
-            field.onWeather(2090000, text, 60);
-            return null;
-        }
-        return "!weather <message>";
-    }
-
     @CommandDesc("Broadcasts your message")
     public static String say(User user, String[] args) {
         if (args.length > 0) {

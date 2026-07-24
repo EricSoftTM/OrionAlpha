@@ -402,7 +402,7 @@ public class ScriptSysFunc {
     }
     
     public void fieldSnowOn(int duration) {
-        getUser().getField().onWeather(2090000, "", duration);
+        //getUser().getField().onWeather(2090000, "", duration);
     }
     
     public void fieldSummonMob(int fieldID, int mobTemplateID, int x, int y, int count) {
@@ -446,7 +446,7 @@ public class ScriptSysFunc {
     }
     
     public void fieldWeatherMsg(int itemID, String msg, int duration) {
-        getUser().getField().onWeather(itemID, msg, duration);
+        //getUser().getField().onWeather(itemID, msg, duration);
     }
     
     public void fieldVanishNpc(int templateID) {

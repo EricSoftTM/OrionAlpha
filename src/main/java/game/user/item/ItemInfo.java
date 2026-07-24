@@ -379,8 +379,6 @@ public class ItemInfo {
             registerUpgradeItem(item.getItemID(), itemData);
         } else if (ItemAccessor.isPortalScrollItem(item.getItemID())) {
             registerPortalScrollItem(item.getItemID(), itemData);
-        } else if (ItemAccessor.isWeatherItem(item.getItemID())) {
-            // wonder if 'CashItem' should add this and megaphone (208)..
         }
         
         bundleItem.put(item.getItemID(), item);

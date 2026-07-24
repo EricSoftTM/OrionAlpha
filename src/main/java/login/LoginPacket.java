@@ -68,7 +68,7 @@ public class LoginPacket {
     public static OutPacket onCreateNewCharacterResult(int msg, CharacterData character) {
         OutPacket packet = new OutPacket(LoopbackPacket.CreateNewCharacterResult);
         packet.encodeByte(msg);
-        if (msg == 0) {
+        if (msg != 0) {
             character.encode(packet, DBChar.Character | DBChar.ItemSlotEquip, false);
         }
         return packet;

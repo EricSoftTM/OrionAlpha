@@ -349,9 +349,10 @@ public class ClientSocket extends SimpleChannelInboundHandler {
             int result = LoginDB.rawCreateNewCharacter(this.accountID, this.worldID, charName, this.gender, face, 0, hairStyle, level, job, clothes, pants, shoes, weapon, stat, map, newCharacterID);
             if (result == 1) {
                 character = LoginDB.rawLoadCharacter(newCharacterID.get());
-                result = 0;
                 // Best way to always have the login's SN up-to-date.
                 LoginApp.getInstance().updateItemInitSN();
+            } else {
+                result = 0;
             }
             
             sendPacket(LoginPacket.onCreateNewCharacterResult(result, character), false);
@@ -498,7 +499,7 @@ public class ClientSocket extends SimpleChannelInboundHandler {
         }
     }
     
-    public void ResetLoginState(int loginState) {
+    public void resetLoginState(int loginState) {
         this.nexonClubID = "";
         this.worldID = -1;
         this.channelID = -1;

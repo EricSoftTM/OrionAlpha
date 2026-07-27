@@ -32,8 +32,6 @@ import network.packet.OutPacket;
 public class MobStat {
     /* The constant Stat Option held as an empty holder for non-buffed stats */
     static final MobStatOption EMPTY_OPTION;
-    /* Constant defined sets for comparing the symmetrical difference of two sets */
-    public static final int MovementAffecting;
     
     private final Map<Integer, MobStatOption> stats;
     private final List<Integer> damagedElemAttr;
@@ -68,14 +66,39 @@ public class MobStat {
         this.stats.clear();
     }
     
-    public void encodeTemporary(OutPacket packet, int flag) {
+    public void encodeTemporary(OutPacket packet) {
+        long time = System.currentTimeMillis();
+        resetTemporary(time);
+        
+        int flag = 0;
+        if (getStatOption(MobStats.PAD) != 0) {
+            flag |= MobStats.PAD;
+        }
+        if (getStatOption(MobStats.PDD) != 0) {
+            flag |= MobStats.PDD;
+        }
+        if (getStatOption(MobStats.MAD) != 0) {
+            flag |= MobStats.MAD;
+        }
+        if (getStatOption(MobStats.MDD) != 0) {
+            flag |= MobStats.MDD;
+        }
+        if (getStatOption(MobStats.ACC) != 0) {
+            flag |= MobStats.ACC;
+        }
+        if (getStatOption(MobStats.EVA) != 0) {
+            flag |= MobStats.EVA;
+        }
+        if (getStatOption(MobStats.Speed) != 0) {
+            flag |= MobStats.Speed;
+        }
         packet.encodeInt(flag);
+        
         for (int cts : stats.keySet()) {
-            if ((cts & flag) != 0) {
+            if ((flag & cts) != 0) {
                 MobStatOption opt = getStat(cts);
                 packet.encodeShort(opt.getOption());
-                packet.encodeInt(opt.getReason());
-                packet.encodeShort((int) ((opt.getDuration() - System.currentTimeMillis()) / 500));
+                packet.encodeShort((int) ((opt.getDuration() - time) / 500));
             }
         }
     }
@@ -113,10 +136,7 @@ public class MobStat {
     }
     
     public MobStatOption getStat(int cts) {
-        if (stats.containsKey(cts)) {
-            return stats.get(cts);
-        }
-        return EMPTY_OPTION;
+        return stats.getOrDefault(cts, EMPTY_OPTION);
     }
     
     public long getStatDuration(int cts) {
@@ -131,10 +151,6 @@ public class MobStat {
         return getStat(cts).getReason();
     }
     
-    public static boolean isMovementAffectingStat(int flag) {
-        return (flag & MovementAffecting) != 0;
-    }
-    
     public int reset() {
         int reset = 0;
         for (int stat : stats.keySet()) {
@@ -145,12 +161,7 @@ public class MobStat {
     }
     
     public int reset(int reset) {
-        for (Iterator<Integer> it = stats.keySet().iterator(); it.hasNext();) {
-            int stat = it.next();
-            if ((stat & reset) != 0) {
-                it.remove();
-            }
-        }
+	    stats.keySet().removeIf(stat -> (stat & reset) != 0);
         return reset;
     }
     
@@ -233,7 +244,5 @@ public class MobStat {
     
     static {
         EMPTY_OPTION = new MobStatOption();
-        
-        MovementAffecting = MobStats.Speed | MobStats.Stun;
     }
 }

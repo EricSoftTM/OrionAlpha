@@ -19,6 +19,8 @@ package game.user.command;
 
 import common.Request;
 import common.user.CharacterStat;
+import common.user.CharacterStat.CharacterStatType;
+import common.user.DBChar;
 import game.field.Field;
 import game.field.FieldSplit;
 import game.field.drop.Drop;
@@ -32,6 +34,50 @@ import game.user.User;
  * @author Eric
  */
 public class DeveloperCommands {
+    
+    @CommandDesc("Set the value of any specific character stat")
+    public static String stat(User user, CharacterStat stat, String[] args) {
+        int flag = 0;
+        if (args.length == 2) {
+            short val = Short.parseShort(args[1]);
+            if (val > 0) {
+                switch (args[0].toLowerCase()) {
+                    case "str":
+                        stat.setSTR(val); flag |= CharacterStatType.STR;
+                        break;
+                    case "dex":
+                        stat.setDEX(val); flag |= CharacterStatType.DEX;
+                        break;
+                    case "int":
+                        stat.setINT(val); flag |= CharacterStatType.INT;
+                        break;
+                    case "luk":
+                        stat.setLUK(val); flag |= CharacterStatType.LUK;
+                        break;
+                    case "mhp":
+                        stat.setMHP(val); flag |= CharacterStatType.MHP;
+                        break;
+                    case "mmp":
+                        stat.setMMP(val); flag |= CharacterStatType.MMP;
+                        break;
+                    case "hp":
+                        stat.setHP(Math.min(val, stat.getMHP())); flag |= CharacterStatType.HP;
+                        break;
+                    case "mp":
+                        stat.setMP(Math.min(val, stat.getMMP())); flag |= CharacterStatType.MP;
+                        break;
+                }
+            }
+            if (flag != 0) {
+                user.addCharacterDataMod(DBChar.Character);
+                user.sendCharacterStat(Request.Excl, flag);
+                user.validateStat(false);
+                user.sendSystemMessage(String.format("Your %s has been updated.", args[0].toUpperCase()));
+                return null;
+            }
+        }
+        return "!stat <str/dex/int/luk/hp/mp/mhp/mmp> <value>";
+    }
     
     @CommandDesc("Displays the map ID that you are currently on")
     public static String whereAmI(User user, CharacterStat stat, String[] args) {

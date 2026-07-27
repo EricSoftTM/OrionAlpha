@@ -108,11 +108,25 @@ public class UserSkill {
     }
     
     public void doActiveSkill_PartyStatChange(SkillEntry skill, byte slv, InPacket packet) {
-        int affectedMemberBitmap = packet.decodeByte(true);
-        long duration = System.currentTimeMillis() + 1000 * skill.getLevelData(slv).getTime();
+        long duration = System.currentTimeMillis() + 1000L * skill.getLevelData(slv).getTime();
+        
+        // version 1.11 doesn't use affected member bitmaps - it encodes the members instead.
+        // funfact: the client even sends dead party members as long as they're in the area ;)
+        int partyCount = packet.decodeByte();
+        List<Integer> members = new ArrayList<>();
+        for (int i = 0; i < partyCount; i++) {
+            int characterID = packet.decodeInt();
+            members.add(characterID);
+        }
+        if (members.isEmpty()) {
+            members.add(partyCount++, user.getCharacterID());
+        } else { // impressive considering parties aren't functional
+            Logger.logError("Invalid Party Skill Request ( Invalid Party Member Count )");
+            sendFailPacket();
+            return;
+        }
         
         int hpRate = 0;
-        int partyCount = 1;
         if (skill.getLevelData(slv).getHP() != 0) {
             int baseInt = user.getBasicStat().getINT();
             int rand = 0;
@@ -128,15 +142,9 @@ public class UserSkill {
         int skillFlag = processSkill(skill, slv, duration);
         int statFlag = 0;
         if (skill.getLevelData(slv).getHP() != 0) {
-            double inc = Math.ceil((double) ((int) hpRate / partyCount));
+            double inc = Math.ceil((double) hpRate / partyCount);
             if (user.incHP((int) (long) inc, false)) {
                 statFlag |= CharacterStatType.HP;
-                if (skill.getSkillID() == Cleric.Heal) {
-                    if (affectedMemberBitmap != 0) {
-                        // Ignore because this only ever adjusts from other party members.
-                        // statFlag |= user.incEXP(affectedMemberBitmap, false);
-                    }
-                }
             }
         }
         user.validateStat(false);

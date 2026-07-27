@@ -422,9 +422,25 @@ public class Mob extends Creature {
     
     public boolean onMobMove(boolean nextAttackPossible, byte action, int data) {
         long time = System.currentTimeMillis();
-        lastMove = time;
-        if (action >= 0) {//>= MobAct.Move
-            // Wait, mob attacks don't exist yet because there's no MobSkill..
+        this.lastMove = time;
+        if (action >= MobAction.Move) {
+            if (action >= MobAction.Attack1 && action <= MobAction.AttackF) {
+                int attackIdx = action - MobAction.Attack1;
+                MobAttackInfo info = null;
+                if (!template.getAttackInfo().isEmpty() && attackIdx < template.getAttackInfo().size()) {
+                    info = template.getAttackInfo().get(attackIdx);
+                }
+                if (info != null) {
+                    this.mp = Math.max(0, this.mp - info.conMP);
+                    this.lastAttack = time;
+                }
+            } else {
+                // Wait, mob skills don't exist yet because there's no MobSkill..
+                int skillID = data & 0xFF;
+                int slv = (data >> 8) & 0xFF;
+                int option = (data >> 16) & 0xFF;
+                // if (action >= MobAction.Skill1 && action <= MobAction.SkillF && !doSkill(skillID, slv, option)) return false;
+            }
         }
         if (time - lastAttack > 5000) {
             int characterID = 0;

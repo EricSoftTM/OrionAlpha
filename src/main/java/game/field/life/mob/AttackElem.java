@@ -31,10 +31,12 @@ public class AttackElem {
             Light       = 3,
             Poison      = 4,
             Holy        = 5,
-            Count       = 6
+            Dark        = 6,
+            Undead      = 7,
+            Count       = 8
     ;
     
-    public static final int getElementAttribute(char elemAttr) {
+    public static int getElementAttribute(char elemAttr) {
         switch (Character.toUpperCase(elemAttr)) {
             case '\0'://(null)
             case 'P'://80 & 112
@@ -45,10 +47,14 @@ public class AttackElem {
                 return Fire;
             case 'L'://76 & 108
                 return Light;
-            case 'S'://83 & 115
+            case 'W'://87 & 119
                 return Poison;
             case 'H'://72 & 104
                 return Holy;
+            case 'D'://68 & 100
+                return Dark;
+            case 'U'://85 & 117
+                return Undead;
             default: {
                 Logger.logError("Undefined element found: '%c'", elemAttr);
                 

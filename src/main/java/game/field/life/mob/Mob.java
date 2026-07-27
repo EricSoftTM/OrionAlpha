@@ -370,7 +370,14 @@ public class Mob extends Creature {
         if (hp <= 0 || isTimeToRemove(System.currentTimeMillis(), false) || forcedDead) {
             deadType = MobLeaveField.ETC;
         }
-        return MobPool.onMobLeaveField(getGameObjectID(), deadType);
+        short removeAfter;
+        if (deadType == MobLeaveField.RemainHP) { // unregister without ZRef<MobDieMsg> when leaving FieldSplits
+            removeAfter = -1;
+        } else {
+            // TODO: Calculate MobDie animation delays for this to be proper
+            removeAfter = 600;
+        }
+        return MobPool.onMobLeaveField(getGameObjectID(), removeAfter);
     }
     
     public void onMobDead(Point hit, short delay) {

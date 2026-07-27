@@ -33,10 +33,10 @@ public class MobPool {
         return packet;
     }
     
-    public static OutPacket onMobLeaveField(int mobID, byte deadType) {
+    public static OutPacket onMobLeaveField(int mobID, short delay) {
         OutPacket packet = new OutPacket(LoopbackPacket.MobLeaveField);
         packet.encodeInt(mobID);
-        packet.encodeByte(deadType);
+        packet.encodeShort(delay);
         return packet;
     }
     

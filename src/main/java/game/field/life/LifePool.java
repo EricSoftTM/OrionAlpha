@@ -31,6 +31,7 @@ import game.field.life.mob.MobTemplate;
 import game.field.life.npc.Npc;
 import game.field.life.npc.NpcTemplate;
 import game.user.User;
+import game.user.skill.AttackType;
 import game.user.skill.SkillAccessor;
 import game.user.skill.SkillEntry;
 import java.awt.Point;
@@ -43,6 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import network.packet.ClientPacket;
 import network.packet.InPacket;
+import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
 import util.Logger;
 import util.Pointer;
@@ -759,11 +761,11 @@ public class LifePool {
                     });
                 }
             
-                OutPacket packet = new OutPacket(type);
+                OutPacket packet = new OutPacket(LoopbackPacket.UserMeleeAttack + (attackType - AttackType.MELEE));
                 packet.encodeInt(user.getCharacterID());
-                packet.encodeByte(damagePerMob | 16 * mobCount);
+                packet.encodeByte((mobCount << 4) | damagePerMob);
                 packet.encodeByte(slv);
-                if (slv > 0) {
+                if (slv != 0) {
                     packet.encodeInt(skillID);
                 }
                 packet.encodeByte(action);
@@ -772,6 +774,9 @@ public class LifePool {
                 packet.encodeInt(bulletItemID);
                 for (AttackInfo info : attack) {
                     packet.encodeInt(info.mobID);
+                    if (info.mobID == 0) {
+                        continue;
+                    }
                     packet.encodeByte(info.hitAction);
                     for (int i = 0; i < damagePerMob; i++) {
                         packet.encodeShort(info.damageCli.get(i));

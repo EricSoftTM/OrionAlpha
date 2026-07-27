@@ -1401,11 +1401,11 @@ public class User extends Creature {
 
             byte attackType;
             if (type == ClientPacket.UserMagicAttack) {
-                attackType = 3;
+                attackType = AttackType.MAGIC;
             } else if (type == ClientPacket.UserShootAttack) {
-                attackType = 2;
+                attackType = AttackType.SHOOT;
             } else if (type == ClientPacket.UserMeleeAttack) {
-                attackType = 1;
+                attackType = AttackType.MELEE;
             } else {
                 Logger.logError("Attack Type Error %d", type);
                 return;

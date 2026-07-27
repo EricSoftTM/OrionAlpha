@@ -366,14 +366,12 @@ public class SkillAccessor {
 
     
     public static int getWeaponMastery(CharacterData cd, int weaponItemID, int attackType, Pointer<Integer> accInc) {
-        final int MELEE = 1, SHOOT = 2;
-        
         int wt = ItemAccessor.getWeaponType(weaponItemID);
         int mastery = 0;
         switch (wt) {
             case 30: //OneHand_Sword
             case 40: //TowHand_Sword
-                if (attackType == MELEE) {
+                if (attackType == AttackType.MELEE) {
                     mastery = SkillAccessor.getMasteryFromSkill(cd, Fighter.WeaponMastery, accInc);
                     if (mastery == 0)
                         mastery = SkillAccessor.getMasteryFromSkill(cd, Page.WeaponMastery, accInc);
@@ -381,7 +379,7 @@ public class SkillAccessor {
                 break;
             case 31: //OneHand_Axe
             case 41: //TowHand_Axe
-                if (attackType == MELEE) {
+                if (attackType == AttackType.MELEE) {
                     mastery = SkillAccessor.getMasteryFromSkill(cd, Fighter.WeaponMasteryEx, accInc);
                     if (mastery == 0)
                         mastery = SkillAccessor.getMasteryFromSkill(cd, Page.WeaponMasteryEx, accInc);
@@ -389,29 +387,29 @@ public class SkillAccessor {
                 break;
             case 32: //OneHand_Mace
             case 42: //TowHand_Mace
-                if (attackType == MELEE) {
+                if (attackType == AttackType.MELEE) {
                     mastery = SkillAccessor.getMasteryFromSkill(cd, Page.WeaponMasteryEx, accInc);
                     if (mastery == 0)
                         mastery = SkillAccessor.getMasteryFromSkill(cd, Fighter.WeaponMasteryEx, accInc);
                 }
                 break;
             case 45: //Bow
-                if (attackType == SHOOT) {
+                if (attackType == AttackType.SHOOT) {
                     mastery = SkillAccessor.getMasteryFromSkill(cd, Hunter.BowMastery, accInc);
                 }
                 break;
             case 46: //CrossBow
-                if (attackType == SHOOT) {
+                if (attackType == AttackType.SHOOT) {
                     mastery = SkillAccessor.getMasteryFromSkill(cd, Crossbowman.CrossbowMastery, accInc);
                 }
                 break;
             case 47: //ThrowingGloves
-                if (attackType == SHOOT) {
+                if (attackType == AttackType.SHOOT) {
                     mastery = SkillAccessor.getMasteryFromSkill(cd, Assassin.JavelinMastery, accInc);
                 }
                 break;
             case 33: //Dagger
-                if (attackType == MELEE) {
+                if (attackType == AttackType.MELEE) {
                     mastery = SkillAccessor.getMasteryFromSkill(cd, Thief.DaggerMastery, accInc);
                 }
                 break;

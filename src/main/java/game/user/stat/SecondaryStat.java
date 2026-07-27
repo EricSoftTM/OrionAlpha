@@ -23,6 +23,7 @@ import common.item.BodyPart;
 import common.item.ItemSlotBase;
 import common.item.ItemSlotEquip;
 import common.user.CharacterData;
+import game.user.skill.AttackType;
 import game.user.skill.SkillAccessor;
 import game.user.skill.SkillEntry;
 import game.user.skill.SkillInfo;
@@ -244,9 +245,9 @@ public class SecondaryStat {
             this.eva += thiefNimbleBody.getLevelData(slv).getY();
         }
         
-        int attackType = 1;//MELEE
+        int attackType = AttackType.MELEE;
         if (jc == JobCategory.Archer || job / 10 == 41)
-            attackType = 2;//SHOOT
+            attackType = AttackType.SHOOT;
         int weaponItemID = 0;
         ItemSlotBase item = realEquip.get(BodyPart.Weapon);
         if (item != null)

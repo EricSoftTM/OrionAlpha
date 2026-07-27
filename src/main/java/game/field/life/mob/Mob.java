@@ -400,7 +400,7 @@ public class Mob extends Creature {
                 damageLog.addLog(characterID, damage, time);
                 setMobHP(hp - damage);
                 //if (hp > 0) {
-                    //if (attackType == 1 && stat.getStatOption(MobStats.Stun) != 0) {
+                    //if (attackType == AttackType.MELEE && stat.getStatOption(MobStats.Stun) != 0) {
                         //flagReset |= stat.reset(MobStats.Stun);
                     //}
                 //}

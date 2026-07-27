@@ -347,40 +347,6 @@ public class SkillAccessor {
         return SkillInfo.getInstance().getSkillLevel(cd, skill, null);
     }
     
-    public static int getMPStealSkillData(CharacterData cd, int attackType, Pointer<Integer> prop, Pointer<Integer> percent) {
-        prop.set(0);
-        percent.set(0);
-        if (attackType != 3)
-            return 0;
-        
-        int skill = 0;
-        switch (JobAccessor.findJob(cd.getCharacterStat().getJob())) {
-            case Wizard_Fire_Poison:
-                skill = Wizard1.MPEater;
-                break;
-            case Wizard_Thunder_Cold:
-                skill = Wizard2.MPEater;
-                break;
-            case Cleric:
-                skill = Cleric.MPEater;
-                break;
-        }
-        
-        if (skill != 0) {
-            Pointer<SkillEntry> skillEntry = new Pointer<>(null);
-            int slv = SkillInfo.getInstance().getSkillLevel(cd, skill, skillEntry);
-            if (slv > 0) {
-                if (skillEntry.get() != null) {
-                    prop.set(skillEntry.get().getLevelData(slv).getProp());
-                    percent.set(skillEntry.get().getLevelData(slv).getX());
-                }
-                return skill;
-            }
-        }
-        
-        return 0;
-    }
-    
     public static int getMasteryFromSkill(CharacterData cd, int skillID, Pointer<Integer> inc) {
         int mastery = 0;
         

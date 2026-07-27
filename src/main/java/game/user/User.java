@@ -2567,17 +2567,7 @@ public class User extends Creature {
                 }
                 postAvatarModified(flag);
             }
-            // Max all skills on a user based on their current Job Race
-            if (isGM() && character.getSkillRecord().isEmpty()) {
-                for (SkillEntry skill : SkillInfo.getInstance().getAllSkills()) {
-                    int skillID = skill.getSkillID();
-                    int skillRoot = skillID / 10000;
-
-                    if (JobAccessor.isCorrectJobForSkillRoot(character.getCharacterStat().getJob(), skillRoot)) {
-                        character.getSkillRecord().put(skillID, skill.getLevelData().length);
-                    }
-                }
-            }
+            
             avatarOld.getEquipped().clear();
         } finally {
             unlock();

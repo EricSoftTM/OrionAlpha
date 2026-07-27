@@ -18,6 +18,7 @@
 package game.user.command;
 
 import common.BroadcastMsg;
+import common.JobAccessor;
 import common.Request;
 import common.item.ItemAccessor;
 import common.item.ItemSlotBase;
@@ -25,6 +26,7 @@ import common.item.ItemSlotType;
 import common.user.CharacterData;
 import common.user.CharacterStat;
 import common.user.CharacterStat.CharacterStatType;
+import common.user.DBChar;
 import game.field.Field;
 import game.field.drop.DropPool;
 import game.field.drop.Reward;
@@ -35,6 +37,9 @@ import game.user.item.ChangeLog;
 import game.user.item.InventoryManipulator;
 import game.user.item.ItemInfo;
 import game.user.item.ItemVariationOption;
+import game.user.skill.SkillEntry;
+import game.user.skill.SkillInfo;
+import game.user.skill.SkillRecord;
 import util.Utilities;
 
 import java.util.ArrayList;
@@ -109,7 +114,50 @@ public class GMCommands {
         }
         return "!job <jobID>";
     }
-
+    
+    @CommandDesc("Max out all of your skills")
+    public static String maxSkills(User user, CharacterData character, String[] args) {
+        if (character.getCharacterStat().getJob() != 0) {
+            List<SkillRecord> changes = new ArrayList<>();
+            for (SkillEntry skill : SkillInfo.getInstance().getAllSkills()) {
+                int skillID = skill.getSkillID();
+                int skillRoot = skillID / 10000;
+                if (JobAccessor.isCorrectJobForSkillRoot(character.getCharacterStat().getJob(), skillRoot)) {
+                    changes.add(new SkillRecord(skillID, skill.getLevelData().length));
+                }
+            }
+            for (SkillRecord change : changes) {
+                character.getSkillRecord().put(change.getSkillID(), change.getInfo());
+            }
+            user.addCharacterDataMod(DBChar.SkillRecord);
+            user.sendPacket(WvsContext.onChangeSkillRecordResult(Request.None, changes));
+            user.validateStat(false);
+            user.sendSystemMessage("Your skills have been maxed.");
+            changes.clear();
+        }
+        return null;
+    }
+    
+    @CommandDesc("Reset all of your skills")
+    public static String resetSkills(User user, CharacterData character, String[] args) {
+        if (!character.getSkillRecord().isEmpty()) {
+            List<SkillRecord> changes = new ArrayList<>();
+            // Since skills can only insert/update in the database, just reset each SLV back to zero.
+            for (int skillID : character.getSkillRecord().keySet()) {
+                changes.add(new SkillRecord(skillID, 0));
+            }
+            for (SkillRecord change : changes) {
+                character.getSkillRecord().put(change.getSkillID(), change.getInfo());
+            }
+            user.addCharacterDataMod(DBChar.SkillRecord);
+            user.sendPacket(WvsContext.onChangeSkillRecordResult(Request.None, changes));
+            user.validateStat(false);
+            user.sendSystemMessage("Your skills have been reset.");
+            changes.clear();
+        }
+        return null;
+    }
+    
     @CommandDesc("Heal yourself back to max HP/MP")
     public static String heal(User user, CharacterStat stat) {
         stat.setHP(stat.getMHP());

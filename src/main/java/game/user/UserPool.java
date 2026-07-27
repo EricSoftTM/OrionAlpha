@@ -39,7 +39,6 @@ public class UserPool {
         packet.encodeInt(user.getCharacterID());
         packet.encodeString(user.getCharacterName());
         packet.encodeByte(user.getCharacter().getCharacterStat().getGender());
-        user.getSecondaryStat().encodeForRemote(packet, SecondaryStat.FilterForRemote);
         packet.encodeInt(user.getCharacter().getCharacterStat().getFace());
         packet.encodeInt(0); //AvatarLook.Unknown2 (unused int)
         packet.encodeInt(0); //AvatarLook.Unknown3 (unused int)

@@ -1313,8 +1313,7 @@ public class User extends Creature {
 
     public void onAttack(byte type, InPacket packet) {
         if (secondaryStat.getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
-            int reset = secondaryStat.resetByCTS(CharacterTemporaryStat.DarkSight);
-            sendTemporaryStatReset(reset);
+            secondaryStat.resetByCTS(CharacterTemporaryStat.DarkSight);
             return;
         }
 
@@ -1447,7 +1446,7 @@ public class User extends Creature {
                                 bulletItemID = item.getItemID();
                                 Inventory.sendInventoryOperation(this, Request.None, changeLog);
                             }
-                        } else if (secondaryStat.getStatOption(CharacterTemporaryStat.SoulArrow) == 0) {
+                        } else {
                             Pointer<Integer> decRet = new Pointer<>(0);
                             if (Inventory.rawRemoveItem(this, ItemType.Consume, bulletItemPos, (short) bulletCount, changeLog, decRet, null) && decRet.get() == bulletCount) {
                                 addCharacterDataMod(DBChar.ItemSlotConsume);
@@ -1773,7 +1772,7 @@ public class User extends Creature {
         int flag = sci.getInfo().apply(this, sci.getItemID(), character, basicStat, secondaryStat, System.currentTimeMillis(), false);
         addCharacterDataMod(DBChar.ItemSlotConsume | DBChar.Character);
         sendCharacterStat(Request.Excl, sci.getInfo().getFlag());
-        sendTemporaryStatSet(flag);
+        sendTemporaryStatSet(itemID, flag);
     }
 
     public void onScriptMessageAnswer(InPacket packet) {
@@ -2135,7 +2134,7 @@ public class User extends Creature {
                             }
                             portal = "";
                             character.getCharacterStat().setHP(50);
-                            basicStat.setFrom(character, character.getEquipped(), character.getEquipped2(), 0, 0);
+                            basicStat.setFrom(character, character.getEquipped());
                             secondaryStat.clear();
                             secondaryStat.setFrom(basicStat, character.getEquipped(), character);
                             validateStat(false);
@@ -2352,8 +2351,7 @@ public class User extends Creature {
     }
 
     private void onUserDead() {
-        sendTemporaryStatReset(secondaryStat.reset());
-
+        secondaryStat.reset();
         ExpAccessor.decreaseExp(character, basicStat, getField().getLifePool().getMobGenCount() <= 0 || getField().isTown());
         sendCharacterStat(Request.None, CharacterStatType.EXP);
     }
@@ -2482,35 +2480,17 @@ public class User extends Creature {
                 reset = secondaryStat.resetByTime(time);
             if (reset != 0) {
                 validateStat(false);
-                sendTemporaryStatReset(reset);
             }
         } finally {
             unlock();
         }
     }
 
-    public void sendTemporaryStatSet(int set) {
+    public void sendTemporaryStatSet(int reasonID, int set) {
         if (set != 0) {
             lock.lock();
             try {
-                sendPacket(WvsContext.onTemporaryStatSet(Request.Excl, secondaryStat, set));
-                if (getField() != null) {
-                    getField().splitSendPacket(getSplit(), UserRemote.onTemporaryStatSet(characterID, secondaryStat, set), this);
-                }
-            } finally {
-                unlock();
-            }
-        }
-    }
-
-    public void sendTemporaryStatReset(int reset) {
-        if (reset != 0) {
-            lock.lock();
-            try {
-                sendPacket(WvsContext.onTemporaryStatReset(reset));
-                if (getField() != null) {
-                    getField().splitSendPacket(getSplit(), UserRemote.onResetTemporaryStat(characterID, reset), this);
-                }
+                sendPacket(WvsContext.onTemporaryStatSet(Request.Excl, secondaryStat, reasonID, set));
             } finally {
                 unlock();
             }
@@ -2549,15 +2529,13 @@ public class User extends Creature {
             ItemAccessor.getRealEquip(character, realEquip, 0, 0);
             avatarLook.load(character.getCharacterStat(), character.getEquipped(), character.getEquipped2());
 
-            int maxHPIncRate = secondaryStat.getStatOption(CharacterTemporaryStat.MaxHP);
-            int maxMPIncRate = secondaryStat.getStatOption(CharacterTemporaryStat.MaxMP);
             int speed = secondaryStat.speed;
             int weaponID = 0;
             if (character.getItem(ItemType.Equip, -BodyPart.Weapon) != null) {
                 weaponID = character.getItem(ItemType.Equip, -BodyPart.Weapon).getItemID();
             }
 
-            basicStat.setFrom(character, realEquip, character.getEquipped2(), maxHPIncRate, maxMPIncRate);
+            basicStat.setFrom(character, realEquip);
             secondaryStat.setFrom(basicStat, realEquip, character);
 
             int flag = 0;
@@ -2574,16 +2552,10 @@ public class User extends Creature {
                 if (flag != 0)
                     sendCharacterStat(Request.None, flag);
                 if (!avatarLook.getEquipped().get(BodyPart.Weapon).equals(weaponID)) {
-                    flag = 0;
                     if (secondaryStat.getStatOption(CharacterTemporaryStat.Booster) != 0) {
                         int reasonID = secondaryStat.getStatReason(CharacterTemporaryStat.Booster);
-                        flag |= secondaryStat.resetByReasonID(reasonID);
+                        secondaryStat.resetByReasonID(reasonID);
                     }
-                    if (secondaryStat.getStatOption(CharacterTemporaryStat.SoulArrow) != 0) {
-                        int reasonID = secondaryStat.getStatReason(CharacterTemporaryStat.SoulArrow);
-                        flag |= secondaryStat.resetByReasonID(reasonID);
-                    }
-                    sendTemporaryStatReset(flag);
                 }
                 flag = 0;
                 if (!avatarOld.equals(avatarLook)) {

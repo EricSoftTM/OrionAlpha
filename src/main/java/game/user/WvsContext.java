@@ -53,17 +53,18 @@ public class WvsContext {
         return packet;
     }
     
-    public static OutPacket onTemporaryStatSet(byte onExclRequest, SecondaryStat ss, int flag) {
+    public static OutPacket onTemporaryStatSet(byte onExclRequest, SecondaryStat ss, int reasonID, int flag) {
         OutPacket packet = new OutPacket(LoopbackPacket.TemporaryStatSet);
         packet.encodeByte(onExclRequest);
         packet.encodeInt(0);//EncodeChangeStat
-        ss.encodeForLocal(packet, flag);
-        return packet;
-    }
-    
-    public static OutPacket onTemporaryStatReset(int flag) {
-        OutPacket packet = new OutPacket(LoopbackPacket.TemporaryStatReset);
-        packet.encodeInt(flag);
+        // in 1.11, both mob and secondary stats do not have independent reasons.
+        var opt = ss.getStat(flag, reasonID);
+        ss.encodeForLocal(packet, opt.getRemainTime(), flag);
+        if (opt.getRemainTime() != 0) {
+            // all reasons are absolute - information path is determined by isSkill.
+            packet.encodeBool(opt.isSkill());
+            packet.encodeInt(Math.abs(opt.getReason()));
+        }
         return packet;
     }
     

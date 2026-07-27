@@ -737,7 +737,7 @@ public class ScriptSysFunc {
                     int flag = sci.getInfo().apply(getUser(), itemID, getUser().getCharacter(), getUser().getBasicStat(), getUser().getSecondaryStat(), time, false);
                     getUser().addCharacterDataMod(DBChar.Character);
                     getUser().sendCharacterStat(Request.None, sci.getInfo().getFlag());
-                    getUser().sendTemporaryStatSet(flag);
+                    getUser().sendTemporaryStatSet(itemID, flag);
                     //getUser().sendGiveBuffMessage(itemID);
                 } finally {
                     getUser().unlock();

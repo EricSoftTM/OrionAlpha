@@ -141,7 +141,7 @@ public class UserSkill {
         }
         user.validateStat(false);
         user.sendCharacterStat(Request.Excl, statFlag);
-        user.sendTemporaryStatSet(skillFlag);
+        user.sendTemporaryStatSet(skill.getSkillID(), skillFlag);
         if (user.getField() != null) {
             user.onUserEffect(UserEffect.SkillUse, skill.getSkillID(), slv);
         }
@@ -179,7 +179,7 @@ public class UserSkill {
         
         user.validateStat(true);
         user.sendCharacterStat(Request.Excl, statFlag);
-        user.sendTemporaryStatSet(skillFlag);
+        user.sendTemporaryStatSet(skill.getSkillID(), skillFlag);
         if (user.getField() != null) {
             user.onUserEffect(UserEffect.SkillUse, skill.getSkillID(), slv);
         }
@@ -209,7 +209,7 @@ public class UserSkill {
             long duration = System.currentTimeMillis() + 1000L * levelData.getTime();
             user.getSecondaryStat().setStat(CharacterTemporaryStat.Booster, new SecondaryStatOption(1, skill.getSkillID(), duration));
             user.sendCharacterStat(Request.Excl, 0);
-            user.sendTemporaryStatSet(CharacterTemporaryStat.Booster);
+            user.sendTemporaryStatSet(skill.getSkillID(), CharacterTemporaryStat.Booster);
             if (user.getField() != null) {
                 user.onUserEffect(UserEffect.SkillUse, skill.getSkillID(), slv);
             }
@@ -278,32 +278,14 @@ public class UserSkill {
             flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.Jump, new SecondaryStatOption(level.getJump(), skill.getSkillID(), duration));
         }
         
-        switch (skill.getSkillID()) {
-            // WARRIOR
-            case Fighter.PowerGuard:
-            case Page.PowerGuard:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.PowerGuard, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
-                break;
-            case Spearman.HyperBody:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MaxHP, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MaxMP, new SecondaryStatOption(level.getY(), skill.getSkillID(), duration));
-                break;
-            // MAGICIAN
-            case Magician.MagicGuard:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.MagicGuard, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
-                break;
-            case Cleric.Invincible:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.Invincible, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
-                break;
-            // BOWMAN
-            case Hunter.SoulArrow_Bow:
-            case Crossbowman.SoulArrow_Crossbow:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.SoulArrow, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
-                break;
-            // THIEF
-            case Rogue.DarkSight:
-                flag |= user.getSecondaryStat().setStat(CharacterTemporaryStat.DarkSight, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
-                break;
+        int cts = 0;
+        if (skill.getSkillID() == Magician.MagicGuard) {
+            cts = CharacterTemporaryStat.MagicGuard;
+        } else if (skill.getSkillID() == Rogue.DarkSight) {
+            cts = CharacterTemporaryStat.DarkSight;
+        }
+        if (cts != 0) {
+            flag |= user.getSecondaryStat().setStat(cts, new SecondaryStatOption(level.getX(), skill.getSkillID(), duration));
         }
         
         return flag;

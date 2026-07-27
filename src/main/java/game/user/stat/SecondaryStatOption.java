@@ -53,8 +53,16 @@ public class SecondaryStatOption {
         return skillReason;
     }
     
+    public boolean isSkill() {
+        return skillReason > 0;
+    }
+    
     public long getDuration() {
         return skillDuration;
+    }
+    
+    public int getRemainTime() {
+        return (int) (skillDuration - System.currentTimeMillis());
     }
     
     public void setModOption(int mod) {

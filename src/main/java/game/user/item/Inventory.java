@@ -183,7 +183,7 @@ public class Inventory {
         InventoryManipulator.insertChangeLog(changeLog, ChangeLog.Position, ItemType.Equip, pos2, item, pos1, (short) 0);
         
         if (user.getSecondaryStat().getStatOption(CharacterTemporaryStat.Booster) != 0 && ItemAccessor.isWeapon(item.getItemID())) {
-            user.sendTemporaryStatReset(user.getSecondaryStat().resetByCTS(CharacterTemporaryStat.Booster));
+            user.getSecondaryStat().resetByCTS(CharacterTemporaryStat.Booster);
         }
         user.validateStat(false);
     }

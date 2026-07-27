@@ -88,7 +88,7 @@ public class BasicStat {
         return mmp;
     }
     
-    public void setFrom(CharacterData c, List<ItemSlotBase> realEquip, List<ItemSlotBase> realEquip2, int maxHPIncRate, int maxMPIncRate) {
+    public void setFrom(CharacterData c, List<ItemSlotBase> realEquip) {
         this.gender = c.getCharacterStat().getGender();
         this.level = c.getCharacterStat().getLevel();
         this.job = c.getCharacterStat().getJob();
@@ -111,9 +111,6 @@ public class BasicStat {
                 this.mmp += equip.iMaxMP;
             }
         }
-        
-        this.mhp = (short) Math.min((maxHPIncRate + 100) * this.mhp / 100, SkillAccessor.HP_MAX);
-        this.mmp = (short) Math.min((maxMPIncRate + 100) * this.mmp / 100, SkillAccessor.MP_MAX);
     }
 
     public void setGender(byte gender) {

@@ -27,7 +27,6 @@ import game.user.skill.SkillAccessor;
 import game.user.skill.SkillEntry;
 import game.user.skill.SkillInfo;
 import game.user.skill.Skills.*;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -43,10 +42,7 @@ public class SecondaryStat {
     /* The constant Stat Option held as an empty holder for non-buffed stats */
     static final SecondaryStatOption EMPTY_OPTION;
     /* Constant defined sets for comparing the symmetrical difference of two sets */
-    public static final int 
-            MovementAffecting,
-            FilterForRemote
-    ;
+    public static final int MovementAffecting;
     
     private final Map<Integer, SecondaryStatOption> stats;
     public int pad;
@@ -76,89 +72,61 @@ public class SecondaryStat {
         this.stats.clear();
     }
     
-    public void encodeForLocal(OutPacket packet, int flag) {
-        packet.encodeInt(flag);
-        for (int cts : stats.keySet()) {
-            if ((cts & flag) != 0) {
-                SecondaryStatOption opt = getStat(cts);
-                packet.encodeShort(opt.getOption());
-                packet.encodeInt(opt.getReason());
+    public void encodeForLocal(OutPacket packet, int duration, int flag) {
+        packet.encodeInt(duration);
+        if (duration != 0) {
+            packet.encodeInt(flag);
+            if ((flag & CharacterTemporaryStat.PAD) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.PAD));
+            }
+            if ((flag & CharacterTemporaryStat.PDD) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.PDD));
+            }
+            if ((flag & CharacterTemporaryStat.MAD) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.MAD));
+            }
+            if ((flag & CharacterTemporaryStat.MDD) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.MDD));
+            }
+            if ((flag & CharacterTemporaryStat.ACC) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.ACC));
+            }
+            if ((flag & CharacterTemporaryStat.EVA) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.EVA));
+            }
+            if ((flag & CharacterTemporaryStat.Craft) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.Craft));
+            }
+            if ((flag & CharacterTemporaryStat.Speed) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.Speed));
+            }
+            if ((flag & CharacterTemporaryStat.Jump) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.Jump));
+            }
+            if ((flag & CharacterTemporaryStat.MagicGuard) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.MagicGuard));
+            }
+            if ((flag & CharacterTemporaryStat.DarkSight) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.DarkSight));
+            }
+            if ((flag & CharacterTemporaryStat.Booster) != 0) {
+                packet.encodeShort(getStatOption(CharacterTemporaryStat.Booster));
             }
         }
     }
     
-    public void encodeForRemote(OutPacket packet, int flag) {
-        int toSend = 0;
-        List<Integer> data = new ArrayList<>();
-        
-        if ((flag & CharacterTemporaryStat.PAD) != 0 && getStatOption(CharacterTemporaryStat.PAD) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.PAD));
-        }
-        if ((flag & CharacterTemporaryStat.PDD) != 0  && getStatOption(CharacterTemporaryStat.PDD) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.PDD));
-        }
-        if ((flag & CharacterTemporaryStat.MAD) != 0  && getStatOption(CharacterTemporaryStat.MAD) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.MAD));
-        }
-        if ((flag & CharacterTemporaryStat.MDD) != 0  && getStatOption(CharacterTemporaryStat.MDD) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.MDD));
-        }
-        if ((flag & CharacterTemporaryStat.ACC) != 0  && getStatOption(CharacterTemporaryStat.ACC) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.ACC));
-        }
-        if ((flag & CharacterTemporaryStat.EVA) != 0  && getStatOption(CharacterTemporaryStat.EVA) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.EVA));
-        }
-        if ((flag & CharacterTemporaryStat.Craft) != 0  && getStatOption(CharacterTemporaryStat.Craft) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.Craft));
-        }
-        if ((flag & CharacterTemporaryStat.Speed) != 0  && getStatOption(CharacterTemporaryStat.Speed) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.Speed));
-        }
-        if ((flag & CharacterTemporaryStat.Jump) != 0  && getStatOption(CharacterTemporaryStat.Jump) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.Jump));
-        }
-        if ((flag & CharacterTemporaryStat.MagicGuard) != 0  && getStatOption(CharacterTemporaryStat.MagicGuard) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.MagicGuard));
-        }
-        if ((flag & CharacterTemporaryStat.DarkSight) != 0  && getStatOption(CharacterTemporaryStat.DarkSight) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.DarkSight));
-        }
-        if ((flag & CharacterTemporaryStat.Booster) != 0  && getStatOption(CharacterTemporaryStat.Booster) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.Booster));
-        }
-        if ((flag & CharacterTemporaryStat.Unknown) != 0  && getStatOption(CharacterTemporaryStat.Unknown) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.Unknown));
-        }
-        if ((flag & CharacterTemporaryStat.PowerGuard) != 0  && getStatOption(CharacterTemporaryStat.PowerGuard) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.PowerGuard));
-        }
-        if ((flag & CharacterTemporaryStat.MaxHP) != 0  && getStatOption(CharacterTemporaryStat.MaxHP) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.MaxHP));
-        }
-        if ((flag & CharacterTemporaryStat.MaxMP) != 0  && getStatOption(CharacterTemporaryStat.MaxMP) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.MaxMP));
-        }
-        if ((flag & CharacterTemporaryStat.Invincible) != 0  && getStatOption(CharacterTemporaryStat.Invincible) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.Invincible));
-        }
-        if ((flag & CharacterTemporaryStat.SoulArrow) != 0  && getStatOption(CharacterTemporaryStat.SoulArrow) != 0) {
-            data.add(getStatReason(CharacterTemporaryStat.SoulArrow));
-        }
-        
-        packet.encodeInt(toSend);
-        for (int val : data) {
-            packet.encodeInt(val);
-        }
-    }
-    
-    public static boolean filterForRemote(int flag) {
-        return (flag & FilterForRemote) != 0;
-    }
-    
     public SecondaryStatOption getStat(int cts) {
+        return stats.getOrDefault(cts, EMPTY_OPTION);
+    }
+    
+    public SecondaryStatOption getStat(int cts, int reason) {
         if (stats.containsKey(cts)) {
             return stats.get(cts);
+        }
+        for (SecondaryStatOption opt : stats.values()) {
+            if (opt.getReason() == reason) {
+                return opt;
+            }
         }
         return EMPTY_OPTION;
     }
@@ -315,6 +283,5 @@ public class SecondaryStat {
         EMPTY_OPTION = new SecondaryStatOption();
         
         MovementAffecting = CharacterTemporaryStat.Speed | CharacterTemporaryStat.Jump;
-        FilterForRemote = CharacterTemporaryStat.Speed | CharacterTemporaryStat.DarkSight | CharacterTemporaryStat.SoulArrow;
     }
 }

@@ -57,39 +57,6 @@ public class UserRemote {
     }
     
     /**
-     * The character buff packet.
-     * This will give a user a set of buffs based on the flag.
-     * 
-     * @param characterID The ID of the user to buff
-     * @param ss The SecondaryStat object of the user
-     * @param flag The flag containing which buffs to give
-     * 
-     * @return The character buff packet
-     */
-    public static OutPacket onTemporaryStatSet(int characterID, SecondaryStat ss, int flag) {
-        OutPacket packet = new OutPacket(LoopbackPacket.UserTemporaryStatSet);
-        packet.encodeInt(characterID);
-        ss.encodeForRemote(packet, flag);
-        return packet;
-    }
-    
-    /**
-     * The buff reset packet.
-     * This will cancel a set of buffs for the character based on the flag.
-     * 
-     * @param characterID The ID of the character to remove buffs from
-     * @param flag The flag containing which buffs to cancel
-     * 
-     * @return The buff reset packet
-     */
-    public static OutPacket onResetTemporaryStat(int characterID, int flag) {
-        OutPacket packet = new OutPacket(LoopbackPacket.UserTemporaryStatReset);
-        packet.encodeInt(characterID);
-        packet.encodeInt(flag);
-        return packet;
-    }
-    
-    /**
      * The character emotion packet.
      * Displays a character using an emotion to the field.
      * 

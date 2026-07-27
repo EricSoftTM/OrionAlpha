@@ -39,7 +39,6 @@ public class LoopbackPacket {
             // Both StatChanged and TemporaryStatSet are in one function in 1.23
             StatChanged = 13,
             TemporaryStatSet = 13,
-            TemporaryStatReset = -1, // TODO: Remove
             ChangeSkillRecordResult = 14,
             SkillUseResult = 15,
             PartyResult = 16,
@@ -69,8 +68,6 @@ public class LoopbackPacket {
             UserEmotion = 39,
             UserAvatarModified = 40,
             UserEffectRemote = 41,
-            UserTemporaryStatSet = -1, // TODO: Remove
-            UserTemporaryStatReset = -1, // TODO: Remove
             END_USERREMOTE = 42,
             BEGIN_USERLOCAL = 43,
             END_USERLOCAL = 44,

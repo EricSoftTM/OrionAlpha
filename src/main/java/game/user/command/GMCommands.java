@@ -51,6 +51,7 @@ public class GMCommands {
         return null;
     }
 
+    @CommandDesc("Set your remaining SP")
     public static String sp(User user, CharacterStat stat, String[] args) {
         if (args.length > 0) {
             stat.setSP(Short.parseShort(args[0]));
@@ -60,6 +61,7 @@ public class GMCommands {
         return "!sp <amount>";
     }
 
+    @CommandDesc("Set your remaining AP")
     public static String ap(User user, CharacterStat stat, String[] args) {
         if (args.length > 0) {
             stat.setAP(Short.parseShort(args[0]));
@@ -74,7 +76,7 @@ public class GMCommands {
             user.postTransferField(Integer.parseInt(args[0]), "", false);
             return null;
         }
-        return "!map <mapid>";
+        return "!map <mapID>";
     }
 
     @CommandDesc("Updates the level of your character")
@@ -87,6 +89,7 @@ public class GMCommands {
         return "!level <level>";
     }
 
+    @CommandAlias("money")
     @CommandDesc("Sets the amount of mesos in your inventory")
     public static String meso(User user, String[] args) {
         if (args.length > 0) {
@@ -104,9 +107,10 @@ public class GMCommands {
             user.sendCharacterStat(Request.Excl, CharacterStatType.Job);
             return null;
         }
-        return "!job <jobid>";
+        return "!job <jobID>";
     }
 
+    @CommandDesc("Heal yourself back to max HP/MP")
     public static String heal(User user, CharacterStat stat) {
         stat.setHP(stat.getMHP());
         stat.setMP(stat.getMMP());
@@ -159,6 +163,6 @@ public class GMCommands {
                 }
             }
         }
-        return "!item <itemid>";
+        return "!" + alias + " <itemID>";
     }
 }

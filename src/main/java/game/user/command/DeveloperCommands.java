@@ -26,7 +26,6 @@ import game.field.drop.DropPool;
 import game.field.life.LifePool;
 import game.field.life.npc.Npc;
 import game.user.User;
-import java.util.Iterator;
 
 /**
  *
@@ -34,20 +33,22 @@ import java.util.Iterator;
  */
 public class DeveloperCommands {
     
-    public static String whereami(User user, CharacterStat stat, String[] args) {
+    @CommandDesc("Displays the map ID that you are currently on")
+    public static String whereAmI(User user, CharacterStat stat, String[] args) {
         user.sendSystemMessage("You are currently on field " + stat.getPosMap());
         return null;
     }
     
+    @CommandDesc("Displays your current position in the map")
     public static String pos(User user, Field field, String[] args) {
         int x = user.getCurrentPosition().x;
         int y = user.getCurrentPosition().y;
         int fh = field.getSpace2D().getFootholdUnderneath(x, y).getSN();
-        
         user.sendSystemMessage("Your character's current position is (" + x + "," + y + ") on foothold (" + fh + ")");
         return null;
     }
     
+    @CommandDesc("Spawn mob(s) at your current location")
     public static String spawn(User user, LifePool lifePool, String[] args) {
         if (args.length > 0) {
             int templateID = Integer.parseInt(args[0]);
@@ -60,35 +61,36 @@ public class DeveloperCommands {
             }
             return null;
         }
-        return "!spawn <mobid> [count] - Spawns a mob, or optionally a specific amount of mobs";
+        return "!spawn <mobID> [count]";
     }
     
+    @CommandDesc("Spawn an NPC at your current location")
     public static String npc(User user, LifePool lifePool, String[] args) {
         if (args.length > 0) {
             Npc npc = lifePool.getNpc(Integer.parseInt(args[0]));
             if (npc != null) {
                 int x = user.getCurrentPosition().x;
                 int y = user.getCurrentPosition().y;
-                
                 lifePool.createNpc(null, npc.getTemplateID(), x, y);
             } else {
                 user.sendSystemMessage("The Npc you have entered does not have an existing template.");
             }
             return null;
         }
-        return "!npc <id> - Spawns the specified NPC at your location";
+        return "!npc <id>";
     }
     
-    public static String itemvac(User user, Field field, DropPool dropPool, String[] args) {
-        for (Iterator<Drop> it = dropPool.getDrops().values().iterator(); it.hasNext();) {
-            Drop drop = it.next();
+    @CommandDesc("Item Vac. 'nuff said")
+    public static String itemVac(User user, Field field, DropPool dropPool, String[] args) {
+        dropPool.getDrops().values().removeIf(drop -> {
             if (user.sendDropPickUpResultPacket(drop, Request.None)) {
-                it.remove();
                 for (FieldSplit split : drop.getSplits()) {
                     field.splitUnregisterFieldObj(split, FieldSplit.Drop, drop, drop.makeLeaveFieldPacket(Drop.PickedUpByUser, user.getCharacterID()));
                 }
+                return true;
             }
-        }
+            return false;
+        });
         return null;
     }
 }

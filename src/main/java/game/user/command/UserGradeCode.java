@@ -28,11 +28,18 @@ public enum UserGradeCode {
     ;
     private final int grade;
     
-    private UserGradeCode(int grade) {
+    UserGradeCode(int grade) {
         this.grade = grade;
     }
     
     public int getGrade() {
         return grade;
+    }
+    
+    public char getPrefix() {
+        if (this == User) {
+            return '@';
+        }
+        return '!';
     }
 }

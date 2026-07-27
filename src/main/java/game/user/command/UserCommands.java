@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 public class UserCommands {
 
     @CommandAlias({"dispose", "excl", "check"})
+    @CommandDesc("Got soft locked? Use this.")
     public static String fixme(User user) {
         if (user.getScriptVM() != null) {
             user.setScriptVM(null);
@@ -54,7 +55,7 @@ public class UserCommands {
                 if (desc == null) {
                     continue;
                 }
-                user.sendSystemMessage("@" + method.getName() + " - " + desc.value());
+                user.sendSystemMessage(role.getPrefix() + method.getName().toLowerCase() + " - " + desc.value());
             }
         }
         return null;

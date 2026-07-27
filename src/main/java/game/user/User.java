@@ -1130,9 +1130,6 @@ public class User extends Creature {
             case ClientPacket.UserTransferFieldRequest:
                 onTransferFieldRequest(packet);
                 break;
-            case ClientPacket.UserMigrateToCashShopRequest:
-                onMigrateToCashShopRequest();
-                break;
             case ClientPacket.UserMove:
                 onMove(packet);
                 break;
@@ -1682,29 +1679,6 @@ public class User extends Creature {
                 } else {
                     sendPacket(WvsContext.onGivePopularityResult(ret, null, false));
                 }
-            }
-        }
-    }
-
-    public void onMigrateToCashShopRequest() {
-        if (getField() == null || getSocket() == null || this.nexonClubID == null || this.nexonClubID.isEmpty()) {
-            return;
-        }
-
-        if (lock()) {
-            try {
-                if (canAttachAdditionalProcess()) {
-                    this.onTransferField = true;
-
-                    OutPacket packet = new OutPacket(CenterPacket.ShopMigrateReq);
-                    packet.encodeInt(getCharacterID());
-                    packet.encodeByte(getWorldID());
-                    packet.encodeByte(getChannelID());
-
-                    getChannel().getCenter().sendPacket(packet);
-                }
-            } finally {
-                unlock();
             }
         }
     }

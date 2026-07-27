@@ -97,7 +97,6 @@ public class ClientSocket extends SimpleChannelInboundHandler {
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         encoder = new SocketEncoder(cipher);
         decoder = new SocketDecoder(cipher);
-        channel.pipeline().addBefore("ClientSocket", "AliveAck", new IdleStateHandler(20, 15, 0));
         channel.pipeline().addBefore("ClientSocket", "SocketEncoder", encoder);
         channel.pipeline().addBefore("ClientSocket", "SocketDecoder", decoder);
         OutPacket packet = new OutPacket(Integer.MAX_VALUE);

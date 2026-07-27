@@ -37,7 +37,6 @@ public class ClientPacket {
             END_SOCKET = 11,
             BEGIN_USER = 12,
             UserTransferFieldRequest = 13,
-            UserMigrateToCashShopRequest = -14, // TODO: Remove
             UserMove = 14,
             UserMeleeAttack = 15,
             UserShootAttack = 16,

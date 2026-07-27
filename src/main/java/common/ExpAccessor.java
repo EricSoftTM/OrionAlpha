@@ -108,43 +108,25 @@ public class ExpAccessor {
      * 
      * @param c The user's active CharacterData
      * @param bs The user's active BasicStat
-     * @param town If the user's current field is a Town map
      */
-    public static void decreaseExp(CharacterData c, BasicStat bs, boolean town) {
-        short job = c.getCharacterStat().getJob();
-        int level = Math.max(1, c.getCharacterStat().getLevel());
-        if (job != 0) {
-            if (level >= MAX_LEVEL) {
-                c.getCharacterStat().setEXP(0);
-            } else {
-                int exp = EXP_USER[level];
-                
-                double rate;
-                if (town) {
-                    rate = 0.01;
-                } else {
-                    if (JobAccessor.getJobCategory(job) == JobCategory.Archer)
-                        rate = 0.08;
-                    else
-                        rate = 0.2;
-                    rate /= (double) c.getCharacterStat().getLUK() + 0.05;
-                }
-                
-                c.getCharacterStat().setEXP(Math.min(Math.max(0, c.getCharacterStat().getEXP() - (int) (exp * rate)), exp - 1));
-            }
+    public static void decreaseExp(CharacterData c, BasicStat bs) {
+        if (c.getCharacterStat().getJob() != 0) {
+            int exp = getNextLevelExp(c.getCharacterStat().getLevel());
+            int dec = (int) ((0.2 / (double) bs.getLUK() + 0.05) * (double) exp);
+            c.getCharacterStat().setEXP(Math.min(Math.max(0, c.getCharacterStat().getEXP() - dec), exp - 1));
         }
     }
     
     /**
      * 
      * @param level The user's level
-     * @return The total EXP needed for the user's level
+     * @return The total EXP required for the next level
      */
-    public static int getEXP(int level) {
-        if (level < 0 || level >= EXP_USER.length) {
+    public static int getNextLevelExp(int level) {
+        if (level > MAX_LEVEL) {
             return Integer.MAX_VALUE;
         }
-        return EXP_USER[level];
+        return EXP_USER[Math.max(1, level)];
     }
     
     /**

@@ -51,11 +51,9 @@ public class MobPool {
         return packet;
     }
     
-    public static OutPacket onCtrlAck(int mobID, short mobCtrlSN, boolean nextAttackPossible, int mp) {
+    public static OutPacket onCtrlAck(int mobID, int mp) {
         OutPacket packet = new OutPacket(LoopbackPacket.MobCtrlAck);
         packet.encodeInt(mobID);
-        packet.encodeShort(mobCtrlSN);
-        packet.encodeBool(nextAttackPossible);
         packet.encodeShort(mp);
         return packet;
     }
@@ -71,11 +69,11 @@ public class MobPool {
         return packet;
     }
     
-    public static OutPacket onMove(int mobID, boolean nextAttackPossible, byte left, int skillID, MovePath mp) {
+    public static OutPacket onMove(int mobID, boolean nextAttackPossible, byte action, int skillID, MovePath mp) {
         OutPacket packet = new OutPacket(LoopbackPacket.MobMove);
         packet.encodeInt(mobID);
         packet.encodeBool(nextAttackPossible);
-        packet.encodeByte(left);
+        packet.encodeByte(action);
         packet.encodeInt(skillID);
         mp.encode(packet);
         return packet;

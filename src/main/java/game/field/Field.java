@@ -297,7 +297,6 @@ public class Field {
     }
 
     public void onMobMove(User ctrl, Mob mob, InPacket packet) {
-        short mobCtrlSN = packet.decodeShort();
         byte mobCtrlState = packet.decodeByte();//bDirLeft | (unsigned __int8)(16 * nMobCtrlState)
         boolean nextAttackPossible = (mobCtrlState & 0xF) != 0;
         byte action = packet.decodeByte();//2 * nAction | bLeft & 1
@@ -315,7 +314,7 @@ public class Field {
         else
             action = (byte) ((action >> 1) & 0xFF);
         if (mob.onMobMove(nextAttackPossible, action, data)) {
-            ctrl.sendPacket(MobPool.onCtrlAck(mob.getGameObjectID(), mobCtrlSN, nextAttackPossible, mob.getMP()));
+            ctrl.sendPacket(MobPool.onCtrlAck(mob.getGameObjectID(), mob.getMP()));
             MovePath mp = new MovePath();
             mp.decode(packet);
             if (!mp.getElem().isEmpty()) {

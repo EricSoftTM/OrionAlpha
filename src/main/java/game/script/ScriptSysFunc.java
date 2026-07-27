@@ -688,7 +688,7 @@ public class ScriptSysFunc {
         return getUser().getCharacter().getCharacterStat().getLUK();
     }
     
-    public byte userGetLevel() {
+    public int userGetLevel() {
         return getUser().getCharacter().getCharacterStat().getLevel();
     }
     

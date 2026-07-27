@@ -116,7 +116,7 @@ public class Mob extends Creature {
         this.stat.setFrom(template);
     }
     
-    public double alterEXPbyLevel(byte level, double incEXP) {
+    public double alterEXPbyLevel(int level, double incEXP) {
         return incEXP;
     }
     

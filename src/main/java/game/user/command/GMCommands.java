@@ -85,10 +85,9 @@ public class GMCommands {
     }
 
     @CommandDesc("Updates the level of your character")
-    public static String level(User user, CharacterStat stat, String[] args) {
+    public static String level(User user, String[] args) {
         if (args.length > 0) {
-            stat.setLevel(Byte.parseByte(args[0]));
-            user.sendCharacterStat(Request.Excl, CharacterStatType.LEV);
+            user.setLevel(Integer.parseInt(args[0]));
             return null;
         }
         return "!level <level>";
@@ -106,10 +105,9 @@ public class GMCommands {
     }
 
     @CommandDesc("Changes your job")
-    public static String job(User user, CharacterStat stat, String[] args) {
+    public static String job(User user, String[] args) {
         if (args.length > 0) {
-            stat.setJob(Short.parseShort(args[0]));
-            user.sendCharacterStat(Request.Excl, CharacterStatType.Job);
+            user.setJob(Short.parseShort(args[0]));
             return null;
         }
         return "!job <jobID>";

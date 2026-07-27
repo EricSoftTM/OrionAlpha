@@ -142,7 +142,7 @@ public class ItemAccessor {
     
     public static void getRealEquip(CharacterData c, List<ItemSlotBase> realEquip, int excl1, int excl2) {
         byte gender = c.getCharacterStat().getGender();
-        byte level = c.getCharacterStat().getLevel();
+        int level = c.getCharacterStat().getLevel();
         short job = c.getCharacterStat().getJob();
         short STR = c.getCharacterStat().getSTR();
         short DEX = c.getCharacterStat().getDEX();

@@ -283,7 +283,7 @@ public class User extends Creature {
         return false;
     }
 
-    public byte getLevel() {
+    public int getLevel() {
         return character.getCharacterStat().getLevel();
     }
 
@@ -700,6 +700,22 @@ public class User extends Creature {
             } finally {
                 unlock();
             }
+        }
+    }
+    
+    public void setLevel(int level) {
+        lock.lock();
+        try {
+            if (level == getLevel()) {
+                return;
+            }
+            characterDataModFlag |= DBChar.Character;
+            character.getCharacterStat().setLevel(Math.max(1, Math.min(level, ExpAccessor.MAX_LEVEL)));
+            character.getCharacterStat().setEXP(0);
+            validateStat(false);
+            sendCharacterStat(Request.None, CharacterStatType.LEV);
+        } finally {
+            unlock();
         }
     }
 

@@ -54,47 +54,28 @@ public class ExpAccessor {
      * @return If the user has physically leveled up.
      */
     public static boolean tryProcessLevelUp(CharacterData cd, BasicStat bs, int inc, Pointer<Boolean> reachMaxLv) {
-        byte level = cd.getCharacterStat().getLevel();
-        int exp = inc + cd.getCharacterStat().getEXP();
+        long exp = cd.getCharacterStat().getEXP() + inc;
+        
+        int level = cd.getCharacterStat().getLevel();
         if (level >= MAX_LEVEL) {
-            cd.getCharacterStat().setEXP(0);
             cd.getCharacterStat().setLevel(MAX_LEVEL);
+            cd.getCharacterStat().setEXP(0);
             return false;
         }
-        int reqEXP;
-        if (level > MAX_LEVEL) {
-            reqEXP = Integer.MAX_VALUE;
-        } else {
-            if (level < 1)
-                level = 1;
-            reqEXP = EXP_USER[level];
-        }
-        if (exp < reqEXP) {
-            cd.getCharacterStat().setEXP(exp);
+        
+        int max = getNextLevelExp(level);
+        if (exp < max) {
+            cd.getCharacterStat().setEXP((int) exp);
             return false;
         }
-        int remainExp = exp - reqEXP;
-        level++;
+        
+        exp -= getNextLevelExp(level); level++;
         cd.getCharacterStat().setLevel(level);
-        if (level == MAX_LEVEL) {
-            reachMaxLv.set(true);
-        }
-        if (level > MAX_LEVEL) {
-            reqEXP = Integer.MAX_VALUE;
-        } else {
-            if (level < 1)
-                level = 1;
-            reqEXP = EXP_USER[level];
-        }
+        if (level == MAX_LEVEL) reachMaxLv.set(true);
+        max = getNextLevelExp(level);
+        cd.getCharacterStat().setEXP((exp >= max) ? Math.max(0, max - 1) : (int) exp);
+        
         SkillAccessor.incMaxHPMP(cd, bs, CharacterStatType.MHP | CharacterStatType.MMP, true);
-        if (remainExp < reqEXP) {
-            exp = remainExp;
-        } else {
-            exp = reqEXP - 1;
-            if (reqEXP - 1 <= 0)
-                exp = 0;
-        }
-        cd.getCharacterStat().setEXP(exp);
         if (cd.getCharacterStat().getHP() > 0) {
             cd.getCharacterStat().setHP(cd.getCharacterStat().getMHP());
             cd.getCharacterStat().setMP(cd.getCharacterStat().getMMP());

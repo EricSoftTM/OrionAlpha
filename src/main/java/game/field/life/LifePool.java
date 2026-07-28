@@ -22,8 +22,6 @@ import common.item.ItemType;
 import game.field.Field;
 import game.field.FieldSplit;
 import game.field.StaticFoothold;
-import game.field.life.heapbase.CompareCtrlMax;
-import game.field.life.heapbase.CompareCtrlMin;
 import game.field.life.mob.Mob;
 import game.field.life.mob.MobCtrl;
 import game.field.life.mob.MobGen;
@@ -36,8 +34,9 @@ import game.user.skill.SkillAccessor;
 import game.user.skill.SkillEntry;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,6 +45,7 @@ import network.packet.ClientPacket;
 import network.packet.InPacket;
 import network.packet.LoopbackPacket;
 import network.packet.OutPacket;
+import util.HeapBase;
 import util.Logger;
 import util.Pointer;
 import util.Rand32;
@@ -60,8 +60,8 @@ import util.wz.WzUtil;
  */
 public class LifePool {
     private final Field field;
-    private final CompareCtrlMin ctrlMin;
-    private final CompareCtrlMax ctrlMax;
+    private final HeapBase<Controller, CompareCtrlMin> heapCtrlMin;
+    private final HeapBase<Controller, CompareCtrlMax> heapCtrlMax;
     private final Map<Integer, Controller> controllers;
     private final Map<Integer, Mob> mobs;
     private final Map<Integer, Npc> npcs;
@@ -78,8 +78,8 @@ public class LifePool {
     
     public LifePool(Field field) {
         this.field = field;
-        this.ctrlMin = new CompareCtrlMin(16);
-        this.ctrlMax = new CompareCtrlMax(16);
+        this.heapCtrlMin = new HeapBase<>(new CompareCtrlMin());
+        this.heapCtrlMax = new HeapBase<>(new CompareCtrlMax());
         this.ctrlNull = new Controller(null);
         this.controllers = new ConcurrentHashMap<>();
         this.mobs = new ConcurrentHashMap<>();
@@ -100,34 +100,33 @@ public class LifePool {
     }
     
     public boolean changeMobController(int characterID, Mob mobWanted, boolean chase) {
-        Controller ctrl = controllers.get(characterID);
-        Controller controller = mobWanted.getController();
+        Controller oldCtrl = mobWanted.getController();
+        
+        Controller newCtrl = null;
         if (characterID != 0) {
-            if (ctrl == null) {
-                return false;
-            }
-            if (controller == ctrl) {
-                return true;
-            }
+            if ((newCtrl = controllers.get(characterID)) == null) return false;
+            if (oldCtrl == newCtrl) return true;
         } else {
-            if (ctrlMin.getCount() == 0 || ctrlMin.getHeap().isEmpty() || ctrlMin.getHeap().get(0) == null)
-                return false;
-            for (Controller p : ctrlMin.getHeap()) {
-                if (p != null && p != controller && p.getCtrlCount() < 50) {
-                    ctrl = p;
-                    break;
-                }
+            var posNext = new Pointer<Controller>();
+            for (var pos = heapCtrlMin.getHeadPosition(); pos != null; ) {
+                posNext.set(pos);
+                newCtrl = heapCtrlMin.getNext(posNext);
+                if (newCtrl != oldCtrl && newCtrl.getCtrlCount() < LifePerUser.MAX) break;
+                else newCtrl = null;
+                pos = posNext.get();
             }
-            if (ctrl == null)
-                return false;
+            if (newCtrl == null) return false;
         }
-        controller.getCtrlMob().remove(mobWanted);
-        updateCtrlHeap(controller);
-        ctrl.getCtrlMob().add(mobWanted);
-        updateCtrlHeap(ctrl);
-        mobWanted.setController(ctrl);
-        mobWanted.sendChangeControllerPacket(controller.getUser(), (byte) 0);
-        mobWanted.sendChangeControllerPacket(ctrl.getUser(), chase ? MobCtrl.Active_Req : MobCtrl.Active_Int);
+        
+        List<Mob> newCtrlMob = newCtrl.getCtrlMob();
+        List<Mob> oldCtrlMob = oldCtrl.getCtrlMob();
+        oldCtrlMob.remove(mobWanted);
+        updateCtrlHeap(oldCtrl);
+        newCtrlMob.add(mobWanted);
+        updateCtrlHeap(newCtrl);
+        mobWanted.setController(newCtrl);
+        mobWanted.sendChangeControllerPacket(oldCtrl.getUser(), (byte) 0);
+        mobWanted.sendChangeControllerPacket(newCtrl.getUser(), chase ? MobCtrl.Active_Req : MobCtrl.Active_Int);
         return true;
     }
     
@@ -144,51 +143,47 @@ public class LifePool {
     }
     
     public boolean createMob(int templateID, MobGen pmg, int x, int y, short fh, boolean noDropPriority, byte left, int mobType, Controller owner) {
-        if (owner == null) {
-            if (ctrlMin.getCount() != 0) {
-                owner = ctrlMin.getHeap().get(0);
+        Controller ctrl = (owner != null) ? owner : (heapCtrlMin.isEmpty() ? null : heapCtrlMin.get());
+        if (ctrl != null && ctrl.getCtrlCount() >= LifePerUser.MAX) {
+            if (mobType == MobType.BOSSMOB) {
+                if (!giveUpMobController(ctrl)) ctrl = null;
             }
+            else ctrl = null;
         }
-        if (owner != null && owner.getCtrlCount() >= 50) {
-            if (mobType != 2 || !giveUpMobController(owner)) {
-                owner = null;
-            }
-        }
-        if (pmg != null && pmg.regenInterval < 0) {
-            owner = ctrlNull;
-        }
+        if (pmg != null && pmg.regenInterval < 0) ctrl = ctrlNull;
+        
         MobTemplate template = MobTemplate.getMobTemplate(templateID);
-        if (template != null && owner != null) {
-            Mob mob = new Mob(field, template, noDropPriority);
-            mob.init(pmg, fh);
-            byte moveAction;
-            if (template.getMoveAbility() == MoveAbility.Fly) {
-                moveAction = MoveActionType.Fly1;
-            } else {
-                moveAction = template.getMoveAbility() == MoveAbility.Stop ? MoveActionType.Stand : MoveActionType.Move;
-            }
-            mob.setMovePosition(x, y, (byte) ((left & 1 | 2 * moveAction) & 0xFF), fh);
-            mob.setController(owner);
-            
-            if (mobType == 1) {
-                if (subMobCount < 0)
-                    subMobCount = 0;
-                ++subMobCount;
-                mob.setMobType(1);
-            }
-            if (mobType == 2)
-                mob.setMobType(2);
-            
-            Point pt = field.makePointInSplit(x, y);
-            field.splitRegisterFieldObj(pt.x, pt.y, FieldSplit.Mob, mob);
-            
-            mobs.put(mob.getGameObjectID(), mob);
-            mob.sendChangeControllerPacket(owner.getUser(), MobCtrl.Active_Int);
-            owner.getCtrlMob().add(mob);
-            updateCtrlHeap(owner);
-            return true;
+        if (template == null || ctrl == null) return false;
+        
+        Mob mob = new Mob(field, template, noDropPriority);
+        mob.init(pmg, fh);
+        byte moveAction;
+        if (template.getMoveAbility() == MoveAbility.Fly) {
+            moveAction = MoveActionType.Fly1;
+        } else {
+            moveAction = template.getMoveAbility() == MoveAbility.Stop ? MoveActionType.Stand : MoveActionType.Move;
         }
-        return false;
+        mob.setMovePosition(x, y, (byte) ((left & 1 | 2 * moveAction) & 0xFF), fh);
+        mob.setController(ctrl);
+        
+        if (mobType == MobType.SUBMOB) {
+            if (subMobCount < 0) subMobCount = 0;
+            subMobCount++;
+            mob.setMobType(MobType.SUBMOB);
+        }
+        if (mobType == MobType.BOSSMOB) {
+            mob.setMobType(MobType.BOSSMOB);
+        }
+        
+        field.makePointInSplit(x, y);
+        field.splitRegisterFieldObj(x, y, FieldSplit.Mob, mob);
+        
+        mobs.put(mob.getGameObjectID(), mob);
+        mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
+        
+        ctrl.getCtrlMob().add(mob);
+        updateCtrlHeap(ctrl);
+        return true;
     }
     
     public Npc createNpc(WzProperty prop, int templateID, int x, int y) {
@@ -384,10 +379,10 @@ public class LifePool {
     }
     
     public void insertController(User user) {
-        Controller t = new Controller(user);
-        t.setPosMinHeap(ctrlMin.insert(t));
-        t.setPosMaxHeap(ctrlMax.insert(t));
-        controllers.put(user.getCharacterID(), t);
+        Controller ctrl = new Controller(user);
+        heapCtrlMax.insert(ctrl);
+        heapCtrlMin.insert(ctrl);
+        controllers.put(user.getCharacterID(), ctrl);
         redistributeLife();
     }
     
@@ -437,74 +432,69 @@ public class LifePool {
     }
     
     public void redistributeLife() {
-        if (ctrlMin.getCount() == 0) {
-            return;
-        }
-        Controller ctrl;
-        Controller controller = ctrlNull;
+        if (heapCtrlMin.isEmpty()) return;
         
-        for (Iterator<Npc> it = controller.getCtrlNpc().iterator(); it.hasNext();) {
-            Npc npc = it.next();
-            ctrl = ctrlMin.getHeap().get(0);
-            if (ctrl.getCtrlCount() >= 50) {
+        List<Mob> ctrlMob = ctrlNull.getCtrlMob();
+        List<Npc> ctrlNpc = ctrlNull.getCtrlNpc();
+        
+        for (Iterator<Npc> pos = ctrlNpc.iterator(); pos.hasNext(); ) {
+            Npc npc = pos.next();
+            Controller ctrl = heapCtrlMin.get();
+            if (ctrl.getCtrlCount() >= LifePerUser.MAX) {
                 break;
             }
             ctrl.getCtrlNpc().add(npc);
             npc.setController(ctrl);
             updateCtrlHeap(ctrl);
             npc.sendChangeControllerPacket(ctrl.getUser(), true);
-            it.remove();
+            pos.remove();
         }
-        for (Iterator<Mob> it = controller.getCtrlMob().iterator(); it.hasNext();) {
-            Mob mob = it.next();
-            ctrl = ctrlMin.getHeap().get(0);
-            if (ctrl.getCtrlCount() >= 50) {
+        
+        for (Iterator<Mob> pos = ctrlMob.iterator(); pos.hasNext(); ) {
+            Mob mob = pos.next();
+            Controller ctrl = heapCtrlMin.get();
+            if (ctrl.getCtrlCount() >= LifePerUser.MAX) {
                 break;
             }
             ctrl.getCtrlMob().add(mob);
             mob.setController(ctrl);
             updateCtrlHeap(ctrl);
             mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
-            it.remove();
+            pos.remove();
         }
         
         while (true) {
-            Controller minCtrl = ctrlMin.getHeap().get(0);
-            Controller maxCtrl = ctrlMax.getHeap().get(0);
-            
-            if (maxCtrl.getCtrlCount() <= minCtrl.getCtrlCount() || maxCtrl.getCtrlCount() <= 20) {
-                return;
-            }
-            
-            if (!maxCtrl.getCtrlNpc().isEmpty()) {
-                Npc npc = maxCtrl.getCtrlNpc().remove(0);
-                updateCtrlHeap(maxCtrl);
-                minCtrl.getCtrlNpc().add(npc);
-                npc.setController(minCtrl);
-                updateCtrlHeap(minCtrl);
-                npc.sendChangeControllerPacket(maxCtrl.getUser(), false);
-                npc.sendChangeControllerPacket(minCtrl.getUser(), true);
-                continue;
-            }
-            
-            if (maxCtrl.getCtrlMob().isEmpty())
+            Controller ctrlMin = heapCtrlMin.get();
+            Controller ctrlMax = heapCtrlMax.get();
+            if (ctrlMax.getCtrlCount() <= ctrlMin.getCtrlCount() + 1
+                    || ctrlMax.getCtrlCount() <= LifePerUser.PROPER_MANY) {
                 break;
-            Mob mob = null;
-            for (Mob m : maxCtrl.getCtrlMob()) {
-                if (m != null) {
-                    mob = m;
-                    break;
+            }
+            if (!ctrlMax.getCtrlNpc().isEmpty()) {
+                Npc npc = ctrlMax.getCtrlNpc().remove(0);
+                updateCtrlHeap(ctrlMax);
+                ctrlMin.getCtrlNpc().add(npc);
+                npc.setController(ctrlMin);
+                updateCtrlHeap(ctrlMin);
+                npc.sendChangeControllerPacket(ctrlMax.getUser(), false);
+                npc.sendChangeControllerPacket(ctrlMin.getUser(), true);
+            } else {
+                Mob mob = null;
+                Iterator<Mob> posSave = null;
+                for (Iterator<Mob> pos = ctrlMax.getCtrlMob().iterator(); pos.hasNext(); ) {
+                    posSave = pos;
+                    mob = pos.next();
                 }
+                if (mob == null) break;
+                
+                posSave.remove();
+                updateCtrlHeap(ctrlMax);
+                ctrlMin.getCtrlMob().add(mob);
+                mob.setController(ctrlMin);
+                updateCtrlHeap(ctrlMin);
+                mob.sendChangeControllerPacket(ctrlMax.getUser(), (byte) 0);
+                mob.sendChangeControllerPacket(ctrlMin.getUser(), MobCtrl.Active_Int);
             }
-            if (mob == null)
-                break;
-            maxCtrl.getCtrlMob().remove(mob);
-            updateCtrlHeap(maxCtrl);
-            minCtrl.getCtrlMob().add(mob);
-            mob.setController(minCtrl);
-            updateCtrlHeap(minCtrl);
-            mob.sendChangeControllerPacket(maxCtrl.getUser(), (byte) 0);
-            mob.sendChangeControllerPacket(minCtrl.getUser(), MobCtrl.Active_Int);
         }
     }
     
@@ -516,52 +506,66 @@ public class LifePool {
     }
     
     public void removeController(User user) {
-        Controller ctrl = controllers.remove(user.getCharacterID());
-        if (ctrl != null) {
-            List<Mob> ctrlMob = new ArrayList<>(ctrl.getCtrlMob());
-            List<Npc> ctrlNpc = new ArrayList<>(ctrl.getCtrlNpc());
+        Controller ctrlRemove = controllers.get(user.getCharacterID());
+        if (ctrlRemove == null) {
+            return;
+        }
         
-            ctrlMin.removeAt(ctrl.getPosMinHeap());
-            ctrlMax.removeAt(ctrl.getPosMaxHeap());
+        List<Mob> ctrlMob = new ArrayList<>(ctrlRemove.getCtrlMob());
+        List<Npc> ctrlNpc = new ArrayList<>(ctrlRemove.getCtrlNpc());
         
-            for (Mob mob : ctrlMob) {
-                if (mob == null)
-                    break;
-                if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(0)) == null || ctrl.getCtrlCount() >= 50) {
+        controllers.remove(user.getCharacterID());
+        heapCtrlMin.removeAt(ctrlRemove);
+        heapCtrlMax.removeAt(ctrlRemove);
+        
+        for (Mob mob : ctrlMob) {
+            Controller ctrl;
+            if (heapCtrlMin.isEmpty()) {
+                ctrl = ctrlNull;
+            } else {
+                ctrl = heapCtrlMin.get();
+                if (ctrl.getCtrlCount() >= LifePerUser.MAX) {
                     ctrl = ctrlNull;
                 }
-            
-                ctrl.getCtrlMob().add(mob);
-                updateCtrlHeap(ctrl);
-                mob.setController(ctrl);
-                mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
             }
-            for (Npc npc : ctrlNpc) {
-                if (npc == null)
-                    break;
-                if (ctrlMin.getCount() == 0 || (ctrl = ctrlMin.getHeap().get(0)) == null || ctrl.getCtrlCount() >= 50) {
+            ctrl.getCtrlMob().add(mob);
+            updateCtrlHeap(ctrl);
+            mob.setController(ctrl);
+            mob.sendChangeControllerPacket(ctrl.getUser(), MobCtrl.Active_Int);
+        }
+        
+        for (Npc npc : ctrlNpc) {
+            Controller ctrl;
+            if (heapCtrlMin.isEmpty()) {
+                ctrl = ctrlNull;
+            } else {
+                ctrl = heapCtrlMin.get();
+                if (ctrl.getCtrlCount() >= LifePerUser.MAX) {
                     ctrl = ctrlNull;
                 }
-            
-                ctrl.getCtrlNpc().add(npc);
-                updateCtrlHeap(ctrl);
-                npc.setController(ctrl);
-                npc.sendChangeControllerPacket(ctrl.getUser(), true);
             }
-            ctrlMob.clear();
-            ctrlNpc.clear();
+            ctrl.getCtrlNpc().add(npc);
+            updateCtrlHeap(ctrl);
+            npc.setController(ctrl);
+            npc.sendChangeControllerPacket(ctrl.getUser(), true);
         }
     }
     
     public void removeMob(Mob mob) {
         mobs.remove(mob.getGameObjectID());
-        if (mob.getController() != null) {
-            mob.getController().getCtrlMob().remove(mob);
-            updateCtrlHeap(mob.getController());
-            mob.sendChangeControllerPacket(mob.getController().getUser(), (byte) 0);
-        }
+        
+        Controller ctrl = mob.getController();
+        List<Mob> ctrlMob = ctrl.getCtrlMob();
+        ctrlMob.remove(mob);
+        updateCtrlHeap(ctrl);
+        mob.sendChangeControllerPacket(ctrl.getUser(), (byte) 0);
+        
         field.splitUnregisterFieldObj(FieldSplit.Mob, mob);
         mob.setRemoved();
+        
+        if (mob.getMobType() == MobType.SUBMOB) {
+            subMobCount--;
+        }
     }
     
     public void removeMob(int mobTemplateID) {
@@ -626,97 +630,73 @@ public class LifePool {
         if (reset) {
             setMobGen(true, 0);
         }
+        
         if (mobGen.isEmpty() || mobGenCount == 0) {
             return;
         }
+        
         long time = System.currentTimeMillis();
-        if (reset || (time - lastCreateMobTime) >= 7000) {
-            int mobCapacity;
-            if (ctrlMin.getCount() > mobCapacityMin / 2) {
-                mobCapacity = ctrlMin.getCount() < 2 * mobCapacityMin ? mobCapacityMin + (mobCapacityMax - mobCapacityMin) * (2 * ctrlMin.getCount() - mobCapacityMin) / (3 * mobCapacityMin) : mobCapacityMax;
-            } else {
-                mobCapacity = mobCapacityMin;
-            }
-            int mobCount = mobCapacity - mobs.size();
-            if (mobCount <= 0) {
-                return;
-            }
-            final List<Mob> mob = new ArrayList<>(mobs.values());
-            final List<Point> points = new ArrayList<>();
-            final List<MobGen> mobGens = new ArrayList<>();
-            int count = 0;
-            for (Iterator<Mob> it = mob.iterator(); it.hasNext();) {
-                Mob m = it.next();
-                if (m != null) {
-                    points.add(new Point(m.getCurrentPos().x, m.getCurrentPos().y));
-                } else {
-                    it.remove();
-                }
-            }
-            boolean checkArea = false;
-            for (MobGen pmg : mobGen) {
-                if (!mobGenEnable) {
-                    break;
-                }
-                if (!mobGenExcept.contains(pmg.templateID)) {
-                    if (pmg.regenInterval == 0) {
-                        checkArea = true;
-                    } else {
-                        if (pmg.regenInterval >= 0 || reset) {
-                            if (pmg.mobCount.get() == 0 && time - pmg.regenAfter >= 0) {
-                                mobGens.add(pmg);
-                                points.add(new Point(pmg.x, pmg.y));
-                            }
-                        }
-                    }
-                }
-                if (checkArea) {
-                    Rect rc = new Rect(pmg.x - 100, pmg.y - 100, pmg.x + 100, pmg.y + 100);
-                    boolean add = true;
-                    int i = 0;
-                    while (i < points.size()) {
-                        Point pt = points.get(i);
-                        if (pt == null) {
-                            break;
-                        }
-                        if (rc.ptInRect(pt)) {
-                            add = false;
-                            break;
-                        }
-                        ++i;
-                    }
-                    if (add) {
-                        mobGens.add(pmg);
-                        points.add(new Point(pmg.x, pmg.y));
-                    }
-                    checkArea = false;
-                }
-                ++count;
-                if (count >= mobGenCount) {
-                    break;
-                }
-            }
-            if (!mobGens.isEmpty()) {
-                int index;
-                while (true) {
-                    if (mobGens.isEmpty())
-                        break;
-                    index = (int) (Rand32.getInstance().random() % mobGens.size());
-                    MobGen pmg = mobGens.remove(index);
-                    if (pmg == null)
-                        continue;
-                    if (createMob(pmg.templateID, pmg, pmg.x, pmg.y, pmg.fh, false, pmg.f, 0, null))
-                        --mobCount;
-                    if (mobCount <= 0) {
-                        break;
-                    }
-                }
-            }
-            mob.clear();
-            points.clear();
-            mobGens.clear();
-            lastCreateMobTime = time;
+        if (!reset && time - lastCreateMobTime < 7000) return;
+        
+        int ctrlCount = heapCtrlMin.getCount();
+        int capacity;
+        if (ctrlCount <= mobCapacityMin / 2) {
+            capacity = mobCapacityMin;
+        } else {
+            capacity = ctrlCount >= mobCapacityMin * 2 ? mobCapacityMax : (2 * ctrlCount - mobCapacityMin) * (mobCapacityMax - mobCapacityMin) / (3 * mobCapacityMin) + mobCapacityMin;
         }
+        int remainCapacity = capacity - mobs.size();
+        if (remainCapacity <= 0) {
+            return;
+        }
+        
+        List<MobGen> mobGenPossible = new ArrayList<>();
+        List<Point> points = new LinkedList<>();
+        for (Mob mob : mobs.values()) {
+            points.add(mob.getCurrentPos());
+        }
+        for (int i = 0; i < mobGenCount; i++) {
+            if (!mobGenEnable) break;
+            MobGen mg = mobGen.get(i);
+            
+            if (mobGenExcept.contains(mg.templateID)) {
+                continue;
+            }
+            
+            if (mg.regenInterval == 0) {
+                Rect rc = new Rect(mg.x - 100, mg.y - 100, mg.x + 100, mg.y + 100);
+                boolean create = true;
+                for (Point pt : points) {
+                    if (rc.ptInRect(pt)) {
+                        create = false;
+                        break;
+                    }
+                }
+                if (!create) continue;
+                mobGenPossible.add(mg);
+            } else if (mg.regenInterval < 0) {
+                if (!reset) continue;
+                mobGenPossible.add(0, mg);
+            } else {
+                if (mg.mobCount.get() != 0 || time - mg.regenAfter < 0) continue;
+                mobGenPossible.add(0, mg);
+            }
+            
+            Point newMob = new Point(mg.x, mg.y);
+            points.add(newMob);
+        }
+        points.clear();
+        
+        while (remainCapacity > 0 && !mobGenPossible.isEmpty()) {
+            int idx = mobGenPossible.get(0).regenInterval != 0 ? 0 : Rand32.getRand(mobGenPossible.size(), 0).intValue();
+            MobGen pmg = mobGenPossible.get(idx);
+            mobGenPossible.remove(idx);
+            
+            if (createMob(pmg.templateID, pmg, pmg.x, pmg.y, pmg.fh, false, pmg.f, 0, null)) --remainCapacity;
+        }
+        mobGenPossible.clear();
+        
+        lastCreateMobTime = time;
     }
     
     public void update(long time) {
@@ -730,10 +710,9 @@ public class LifePool {
     }
     
     public void updateCtrlHeap(Controller ctrl) {
-        if (ctrl != ctrlNull) {
-            ctrlMin.updateAt(ctrl.getPosMinHeap());
-            ctrlMax.updateAt(ctrl.getPosMaxHeap());
-        }
+        if (ctrl == ctrlNull) return;
+        heapCtrlMin.updateAt(ctrl);
+        heapCtrlMax.updateAt(ctrl);
     }
     
     public boolean onUserAttack(User user, byte type, byte attackType, byte mobCount, byte damagePerMob, SkillEntry skill, byte slv, byte action, byte left, byte speedDegree, int bulletItemID, List<AttackInfo> attack, Point ballStart) {
@@ -833,6 +812,28 @@ public class LifePool {
                 removeMob(mob);
                 mob.onMobDead(hit, delay);
             }
+        }
+    }
+    
+    @SuppressWarnings("ComparatorMethodParameterNotUsed")
+    private static class CompareCtrlMin implements Comparator<Controller> {
+        @Override
+        public int compare(Controller p, Controller q) {
+            if (p.getCtrlCount() > q.getCtrlCount()) {
+                return 1;
+            }
+            return -1;
+        }
+    }
+    
+    @SuppressWarnings("ComparatorMethodParameterNotUsed")
+    private static class CompareCtrlMax implements Comparator<Controller> {
+        @Override
+        public int compare(Controller p, Controller q) {
+            if (p.getCtrlCount() < q.getCtrlCount()) {
+                return 1;
+            }
+            return -1;
         }
     }
 }

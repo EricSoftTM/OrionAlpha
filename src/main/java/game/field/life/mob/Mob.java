@@ -26,6 +26,7 @@ import game.field.MovePath.Elem;
 import game.field.drop.Reward;
 import game.field.drop.RewardType;
 import game.field.life.Controller;
+import game.field.life.MobType;
 import game.field.life.MoveAbility;
 import game.field.life.mob.MobDamageLog.Info;
 import game.user.User;
@@ -87,7 +88,7 @@ public class Mob extends Creature {
         
         this.template = template;
         this.noDropPriority = noDropPriority;
-        this.mobType = 0;//MobSpecies.Beast
+        this.mobType = MobType.NONE;
         this.controller = null;
         this.nextAttackPossible = false;
         this.damageLog = new MobDamageLog();
@@ -562,6 +563,10 @@ public class Mob extends Creature {
         if (hp >= 0 && hp <= getMaxHP() && hp != getHP()) {
             this.hp = hp;
         }
+    }
+    
+    public byte getMobType() {
+        return mobType;
     }
     
     public void setMobType(int type) {
